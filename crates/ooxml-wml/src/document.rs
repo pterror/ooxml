@@ -18,7 +18,7 @@
 
 use crate::error::{Error, Result};
 use crate::styles::{Styles, merge_run_properties};
-use ooxml::{Package, rel_type};
+use ooxml::{Package, Relationships, rel_type, rels_path_for};
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::fs::File;
@@ -32,6 +32,10 @@ pub struct Document<R> {
     package: Package<R>,
     body: Body,
     styles: Styles,
+    /// Document part relationships (for images, hyperlinks, etc.)
+    doc_rels: Relationships,
+    /// Path to the document part (e.g., "word/document.xml")
+    doc_path: String,
 }
 
 impl Document<BufReader<File>> {
@@ -54,9 +58,20 @@ impl<R: Read + Seek> Document<R> {
             .get_by_type(rel_type::OFFICE_DOCUMENT)
             .ok_or_else(|| Error::MissingPart("main document relationship".into()))?;
 
+        let doc_path = doc_rel.target.clone();
+
         // Parse the document XML
-        let doc_xml = package.read_part(&doc_rel.target)?;
+        let doc_xml = package.read_part(&doc_path)?;
         let body = parse_document(&doc_xml)?;
+
+        // Load document-level relationships (for images, hyperlinks, etc.)
+        let doc_rels_path = rels_path_for(&doc_path);
+        let doc_rels = if package.has_part(&doc_rels_path) {
+            let rels_xml = package.read_part(&doc_rels_path)?;
+            Relationships::parse(&rels_xml[..])?
+        } else {
+            Relationships::new()
+        };
 
         // Load styles if available
         let styles = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES) {
@@ -70,6 +85,8 @@ impl<R: Read + Seek> Document<R> {
             package,
             body,
             styles,
+            doc_rels,
+            doc_path,
         })
     }
 
@@ -130,6 +147,82 @@ impl<R: Read + Seek> Document<R> {
     pub fn text(&self) -> String {
         self.body.text()
     }
+
+    /// Get image data by relationship ID.
+    ///
+    /// Looks up the relationship, reads the image file from the package,
+    /// and returns the image data with its content type.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// for para in doc.body().paragraphs() {
+    ///     for run in para.runs() {
+    ///         for drawing in run.drawings() {
+    ///             for image in drawing.images() {
+    ///                 let data = doc.get_image_data(image.rel_id())?;
+    ///                 println!("Image type: {}", data.content_type);
+    ///             }
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    pub fn get_image_data(&mut self, rel_id: &str) -> Result<ImageData> {
+        // Look up the relationship
+        let rel = self
+            .doc_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::MissingPart(format!("image relationship {}", rel_id)))?;
+
+        // Resolve the target path relative to the document
+        let image_path = resolve_path(&self.doc_path, &rel.target);
+
+        // Read the image data from the package
+        let data = self.package.read_part(&image_path)?;
+
+        // Determine content type from extension
+        let content_type = content_type_from_path(&image_path);
+
+        Ok(ImageData { content_type, data })
+    }
+
+    /// Get document relationships (for advanced use).
+    pub fn doc_relationships(&self) -> &Relationships {
+        &self.doc_rels
+    }
+}
+
+/// Resolve a relative path against a base path.
+fn resolve_path(base: &str, relative: &str) -> String {
+    // If the target is absolute (starts with /), use it directly (without the /)
+    if let Some(stripped) = relative.strip_prefix('/') {
+        return stripped.to_string();
+    }
+
+    // Otherwise, resolve relative to the base directory
+    if let Some(slash_pos) = base.rfind('/') {
+        format!("{}/{}", &base[..slash_pos], relative)
+    } else {
+        relative.to_string()
+    }
+}
+
+/// Determine MIME content type from file extension.
+fn content_type_from_path(path: &str) -> String {
+    let ext = path.rsplit('.').next().unwrap_or("").to_lowercase();
+    match ext.as_str() {
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "bmp" => "image/bmp",
+        "tiff" | "tif" => "image/tiff",
+        "webp" => "image/webp",
+        "svg" => "image/svg+xml",
+        "emf" => "image/x-emf",
+        "wmf" => "image/x-wmf",
+        _ => "application/octet-stream",
+    }
+    .to_string()
 }
 
 /// The document body containing paragraphs and other block-level elements.
@@ -417,13 +510,50 @@ pub struct ParagraphProperties {
 /// A text run in the document.
 ///
 /// Corresponds to the `<w:r>` element. A run is a contiguous range of text
-/// with the same formatting.
+/// with the same formatting. Runs may also contain drawings (images).
 #[derive(Debug, Clone, Default)]
 pub struct Run {
     /// Text content in the run.
     text: String,
     /// Run properties (bold, italic, etc.).
     properties: Option<RunProperties>,
+    /// Drawings (images) in the run.
+    drawings: Vec<Drawing>,
+}
+
+/// A drawing element containing images.
+///
+/// Corresponds to the `<w:drawing>` element. Currently only inline drawings
+/// are supported (not floating/anchored).
+#[derive(Debug, Clone, Default)]
+pub struct Drawing {
+    /// Images in this drawing.
+    images: Vec<InlineImage>,
+}
+
+/// An inline image in a drawing.
+///
+/// Represents an image embedded in the document via DrawingML.
+/// References image data through a relationship ID.
+#[derive(Debug, Clone)]
+pub struct InlineImage {
+    /// Relationship ID referencing the image file (e.g., "rId4").
+    rel_id: String,
+    /// Width in EMUs (English Metric Units). 914400 EMUs = 1 inch.
+    width_emu: Option<i64>,
+    /// Height in EMUs.
+    height_emu: Option<i64>,
+    /// Optional description/alt text for the image.
+    description: Option<String>,
+}
+
+/// Image data loaded from the package.
+#[derive(Debug, Clone)]
+pub struct ImageData {
+    /// MIME content type (e.g., "image/png", "image/jpeg").
+    pub content_type: String,
+    /// Raw image bytes.
+    pub data: Vec<u8>,
 }
 
 impl Run {
@@ -465,6 +595,116 @@ impl Run {
     /// Check if the run is underlined.
     pub fn is_underline(&self) -> bool {
         self.properties.as_ref().is_some_and(|p| p.underline)
+    }
+
+    /// Get drawings (images) in this run.
+    pub fn drawings(&self) -> &[Drawing] {
+        &self.drawings
+    }
+
+    /// Get mutable reference to drawings.
+    pub fn drawings_mut(&mut self) -> &mut Vec<Drawing> {
+        &mut self.drawings
+    }
+
+    /// Check if this run contains any images.
+    pub fn has_images(&self) -> bool {
+        self.drawings.iter().any(|d| !d.images.is_empty())
+    }
+}
+
+impl Drawing {
+    /// Create an empty drawing.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get images in this drawing.
+    pub fn images(&self) -> &[InlineImage] {
+        &self.images
+    }
+
+    /// Get mutable reference to images.
+    pub fn images_mut(&mut self) -> &mut Vec<InlineImage> {
+        &mut self.images
+    }
+
+    /// Add an image to this drawing.
+    pub fn add_image(&mut self, rel_id: impl Into<String>) -> &mut InlineImage {
+        self.images.push(InlineImage::new(rel_id));
+        self.images.last_mut().unwrap()
+    }
+}
+
+impl InlineImage {
+    /// Create a new inline image with the given relationship ID.
+    pub fn new(rel_id: impl Into<String>) -> Self {
+        Self {
+            rel_id: rel_id.into(),
+            width_emu: None,
+            height_emu: None,
+            description: None,
+        }
+    }
+
+    /// Get the relationship ID.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+
+    /// Get width in EMUs (914400 EMUs = 1 inch).
+    pub fn width_emu(&self) -> Option<i64> {
+        self.width_emu
+    }
+
+    /// Get height in EMUs.
+    pub fn height_emu(&self) -> Option<i64> {
+        self.height_emu
+    }
+
+    /// Get width in inches.
+    pub fn width_inches(&self) -> Option<f64> {
+        self.width_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Get height in inches.
+    pub fn height_inches(&self) -> Option<f64> {
+        self.height_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Set width in EMUs.
+    pub fn set_width_emu(&mut self, emu: i64) -> &mut Self {
+        self.width_emu = Some(emu);
+        self
+    }
+
+    /// Set height in EMUs.
+    pub fn set_height_emu(&mut self, emu: i64) -> &mut Self {
+        self.height_emu = Some(emu);
+        self
+    }
+
+    /// Set width in inches.
+    pub fn set_width_inches(&mut self, inches: f64) -> &mut Self {
+        self.width_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Set height in inches.
+    pub fn set_height_inches(&mut self, inches: f64) -> &mut Self {
+        self.height_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Get the description/alt text.
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
+
+    /// Set the description/alt text.
+    pub fn set_description(&mut self, desc: impl Into<String>) -> &mut Self {
+        self.description = Some(desc.into());
+        self
     }
 }
 
@@ -510,6 +750,13 @@ const EL_TBL: &[u8] = b"tbl";
 const EL_TR: &[u8] = b"tr";
 const EL_TC: &[u8] = b"tc";
 
+// Drawing element names (DrawingML)
+const EL_DRAWING: &[u8] = b"drawing";
+const EL_INLINE: &[u8] = b"inline";
+const EL_EXTENT: &[u8] = b"extent";
+const EL_DOCPR: &[u8] = b"docPr";
+const EL_BLIP: &[u8] = b"blip";
+
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut reader = Reader::from_reader(xml);
@@ -530,6 +777,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut current_table: Option<Table> = None;
     let mut current_row: Option<Row> = None;
     let mut current_cell: Option<Cell> = None;
+
+    // Drawing/image parsing state
+    let mut current_drawing: Option<Drawing> = None;
+    let mut current_image: Option<InlineImage> = None;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -565,6 +816,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_RPR && current_run.is_some() => {
                         in_rpr = true;
                         current_rpr = Some(RunProperties::default());
+                    }
+                    name if name == EL_DRAWING && current_run.is_some() => {
+                        current_drawing = Some(Drawing::new());
+                    }
+                    name if name == EL_INLINE && current_drawing.is_some() => {
+                        // Start of an inline image - create with placeholder rel_id
+                        current_image = Some(InlineImage::new(""));
                     }
                     _ => {}
                 }
@@ -659,6 +917,49 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
+                    // Image extent (dimensions)
+                    name if name == EL_EXTENT && current_image.is_some() => {
+                        if let Some(img) = current_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                match attr.key.as_ref() {
+                                    b"cx" => {
+                                        if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                            img.width_emu = s.parse().ok();
+                                        }
+                                    }
+                                    b"cy" => {
+                                        if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                            img.height_emu = s.parse().ok();
+                                        }
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                    }
+                    // Image properties (description/alt text)
+                    name if name == EL_DOCPR && current_image.is_some() => {
+                        if let Some(img) = current_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"descr" {
+                                    img.description =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        }
+                    }
+                    // Blip - contains the relationship ID to the image
+                    name if name == EL_BLIP && current_image.is_some() => {
+                        if let Some(img) = current_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                // r:embed attribute contains the relationship ID
+                                if attr.key.as_ref() == b"r:embed" || attr.key.as_ref() == b"embed"
+                                {
+                                    img.rel_id = String::from_utf8_lossy(&attr.value).into_owned();
+                                }
+                            }
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -721,6 +1022,23 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_RPR => {
                         in_rpr = false;
+                    }
+                    // End of inline image - add to current drawing
+                    name if name == EL_INLINE => {
+                        if let Some(img) = current_image.take()
+                            && !img.rel_id.is_empty()
+                            && let Some(drawing) = current_drawing.as_mut()
+                        {
+                            drawing.images.push(img);
+                        }
+                    }
+                    // End of drawing - add to current run
+                    name if name == EL_DRAWING => {
+                        if let Some(drawing) = current_drawing.take()
+                            && let Some(run) = current_run.as_mut()
+                        {
+                            run.drawings.push(drawing);
+                        }
                     }
                     _ => {}
                 }
@@ -1023,5 +1341,92 @@ mod tests {
 
         // Table text uses newlines between rows
         assert_eq!(table.text(), "A\tB\nC\tD");
+    }
+
+    #[test]
+    fn test_parse_inline_image() {
+        // Simplified DrawingML structure for an inline image
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+            xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <w:body>
+    <w:p>
+      <w:r>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="914400" cy="457200"/>
+            <wp:docPr id="1" name="Picture 1" descr="Test image"/>
+            <a:graphic>
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <a:blip r:embed="rId4"/>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let para = &body.paragraphs()[0];
+        let run = &para.runs()[0];
+
+        // Should have one drawing with one image
+        assert_eq!(run.drawings().len(), 1);
+        let drawing = &run.drawings()[0];
+        assert_eq!(drawing.images().len(), 1);
+
+        let image = &drawing.images()[0];
+        assert_eq!(image.rel_id(), "rId4");
+        assert_eq!(image.width_emu(), Some(914400)); // 1 inch
+        assert_eq!(image.height_emu(), Some(457200)); // 0.5 inch
+        assert_eq!(image.description(), Some("Test image"));
+
+        // Check convenience methods
+        assert!((image.width_inches().unwrap() - 1.0).abs() < 0.001);
+        assert!((image.height_inches().unwrap() - 0.5).abs() < 0.001);
+
+        // Run should report having images
+        assert!(run.has_images());
+    }
+
+    #[test]
+    fn test_resolve_path() {
+        // Relative path resolution
+        assert_eq!(
+            resolve_path("word/document.xml", "media/image1.png"),
+            "word/media/image1.png"
+        );
+        assert_eq!(
+            resolve_path("word/document.xml", "../media/image1.png"),
+            "word/../media/image1.png"
+        );
+
+        // Absolute path
+        assert_eq!(
+            resolve_path("word/document.xml", "/word/media/image1.png"),
+            "word/media/image1.png"
+        );
+    }
+
+    #[test]
+    fn test_content_type_from_path() {
+        assert_eq!(content_type_from_path("word/media/image1.png"), "image/png");
+        assert_eq!(
+            content_type_from_path("word/media/image2.jpg"),
+            "image/jpeg"
+        );
+        assert_eq!(
+            content_type_from_path("word/media/image3.JPEG"),
+            "image/jpeg"
+        );
+        assert_eq!(content_type_from_path("word/media/image4.gif"), "image/gif");
+        assert_eq!(
+            content_type_from_path("word/media/unknown.xyz"),
+            "application/octet-stream"
+        );
     }
 }

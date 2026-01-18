@@ -3,10 +3,14 @@
 //! This module provides functionality for creating new Word documents
 //! and saving existing documents.
 
-use crate::document::{Body, Paragraph, ParagraphProperties, Run, RunProperties};
+use crate::document::{
+    BlockContent, Body, Cell, Drawing, InlineImage, Paragraph, ParagraphProperties, Row, Run,
+    RunProperties, Table,
+};
 use crate::error::Result;
 use crate::styles::Styles;
 use ooxml::{PackageWriter, Relationship, Relationships, content_type, rel_type};
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};
 use std::path::Path;
@@ -15,11 +19,34 @@ use std::path::Path;
 pub const NS_W: &str = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
 /// Relationships namespace.
 pub const NS_R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+/// WordprocessingML Drawing namespace.
+pub const NS_WP: &str = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+/// DrawingML main namespace.
+pub const NS_A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
+/// Picture namespace.
+pub const NS_PIC: &str = "http://schemas.openxmlformats.org/drawingml/2006/picture";
+
+/// A pending image to be written to the package.
+#[derive(Clone)]
+pub struct PendingImage {
+    /// Raw image data.
+    pub data: Vec<u8>,
+    /// Content type (e.g., "image/png").
+    pub content_type: String,
+    /// Assigned relationship ID.
+    pub rel_id: String,
+    /// Generated filename (e.g., "image1.png").
+    pub filename: String,
+}
 
 /// Builder for creating new Word documents.
 pub struct DocumentBuilder {
     body: Body,
     _styles: Styles, // TODO: serialize styles.xml
+    /// Pending images to write, keyed by rel_id.
+    images: HashMap<String, PendingImage>,
+    /// Counter for generating unique IDs.
+    next_image_id: u32,
 }
 
 impl Default for DocumentBuilder {
@@ -34,7 +61,34 @@ impl DocumentBuilder {
         Self {
             body: Body::new(),
             _styles: Styles::new(),
+            images: HashMap::new(),
+            next_image_id: 1,
         }
+    }
+
+    /// Add an image and return its relationship ID.
+    ///
+    /// The image data will be written to the package when save() is called.
+    /// Use the returned rel_id when adding an InlineImage to a Run.
+    pub fn add_image(&mut self, data: Vec<u8>, content_type: &str) -> String {
+        let id = self.next_image_id;
+        self.next_image_id += 1;
+
+        let rel_id = format!("rId{}", id);
+        let ext = extension_from_content_type(content_type);
+        let filename = format!("image{}.{}", id, ext);
+
+        self.images.insert(
+            rel_id.clone(),
+            PendingImage {
+                data,
+                content_type: content_type.to_string(),
+                rel_id: rel_id.clone(),
+                filename,
+            },
+        );
+
+        rel_id
     }
 
     /// Get a mutable reference to the body.
@@ -64,6 +118,12 @@ impl DocumentBuilder {
         pkg.add_default_content_type("rels", content_type::RELATIONSHIPS);
         pkg.add_default_content_type("xml", content_type::XML);
 
+        // Add content types for images
+        pkg.add_default_content_type("png", "image/png");
+        pkg.add_default_content_type("jpg", "image/jpeg");
+        pkg.add_default_content_type("jpeg", "image/jpeg");
+        pkg.add_default_content_type("gif", "image/gif");
+
         // Write document.xml
         let doc_xml = serialize_document(&self.body);
         pkg.add_part(
@@ -85,8 +145,22 @@ impl DocumentBuilder {
             pkg_rels.serialize().as_bytes(),
         )?;
 
-        // Write document relationships (even if empty, Word expects it)
-        let doc_rels = Relationships::new();
+        // Build document relationships and write images
+        let mut doc_rels = Relationships::new();
+
+        for image in self.images.values() {
+            // Add relationship for the image
+            doc_rels.add(Relationship::new(
+                &image.rel_id,
+                rel_type::IMAGE,
+                format!("media/{}", image.filename),
+            ));
+
+            // Write image file to package
+            let image_path = format!("word/media/{}", image.filename);
+            pkg.add_part(&image_path, &image.content_type, &image.data)?;
+        }
+
         pkg.add_part(
             "word/_rels/document.xml.rels",
             content_type::RELATIONSHIPS,
@@ -106,10 +180,10 @@ pub fn serialize_document(body: &Body) -> String {
     xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
     xml.push('\n');
 
-    // Document element with namespace
+    // Document element with namespaces (including DrawingML for images)
     xml.push_str(&format!(
-        r#"<w:document xmlns:w="{}" xmlns:r="{}">"#,
-        NS_W, NS_R
+        r#"<w:document xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
     ));
 
     // Body
@@ -123,9 +197,39 @@ pub fn serialize_document(body: &Body) -> String {
 
 /// Serialize body contents.
 fn serialize_body(body: &Body, xml: &mut String) {
-    for para in body.paragraphs() {
+    for block in body.content() {
+        match block {
+            BlockContent::Paragraph(para) => serialize_paragraph(para, xml),
+            BlockContent::Table(table) => serialize_table(table, xml),
+        }
+    }
+}
+
+/// Serialize a table.
+fn serialize_table(table: &Table, xml: &mut String) {
+    xml.push_str("<w:tbl>");
+    for row in table.rows() {
+        serialize_row(row, xml);
+    }
+    xml.push_str("</w:tbl>");
+}
+
+/// Serialize a table row.
+fn serialize_row(row: &Row, xml: &mut String) {
+    xml.push_str("<w:tr>");
+    for cell in row.cells() {
+        serialize_cell(cell, xml);
+    }
+    xml.push_str("</w:tr>");
+}
+
+/// Serialize a table cell.
+fn serialize_cell(cell: &Cell, xml: &mut String) {
+    xml.push_str("<w:tc>");
+    for para in cell.paragraphs() {
         serialize_paragraph(para, xml);
     }
+    xml.push_str("</w:tc>");
 }
 
 /// Serialize a paragraph.
@@ -165,6 +269,11 @@ fn serialize_run(run: &Run, xml: &mut String) {
         serialize_run_properties(props, xml);
     }
 
+    // Drawings (images)
+    for drawing in run.drawings() {
+        serialize_drawing(drawing, xml);
+    }
+
     // Text content
     let text = run.text();
     if !text.is_empty() {
@@ -184,6 +293,78 @@ fn serialize_run(run: &Run, xml: &mut String) {
     }
 
     xml.push_str("</w:r>");
+}
+
+/// Serialize a drawing element.
+fn serialize_drawing(drawing: &Drawing, xml: &mut String) {
+    xml.push_str("<w:drawing>");
+    for (idx, image) in drawing.images().iter().enumerate() {
+        serialize_inline_image(image, idx + 1, xml);
+    }
+    xml.push_str("</w:drawing>");
+}
+
+/// Serialize an inline image.
+///
+/// Generates the DrawingML structure required for an inline image.
+fn serialize_inline_image(image: &InlineImage, doc_id: usize, xml: &mut String) {
+    // Default dimensions: 1 inch x 1 inch (914400 EMUs)
+    let cx = image.width_emu().unwrap_or(914400);
+    let cy = image.height_emu().unwrap_or(914400);
+    let rel_id = image.rel_id();
+    let descr = image.description().unwrap_or("Image");
+
+    // Inline element with extent
+    xml.push_str(r#"<wp:inline distT="0" distB="0" distL="0" distR="0">"#);
+    xml.push_str(&format!(r#"<wp:extent cx="{}" cy="{}"/>"#, cx, cy));
+
+    // Document properties
+    xml.push_str(&format!(
+        r#"<wp:docPr id="{}" name="Picture {}" descr="{}"/>"#,
+        doc_id,
+        doc_id,
+        escape_xml(descr)
+    ));
+
+    // Graphic frame lock
+    xml.push_str(
+        r#"<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>"#,
+    );
+
+    // Graphic container
+    xml.push_str(r#"<a:graphic>"#);
+    xml.push_str(
+        r#"<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">"#,
+    );
+
+    // Picture element
+    xml.push_str(r#"<pic:pic>"#);
+
+    // Non-visual properties
+    xml.push_str(&format!(
+        r#"<pic:nvPicPr><pic:cNvPr id="{}" name="Picture {}"/><pic:cNvPicPr/></pic:nvPicPr>"#,
+        doc_id, doc_id
+    ));
+
+    // Blip fill (references the image relationship)
+    xml.push_str(r#"<pic:blipFill>"#);
+    xml.push_str(&format!(r#"<a:blip r:embed="{}"/>"#, rel_id));
+    xml.push_str(r#"<a:stretch><a:fillRect/></a:stretch>"#);
+    xml.push_str(r#"</pic:blipFill>"#);
+
+    // Shape properties
+    xml.push_str(r#"<pic:spPr>"#);
+    xml.push_str(r#"<a:xfrm>"#);
+    xml.push_str(r#"<a:off x="0" y="0"/>"#);
+    xml.push_str(&format!(r#"<a:ext cx="{}" cy="{}"/>"#, cx, cy));
+    xml.push_str(r#"</a:xfrm>"#);
+    xml.push_str(r#"<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
+    xml.push_str(r#"</pic:spPr>"#);
+
+    xml.push_str(r#"</pic:pic>"#);
+    xml.push_str(r#"</a:graphicData>"#);
+    xml.push_str(r#"</a:graphic>"#);
+    xml.push_str(r#"</wp:inline>"#);
 }
 
 /// Serialize run properties.
@@ -248,6 +429,22 @@ fn escape_xml(s: &str) -> String {
         }
     }
     result
+}
+
+/// Get file extension from MIME content type.
+fn extension_from_content_type(content_type: &str) -> &'static str {
+    match content_type {
+        "image/png" => "png",
+        "image/jpeg" => "jpg",
+        "image/gif" => "gif",
+        "image/bmp" => "bmp",
+        "image/tiff" => "tiff",
+        "image/webp" => "webp",
+        "image/svg+xml" => "svg",
+        "image/x-emf" | "image/emf" => "emf",
+        "image/x-wmf" | "image/wmf" => "wmf",
+        _ => "bin",
+    }
 }
 
 #[cfg(test)]
@@ -336,5 +533,110 @@ mod tests {
 
         assert_eq!(doc.body().paragraphs().len(), 1);
         assert_eq!(doc.text(), "Test content");
+    }
+
+    #[test]
+    fn test_serialize_table() {
+        let mut body = Body::new();
+        let table = body.add_table();
+        let row = table.add_row();
+        row.add_cell().add_paragraph().add_run().set_text("A1");
+        row.add_cell().add_paragraph().add_run().set_text("B1");
+
+        let xml = serialize_document(&body);
+
+        assert!(xml.contains("<w:tbl>"));
+        assert!(xml.contains("<w:tr>"));
+        assert!(xml.contains("<w:tc>"));
+        assert!(xml.contains("<w:t>A1</w:t>"));
+        assert!(xml.contains("<w:t>B1</w:t>"));
+    }
+
+    #[test]
+    fn test_roundtrip_table() {
+        use crate::Document;
+        use std::io::Cursor;
+
+        // Create a document with a table
+        let mut builder = DocumentBuilder::new();
+        builder.add_paragraph("Before table");
+        let table = builder.body_mut().add_table();
+        let row = table.add_row();
+        row.add_cell().add_paragraph().add_run().set_text("Cell 1");
+        row.add_cell().add_paragraph().add_run().set_text("Cell 2");
+        builder
+            .body_mut()
+            .add_paragraph()
+            .add_run()
+            .set_text("After table");
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back
+        buffer.set_position(0);
+        let doc = Document::from_reader(buffer).unwrap();
+
+        // Verify structure
+        assert_eq!(doc.body().content().len(), 3); // para, table, para
+        assert_eq!(doc.body().tables().count(), 1);
+
+        let table = doc.body().tables().next().unwrap();
+        assert_eq!(table.row_count(), 1);
+        assert_eq!(table.column_count(), 2);
+        assert_eq!(table.rows()[0].cells()[0].text(), "Cell 1");
+        assert_eq!(table.rows()[0].cells()[1].text(), "Cell 2");
+    }
+
+    #[test]
+    fn test_serialize_inline_image() {
+        use crate::document::Drawing;
+
+        let mut body = Body::new();
+        let run = body.add_paragraph().add_run();
+
+        // Add a drawing with an image
+        let mut drawing = Drawing::new();
+        drawing
+            .add_image("rId1")
+            .set_width_inches(2.0)
+            .set_height_inches(1.5)
+            .set_description("Test image");
+        run.drawings_mut().push(drawing);
+
+        let xml = serialize_document(&body);
+
+        // Check DrawingML structure
+        assert!(xml.contains("<w:drawing>"));
+        assert!(xml.contains("<wp:inline"));
+        assert!(xml.contains(r#"r:embed="rId1""#));
+        assert!(xml.contains("wp:extent"));
+        assert!(xml.contains("pic:pic"));
+        assert!(xml.contains(r#"descr="Test image""#));
+    }
+
+    #[test]
+    fn test_document_builder_add_image() {
+        let mut builder = DocumentBuilder::new();
+
+        // Add an image via the builder
+        let rel_id = builder.add_image(vec![0x89, 0x50, 0x4E, 0x47], "image/png");
+        assert_eq!(rel_id, "rId1");
+
+        // Add another image
+        let rel_id2 = builder.add_image(vec![0xFF, 0xD8, 0xFF], "image/jpeg");
+        assert_eq!(rel_id2, "rId2");
+
+        // Verify the images are tracked
+        assert_eq!(builder.images.len(), 2);
+    }
+
+    #[test]
+    fn test_extension_from_content_type() {
+        assert_eq!(extension_from_content_type("image/png"), "png");
+        assert_eq!(extension_from_content_type("image/jpeg"), "jpg");
+        assert_eq!(extension_from_content_type("image/gif"), "gif");
+        assert_eq!(extension_from_content_type("unknown/type"), "bin");
     }
 }

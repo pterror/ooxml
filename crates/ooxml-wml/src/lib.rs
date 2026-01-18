@@ -38,8 +38,8 @@ pub mod types {
 }
 
 pub use document::{
-    BlockContent, Body, Cell, Document, Paragraph, ParagraphProperties, Row, Run, RunProperties,
-    Table,
+    BlockContent, Body, Cell, Document, Drawing, ImageData, InlineImage, Paragraph,
+    ParagraphProperties, Row, Run, RunProperties, Table,
 };
 pub use error::{Error, Result};
 pub use styles::{Style, StyleType, Styles};
@@ -47,6 +47,14 @@ pub use writer::DocumentBuilder;
 
 // Re-export commonly used generated types at the crate root
 pub use types::ns;
+
 // TODO: Lists/numbering
-// TODO: Images
 // TODO: Hyperlinks
+
+// ## Current Limitations (v0.1)
+//
+// Images:
+// - Inline images only (no floating/anchored images)
+// - No image cropping or effects
+// - No linked images (external URLs)
+// - Basic positioning only (no text wrapping options)
