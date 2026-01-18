@@ -8,7 +8,7 @@ pub mod codegen;
 pub mod lexer;
 pub mod parser;
 
-pub use ast::{Definition, Namespace, Pattern, QName, Schema};
+pub use ast::{DatatypeParam, Definition, Namespace, Pattern, QName, Schema};
 pub use codegen::{CodegenConfig, generate};
 pub use lexer::{LexError, Lexer};
 pub use parser::{ParseError, Parser};

@@ -55,16 +55,32 @@ impl<'a> Generator<'a> {
     fn run(&mut self) -> String {
         self.write_header();
 
-        // Separate simple types (enums) from complex types (structs)
-        let (simple_types, complex_types): (Vec<_>, Vec<_>) = self
-            .schema
-            .definitions
-            .iter()
-            .partition(|d| d.name.contains("_ST_") || self.is_simple_type(&d.pattern));
+        // Categorize definitions into simple types, element groups, and complex types
+        let mut simple_types = Vec::new();
+        let mut element_groups = Vec::new();
+        let mut complex_types = Vec::new();
 
-        // Generate enums for simple types
+        for def in &self.schema.definitions {
+            if def.name.contains("_ST_") || self.is_simple_type(&def.pattern) {
+                simple_types.push(def);
+            } else if def.name.contains("_EG_") && self.is_element_choice(&def.pattern) {
+                element_groups.push(def);
+            } else {
+                complex_types.push(def);
+            }
+        }
+
+        // Generate enums for simple types (string literal choices)
         for def in &simple_types {
             if let Some(code) = self.gen_simple_type(def) {
+                self.output.push_str(&code);
+                self.output.push('\n');
+            }
+        }
+
+        // Generate enums for element groups (element choice patterns)
+        for def in &element_groups {
+            if let Some(code) = self.gen_element_group(def) {
                 self.output.push_str(&code);
                 self.output.push('\n');
             }
@@ -85,6 +101,37 @@ impl<'a> Generator<'a> {
         writeln!(self.output, "// Generated from ECMA-376 RELAX NG schema.").unwrap();
         writeln!(self.output, "// Do not edit manually.").unwrap();
         writeln!(self.output).unwrap();
+        writeln!(self.output, "use serde::{{Deserialize, Serialize}};").unwrap();
+        writeln!(self.output).unwrap();
+
+        // Generate namespace constants
+        if !self.schema.namespaces.is_empty() {
+            writeln!(self.output, "/// XML namespace URIs used in this schema.").unwrap();
+            writeln!(self.output, "pub mod ns {{").unwrap();
+
+            for ns in &self.schema.namespaces {
+                let const_name = ns.prefix.to_uppercase();
+                if ns.is_default {
+                    writeln!(
+                        self.output,
+                        "    /// Default namespace (prefix: {})",
+                        ns.prefix
+                    )
+                    .unwrap();
+                } else {
+                    writeln!(self.output, "    /// Namespace prefix: {}", ns.prefix).unwrap();
+                }
+                writeln!(
+                    self.output,
+                    "    pub const {}: &str = \"{}\";",
+                    const_name, ns.uri
+                )
+                .unwrap();
+            }
+
+            writeln!(self.output, "}}").unwrap();
+            writeln!(self.output).unwrap();
+        }
     }
 
     fn is_simple_type(&self, pattern: &Pattern) -> bool {
@@ -104,6 +151,27 @@ impl<'a> Generator<'a> {
         }
     }
 
+    /// Check if a pattern is a choice of elements (for element groups).
+    fn is_element_choice(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Choice(variants) => {
+                // At least one variant must be an element (not just refs)
+                // and we need to be able to extract at least some element variants
+                variants.iter().any(Self::is_direct_element_variant)
+            }
+            _ => false,
+        }
+    }
+
+    /// Check if a pattern is a direct element variant (not a ref to another EG_*).
+    fn is_direct_element_variant(pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Element { .. } => true,
+            Pattern::Optional(inner) => Self::is_direct_element_variant(inner),
+            _ => false,
+        }
+    }
+
     fn gen_simple_type(&self, def: &Definition) -> Option<String> {
         let rust_name = self.to_rust_type_name(&def.name);
 
@@ -118,17 +186,88 @@ impl<'a> Generator<'a> {
                     .collect();
 
                 if !string_variants.is_empty() {
+                    // Deduplicate by Rust variant name (keep first occurrence)
+                    let mut seen_variants = std::collections::HashSet::new();
+                    let dedup_variants: Vec<_> = string_variants
+                        .iter()
+                        .filter(|v| {
+                            let name = self.to_rust_variant_name(v);
+                            seen_variants.insert(name)
+                        })
+                        .copied()
+                        .collect();
+
                     // Enum of string literals
                     let mut code = String::new();
-                    writeln!(code, "#[derive(Debug, Clone, Copy, PartialEq, Eq)]").unwrap();
+                    writeln!(
+                        code,
+                        "#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]"
+                    )
+                    .unwrap();
                     writeln!(code, "pub enum {} {{", rust_name).unwrap();
 
-                    for variant in &string_variants {
+                    for variant in &dedup_variants {
                         let variant_name = self.to_rust_variant_name(variant);
+                        // Add serde rename to preserve original XML value
+                        writeln!(code, "    #[serde(rename = \"{}\")]", variant).unwrap();
                         writeln!(code, "    {},", variant_name).unwrap();
                     }
 
                     writeln!(code, "}}").unwrap();
+                    writeln!(code).unwrap();
+
+                    // Generate Display impl
+                    writeln!(code, "impl std::fmt::Display for {} {{", rust_name).unwrap();
+                    writeln!(
+                        code,
+                        "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{"
+                    )
+                    .unwrap();
+                    writeln!(code, "        match self {{").unwrap();
+                    for variant in &dedup_variants {
+                        let variant_name = self.to_rust_variant_name(variant);
+                        writeln!(
+                            code,
+                            "            Self::{} => write!(f, \"{}\"),",
+                            variant_name, variant
+                        )
+                        .unwrap();
+                    }
+                    writeln!(code, "        }}").unwrap();
+                    writeln!(code, "    }}").unwrap();
+                    writeln!(code, "}}").unwrap();
+                    writeln!(code).unwrap();
+
+                    // Generate FromStr impl (include all string variants for parsing)
+                    writeln!(code, "impl std::str::FromStr for {} {{", rust_name).unwrap();
+                    writeln!(code, "    type Err = String;").unwrap();
+                    writeln!(code).unwrap();
+                    writeln!(
+                        code,
+                        "    fn from_str(s: &str) -> Result<Self, Self::Err> {{"
+                    )
+                    .unwrap();
+                    writeln!(code, "        match s {{").unwrap();
+                    // Use original string_variants for FromStr to handle aliases
+                    for variant in &string_variants {
+                        let variant_name = self.to_rust_variant_name(variant);
+                        writeln!(
+                            code,
+                            "            \"{}\" => Ok(Self::{}),",
+                            variant, variant_name
+                        )
+                        .unwrap();
+                    }
+                    writeln!(
+                        code,
+                        "            _ => Err(format!(\"unknown {} value: {{}}\", s)),",
+                        rust_name
+                    )
+                    .unwrap();
+                    writeln!(code, "        }}").unwrap();
+                    writeln!(code, "    }}").unwrap();
+                    writeln!(code, "}}").unwrap();
+
                     return Some(code);
                 }
 
@@ -161,6 +300,58 @@ impl<'a> Generator<'a> {
         }
     }
 
+    fn gen_element_group(&self, def: &Definition) -> Option<String> {
+        let rust_name = self.to_rust_type_name(&def.name);
+
+        let Pattern::Choice(variants) = &def.pattern else {
+            return None;
+        };
+
+        // Collect element variants
+        let element_variants: Vec<_> = variants
+            .iter()
+            .filter_map(|v| self.extract_element_variant(v))
+            .collect();
+
+        if element_variants.is_empty() {
+            // Fallback to type alias
+            let mut code = String::new();
+            writeln!(code, "pub type {} = String;", rust_name).unwrap();
+            return Some(code);
+        }
+
+        let mut code = String::new();
+        writeln!(code, "#[derive(Debug, Clone, Serialize, Deserialize)]").unwrap();
+        writeln!(code, "pub enum {} {{", rust_name).unwrap();
+
+        for (xml_name, inner_type) in &element_variants {
+            let variant_name = self.to_rust_variant_name(xml_name);
+            writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
+            writeln!(code, "    {}({}),", variant_name, inner_type).unwrap();
+        }
+
+        writeln!(code, "}}").unwrap();
+
+        Some(code)
+    }
+
+    /// Extract element info from a choice variant: (xml_name, rust_type)
+    /// Only extracts direct Element patterns, not refs to other EG_* groups.
+    fn extract_element_variant(&self, pattern: &Pattern) -> Option<(String, String)> {
+        match pattern {
+            Pattern::Element { name, pattern } => {
+                let inner_type = self.pattern_to_rust_type(pattern, false);
+                Some((name.local.clone(), inner_type))
+            }
+            Pattern::Optional(inner) => self.extract_element_variant(inner),
+            Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
+                // For repeated elements in a choice, still extract but mark the type
+                self.extract_element_variant(inner)
+            }
+            _ => None,
+        }
+    }
+
     fn gen_complex_type(&self, def: &Definition) -> Option<String> {
         // For element-only definitions, generate a type alias to the inner type
         if let Pattern::Element { pattern, .. } = &def.pattern {
@@ -179,14 +370,36 @@ impl<'a> Generator<'a> {
 
         if fields.is_empty() {
             // Empty struct
-            writeln!(code, "#[derive(Debug, Clone, Default)]").unwrap();
+            writeln!(
+                code,
+                "#[derive(Debug, Clone, Default, Serialize, Deserialize)]"
+            )
+            .unwrap();
             writeln!(code, "pub struct {};", rust_name).unwrap();
         } else {
-            writeln!(code, "#[derive(Debug, Clone)]").unwrap();
+            writeln!(code, "#[derive(Debug, Clone, Serialize, Deserialize)]").unwrap();
             writeln!(code, "pub struct {} {{", rust_name).unwrap();
 
             for field in &fields {
-                let field_type = self.pattern_to_rust_type(&field.pattern, field.is_optional);
+                let inner_type = self.pattern_to_rust_type(&field.pattern, false);
+                let field_type = if field.is_vec {
+                    format!("Vec<{}>", inner_type)
+                } else if field.is_optional {
+                    format!("Option<{}>", inner_type)
+                } else {
+                    inner_type
+                };
+
+                // Add serde attributes
+                let xml_name = &field.xml_name;
+                if field.is_attribute {
+                    writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
+                } else {
+                    writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
+                }
+                if field.is_optional || field.is_vec {
+                    writeln!(code, "    #[serde(default)]").unwrap();
+                }
                 writeln!(code, "    pub {}: {},", field.name, field_type).unwrap();
             }
 
@@ -210,17 +423,21 @@ impl<'a> Generator<'a> {
             Pattern::Attribute { name, pattern } => {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
+                    xml_name: name.local.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: true,
+                    is_vec: false,
                 });
             }
             Pattern::Element { name, pattern } => {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
+                    xml_name: name.local.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: false,
+                    is_vec: false,
                 });
             }
             Pattern::Sequence(items) | Pattern::Interleave(items) => {
@@ -233,19 +450,37 @@ impl<'a> Generator<'a> {
             }
             Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
                 // These become Vec<T> fields
-                self.collect_fields(inner, fields, is_optional);
+                match inner.as_ref() {
+                    Pattern::Element { name, pattern } => {
+                        fields.push(Field {
+                            name: self.qname_to_field_name(name),
+                            xml_name: name.local.clone(),
+                            pattern: pattern.as_ref().clone(),
+                            is_optional: false,
+                            is_attribute: false,
+                            is_vec: true,
+                        });
+                    }
+                    Pattern::Ref(name) if name.contains("_EG_") => {
+                        // EG_* element group references skipped - need mixed content handling
+                        let _ = name;
+                    }
+                    Pattern::Choice(_) | Pattern::Ref(_) => {
+                        // Complex repeated content - recurse but don't add directly
+                        self.collect_fields(inner, fields, false);
+                    }
+                    _ => {}
+                }
             }
             Pattern::Group(inner) => {
                 self.collect_fields(inner, fields, is_optional);
             }
             Pattern::Ref(name) => {
-                // If referencing an element group (EG_*), inline its fields
-                if name.contains("_EG_")
-                    && let Some(target) = self.definitions.get(name.as_str())
-                {
-                    self.collect_fields(target, fields, is_optional);
-                }
-                // Otherwise it's a type reference, not a field
+                // EG_* element group references are skipped for now - they need
+                // special mixed content handling that isn't implemented yet.
+                // The EG_* enums are generated separately and can be used manually.
+                // Non-EG_* refs are type references, not fields.
+                let _ = name;
             }
             Pattern::Choice(_) => {
                 // Choice patterns are complex - for now, skip them
@@ -267,6 +502,10 @@ impl<'a> Generator<'a> {
     }
 
     fn to_rust_variant_name(&self, name: &str) -> String {
+        // Handle empty string variant
+        if name.is_empty() {
+            return "Empty".to_string();
+        }
         let name = to_pascal_case(name);
         // Prefix with underscore if starts with digit
         if name.chars().next().is_some_and(|c| c.is_ascii_digit()) {
@@ -320,8 +559,8 @@ impl<'a> Generator<'a> {
                 // Check if this is a known definition
                 if self.definitions.contains_key(name.as_str()) {
                     let type_name = self.to_rust_type_name(name);
-                    // Box complex types (CT_*) to avoid infinite size issues
-                    let needs_box = name.contains("_CT_");
+                    // Box complex types (CT_*) and element groups (EG_*) to avoid infinite size
+                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
                     (type_name, needs_box)
                 } else {
                     // Unknown reference (likely from another schema) - use String as fallback
@@ -353,10 +592,11 @@ impl<'a> Generator<'a> {
 
 struct Field {
     name: String,
+    xml_name: String,
     pattern: Pattern,
     is_optional: bool,
-    #[allow(dead_code)] // Will be used for XML attribute annotations
     is_attribute: bool,
+    is_vec: bool,
 }
 
 fn to_pascal_case(s: &str) -> String {

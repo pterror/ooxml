@@ -2,6 +2,48 @@ use ooxml_codegen::{CodegenConfig, generate, parse_rnc};
 use std::fs;
 
 #[test]
+fn test_eg_definitions() {
+    use ooxml_codegen::ast::Pattern;
+
+    let path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../spec/OfficeOpenXML-RELAXNG-Transitional/wml.rnc"
+    );
+    let input = fs::read_to_string(path).expect("failed to read wml.rnc");
+    let schema = parse_rnc(&input).expect("failed to parse wml.rnc");
+
+    let eg_defs: Vec<_> = schema
+        .definitions
+        .iter()
+        .filter(|d| d.name.contains("_EG_"))
+        .collect();
+
+    println!("Found {} EG_* definitions:", eg_defs.len());
+
+    // Check which ones are element choices
+    for d in &eg_defs {
+        let is_choice = matches!(&d.pattern, Pattern::Choice(_));
+        let has_direct_element = if let Pattern::Choice(variants) = &d.pattern {
+            variants.iter().any(is_direct_element)
+        } else {
+            false
+        };
+        if is_choice && has_direct_element {
+            println!("  [ELEMENT CHOICE] {}", d.name);
+        }
+    }
+}
+
+fn is_direct_element(pattern: &ooxml_codegen::ast::Pattern) -> bool {
+    use ooxml_codegen::ast::Pattern;
+    match pattern {
+        Pattern::Element { .. } => true,
+        Pattern::Optional(inner) => is_direct_element(inner),
+        _ => false,
+    }
+}
+
+#[test]
 fn test_generate_wml() {
     let path = concat!(
         env!("CARGO_MANIFEST_DIR"),
