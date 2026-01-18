@@ -17,6 +17,7 @@
 //! ```
 
 use crate::error::{Error, Result};
+use crate::styles::{Styles, merge_run_properties};
 use ooxml::{Package, rel_type};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -30,6 +31,7 @@ use std::path::Path;
 pub struct Document<R> {
     package: Package<R>,
     body: Body,
+    styles: Styles,
 }
 
 impl Document<BufReader<File>> {
@@ -56,7 +58,19 @@ impl<R: Read + Seek> Document<R> {
         let doc_xml = package.read_part(&doc_rel.target)?;
         let body = parse_document(&doc_xml)?;
 
-        Ok(Self { package, body })
+        // Load styles if available
+        let styles = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES) {
+            let styles_xml = package.read_part(&styles_rel.target)?;
+            Styles::parse(&styles_xml[..])?
+        } else {
+            Styles::new()
+        };
+
+        Ok(Self {
+            package,
+            body,
+            styles,
+        })
     }
 
     /// Get the document body.
@@ -77,6 +91,37 @@ impl<R: Read + Seek> Document<R> {
     /// Get a mutable reference to the underlying package.
     pub fn package_mut(&mut self) -> &mut Package<R> {
         &mut self.package
+    }
+
+    /// Get the document styles.
+    pub fn styles(&self) -> &Styles {
+        &self.styles
+    }
+
+    /// Resolve effective run properties for a run, combining direct and style formatting.
+    ///
+    /// This merges: default run properties -> paragraph style -> character style -> direct formatting.
+    pub fn resolve_run_formatting(&self, para: &Paragraph, run: &Run) -> RunProperties {
+        let mut props = self.styles.default_run().clone();
+
+        // Apply paragraph style's run properties
+        if let Some(pstyle) = para.properties().and_then(|p| p.style.as_ref()) {
+            let style_props = self.styles.resolve_run_properties(pstyle);
+            merge_run_properties(&mut props, &style_props);
+        }
+
+        // Apply character style
+        if let Some(rstyle) = run.properties().and_then(|p| p.style.as_ref()) {
+            let style_props = self.styles.resolve_run_properties(rstyle);
+            merge_run_properties(&mut props, &style_props);
+        }
+
+        // Apply direct formatting
+        if let Some(direct) = run.properties() {
+            merge_run_properties(&mut props, direct);
+        }
+
+        props
     }
 
     /// Extract all text from the document.
