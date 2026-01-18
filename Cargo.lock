@@ -440,6 +440,7 @@ name = "ooxml-wml"
 version = "0.1.0"
 dependencies = [
  "ooxml",
+ "ooxml-codegen",
  "quick-xml",
  "thiserror",
 ]

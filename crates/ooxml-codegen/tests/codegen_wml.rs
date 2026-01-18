@@ -23,20 +23,20 @@ fn test_generate_wml() {
         println!("{}", line);
     }
 
-    // Basic sanity checks
-    assert!(code.contains("pub enum HighlightColor"));
+    // Basic sanity checks (types keep CT_/ST_ prefixes)
+    assert!(code.contains("pub enum STHighlightColor"));
     assert!(
-        code.contains("pub struct Body"),
-        "Expected Body struct in output"
+        code.contains("pub struct CTBody"),
+        "Expected CTBody struct in output"
     );
 
     // Check for some struct fields
     assert!(
-        code.contains("pub struct Document"),
-        "Expected Document struct"
+        code.contains("pub struct CTDocument"),
+        "Expected CTDocument struct"
     );
     assert!(
-        code.contains("pub struct P "),
-        "Expected P (paragraph) struct"
+        code.contains("pub struct CTP "),
+        "Expected CTP (paragraph) struct"
     );
 }

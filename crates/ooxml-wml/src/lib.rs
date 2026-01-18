@@ -19,6 +19,13 @@
 //! doc.save("output.docx")?;
 //! ```
 
+// Generated types from ECMA-376 schema
+mod generated {
+    include!(concat!(env!("OUT_DIR"), "/wml_types.rs"));
+}
+
+pub use generated::*;
+
 // TODO: Document struct (main entry point)
 // TODO: Body, Paragraph, Run, Text elements
 // TODO: Formatting properties (bold, italic, etc.)

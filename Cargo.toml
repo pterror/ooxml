@@ -16,6 +16,7 @@ repository = "https://github.com/pterror/ooxml"
 # Internal crates
 ooxml = { path = "crates/ooxml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
+ooxml-codegen = { path = "crates/ooxml-codegen" }
 
 # External dependencies
 zip = "2"

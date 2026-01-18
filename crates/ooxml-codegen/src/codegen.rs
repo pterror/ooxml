@@ -82,10 +82,8 @@ impl<'a> Generator<'a> {
     }
 
     fn write_header(&mut self) {
-        writeln!(self.output, "//! Generated from ECMA-376 RELAX NG schema.").unwrap();
-        writeln!(self.output, "//! Do not edit manually.").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "#![allow(dead_code)]").unwrap();
+        writeln!(self.output, "// Generated from ECMA-376 RELAX NG schema.").unwrap();
+        writeln!(self.output, "// Do not edit manually.").unwrap();
         writeln!(self.output).unwrap();
     }
 
@@ -119,20 +117,25 @@ impl<'a> Generator<'a> {
                     })
                     .collect();
 
-                if string_variants.is_empty() {
-                    return None;
+                if !string_variants.is_empty() {
+                    // Enum of string literals
+                    let mut code = String::new();
+                    writeln!(code, "#[derive(Debug, Clone, Copy, PartialEq, Eq)]").unwrap();
+                    writeln!(code, "pub enum {} {{", rust_name).unwrap();
+
+                    for variant in &string_variants {
+                        let variant_name = self.to_rust_variant_name(variant);
+                        writeln!(code, "    {},", variant_name).unwrap();
+                    }
+
+                    writeln!(code, "}}").unwrap();
+                    return Some(code);
                 }
 
+                // Choice of non-string types (e.g., xsd:integer | s_ST_Something)
+                // Generate a type alias to String as fallback
                 let mut code = String::new();
-                writeln!(code, "#[derive(Debug, Clone, Copy, PartialEq, Eq)]").unwrap();
-                writeln!(code, "pub enum {} {{", rust_name).unwrap();
-
-                for variant in &string_variants {
-                    let variant_name = self.to_rust_variant_name(variant);
-                    writeln!(code, "    {},", variant_name).unwrap();
-                }
-
-                writeln!(code, "}}").unwrap();
+                writeln!(code, "pub type {} = String;", rust_name).unwrap();
                 Some(code)
             }
             Pattern::Datatype { library, name, .. } => {
@@ -143,8 +146,13 @@ impl<'a> Generator<'a> {
                 Some(code)
             }
             Pattern::Ref(target) => {
-                // Type alias
-                let target_rust = self.to_rust_type_name(target);
+                // Type alias - check if target exists in this schema
+                let target_rust = if self.definitions.contains_key(target.as_str()) {
+                    self.to_rust_type_name(target)
+                } else {
+                    // Unknown type from another schema - use String as fallback
+                    "String".to_string()
+                };
                 let mut code = String::new();
                 writeln!(code, "pub type {} = {};", rust_name, target_rust).unwrap();
                 Some(code)
@@ -154,9 +162,13 @@ impl<'a> Generator<'a> {
     }
 
     fn gen_complex_type(&self, def: &Definition) -> Option<String> {
-        // Skip element definitions (e.g., w_document = element document { ... })
-        if matches!(&def.pattern, Pattern::Element { .. }) {
-            return None;
+        // For element-only definitions, generate a type alias to the inner type
+        if let Pattern::Element { pattern, .. } = &def.pattern {
+            let rust_name = self.to_rust_type_name(&def.name);
+            let inner_type = self.pattern_to_rust_type(pattern, false);
+            let mut code = String::new();
+            writeln!(code, "pub type {} = {};", rust_name, inner_type).unwrap();
+            return Some(code);
         }
 
         let rust_name = self.to_rust_type_name(&def.name);
@@ -187,6 +199,9 @@ impl<'a> Generator<'a> {
     fn extract_fields(&self, pattern: &Pattern) -> Vec<Field> {
         let mut fields = Vec::new();
         self.collect_fields(pattern, &mut fields, false);
+        // Deduplicate by name (keep first occurrence)
+        let mut seen = std::collections::HashSet::new();
+        fields.retain(|f| seen.insert(f.name.clone()));
         fields
     }
 
@@ -247,18 +262,18 @@ impl<'a> Generator<'a> {
             name
         };
 
-        // Remove CT_, ST_, EG_ prefixes and convert to PascalCase
-        let name = name
-            .strip_prefix("CT_")
-            .or_else(|| name.strip_prefix("ST_"))
-            .or_else(|| name.strip_prefix("EG_"))
-            .unwrap_or(name);
-
+        // Convert to PascalCase, keeping CT/ST/EG prefix
         to_pascal_case(name)
     }
 
     fn to_rust_variant_name(&self, name: &str) -> String {
-        to_pascal_case(name)
+        let name = to_pascal_case(name);
+        // Prefix with underscore if starts with digit
+        if name.chars().next().is_some_and(|c| c.is_ascii_digit()) {
+            format!("_{}", name)
+        } else {
+            name
+        }
     }
 
     fn qname_to_field_name(&self, qname: &QName) -> String {
@@ -300,13 +315,32 @@ impl<'a> Generator<'a> {
     }
 
     fn pattern_to_rust_type(&self, pattern: &Pattern, is_optional: bool) -> String {
-        let inner = match pattern {
-            Pattern::Ref(name) => self.to_rust_type_name(name),
-            Pattern::Datatype { library, name, .. } => self.xsd_to_rust(library, name).to_string(),
-            Pattern::Empty => "()".to_string(),
-            Pattern::StringLiteral(_) => "String".to_string(),
-            Pattern::Choice(_) => "String".to_string(), // Simplified
-            _ => "String".to_string(),
+        let (inner, needs_box) = match pattern {
+            Pattern::Ref(name) => {
+                // Check if this is a known definition
+                if self.definitions.contains_key(name.as_str()) {
+                    let type_name = self.to_rust_type_name(name);
+                    // Box complex types (CT_*) to avoid infinite size issues
+                    let needs_box = name.contains("_CT_");
+                    (type_name, needs_box)
+                } else {
+                    // Unknown reference (likely from another schema) - use String as fallback
+                    ("String".to_string(), false)
+                }
+            }
+            Pattern::Datatype { library, name, .. } => {
+                (self.xsd_to_rust(library, name).to_string(), false)
+            }
+            Pattern::Empty => ("()".to_string(), false),
+            Pattern::StringLiteral(_) => ("String".to_string(), false),
+            Pattern::Choice(_) => ("String".to_string(), false),
+            _ => ("String".to_string(), false),
+        };
+
+        let inner = if needs_box {
+            format!("Box<{}>", inner)
+        } else {
+            inner
         };
 
         if is_optional {

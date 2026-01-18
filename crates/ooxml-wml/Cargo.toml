@@ -10,3 +10,6 @@ description = "WordprocessingML (DOCX) support for the ooxml library"
 ooxml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
+
+[build-dependencies]
+ooxml-codegen.workspace = true
