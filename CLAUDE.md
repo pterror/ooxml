@@ -41,16 +41,38 @@ v0.1 goal: Basic Word document support
 5. Tables (basic)
 6. Images (embedded)
 
+## Code Conventions
+
+**Error handling:**
+- Use `thiserror` for error enums
+- Each crate has its own `Error` and `Result` type
+- Wrap external errors with `#[from]` where appropriate
+- Use `Invalid(String)` for malformed input, `Unsupported(String)` for unimplemented features
+
+**Naming:**
+- Struct names match OOXML element names where practical (e.g., `Run` for `<w:r>`)
+- Use full words, not abbreviations (except where OOXML itself abbreviates)
+- Prefix internal modules with the crate's domain (`wml_`, `sml_`, etc.) only if disambiguation needed
+
+**XML handling:**
+- Use `quick-xml` for parsing and serialization
+- Preserve unknown elements/attributes in a catch-all field for roundtrip fidelity
+- Namespaces: define constants for common OOXML namespaces (see ECMA-376 Part 1, §8)
+
+**Dependencies:**
+- Workspace dependencies in root `Cargo.toml`
+- Internal crates use `{ workspace = true }`
+
 ## Testing Strategy
 
 - Unit tests for individual elements
 - Roundtrip tests: open → save → compare
-- Fixture tests with real .docx files
+- Fixture tests with real .docx files in `tests/fixtures/`
 - Use `insta` for snapshot testing XML output
 
 ## References
 
-- [ECMA-376 Standard](https://www.ecma-international.org/publications-and-standards/standards/ecma-376/)
+- [ECMA-376 Standard](https://www.ecma-international.org/publications-and-standards/standards/ecma-376/) - Source of truth
 - [Open XML SDK Docs](https://docs.microsoft.com/en-us/office/open-xml/open-xml-sdk)
 - [python-docx source](https://github.com/python-openxml/python-docx) - Good API reference
 
@@ -58,3 +80,19 @@ v0.1 goal: Basic Word document support
 
 This library will be used by `rescribe` (document conversion library) for DOCX support.
 The rescribe team is waiting on this to implement `rescribe-read-docx` and `rescribe-write-docx`.
+
+## Core Rules
+
+- **Reference the spec** - When implementing OOXML elements, cite the relevant ECMA-376 section
+- **Test as you go** - Every new struct/parser needs a unit test
+- **Preserve unknown data** - Never silently drop XML elements or attributes we don't understand
+- **Verify roundtrips** - Changes to serialization must pass roundtrip tests
+
+## Negative Constraints
+
+Do not:
+- Parse entire documents eagerly - use lazy loading for large files
+- Invent element names - use OOXML terminology from ECMA-376
+- Panic on malformed input - return `Error::Invalid` instead
+- Add format-specific code to `ooxml` core - that belongs in `ooxml-wml`, etc.
+- Commit without running `cargo clippy` and `cargo test`

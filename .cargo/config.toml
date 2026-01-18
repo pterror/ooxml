@@ -1,0 +1,14 @@
+# Reduce target/ directory bloat
+[profile.dev]
+debug = 1  # 0=none, 1=line tables, 2=full
+
+[profile.release]
+strip = "symbols"
+
+[profile.dev.package."*"]
+opt-level = 2  # Optimize deps even in dev builds
+
+# For faster builds with mold linker (local only), uncomment:
+# [target.x86_64-unknown-linux-gnu]
+# linker = "clang"
+# rustflags = ["-C", "link-arg=-fuse-ld=mold"]

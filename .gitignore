@@ -1,0 +1,24 @@
+# Rust
+/target/
+
+# Nix
+result
+.direnv/
+
+# Node (docs)
+node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+
+# Spec downloads (large PDFs)
+/spec/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
