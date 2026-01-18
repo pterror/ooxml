@@ -37,15 +37,16 @@ pub mod types {
     include!(concat!(env!("OUT_DIR"), "/wml_types.rs"));
 }
 
-pub use document::{Body, Document, Paragraph, ParagraphProperties, Run, RunProperties};
+pub use document::{
+    BlockContent, Body, Cell, Document, Paragraph, ParagraphProperties, Row, Run, RunProperties,
+    Table,
+};
 pub use error::{Error, Result};
 pub use styles::{Style, StyleType, Styles};
 pub use writer::DocumentBuilder;
 
 // Re-export commonly used generated types at the crate root
 pub use types::ns;
-
-// TODO: Tables
 // TODO: Lists/numbering
 // TODO: Images
 // TODO: Hyperlinks

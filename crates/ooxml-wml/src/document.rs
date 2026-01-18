@@ -135,8 +135,17 @@ impl<R: Read + Seek> Document<R> {
 /// The document body containing paragraphs and other block-level elements.
 #[derive(Debug, Clone, Default)]
 pub struct Body {
-    /// Paragraphs in the body.
-    paragraphs: Vec<Paragraph>,
+    /// Block-level content (paragraphs and tables in order).
+    content: Vec<BlockContent>,
+}
+
+/// Block-level content in the document body.
+#[derive(Debug, Clone)]
+pub enum BlockContent {
+    /// A paragraph.
+    Paragraph(Paragraph),
+    /// A table.
+    Table(Table),
 }
 
 impl Body {
@@ -145,29 +154,205 @@ impl Body {
         Self::default()
     }
 
-    /// Get paragraphs in the body.
+    /// Get all paragraphs in the body (flattened, including those in tables).
+    pub fn paragraphs(&self) -> Vec<&Paragraph> {
+        let mut paras = Vec::new();
+        for block in &self.content {
+            match block {
+                BlockContent::Paragraph(p) => paras.push(p),
+                BlockContent::Table(t) => {
+                    for row in t.rows() {
+                        for cell in row.cells() {
+                            for p in cell.paragraphs() {
+                                paras.push(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        paras
+    }
+
+    /// Get block-level content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get mutable reference to block-level content.
+    pub fn content_mut(&mut self) -> &mut Vec<BlockContent> {
+        &mut self.content
+    }
+
+    /// Get all tables in the body.
+    pub fn tables(&self) -> impl Iterator<Item = &Table> {
+        self.content.iter().filter_map(|b| match b {
+            BlockContent::Table(t) => Some(t),
+            _ => None,
+        })
+    }
+
+    /// Add a new paragraph to the body.
+    pub fn add_paragraph(&mut self) -> &mut Paragraph {
+        self.content.push(BlockContent::Paragraph(Paragraph::new()));
+        match self.content.last_mut() {
+            Some(BlockContent::Paragraph(p)) => p,
+            _ => unreachable!(),
+        }
+    }
+
+    /// Add a new table to the body.
+    pub fn add_table(&mut self) -> &mut Table {
+        self.content.push(BlockContent::Table(Table::new()));
+        match self.content.last_mut() {
+            Some(BlockContent::Table(t)) => t,
+            _ => unreachable!(),
+        }
+    }
+
+    /// Extract all text from the body.
+    pub fn text(&self) -> String {
+        self.content
+            .iter()
+            .map(|block| match block {
+                BlockContent::Paragraph(p) => p.text(),
+                BlockContent::Table(t) => t.text(),
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// A table in the document.
+///
+/// Corresponds to the `<w:tbl>` element.
+#[derive(Debug, Clone, Default)]
+pub struct Table {
+    /// Rows in the table.
+    rows: Vec<Row>,
+}
+
+impl Table {
+    /// Create an empty table.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get rows in the table.
+    pub fn rows(&self) -> &[Row] {
+        &self.rows
+    }
+
+    /// Get mutable reference to rows.
+    pub fn rows_mut(&mut self) -> &mut Vec<Row> {
+        &mut self.rows
+    }
+
+    /// Add a new row to the table.
+    pub fn add_row(&mut self) -> &mut Row {
+        self.rows.push(Row::new());
+        self.rows.last_mut().unwrap()
+    }
+
+    /// Get the number of rows.
+    pub fn row_count(&self) -> usize {
+        self.rows.len()
+    }
+
+    /// Get the number of columns (based on first row).
+    pub fn column_count(&self) -> usize {
+        self.rows.first().map(|r| r.cells().len()).unwrap_or(0)
+    }
+
+    /// Extract all text from the table.
+    pub fn text(&self) -> String {
+        self.rows
+            .iter()
+            .map(|r| r.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// A row in a table.
+///
+/// Corresponds to the `<w:tr>` element.
+#[derive(Debug, Clone, Default)]
+pub struct Row {
+    /// Cells in the row.
+    cells: Vec<Cell>,
+}
+
+impl Row {
+    /// Create an empty row.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get cells in the row.
+    pub fn cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    /// Get mutable reference to cells.
+    pub fn cells_mut(&mut self) -> &mut Vec<Cell> {
+        &mut self.cells
+    }
+
+    /// Add a new cell to the row.
+    pub fn add_cell(&mut self) -> &mut Cell {
+        self.cells.push(Cell::new());
+        self.cells.last_mut().unwrap()
+    }
+
+    /// Extract all text from the row (cells separated by tabs).
+    pub fn text(&self) -> String {
+        self.cells
+            .iter()
+            .map(|c| c.text())
+            .collect::<Vec<_>>()
+            .join("\t")
+    }
+}
+
+/// A cell in a table row.
+///
+/// Corresponds to the `<w:tc>` element.
+#[derive(Debug, Clone, Default)]
+pub struct Cell {
+    /// Paragraphs in the cell.
+    paragraphs: Vec<Paragraph>,
+}
+
+impl Cell {
+    /// Create an empty cell.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get paragraphs in the cell.
     pub fn paragraphs(&self) -> &[Paragraph] {
         &self.paragraphs
     }
 
-    /// Get a mutable reference to paragraphs.
+    /// Get mutable reference to paragraphs.
     pub fn paragraphs_mut(&mut self) -> &mut Vec<Paragraph> {
         &mut self.paragraphs
     }
 
-    /// Add a new paragraph to the body.
+    /// Add a paragraph to the cell.
     pub fn add_paragraph(&mut self) -> &mut Paragraph {
         self.paragraphs.push(Paragraph::new());
         self.paragraphs.last_mut().unwrap()
     }
 
-    /// Extract all text from the body.
+    /// Extract all text from the cell.
     pub fn text(&self) -> String {
         self.paragraphs
             .iter()
             .map(|p| p.text())
             .collect::<Vec<_>>()
-            .join("\n")
+            .join(" ")
     }
 }
 
@@ -321,6 +506,9 @@ const EL_SZ: &[u8] = b"sz";
 const EL_RFONTS: &[u8] = b"rFonts";
 const EL_BR: &[u8] = b"br";
 const EL_TAB: &[u8] = b"tab";
+const EL_TBL: &[u8] = b"tbl";
+const EL_TR: &[u8] = b"tr";
+const EL_TC: &[u8] = b"tc";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -338,6 +526,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_rpr = false;
     let mut in_text = false;
 
+    // Table parsing state
+    let mut current_table: Option<Table> = None;
+    let mut current_row: Option<Row> = None;
+    let mut current_cell: Option<Cell> = None;
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
@@ -346,6 +539,15 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 match local {
                     name if name == EL_BODY => {
                         in_body = true;
+                    }
+                    name if name == EL_TBL && in_body => {
+                        current_table = Some(Table::new());
+                    }
+                    name if name == EL_TR && current_table.is_some() => {
+                        current_row = Some(Row::new());
+                    }
+                    name if name == EL_TC && current_row.is_some() => {
+                        current_cell = Some(Cell::new());
                     }
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
@@ -473,10 +675,34 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_BODY => {
                         in_body = false;
                     }
+                    name if name == EL_TBL => {
+                        if let Some(table) = current_table.take() {
+                            body.content.push(BlockContent::Table(table));
+                        }
+                    }
+                    name if name == EL_TR => {
+                        if let Some(row) = current_row.take()
+                            && let Some(table) = current_table.as_mut()
+                        {
+                            table.rows.push(row);
+                        }
+                    }
+                    name if name == EL_TC => {
+                        if let Some(cell) = current_cell.take()
+                            && let Some(row) = current_row.as_mut()
+                        {
+                            row.cells.push(cell);
+                        }
+                    }
                     name if name == EL_P && current_para.is_some() => {
                         if let Some(mut para) = current_para.take() {
                             para.properties = current_ppr.take();
-                            body.paragraphs.push(para);
+                            // Add to cell if inside table, otherwise to body
+                            if let Some(cell) = current_cell.as_mut() {
+                                cell.paragraphs.push(para);
+                            } else {
+                                body.content.push(BlockContent::Paragraph(para));
+                            }
                         }
                     }
                     name if name == EL_R && current_run.is_some() => {
@@ -695,5 +921,107 @@ mod tests {
         let text = body.paragraphs()[0].runs()[0].text();
 
         assert_eq!(text, "Line 1\nLine 2\tAfter tab");
+    }
+
+    #[test]
+    fn test_parse_simple_table() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:p><w:r><w:t>A1</w:t></w:r></w:p>
+        </w:tc>
+        <w:tc>
+          <w:p><w:r><w:t>B1</w:t></w:r></w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:p><w:r><w:t>A2</w:t></w:r></w:p>
+        </w:tc>
+        <w:tc>
+          <w:p><w:r><w:t>B2</w:t></w:r></w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Should have one table
+        let tables: Vec<_> = body.tables().collect();
+        assert_eq!(tables.len(), 1);
+
+        let table = tables[0];
+        assert_eq!(table.row_count(), 2);
+        assert_eq!(table.column_count(), 2);
+
+        // Check cell content
+        assert_eq!(table.rows()[0].cells()[0].text(), "A1");
+        assert_eq!(table.rows()[0].cells()[1].text(), "B1");
+        assert_eq!(table.rows()[1].cells()[0].text(), "A2");
+        assert_eq!(table.rows()[1].cells()[1].text(), "B2");
+    }
+
+    #[test]
+    fn test_parse_mixed_content() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>Before table</w:t></w:r></w:p>
+    <w:tbl>
+      <w:tr>
+        <w:tc><w:p><w:r><w:t>Cell</w:t></w:r></w:p></w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p><w:r><w:t>After table</w:t></w:r></w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Should have 3 block elements
+        assert_eq!(body.content().len(), 3);
+
+        // Check order
+        assert!(matches!(body.content()[0], BlockContent::Paragraph(_)));
+        assert!(matches!(body.content()[1], BlockContent::Table(_)));
+        assert!(matches!(body.content()[2], BlockContent::Paragraph(_)));
+
+        // All paragraphs (including table cells)
+        assert_eq!(body.paragraphs().len(), 3);
+    }
+
+    #[test]
+    fn test_table_text_extraction() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:tbl>
+      <w:tr>
+        <w:tc><w:p><w:r><w:t>A</w:t></w:r></w:p></w:tc>
+        <w:tc><w:p><w:r><w:t>B</w:t></w:r></w:p></w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc><w:p><w:r><w:t>C</w:t></w:r></w:p></w:tc>
+        <w:tc><w:p><w:r><w:t>D</w:t></w:r></w:p></w:tc>
+      </w:tr>
+    </w:tbl>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let tables: Vec<_> = body.tables().collect();
+        let table = tables[0];
+
+        // Row text uses tabs between cells
+        assert_eq!(table.rows()[0].text(), "A\tB");
+        assert_eq!(table.rows()[1].text(), "C\tD");
+
+        // Table text uses newlines between rows
+        assert_eq!(table.text(), "A\tB\nC\tD");
     }
 }
