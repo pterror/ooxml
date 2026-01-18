@@ -4,7 +4,7 @@
 //!
 //! # Example
 //!
-//! ```ignore
+//! ```no_run
 //! use ooxml_wml::Document;
 //!
 //! // Open an existing document
@@ -12,23 +12,25 @@
 //! for para in doc.body().paragraphs() {
 //!     println!("{}", para.text());
 //! }
-//!
-//! // Create a new document
-//! let mut doc = Document::new();
-//! doc.body_mut().add_paragraph().add_run().set_text("Hello, World!");
-//! doc.save("output.docx")?;
+//! # Ok::<(), ooxml_wml::Error>(())
 //! ```
 
-// Generated types from ECMA-376 schema
-mod generated {
+pub mod document;
+pub mod error;
+
+// Generated types from ECMA-376 schema.
+// Access via `ooxml_wml::types::*` for generated structs/enums.
+pub mod types {
+    #![allow(dead_code)]
     include!(concat!(env!("OUT_DIR"), "/wml_types.rs"));
 }
 
-pub use generated::*;
+pub use document::{Body, Document, Paragraph, ParagraphProperties, Run, RunProperties};
+pub use error::{Error, Result};
 
-// TODO: Document struct (main entry point)
-// TODO: Body, Paragraph, Run, Text elements
-// TODO: Formatting properties (bold, italic, etc.)
+// Re-export commonly used generated types at the crate root
+pub use types::ns;
+
 // TODO: Styles support
 // TODO: Tables
 // TODO: Lists/numbering
