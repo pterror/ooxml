@@ -10,9 +10,32 @@
 //! - `ooxml-wml` - WordprocessingML (DOCX)
 //! - `ooxml-sml` - SpreadsheetML (XLSX) - planned
 //! - `ooxml-pml` - PresentationML (PPTX) - planned
+//!
+//! # Example
+//!
+//! ```no_run
+//! use ooxml::{Package, Relationships, rel_type, rels_path_for};
+//! use std::fs::File;
+//!
+//! let file = File::open("document.docx")?;
+//! let mut pkg = Package::open(file)?;
+//!
+//! // Read package relationships
+//! let rels_data = pkg.read_part("_rels/.rels")?;
+//! let rels = Relationships::parse(&rels_data[..])?;
+//!
+//! // Find the main document
+//! if let Some(doc_rel) = rels.get_by_type(rel_type::OFFICE_DOCUMENT) {
+//!     let doc_xml = pkg.read_part_string(&doc_rel.target)?;
+//!     println!("Document: {}", doc_xml);
+//! }
+//! # Ok::<(), ooxml::Error>(())
+//! ```
 
 pub mod error;
 pub mod packaging;
 pub mod relationships;
 
 pub use error::{Error, Result};
+pub use packaging::{ContentTypes, Package, PackageWriter, content_type};
+pub use relationships::{Relationship, Relationships, TargetMode, rel_type, rels_path_for};
