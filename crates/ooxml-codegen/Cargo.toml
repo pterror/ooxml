@@ -1,0 +1,12 @@
+[package]
+name = "ooxml-codegen"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Code generator for OOXML types from RELAX NG schemas"
+
+[dependencies]
+thiserror.workspace = true
+
+[dev-dependencies]
+insta.workspace = true

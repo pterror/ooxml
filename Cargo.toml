@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/ooxml",
     "crates/ooxml-wml",
+    "crates/ooxml-codegen",
 ]
 
 [workspace.package]
@@ -20,6 +21,4 @@ ooxml-wml = { path = "crates/ooxml-wml" }
 zip = "2"
 quick-xml = "0.36"
 thiserror = "2"
-
-[workspace.dev-dependencies]
 insta = "1"

@@ -9,6 +9,7 @@ export default withMermaid(
       nav: [
         { text: 'Guide', link: '/guide/' },
         { text: 'API', link: '/api/' },
+        { text: 'ADRs', link: '/adr/' },
         { text: 'Rhizome', link: 'https://rhizome-lab.github.io/' },
       ],
       sidebar: {
@@ -18,6 +19,15 @@ export default withMermaid(
             items: [
               { text: 'Introduction', link: '/guide/' },
               { text: 'Installation', link: '/guide/installation' },
+            ],
+          },
+        ],
+        '/adr/': [
+          {
+            text: 'Architecture Decisions',
+            items: [
+              { text: 'Overview', link: '/adr/' },
+              { text: '001: Custom RNC Parser', link: '/adr/001-custom-rnc-parser' },
             ],
           },
         ],
