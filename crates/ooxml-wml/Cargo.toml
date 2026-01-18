@@ -1,0 +1,12 @@
+[package]
+name = "ooxml-wml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "WordprocessingML (DOCX) support for the ooxml library"
+
+[dependencies]
+ooxml.workspace = true
+quick-xml.workspace = true
+thiserror.workspace = true

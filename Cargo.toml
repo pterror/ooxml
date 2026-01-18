@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/ooxml",
+    "crates/ooxml-wml",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/pterror/ooxml"
+
+[workspace.dependencies]
+# Internal crates
+ooxml = { path = "crates/ooxml" }
+ooxml-wml = { path = "crates/ooxml-wml" }
+
+# External dependencies
+zip = "2"
+quick-xml = "0.36"
+thiserror = "2"
+
+[workspace.dev-dependencies]
+insta = "1"

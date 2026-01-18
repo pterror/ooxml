@@ -1,0 +1,12 @@
+[package]
+name = "ooxml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Core OOXML library: OPC packaging, relationships, and shared types"
+
+[dependencies]
+zip.workspace = true
+quick-xml.workspace = true
+thiserror.workspace = true
