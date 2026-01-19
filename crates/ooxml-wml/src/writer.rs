@@ -408,6 +408,50 @@ fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String)
         serialize_numbering_properties(num_props, xml);
     }
 
+    // Alignment (justification)
+    if let Some(alignment) = props.alignment {
+        xml.push_str(&format!(r#"<w:jc w:val="{}"/>"#, alignment.as_str()));
+    }
+
+    // Spacing
+    if props.spacing_before.is_some()
+        || props.spacing_after.is_some()
+        || props.spacing_line.is_some()
+    {
+        xml.push_str("<w:spacing");
+        if let Some(before) = props.spacing_before {
+            xml.push_str(&format!(r#" w:before="{}""#, before));
+        }
+        if let Some(after) = props.spacing_after {
+            xml.push_str(&format!(r#" w:after="{}""#, after));
+        }
+        if let Some(line) = props.spacing_line {
+            xml.push_str(&format!(r#" w:line="{}""#, line));
+        }
+        xml.push_str("/>");
+    }
+
+    // Indentation
+    if props.indent_left.is_some()
+        || props.indent_right.is_some()
+        || props.indent_first_line.is_some()
+        || props.indent_hanging.is_some()
+    {
+        xml.push_str("<w:ind");
+        if let Some(left) = props.indent_left {
+            xml.push_str(&format!(r#" w:left="{}""#, left));
+        }
+        if let Some(right) = props.indent_right {
+            xml.push_str(&format!(r#" w:right="{}""#, right));
+        }
+        if let Some(hanging) = props.indent_hanging {
+            xml.push_str(&format!(r#" w:hanging="{}""#, hanging));
+        } else if let Some(first_line) = props.indent_first_line {
+            xml.push_str(&format!(r#" w:firstLine="{}""#, first_line));
+        }
+        xml.push_str("/>");
+    }
+
     xml.push_str("</w:pPr>");
 }
 

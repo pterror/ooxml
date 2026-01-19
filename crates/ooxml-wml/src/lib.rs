@@ -38,7 +38,7 @@ pub mod types {
 }
 
 pub use document::{
-    BlockContent, Body, Cell, Document, Drawing, Hyperlink, ImageData, InlineImage,
+    Alignment, BlockContent, Body, Cell, Document, Drawing, Hyperlink, ImageData, InlineImage,
     NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties,
     Table,
 };

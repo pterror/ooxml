@@ -511,3 +511,71 @@ fn test_roundtrip_text_color() {
     );
     assert!(run2.is_bold());
 }
+
+/// Test creating a document with paragraph alignment, spacing, and indentation.
+#[test]
+fn test_roundtrip_paragraph_properties() {
+    use ooxml_wml::{Alignment, ParagraphProperties};
+
+    let mut builder = DocumentBuilder::new();
+
+    // Centered paragraph
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.set_properties(ParagraphProperties {
+            alignment: Some(Alignment::Center),
+            ..Default::default()
+        });
+        para.add_run().set_text("Centered text");
+    }
+
+    // Right-aligned with spacing
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.set_properties(ParagraphProperties {
+            alignment: Some(Alignment::Right),
+            spacing_before: Some(240), // 12pt in twips
+            spacing_after: Some(120),  // 6pt in twips
+            ..Default::default()
+        });
+        para.add_run().set_text("Right aligned with spacing");
+    }
+
+    // Indented paragraph
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.set_properties(ParagraphProperties {
+            indent_left: Some(720),       // 0.5 inch in twips
+            indent_first_line: Some(360), // 0.25 inch first line indent
+            ..Default::default()
+        });
+        para.add_run().set_text("Indented paragraph");
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify paragraph properties
+    let paras = doc.body().paragraphs();
+    assert_eq!(paras.len(), 3);
+
+    // Check centered paragraph
+    let props0 = paras[0].properties().unwrap();
+    assert_eq!(props0.alignment, Some(Alignment::Center));
+
+    // Check right-aligned with spacing
+    let props1 = paras[1].properties().unwrap();
+    assert_eq!(props1.alignment, Some(Alignment::Right));
+    assert_eq!(props1.spacing_before, Some(240));
+    assert_eq!(props1.spacing_after, Some(120));
+
+    // Check indented paragraph
+    let props2 = paras[2].properties().unwrap();
+    assert_eq!(props2.indent_left, Some(720));
+    assert_eq!(props2.indent_first_line, Some(360));
+}

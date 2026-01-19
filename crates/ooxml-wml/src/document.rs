@@ -626,6 +626,50 @@ impl Hyperlink {
     }
 }
 
+/// Paragraph alignment (justification).
+///
+/// Corresponds to the `<w:jc>` element values.
+/// ECMA-376 Part 1, Section 17.18.44 (ST_Jc).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Alignment {
+    /// Align left (default for LTR).
+    #[default]
+    Left,
+    /// Center alignment.
+    Center,
+    /// Align right.
+    Right,
+    /// Justified (both edges aligned).
+    Both,
+    /// Distributed alignment (for CJK).
+    Distribute,
+}
+
+impl Alignment {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "left" | "start" => Alignment::Left,
+            "center" => Alignment::Center,
+            "right" | "end" => Alignment::Right,
+            "both" | "justify" => Alignment::Both,
+            "distribute" => Alignment::Distribute,
+            _ => Alignment::Left,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Alignment::Left => "left",
+            Alignment::Center => "center",
+            Alignment::Right => "right",
+            Alignment::Both => "both",
+            Alignment::Distribute => "distribute",
+        }
+    }
+}
+
 /// Properties of a paragraph.
 ///
 /// Corresponds to the `<w:pPr>` element.
@@ -635,6 +679,22 @@ pub struct ParagraphProperties {
     pub style: Option<String>,
     /// Numbering/list properties.
     pub numbering: Option<NumberingProperties>,
+    /// Paragraph alignment/justification.
+    pub alignment: Option<Alignment>,
+    /// Spacing before the paragraph in twips (1/20 of a point).
+    pub spacing_before: Option<u32>,
+    /// Spacing after the paragraph in twips.
+    pub spacing_after: Option<u32>,
+    /// Line spacing in twips (or 240ths of a line if line_rule is Auto).
+    pub spacing_line: Option<u32>,
+    /// Left indentation in twips.
+    pub indent_left: Option<i32>,
+    /// Right indentation in twips.
+    pub indent_right: Option<i32>,
+    /// First line indentation in twips (positive for indent, use indent_hanging for hanging).
+    pub indent_first_line: Option<i32>,
+    /// Hanging indentation in twips (overrides indent_first_line if set).
+    pub indent_hanging: Option<u32>,
 }
 
 /// Numbering properties for a paragraph.
@@ -916,6 +976,11 @@ const EL_NUMPR: &[u8] = b"numPr";
 const EL_NUMID: &[u8] = b"numId";
 const EL_ILVL: &[u8] = b"ilvl";
 
+// Paragraph formatting elements
+const EL_JC: &[u8] = b"jc";
+const EL_SPACING: &[u8] = b"spacing";
+const EL_IND: &[u8] = b"ind";
+
 // Drawing element names (DrawingML)
 const EL_DRAWING: &[u8] = b"drawing";
 const EL_INLINE: &[u8] = b"inline";
@@ -1060,6 +1125,61 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
                                     ppr.style =
                                         Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_JC && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
+                                    let val = std::str::from_utf8(&attr.value).unwrap_or("left");
+                                    ppr.alignment = Some(Alignment::parse(val));
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_SPACING && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:before" | b"before" => {
+                                            ppr.spacing_before = s.parse().ok();
+                                        }
+                                        b"w:after" | b"after" => {
+                                            ppr.spacing_after = s.parse().ok();
+                                        }
+                                        b"w:line" | b"line" => {
+                                            ppr.spacing_line = s.parse().ok();
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_IND && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:left" | b"left" => {
+                                            ppr.indent_left = s.parse().ok();
+                                        }
+                                        b"w:right" | b"right" => {
+                                            ppr.indent_right = s.parse().ok();
+                                        }
+                                        b"w:firstLine" | b"firstLine" => {
+                                            ppr.indent_first_line = s.parse().ok();
+                                        }
+                                        b"w:hanging" | b"hanging" => {
+                                            ppr.indent_hanging = s.parse().ok();
+                                        }
+                                        _ => {}
+                                    }
                                 }
                             }
                         }
