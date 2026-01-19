@@ -2,6 +2,8 @@
 
 High-quality Rust library for reading/writing Office Open XML formats (DOCX, XLSX, PPTX).
 
+Part of the [Rhizome](https://rhizome-lab.github.io/) ecosystem, providing OOXML support for [rescribe](https://github.com/pterror/rescribe) document conversion.
+
 ## Why?
 
 The Rust ecosystem lacks a mature OOXML library. Python has `python-docx`, Java has Apache POI, .NET has Open XML SDK. Rust deserves the same.
@@ -17,39 +19,54 @@ The Rust ecosystem lacks a mature OOXML library. Python has `python-docx`, Java 
 ## Architecture
 
 ```
-crates/
-  ooxml/              # Core: OPC packaging, shared types
-  ooxml-wml/          # WordprocessingML (Word documents)
-  ooxml-sml/          # SpreadsheetML (Excel) - future
-  ooxml-pml/          # PresentationML (PowerPoint) - future
-  ooxml-dml/          # DrawingML (shared graphics) - future
+ooxml/
+├── crates/                    # Rust implementation
+│   ├── ooxml/                 # Core: OPC packaging, relationships
+│   ├── ooxml-wml/             # WordprocessingML (Word)
+│   ├── ooxml-sml/             # SpreadsheetML (Excel) - future
+│   ├── ooxml-pml/             # PresentationML (PowerPoint) - future
+│   └── ooxml-codegen/         # Generate types from specs
+│
+├── fixtures/                  # Test files (CC0 licensed)
+│   ├── wml/                   # Word documents
+│   ├── sml/                   # Excel spreadsheets
+│   └── pml/                   # PowerPoint presentations
+│
+└── specs/                     # Machine-readable spec (CC0 licensed)
+    ├── elements/              # Element definitions
+    ├── enums/                 # Enumeration values
+    └── ...
 ```
+
+See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ## Scope
 
 ### v0.1 - Core + Word Basics
 
 **ooxml (core):**
-- [ ] OPC packaging (ZIP read/write)
-- [ ] Relationships (.rels files)
-- [ ] Content types ([Content_Types].xml)
+- [x] OPC packaging (ZIP read/write)
+- [x] Relationships (.rels files)
+- [x] Content types ([Content_Types].xml)
 - [ ] Core properties (docProps/core.xml)
 - [ ] App properties (docProps/app.xml)
 
 **ooxml-wml (WordprocessingML):**
-- [ ] Document structure (document.xml)
-- [ ] Paragraphs (`<w:p>`)
-- [ ] Runs (`<w:r>`) and text (`<w:t>`)
-- [ ] Basic formatting: bold, italic, underline, strikethrough
-- [ ] Font, size, color
+- [x] Document structure (document.xml)
+- [x] Paragraphs (`<w:p>`)
+- [x] Runs (`<w:r>`) and text (`<w:t>`)
+- [x] Basic formatting: bold, italic, underline, strikethrough
+- [x] Font, size, color
 - [ ] Paragraph properties: alignment, spacing, indentation
-- [ ] Headings (via paragraph styles)
-- [ ] Lists (numbering definitions + abstract numbering)
-- [ ] Tables (basic: rows, cells, simple borders)
-- [ ] Hyperlinks
-- [ ] Images (embedded in word/media/)
-- [ ] Styles (styles.xml) - read and apply
-- [ ] Page breaks, section breaks
+- [x] Headings (via paragraph styles)
+- [x] Lists (numbering definitions + abstract numbering)
+- [x] Tables (basic: rows, cells)
+- [x] Hyperlinks (internal and external)
+- [x] Images (embedded in word/media/)
+- [x] Styles (styles.xml) - read and apply
+- [ ] Styles (styles.xml) - write
+- [x] Page breaks
+- [ ] Section breaks
 
 ### v0.2 - Extended Word
 
@@ -61,6 +78,7 @@ crates/
 - [ ] Text boxes
 - [ ] Tabs and tab stops
 - [ ] Borders and shading
+- [ ] Table borders
 
 ### v0.3 - Advanced Word
 
@@ -72,11 +90,30 @@ crates/
 - [ ] SmartArt (limited)
 - [ ] Charts (limited)
 
+### v0.4 - SpreadsheetML (Excel)
+
+- [ ] ooxml-sml crate
+- [ ] Workbook structure
+- [ ] Worksheets
+- [ ] Cells and values
+- [ ] Formulas (as strings, not evaluated)
+- [ ] Basic formatting
+- [ ] Shared strings
+
+### v0.5 - PresentationML (PowerPoint)
+
+- [ ] ooxml-pml crate
+- [ ] Presentation structure
+- [ ] Slides
+- [ ] Shapes and text
+- [ ] Images
+- [ ] Basic transitions
+
 ### Future
 
-- [ ] ooxml-sml: Excel support
-- [ ] ooxml-pml: PowerPoint support
 - [ ] ooxml-dml: Full DrawingML
+- [ ] Advanced Excel (charts, pivot tables)
+- [ ] Advanced PowerPoint (animations, SmartArt)
 
 ## Dependencies
 
@@ -90,40 +127,63 @@ thiserror = "2"        # Error handling
 insta = "1"            # Snapshot testing
 ```
 
-## API Design (Draft)
+## API Design
+
+### Reading
 
 ```rust
-// Reading
 let doc = ooxml_wml::Document::open("input.docx")?;
 for para in doc.body().paragraphs() {
     println!("Style: {:?}", para.style());
     for run in para.runs() {
         println!("  Text: {}", run.text());
-        println!("  Bold: {}", run.properties().bold());
+        if run.is_bold() { println!("  (bold)"); }
     }
 }
+```
 
-// Writing
-let mut doc = ooxml_wml::Document::new();
-let mut para = doc.body_mut().add_paragraph();
-para.set_style("Heading1");
-para.add_run().set_text("Hello, World!");
-doc.save("output.docx")?;
+### Writing (DocumentBuilder)
 
-// Roundtrip (preserves unknown elements)
+```rust
+let mut builder = ooxml_wml::DocumentBuilder::new();
+builder.add_paragraph("Hello, World!");
+
+// With formatting
+let para = builder.body_mut().add_paragraph();
+let mut run = para.add_run();
+run.set_text("Bold text");
+run.set_properties(RunProperties { bold: true, ..Default::default() });
+
+// Lists
+let num_id = builder.add_list(ListType::Bullet);
+let para = builder.body_mut().add_paragraph();
+para.set_numbering(num_id, 0);
+para.add_run().set_text("List item");
+
+// Images
+let rel_id = builder.add_image(image_bytes, "image/png");
+let mut drawing = Drawing::new();
+drawing.add_image(&rel_id).set_width_inches(2.0);
+para.add_run().drawings_mut().push(drawing);
+
+builder.save("output.docx")?;
+```
+
+### Roundtrip (preserves unknown elements)
+
+```rust
 let mut doc = ooxml_wml::Document::open("input.docx")?;
-doc.body_mut().paragraphs_mut().next().unwrap()
-    .add_run().set_text(" - modified");
+// Modify...
 doc.save("output.docx")?;
 ```
 
 ## Testing Strategy
 
 1. **Unit tests** - Individual element parsing/serialization
-2. **Roundtrip tests** - Open → save → compare (byte-level or structural)
-3. **Fixture tests** - Real DOCX files from various sources
+2. **Roundtrip tests** - Open → save → compare (structural)
+3. **Fixture tests** - Real DOCX files from various sources (see `fixtures/`)
 4. **Snapshot tests** - Insta for XML output verification
-5. **Fuzz tests** - Malformed input handling
+5. **Fuzz tests** - Malformed input handling (future)
 
 ## References
 
@@ -139,3 +199,8 @@ doc.save("output.docx")?;
 - Standalone use for DOCX manipulation
 - Report generation
 - Document automation
+
+## License
+
+- **Rust code** (`crates/`): MIT OR Apache-2.0
+- **Ecosystem resources** (`fixtures/`, `specs/`): CC0 1.0 (public domain)
