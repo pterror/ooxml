@@ -13,6 +13,11 @@ docs/.vitepress/dist/
 # Spec downloads (large PDFs)
 /spec/
 
+# External corpora (NapierOne, docx-corpus, etc.)
+# These are large and downloaded separately - see ECOSYSTEM.md
+/corpora/
+*.zip
+
 # IDE
 .idea/
 .vscode/
