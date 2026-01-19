@@ -274,3 +274,240 @@ fn test_multiple_images() {
     assert_eq!(data2.content_type, "image/jpeg");
     assert_eq!(data2.data, jpg_data);
 }
+
+/// Test creating a document with a hyperlink.
+#[test]
+fn test_roundtrip_hyperlink() {
+    let mut builder = DocumentBuilder::new();
+    let rel_id = builder.add_hyperlink("https://example.com");
+
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_text("Visit ");
+
+        let link = para.add_hyperlink();
+        link.set_rel_id(&rel_id);
+        link.add_run().set_text("our website");
+
+        para.add_run().set_text(" for more info.");
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify paragraph structure
+    let para = &doc.body().paragraphs()[0];
+    assert_eq!(para.content().len(), 3); // run, hyperlink, run
+
+    // Check the hyperlink
+    let links: Vec<_> = para.hyperlinks().collect();
+    assert_eq!(links.len(), 1);
+    let link = links[0];
+    assert!(link.is_external());
+    assert_eq!(link.text(), "our website");
+
+    // Look up the URL
+    let url = doc.get_hyperlink_url(link.rel_id().unwrap()).unwrap();
+    assert_eq!(url, "https://example.com");
+
+    // Full text
+    assert_eq!(para.text(), "Visit our website for more info.");
+}
+
+/// Test creating a document with a numbered list.
+#[test]
+fn test_roundtrip_numbered_list() {
+    use ooxml_wml::{ListType, NumberingProperties, ParagraphProperties};
+
+    let mut builder = DocumentBuilder::new();
+    let num_id = builder.add_list(ListType::Decimal);
+
+    // Add three list items
+    for item in &["First item", "Second item", "Third item"] {
+        let para = builder.body_mut().add_paragraph();
+        para.set_properties(ParagraphProperties {
+            numbering: Some(NumberingProperties { num_id, ilvl: 0 }),
+            ..Default::default()
+        });
+        para.add_run().set_text(*item);
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify numbering.xml was created
+    assert!(doc.package().has_part("word/numbering.xml"));
+
+    // Verify paragraph numbering properties
+    let paras = doc.body().paragraphs();
+    assert_eq!(paras.len(), 3);
+
+    for para in paras {
+        let props = para.properties().expect("should have properties");
+        let num_props = props.numbering.as_ref().expect("should have numbering");
+        assert_eq!(num_props.num_id, num_id);
+        assert_eq!(num_props.ilvl, 0);
+    }
+
+    // Verify text content
+    assert_eq!(doc.body().paragraphs()[0].text(), "First item");
+    assert_eq!(doc.body().paragraphs()[1].text(), "Second item");
+    assert_eq!(doc.body().paragraphs()[2].text(), "Third item");
+}
+
+/// Test creating a document with a bullet list.
+#[test]
+fn test_roundtrip_bullet_list() {
+    use ooxml_wml::{ListType, NumberingProperties, ParagraphProperties};
+
+    let mut builder = DocumentBuilder::new();
+    let num_id = builder.add_list(ListType::Bullet);
+
+    // Add bullet items
+    for item in &["Apple", "Banana", "Cherry"] {
+        let para = builder.body_mut().add_paragraph();
+        para.set_properties(ParagraphProperties {
+            numbering: Some(NumberingProperties { num_id, ilvl: 0 }),
+            ..Default::default()
+        });
+        para.add_run().set_text(*item);
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify content
+    assert_eq!(doc.body().paragraphs().len(), 3);
+    assert_eq!(doc.text(), "Apple\nBanana\nCherry");
+
+    // Verify all paragraphs have numbering
+    for para in doc.body().paragraphs() {
+        assert!(para.properties().unwrap().numbering.is_some());
+    }
+}
+
+/// Test creating a document with page breaks.
+#[test]
+fn test_roundtrip_page_break() {
+    let mut builder = DocumentBuilder::new();
+
+    // First page content
+    builder.add_paragraph("Page 1 content");
+
+    // Page break
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_run().set_page_break(true);
+    }
+
+    // Second page content
+    builder.add_paragraph("Page 2 content");
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify structure
+    assert_eq!(doc.body().paragraphs().len(), 3);
+
+    // First paragraph - no page break
+    assert!(!doc.body().paragraphs()[0].runs()[0].has_page_break());
+    assert_eq!(doc.body().paragraphs()[0].text(), "Page 1 content");
+
+    // Second paragraph - has page break
+    assert!(doc.body().paragraphs()[1].runs()[0].has_page_break());
+
+    // Third paragraph - no page break
+    assert!(!doc.body().paragraphs()[2].runs()[0].has_page_break());
+    assert_eq!(doc.body().paragraphs()[2].text(), "Page 2 content");
+}
+
+/// Test creating a document with colored text.
+#[test]
+fn test_roundtrip_text_color() {
+    use ooxml_wml::RunProperties;
+
+    let mut builder = DocumentBuilder::new();
+
+    {
+        let para = builder.body_mut().add_paragraph();
+
+        // Red text
+        let run = para.add_run();
+        run.set_text("Red ");
+        run.set_properties(RunProperties {
+            color: Some("FF0000".to_string()),
+            ..Default::default()
+        });
+
+        // Blue text
+        let run = para.add_run();
+        run.set_text("Blue ");
+        run.set_properties(RunProperties {
+            color: Some("0000FF".to_string()),
+            ..Default::default()
+        });
+
+        // Green text (bold too)
+        let run = para.add_run();
+        run.set_text("Green");
+        run.set_properties(RunProperties {
+            color: Some("00FF00".to_string()),
+            bold: true,
+            ..Default::default()
+        });
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify colors
+    let para = &doc.body().paragraphs()[0];
+    assert_eq!(para.runs().len(), 3);
+
+    let run0 = &para.runs()[0];
+    assert_eq!(run0.text(), "Red ");
+    assert_eq!(
+        run0.properties().and_then(|p| p.color.as_deref()),
+        Some("FF0000")
+    );
+
+    let run1 = &para.runs()[1];
+    assert_eq!(run1.text(), "Blue ");
+    assert_eq!(
+        run1.properties().and_then(|p| p.color.as_deref()),
+        Some("0000FF")
+    );
+
+    let run2 = &para.runs()[2];
+    assert_eq!(run2.text(), "Green");
+    assert_eq!(
+        run2.properties().and_then(|p| p.color.as_deref()),
+        Some("00FF00")
+    );
+    assert!(run2.is_bold());
+}

@@ -332,6 +332,10 @@ pub mod content_type {
     pub const WORDPROCESSING_STYLES: &str =
         "application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml";
 
+    /// WordprocessingML numbering definitions.
+    pub const WORDPROCESSING_NUMBERING: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";
+
     /// Core properties (Dublin Core metadata).
     pub const CORE_PROPERTIES: &str = "application/vnd.openxmlformats-package.core-properties+xml";
 

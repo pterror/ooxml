@@ -38,18 +38,16 @@ pub mod types {
 }
 
 pub use document::{
-    BlockContent, Body, Cell, Document, Drawing, ImageData, InlineImage, Paragraph,
-    ParagraphProperties, Row, Run, RunProperties, Table,
+    BlockContent, Body, Cell, Document, Drawing, Hyperlink, ImageData, InlineImage,
+    NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties,
+    Table,
 };
 pub use error::{Error, Result};
 pub use styles::{Style, StyleType, Styles};
-pub use writer::DocumentBuilder;
+pub use writer::{DocumentBuilder, ListType};
 
 // Re-export commonly used generated types at the crate root
 pub use types::ns;
-
-// TODO: Lists/numbering
-// TODO: Hyperlinks
 
 // ## Current Limitations (v0.1)
 //

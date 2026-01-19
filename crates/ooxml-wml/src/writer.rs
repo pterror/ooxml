@@ -4,8 +4,8 @@
 //! and saving existing documents.
 
 use crate::document::{
-    BlockContent, Body, Cell, Drawing, InlineImage, Paragraph, ParagraphProperties, Row, Run,
-    RunProperties, Table,
+    BlockContent, Body, Cell, Drawing, Hyperlink, InlineImage, NumberingProperties, Paragraph,
+    ParagraphContent, ParagraphProperties, Row, Run, RunProperties, Table,
 };
 use crate::error::Result;
 use crate::styles::Styles;
@@ -39,14 +39,57 @@ pub struct PendingImage {
     pub filename: String,
 }
 
+/// A pending hyperlink to be written to relationships.
+#[derive(Clone)]
+pub struct PendingHyperlink {
+    /// Relationship ID.
+    pub rel_id: String,
+    /// Target URL.
+    pub url: String,
+}
+
+/// List type for creating numbered or bulleted lists.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ListType {
+    /// Bulleted list (uses bullet character).
+    Bullet,
+    /// Numbered list (uses decimal numbers: 1, 2, 3...).
+    Decimal,
+    /// Lowercase letter list (a, b, c...).
+    LowerLetter,
+    /// Uppercase letter list (A, B, C...).
+    UpperLetter,
+    /// Lowercase Roman numerals (i, ii, iii...).
+    LowerRoman,
+    /// Uppercase Roman numerals (I, II, III...).
+    UpperRoman,
+}
+
+/// A numbering definition to be written to numbering.xml.
+#[derive(Clone)]
+pub struct PendingNumbering {
+    /// Abstract numbering ID.
+    pub abstract_num_id: u32,
+    /// Concrete numbering ID (used in numPr).
+    pub num_id: u32,
+    /// List type.
+    pub list_type: ListType,
+}
+
 /// Builder for creating new Word documents.
 pub struct DocumentBuilder {
     body: Body,
     _styles: Styles, // TODO: serialize styles.xml
     /// Pending images to write, keyed by rel_id.
     images: HashMap<String, PendingImage>,
+    /// Pending hyperlinks, keyed by rel_id.
+    hyperlinks: HashMap<String, PendingHyperlink>,
+    /// Numbering definitions, keyed by num_id.
+    numberings: HashMap<u32, PendingNumbering>,
     /// Counter for generating unique IDs.
-    next_image_id: u32,
+    next_rel_id: u32,
+    /// Counter for generating unique numbering IDs.
+    next_num_id: u32,
 }
 
 impl Default for DocumentBuilder {
@@ -62,7 +105,10 @@ impl DocumentBuilder {
             body: Body::new(),
             _styles: Styles::new(),
             images: HashMap::new(),
-            next_image_id: 1,
+            hyperlinks: HashMap::new(),
+            numberings: HashMap::new(),
+            next_rel_id: 1,
+            next_num_id: 1,
         }
     }
 
@@ -71,8 +117,8 @@ impl DocumentBuilder {
     /// The image data will be written to the package when save() is called.
     /// Use the returned rel_id when adding an InlineImage to a Run.
     pub fn add_image(&mut self, data: Vec<u8>, content_type: &str) -> String {
-        let id = self.next_image_id;
-        self.next_image_id += 1;
+        let id = self.next_rel_id;
+        self.next_rel_id += 1;
 
         let rel_id = format!("rId{}", id);
         let ext = extension_from_content_type(content_type);
@@ -89,6 +135,57 @@ impl DocumentBuilder {
         );
 
         rel_id
+    }
+
+    /// Add a hyperlink and return its relationship ID.
+    ///
+    /// Use the returned rel_id when creating a Hyperlink in a paragraph.
+    pub fn add_hyperlink(&mut self, url: &str) -> String {
+        let id = self.next_rel_id;
+        self.next_rel_id += 1;
+
+        let rel_id = format!("rId{}", id);
+
+        self.hyperlinks.insert(
+            rel_id.clone(),
+            PendingHyperlink {
+                rel_id: rel_id.clone(),
+                url: url.to_string(),
+            },
+        );
+
+        rel_id
+    }
+
+    /// Create a list definition and return its numbering ID.
+    ///
+    /// Use the returned num_id in NumberingProperties when adding list items.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let num_id = builder.add_list(ListType::Bullet);
+    /// let para = builder.body_mut().add_paragraph();
+    /// para.set_properties(ParagraphProperties {
+    ///     numbering: Some(NumberingProperties { num_id, ilvl: 0 }),
+    ///     ..Default::default()
+    /// });
+    /// para.add_run().set_text("First list item");
+    /// ```
+    pub fn add_list(&mut self, list_type: ListType) -> u32 {
+        let num_id = self.next_num_id;
+        self.next_num_id += 1;
+
+        self.numberings.insert(
+            num_id,
+            PendingNumbering {
+                abstract_num_id: num_id, // Use same ID for simplicity
+                num_id,
+                list_type,
+            },
+        );
+
+        num_id
     }
 
     /// Get a mutable reference to the body.
@@ -145,20 +242,46 @@ impl DocumentBuilder {
             pkg_rels.serialize().as_bytes(),
         )?;
 
-        // Build document relationships and write images
+        // Build document relationships
         let mut doc_rels = Relationships::new();
 
+        // Add image relationships and write image files
         for image in self.images.values() {
-            // Add relationship for the image
             doc_rels.add(Relationship::new(
                 &image.rel_id,
                 rel_type::IMAGE,
                 format!("media/{}", image.filename),
             ));
 
-            // Write image file to package
             let image_path = format!("word/media/{}", image.filename);
             pkg.add_part(&image_path, &image.content_type, &image.data)?;
+        }
+
+        // Add hyperlink relationships (external)
+        for hyperlink in self.hyperlinks.values() {
+            doc_rels.add(Relationship::external(
+                &hyperlink.rel_id,
+                rel_type::HYPERLINK,
+                &hyperlink.url,
+            ));
+        }
+
+        // Write numbering.xml if we have any numbering definitions
+        if !self.numberings.is_empty() {
+            let num_xml = serialize_numbering(&self.numberings);
+            pkg.add_part(
+                "word/numbering.xml",
+                content_type::WORDPROCESSING_NUMBERING,
+                num_xml.as_bytes(),
+            )?;
+
+            // Add relationship from document to numbering
+            let num_rel_id = format!("rId{}", self.next_rel_id);
+            doc_rels.add(Relationship::new(
+                &num_rel_id,
+                rel_type::NUMBERING,
+                "numbering.xml",
+            ));
         }
 
         pkg.add_part(
@@ -241,12 +364,35 @@ fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
         serialize_paragraph_properties(props, xml);
     }
 
-    // Runs
-    for run in para.runs() {
-        serialize_run(run, xml);
+    // Content (runs and hyperlinks)
+    for content in para.content() {
+        match content {
+            ParagraphContent::Run(run) => serialize_run(run, xml),
+            ParagraphContent::Hyperlink(link) => serialize_hyperlink(link, xml),
+        }
     }
 
     xml.push_str("</w:p>");
+}
+
+/// Serialize a hyperlink.
+fn serialize_hyperlink(link: &Hyperlink, xml: &mut String) {
+    xml.push_str("<w:hyperlink");
+
+    if let Some(rel_id) = link.rel_id() {
+        xml.push_str(&format!(r#" r:id="{}""#, rel_id));
+    }
+    if let Some(anchor) = link.anchor() {
+        xml.push_str(&format!(r#" w:anchor="{}""#, escape_xml(anchor)));
+    }
+
+    xml.push('>');
+
+    for run in link.runs() {
+        serialize_run(run, xml);
+    }
+
+    xml.push_str("</w:hyperlink>");
 }
 
 /// Serialize paragraph properties.
@@ -257,7 +403,20 @@ fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String)
         xml.push_str(&format!(r#"<w:pStyle w:val="{}"/>"#, escape_xml(style)));
     }
 
+    // Numbering properties
+    if let Some(ref num_props) = props.numbering {
+        serialize_numbering_properties(num_props, xml);
+    }
+
     xml.push_str("</w:pPr>");
+}
+
+/// Serialize numbering properties (within pPr).
+fn serialize_numbering_properties(props: &NumberingProperties, xml: &mut String) {
+    xml.push_str("<w:numPr>");
+    xml.push_str(&format!(r#"<w:ilvl w:val="{}"/>"#, props.ilvl));
+    xml.push_str(&format!(r#"<w:numId w:val="{}"/>"#, props.num_id));
+    xml.push_str("</w:numPr>");
 }
 
 /// Serialize a run.
@@ -267,6 +426,11 @@ fn serialize_run(run: &Run, xml: &mut String) {
     // Run properties
     if let Some(props) = run.properties() {
         serialize_run_properties(props, xml);
+    }
+
+    // Page break (if any)
+    if run.has_page_break() {
+        xml.push_str(r#"<w:br w:type="page"/>"#);
     }
 
     // Drawings (images)
@@ -376,7 +540,8 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         || props.strike
         || props.size.is_some()
         || props.font.is_some()
-        || props.style.is_some();
+        || props.style.is_some()
+        || props.color.is_some();
 
     if !has_props {
         return;
@@ -412,6 +577,10 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         xml.push_str(&format!(r#"<w:sz w:val="{}"/>"#, size));
     }
 
+    if let Some(ref color) = props.color {
+        xml.push_str(&format!(r#"<w:color w:val="{}"/>"#, escape_xml(color)));
+    }
+
     xml.push_str("</w:rPr>");
 }
 
@@ -445,6 +614,81 @@ fn extension_from_content_type(content_type: &str) -> &'static str {
         "image/x-wmf" | "image/wmf" => "wmf",
         _ => "bin",
     }
+}
+
+/// Serialize numbering.xml content.
+fn serialize_numbering(numberings: &HashMap<u32, PendingNumbering>) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Numbering element with namespace
+    xml.push_str(&format!(r#"<w:numbering xmlns:w="{}">"#, NS_W));
+
+    // Sort numberings by num_id for deterministic output
+    let mut sorted: Vec<_> = numberings.values().collect();
+    sorted.sort_by_key(|n| n.num_id);
+
+    // Write abstract numbering definitions
+    for num in &sorted {
+        serialize_abstract_num(num, &mut xml);
+    }
+
+    // Write concrete numbering instances
+    for num in &sorted {
+        xml.push_str(&format!(
+            r#"<w:num w:numId="{}"><w:abstractNumId w:val="{}"/></w:num>"#,
+            num.num_id, num.abstract_num_id
+        ));
+    }
+
+    xml.push_str("</w:numbering>");
+    xml
+}
+
+/// Serialize an abstract numbering definition.
+fn serialize_abstract_num(num: &PendingNumbering, xml: &mut String) {
+    xml.push_str(&format!(
+        r#"<w:abstractNum w:abstractNumId="{}">"#,
+        num.abstract_num_id
+    ));
+
+    // Level 0 definition (we only support single-level lists in v0.1)
+    xml.push_str(r#"<w:lvl w:ilvl="0">"#);
+
+    // Start value
+    xml.push_str(r#"<w:start w:val="1"/>"#);
+
+    // Number format and text based on list type
+    let (num_fmt, lvl_text) = match num.list_type {
+        ListType::Bullet => ("bullet", "\u{2022}"), // Bullet character
+        ListType::Decimal => ("decimal", "%1."),
+        ListType::LowerLetter => ("lowerLetter", "%1."),
+        ListType::UpperLetter => ("upperLetter", "%1."),
+        ListType::LowerRoman => ("lowerRoman", "%1."),
+        ListType::UpperRoman => ("upperRoman", "%1."),
+    };
+
+    xml.push_str(&format!(r#"<w:numFmt w:val="{}"/>"#, num_fmt));
+    xml.push_str(&format!(r#"<w:lvlText w:val="{}"/>"#, lvl_text));
+    xml.push_str(r#"<w:lvlJc w:val="left"/>"#);
+
+    // Paragraph properties (indentation)
+    xml.push_str("<w:pPr>");
+    xml.push_str(r#"<w:ind w:left="720" w:hanging="360"/>"#);
+    xml.push_str("</w:pPr>");
+
+    // Run properties for bullet lists (use Symbol font)
+    if num.list_type == ListType::Bullet {
+        xml.push_str("<w:rPr>");
+        xml.push_str(r#"<w:rFonts w:ascii="Symbol" w:hAnsi="Symbol" w:hint="default"/>"#);
+        xml.push_str("</w:rPr>");
+    }
+
+    xml.push_str("</w:lvl>");
+    xml.push_str("</w:abstractNum>");
 }
 
 #[cfg(test)]

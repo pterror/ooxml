@@ -186,6 +186,13 @@ impl<R: Read + Seek> Document<R> {
         Ok(ImageData { content_type, data })
     }
 
+    /// Get the URL for a hyperlink by its relationship ID.
+    ///
+    /// Returns None if the relationship doesn't exist.
+    pub fn get_hyperlink_url(&self, rel_id: &str) -> Option<&str> {
+        self.doc_rels.get(rel_id).map(|rel| rel.target.as_str())
+    }
+
     /// Get document relationships (for advanced use).
     pub fn doc_relationships(&self) -> &Relationships {
         &self.doc_rels
@@ -454,10 +461,33 @@ impl Cell {
 /// Corresponds to the `<w:p>` element.
 #[derive(Debug, Clone, Default)]
 pub struct Paragraph {
-    /// Runs in the paragraph.
-    runs: Vec<Run>,
+    /// Content in the paragraph (runs and hyperlinks).
+    content: Vec<ParagraphContent>,
     /// Paragraph properties (style, alignment, etc.).
     properties: Option<ParagraphProperties>,
+}
+
+/// Content that can appear inside a paragraph.
+#[derive(Debug, Clone)]
+pub enum ParagraphContent {
+    /// A text run.
+    Run(Run),
+    /// A hyperlink containing runs.
+    Hyperlink(Hyperlink),
+}
+
+/// A hyperlink in the document.
+///
+/// Corresponds to the `<w:hyperlink>` element. Contains runs that form
+/// the clickable link text.
+#[derive(Debug, Clone, Default)]
+pub struct Hyperlink {
+    /// Runs inside the hyperlink.
+    runs: Vec<Run>,
+    /// Relationship ID for external URLs.
+    rel_id: Option<String>,
+    /// Anchor for internal document links (bookmarks).
+    anchor: Option<String>,
 }
 
 impl Paragraph {
@@ -466,20 +496,57 @@ impl Paragraph {
         Self::default()
     }
 
-    /// Get runs in the paragraph.
-    pub fn runs(&self) -> &[Run] {
-        &self.runs
+    /// Get all runs in the paragraph (flattened, including those in hyperlinks).
+    pub fn runs(&self) -> Vec<&Run> {
+        let mut runs = Vec::new();
+        for content in &self.content {
+            match content {
+                ParagraphContent::Run(run) => runs.push(run),
+                ParagraphContent::Hyperlink(link) => {
+                    for run in &link.runs {
+                        runs.push(run);
+                    }
+                }
+            }
+        }
+        runs
     }
 
-    /// Get a mutable reference to runs.
-    pub fn runs_mut(&mut self) -> &mut Vec<Run> {
-        &mut self.runs
+    /// Get paragraph content (runs and hyperlinks).
+    pub fn content(&self) -> &[ParagraphContent] {
+        &self.content
+    }
+
+    /// Get mutable reference to paragraph content.
+    pub fn content_mut(&mut self) -> &mut Vec<ParagraphContent> {
+        &mut self.content
     }
 
     /// Add a new run to the paragraph.
     pub fn add_run(&mut self) -> &mut Run {
-        self.runs.push(Run::new());
-        self.runs.last_mut().unwrap()
+        self.content.push(ParagraphContent::Run(Run::new()));
+        match self.content.last_mut() {
+            Some(ParagraphContent::Run(run)) => run,
+            _ => unreachable!(),
+        }
+    }
+
+    /// Add a new hyperlink to the paragraph.
+    pub fn add_hyperlink(&mut self) -> &mut Hyperlink {
+        self.content
+            .push(ParagraphContent::Hyperlink(Hyperlink::new()));
+        match self.content.last_mut() {
+            Some(ParagraphContent::Hyperlink(link)) => link,
+            _ => unreachable!(),
+        }
+    }
+
+    /// Get all hyperlinks in the paragraph.
+    pub fn hyperlinks(&self) -> impl Iterator<Item = &Hyperlink> {
+        self.content.iter().filter_map(|c| match c {
+            ParagraphContent::Hyperlink(link) => Some(link),
+            _ => None,
+        })
     }
 
     /// Get paragraph properties.
@@ -494,6 +561,67 @@ impl Paragraph {
 
     /// Extract all text from the paragraph.
     pub fn text(&self) -> String {
+        self.content
+            .iter()
+            .map(|c| match c {
+                ParagraphContent::Run(run) => run.text().to_string(),
+                ParagraphContent::Hyperlink(link) => link.text(),
+            })
+            .collect()
+    }
+}
+
+impl Hyperlink {
+    /// Create an empty hyperlink.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get runs inside the hyperlink.
+    pub fn runs(&self) -> &[Run] {
+        &self.runs
+    }
+
+    /// Get mutable reference to runs.
+    pub fn runs_mut(&mut self) -> &mut Vec<Run> {
+        &mut self.runs
+    }
+
+    /// Add a new run to the hyperlink.
+    pub fn add_run(&mut self) -> &mut Run {
+        self.runs.push(Run::new());
+        self.runs.last_mut().unwrap()
+    }
+
+    /// Get the relationship ID (for external URLs).
+    pub fn rel_id(&self) -> Option<&str> {
+        self.rel_id.as_deref()
+    }
+
+    /// Set the relationship ID.
+    pub fn set_rel_id(&mut self, rel_id: impl Into<String>) -> &mut Self {
+        self.rel_id = Some(rel_id.into());
+        self
+    }
+
+    /// Get the anchor (for internal document links).
+    pub fn anchor(&self) -> Option<&str> {
+        self.anchor.as_deref()
+    }
+
+    /// Set the anchor for internal links.
+    pub fn set_anchor(&mut self, anchor: impl Into<String>) -> &mut Self {
+        self.anchor = Some(anchor.into());
+        self
+    }
+
+    /// Check if this is an external hyperlink.
+    pub fn is_external(&self) -> bool {
+        self.rel_id.is_some()
+    }
+
+    /// Extract all text from the hyperlink.
+    pub fn text(&self) -> String {
         self.runs.iter().map(|r| r.text()).collect()
     }
 }
@@ -505,6 +633,20 @@ impl Paragraph {
 pub struct ParagraphProperties {
     /// Style ID reference.
     pub style: Option<String>,
+    /// Numbering/list properties.
+    pub numbering: Option<NumberingProperties>,
+}
+
+/// Numbering properties for a paragraph.
+///
+/// Corresponds to the `<w:numPr>` element. References a numbering definition
+/// and specifies the indentation level.
+#[derive(Debug, Clone)]
+pub struct NumberingProperties {
+    /// Numbering definition ID (references an entry in numbering.xml).
+    pub num_id: u32,
+    /// Indentation level (0-8). 0 is the first level.
+    pub ilvl: u32,
 }
 
 /// A text run in the document.
@@ -519,6 +661,8 @@ pub struct Run {
     properties: Option<RunProperties>,
     /// Drawings (images) in the run.
     drawings: Vec<Drawing>,
+    /// Whether this run contains a page break.
+    page_break: bool,
 }
 
 /// A drawing element containing images.
@@ -610,6 +754,17 @@ impl Run {
     /// Check if this run contains any images.
     pub fn has_images(&self) -> bool {
         self.drawings.iter().any(|d| !d.images.is_empty())
+    }
+
+    /// Check if this run contains a page break.
+    pub fn has_page_break(&self) -> bool {
+        self.page_break
+    }
+
+    /// Set whether this run contains a page break.
+    pub fn set_page_break(&mut self, has_break: bool) -> &mut Self {
+        self.page_break = has_break;
+        self
     }
 }
 
@@ -727,6 +882,8 @@ pub struct RunProperties {
     pub font: Option<String>,
     /// Style ID reference.
     pub style: Option<String>,
+    /// Text color as hex RGB (e.g., "FF0000" for red, without # prefix).
+    pub color: Option<String>,
 }
 
 // XML element names (local names)
@@ -744,11 +901,20 @@ const EL_U: &[u8] = b"u";
 const EL_STRIKE: &[u8] = b"strike";
 const EL_SZ: &[u8] = b"sz";
 const EL_RFONTS: &[u8] = b"rFonts";
+const EL_COLOR: &[u8] = b"color";
 const EL_BR: &[u8] = b"br";
 const EL_TAB: &[u8] = b"tab";
 const EL_TBL: &[u8] = b"tbl";
 const EL_TR: &[u8] = b"tr";
 const EL_TC: &[u8] = b"tc";
+
+// Hyperlink element
+const EL_HYPERLINK: &[u8] = b"hyperlink";
+
+// Numbering elements
+const EL_NUMPR: &[u8] = b"numPr";
+const EL_NUMID: &[u8] = b"numId";
+const EL_ILVL: &[u8] = b"ilvl";
 
 // Drawing element names (DrawingML)
 const EL_DRAWING: &[u8] = b"drawing";
@@ -778,6 +944,14 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut current_row: Option<Row> = None;
     let mut current_cell: Option<Cell> = None;
 
+    // Hyperlink parsing state
+    let mut current_hyperlink: Option<Hyperlink> = None;
+
+    // Numbering parsing state
+    let mut in_numpr = false;
+    let mut current_numid: Option<u32> = None;
+    let mut current_ilvl: Option<u32> = None;
+
     // Drawing/image parsing state
     let mut current_drawing: Option<Drawing> = None;
     let mut current_image: Option<InlineImage> = None;
@@ -803,6 +977,22 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
                     }
+                    name if name == EL_HYPERLINK && current_para.is_some() => {
+                        let mut hyperlink = Hyperlink::new();
+                        // Extract r:id attribute for external links
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"r:id" {
+                                hyperlink.rel_id =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            } else if attr.key.as_ref() == b"w:anchor"
+                                || attr.key.as_ref() == b"anchor"
+                            {
+                                hyperlink.anchor =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                        current_hyperlink = Some(hyperlink);
+                    }
                     name if name == EL_R && current_para.is_some() => {
                         current_run = Some(Run::new());
                     }
@@ -812,6 +1002,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_PPR && current_para.is_some() => {
                         in_ppr = true;
                         current_ppr = Some(ParagraphProperties::default());
+                    }
+                    name if name == EL_NUMPR && in_ppr => {
+                        in_numpr = true;
+                        current_numid = None;
+                        current_ilvl = None;
                     }
                     name if name == EL_RPR && current_run.is_some() => {
                         in_rpr = true;
@@ -835,9 +1030,22 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         // Empty text element, nothing to do
                     }
                     name if name == EL_BR && current_run.is_some() => {
-                        // Line break
+                        // Check if this is a page break
+                        let mut is_page_break = false;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:type" || attr.key.as_ref() == b"type")
+                                && attr.value.as_ref() == b"page"
+                            {
+                                is_page_break = true;
+                            }
+                        }
                         if let Some(run) = current_run.as_mut() {
-                            run.text.push('\n');
+                            if is_page_break {
+                                run.page_break = true;
+                            } else {
+                                // Regular line break
+                                run.text.push('\n');
+                            }
                         }
                     }
                     name if name == EL_TAB && current_run.is_some() => {
@@ -863,6 +1071,24 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                     rpr.style =
                                         Some(String::from_utf8_lossy(&attr.value).into_owned());
                                 }
+                            }
+                        }
+                    }
+                    name if name == EL_NUMID && in_numpr => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                current_numid = s.parse().ok();
+                            }
+                        }
+                    }
+                    name if name == EL_ILVL && in_numpr => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                current_ilvl = s.parse().ok();
                             }
                         }
                     }
@@ -913,6 +1139,19 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                     rpr.font =
                                         Some(String::from_utf8_lossy(&attr.value).into_owned());
                                     break;
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_COLOR && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
+                                    let val = String::from_utf8_lossy(&attr.value).into_owned();
+                                    // Skip "auto" which means use the default color
+                                    if val != "auto" {
+                                        rpr.color = Some(val);
+                                    }
                                 }
                             }
                         }
@@ -1009,13 +1248,35 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_R && current_run.is_some() => {
                         if let Some(mut run) = current_run.take() {
                             run.properties = current_rpr.take();
-                            if let Some(para) = current_para.as_mut() {
-                                para.runs.push(run);
+                            // Add run to hyperlink if inside one, otherwise to paragraph
+                            if let Some(hyperlink) = current_hyperlink.as_mut() {
+                                hyperlink.runs.push(run);
+                            } else if let Some(para) = current_para.as_mut() {
+                                para.content.push(ParagraphContent::Run(run));
                             }
+                        }
+                    }
+                    name if name == EL_HYPERLINK => {
+                        if let Some(hyperlink) = current_hyperlink.take()
+                            && let Some(para) = current_para.as_mut()
+                        {
+                            para.content.push(ParagraphContent::Hyperlink(hyperlink));
                         }
                     }
                     name if name == EL_T => {
                         in_text = false;
+                    }
+                    name if name == EL_NUMPR => {
+                        in_numpr = false;
+                        // Create numbering properties if we have both numId and ilvl
+                        if let (Some(num_id), Some(ppr)) =
+                            (current_numid.take(), current_ppr.as_mut())
+                        {
+                            ppr.numbering = Some(NumberingProperties {
+                                num_id,
+                                ilvl: current_ilvl.take().unwrap_or(0),
+                            });
+                        }
                     }
                     name if name == EL_PPR => {
                         in_ppr = false;
@@ -1428,5 +1689,63 @@ mod tests {
             content_type_from_path("word/media/unknown.xyz"),
             "application/octet-stream"
         );
+    }
+
+    #[test]
+    fn test_parse_hyperlink() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <w:body>
+    <w:p>
+      <w:r><w:t>Click </w:t></w:r>
+      <w:hyperlink r:id="rId5">
+        <w:r><w:t>here</w:t></w:r>
+      </w:hyperlink>
+      <w:r><w:t> for more info.</w:t></w:r>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let para = &body.paragraphs()[0];
+
+        // Should have 3 content items: run, hyperlink, run
+        assert_eq!(para.content().len(), 3);
+
+        // Check the hyperlink
+        let hyperlinks: Vec<_> = para.hyperlinks().collect();
+        assert_eq!(hyperlinks.len(), 1);
+        let link = hyperlinks[0];
+        assert_eq!(link.rel_id(), Some("rId5"));
+        assert_eq!(link.text(), "here");
+        assert!(link.is_external());
+
+        // Full paragraph text should include hyperlink text
+        assert_eq!(para.text(), "Click here for more info.");
+    }
+
+    #[test]
+    fn test_parse_internal_hyperlink() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:hyperlink w:anchor="section1">
+        <w:r><w:t>Jump to section 1</w:t></w:r>
+      </w:hyperlink>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let para = &body.paragraphs()[0];
+        let links: Vec<_> = para.hyperlinks().collect();
+
+        assert_eq!(links.len(), 1);
+        let link = links[0];
+        assert_eq!(link.anchor(), Some("section1"));
+        assert!(!link.is_external());
+        assert_eq!(link.text(), "Jump to section 1");
     }
 }
