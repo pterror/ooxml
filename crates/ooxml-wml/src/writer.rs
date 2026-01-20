@@ -1055,6 +1055,20 @@ fn serialize_run(run: &Run, xml: &mut String) {
         xml.push_str("</w:instrText>");
     }
 
+    // Footnote reference
+    if let Some(footnote_ref) = run.footnote_ref() {
+        xml.push_str("<w:footnoteReference w:id=\"");
+        xml.push_str(&footnote_ref.id.to_string());
+        xml.push_str("\"/>");
+    }
+
+    // Endnote reference
+    if let Some(endnote_ref) = run.endnote_ref() {
+        xml.push_str("<w:endnoteReference w:id=\"");
+        xml.push_str(&endnote_ref.id.to_string());
+        xml.push_str("\"/>");
+    }
+
     // Text content
     let text = run.text();
     if !text.is_empty() {

@@ -141,8 +141,8 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `word/_rels/document.xml.rels` | ✅ | Document relationships |
 | `word/header*.xml` | 🔶 | Header references parsed, content parts not loaded |
 | `word/footer*.xml` | 🔶 | Footer references parsed, content parts not loaded |
-| `word/footnotes.xml` | ❌ | Footnotes |
-| `word/endnotes.xml` | ❌ | Endnotes |
+| `word/footnotes.xml` | 🔶 | Footnote references parsed, content parts not loaded |
+| `word/endnotes.xml` | 🔶 | Endnote references parsed, content parts not loaded |
 | `word/comments.xml` | ❌ | Comments |
 | `word/settings.xml` | ❌ | Document settings |
 
@@ -208,7 +208,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 ### Lower Priority (affects <5% of documents)
 
-10. **Footnotes/Endnotes** - ~3% of documents
+10. **Footnotes/Endnotes** - 🔶 References parsed, content parts pending
 11. **Comments** - Rarely present in final documents
 12. ~~**Superscript/Subscript**~~ ✅ Now implemented
 13. **Content controls** - Enterprise/form documents
