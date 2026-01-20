@@ -1979,12 +1979,14 @@ pub struct Run {
 
 /// A drawing element containing images.
 ///
-/// Corresponds to the `<w:drawing>` element. Currently only inline drawings
-/// are supported (not floating/anchored).
+/// Corresponds to the `<w:drawing>` element. Supports both inline images
+/// (positioned within text flow) and anchored images (floating with text wrap).
 #[derive(Debug, Clone, Default)]
 pub struct Drawing {
-    /// Images in this drawing.
+    /// Inline images in this drawing.
     images: Vec<InlineImage>,
+    /// Anchored (floating) images in this drawing.
+    anchored_images: Vec<AnchoredImage>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -2007,6 +2009,76 @@ pub struct InlineImage {
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
+}
+
+/// An anchored (floating) image in a drawing.
+///
+/// Represents an image positioned relative to a reference point (page, column, paragraph, etc.)
+/// with text wrapping options. Unlike inline images, anchored images can float and wrap.
+/// ECMA-376 Part 1, Section 20.4.2.3 (anchor).
+#[derive(Debug, Clone)]
+pub struct AnchoredImage {
+    /// Relationship ID referencing the image file (e.g., "rId4").
+    rel_id: String,
+    /// Width in EMUs (English Metric Units). 914400 EMUs = 1 inch.
+    width_emu: Option<i64>,
+    /// Height in EMUs.
+    height_emu: Option<i64>,
+    /// Optional description/alt text for the image.
+    description: Option<String>,
+    /// Whether the image is behind text (true) or in front (false).
+    behind_doc: bool,
+    /// Horizontal position offset from the reference in EMUs.
+    pos_x: i64,
+    /// Vertical position offset from the reference in EMUs.
+    pos_y: i64,
+    /// Text wrapping mode.
+    wrap_type: WrapType,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Text wrapping type for anchored images.
+///
+/// ECMA-376 Part 1, Section 20.4.2.3.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum WrapType {
+    /// No wrapping - text flows over/under the image.
+    #[default]
+    None,
+    /// Square wrapping - text wraps around a bounding box.
+    Square,
+    /// Tight wrapping - text wraps closely around the image shape.
+    Tight,
+    /// Through wrapping - text wraps through transparent areas.
+    Through,
+    /// Top and bottom - text only above and below.
+    TopAndBottom,
+}
+
+impl WrapType {
+    /// Parse a wrap type from its XML element name.
+    pub fn from_element(name: &[u8]) -> Option<Self> {
+        match name {
+            b"wrapNone" => Some(WrapType::None),
+            b"wrapSquare" => Some(WrapType::Square),
+            b"wrapTight" => Some(WrapType::Tight),
+            b"wrapThrough" => Some(WrapType::Through),
+            b"wrapTopAndBottom" => Some(WrapType::TopAndBottom),
+            _ => None,
+        }
+    }
+
+    /// Get the XML element name for this wrap type.
+    pub fn as_element(&self) -> &'static str {
+        match self {
+            WrapType::None => "wrapNone",
+            WrapType::Square => "wrapSquare",
+            WrapType::Tight => "wrapTight",
+            WrapType::Through => "wrapThrough",
+            WrapType::TopAndBottom => "wrapTopAndBottom",
+        }
+    }
 }
 
 /// Image data loaded from the package.
@@ -2185,20 +2257,36 @@ impl Drawing {
         Self::default()
     }
 
-    /// Get images in this drawing.
+    /// Get inline images in this drawing.
     pub fn images(&self) -> &[InlineImage] {
         &self.images
     }
 
-    /// Get mutable reference to images.
+    /// Get mutable reference to inline images.
     pub fn images_mut(&mut self) -> &mut Vec<InlineImage> {
         &mut self.images
     }
 
-    /// Add an image to this drawing.
+    /// Add an inline image to this drawing.
     pub fn add_image(&mut self, rel_id: impl Into<String>) -> &mut InlineImage {
         self.images.push(InlineImage::new(rel_id));
         self.images.last_mut().unwrap()
+    }
+
+    /// Get anchored (floating) images in this drawing.
+    pub fn anchored_images(&self) -> &[AnchoredImage] {
+        &self.anchored_images
+    }
+
+    /// Get mutable reference to anchored images.
+    pub fn anchored_images_mut(&mut self) -> &mut Vec<AnchoredImage> {
+        &mut self.anchored_images
+    }
+
+    /// Add an anchored image to this drawing.
+    pub fn add_anchored_image(&mut self, rel_id: impl Into<String>) -> &mut AnchoredImage {
+        self.anchored_images.push(AnchoredImage::new(rel_id));
+        self.anchored_images.last_mut().unwrap()
     }
 }
 
@@ -2271,6 +2359,127 @@ impl InlineImage {
     /// Set the description/alt text.
     pub fn set_description(&mut self, desc: impl Into<String>) -> &mut Self {
         self.description = Some(desc.into());
+        self
+    }
+}
+
+impl AnchoredImage {
+    /// Create a new anchored image with the given relationship ID.
+    pub fn new(rel_id: impl Into<String>) -> Self {
+        Self {
+            rel_id: rel_id.into(),
+            width_emu: None,
+            height_emu: None,
+            description: None,
+            behind_doc: false,
+            pos_x: 0,
+            pos_y: 0,
+            wrap_type: WrapType::None,
+            unknown_children: Vec::new(),
+        }
+    }
+
+    /// Get the relationship ID.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+
+    /// Get width in EMUs (914400 EMUs = 1 inch).
+    pub fn width_emu(&self) -> Option<i64> {
+        self.width_emu
+    }
+
+    /// Get height in EMUs.
+    pub fn height_emu(&self) -> Option<i64> {
+        self.height_emu
+    }
+
+    /// Get width in inches.
+    pub fn width_inches(&self) -> Option<f64> {
+        self.width_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Get height in inches.
+    pub fn height_inches(&self) -> Option<f64> {
+        self.height_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Set width in EMUs.
+    pub fn set_width_emu(&mut self, emu: i64) -> &mut Self {
+        self.width_emu = Some(emu);
+        self
+    }
+
+    /// Set height in EMUs.
+    pub fn set_height_emu(&mut self, emu: i64) -> &mut Self {
+        self.height_emu = Some(emu);
+        self
+    }
+
+    /// Set width in inches.
+    pub fn set_width_inches(&mut self, inches: f64) -> &mut Self {
+        self.width_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Set height in inches.
+    pub fn set_height_inches(&mut self, inches: f64) -> &mut Self {
+        self.height_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Get the description/alt text.
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
+
+    /// Set the description/alt text.
+    pub fn set_description(&mut self, desc: impl Into<String>) -> &mut Self {
+        self.description = Some(desc.into());
+        self
+    }
+
+    /// Check if the image is behind document text.
+    pub fn is_behind_doc(&self) -> bool {
+        self.behind_doc
+    }
+
+    /// Set whether the image is behind document text.
+    pub fn set_behind_doc(&mut self, behind: bool) -> &mut Self {
+        self.behind_doc = behind;
+        self
+    }
+
+    /// Get horizontal position offset in EMUs.
+    pub fn pos_x(&self) -> i64 {
+        self.pos_x
+    }
+
+    /// Get vertical position offset in EMUs.
+    pub fn pos_y(&self) -> i64 {
+        self.pos_y
+    }
+
+    /// Set horizontal position offset in EMUs.
+    pub fn set_pos_x(&mut self, emu: i64) -> &mut Self {
+        self.pos_x = emu;
+        self
+    }
+
+    /// Set vertical position offset in EMUs.
+    pub fn set_pos_y(&mut self, emu: i64) -> &mut Self {
+        self.pos_y = emu;
+        self
+    }
+
+    /// Get the text wrapping type.
+    pub fn wrap_type(&self) -> WrapType {
+        self.wrap_type
+    }
+
+    /// Set the text wrapping type.
+    pub fn set_wrap_type(&mut self, wrap: WrapType) -> &mut Self {
+        self.wrap_type = wrap;
         self
     }
 }
@@ -2615,9 +2824,13 @@ const EL_BAR: &[u8] = b"bar";
 // Drawing element names (DrawingML)
 const EL_DRAWING: &[u8] = b"drawing";
 const EL_INLINE: &[u8] = b"inline";
+const EL_ANCHOR: &[u8] = b"anchor";
 const EL_EXTENT: &[u8] = b"extent";
 const EL_DOCPR: &[u8] = b"docPr";
 const EL_BLIP: &[u8] = b"blip";
+const EL_POS_H: &[u8] = b"positionH";
+const EL_POS_V: &[u8] = b"positionV";
+const EL_POS_OFFSET: &[u8] = b"posOffset";
 
 // Section properties elements
 const EL_SECT_PR: &[u8] = b"sectPr";
@@ -2672,6 +2885,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     // Drawing/image parsing state
     let mut current_drawing: Option<Drawing> = None;
     let mut current_image: Option<InlineImage> = None;
+    let mut current_anchored_image: Option<AnchoredImage> = None;
+    let mut in_pos_h = false;
+    let mut in_pos_v = false;
+    let mut in_pos_offset = false;
 
     // Section properties parsing state
     let mut current_sect_pr: Option<SectionProperties> = None;
@@ -2880,6 +3097,29 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_INLINE && current_drawing.is_some() => {
                         // Start of an inline image - create with placeholder rel_id
                         current_image = Some(InlineImage::new(""));
+                    }
+                    name if name == EL_ANCHOR && current_drawing.is_some() => {
+                        // Start of an anchored (floating) image
+                        let mut img = AnchoredImage::new("");
+                        // Parse anchor attributes
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if key == b"behindDoc"
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                img.behind_doc = matches!(s, "1" | "true");
+                            }
+                        }
+                        current_anchored_image = Some(img);
+                    }
+                    name if name == EL_POS_H && current_anchored_image.is_some() => {
+                        in_pos_h = true;
+                    }
+                    name if name == EL_POS_V && current_anchored_image.is_some() => {
+                        in_pos_v = true;
+                    }
+                    name if name == EL_POS_OFFSET && (in_pos_h || in_pos_v) => {
+                        in_pos_offset = true;
                     }
                     name if name == EL_SECT_PR && in_body => {
                         // Section properties at document level (defines last section)
@@ -3510,7 +3750,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
-                    // Image extent (dimensions)
+                    // Image extent (dimensions) - for inline images
                     name if name == EL_EXTENT && current_image.is_some() => {
                         if let Some(img) = current_image.as_mut() {
                             for attr in e.attributes().filter_map(|a| a.ok()) {
@@ -3530,7 +3770,27 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
-                    // Image properties (description/alt text)
+                    // Image extent (dimensions) - for anchored images
+                    name if name == EL_EXTENT && current_anchored_image.is_some() => {
+                        if let Some(img) = current_anchored_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                match attr.key.as_ref() {
+                                    b"cx" => {
+                                        if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                            img.width_emu = s.parse().ok();
+                                        }
+                                    }
+                                    b"cy" => {
+                                        if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                            img.height_emu = s.parse().ok();
+                                        }
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                    }
+                    // Image properties (description/alt text) - for inline images
                     name if name == EL_DOCPR && current_image.is_some() => {
                         if let Some(img) = current_image.as_mut() {
                             for attr in e.attributes().filter_map(|a| a.ok()) {
@@ -3541,7 +3801,18 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
-                    // Blip - contains the relationship ID to the image
+                    // Image properties (description/alt text) - for anchored images
+                    name if name == EL_DOCPR && current_anchored_image.is_some() => {
+                        if let Some(img) = current_anchored_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"descr" {
+                                    img.description =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        }
+                    }
+                    // Blip - contains the relationship ID to the image (inline)
                     name if name == EL_BLIP && current_image.is_some() => {
                         if let Some(img) = current_image.as_mut() {
                             for attr in e.attributes().filter_map(|a| a.ok()) {
@@ -3551,6 +3822,26 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                     img.rel_id = String::from_utf8_lossy(&attr.value).into_owned();
                                 }
                             }
+                        }
+                    }
+                    // Blip - contains the relationship ID to the image (anchored)
+                    name if name == EL_BLIP && current_anchored_image.is_some() => {
+                        if let Some(img) = current_anchored_image.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                // r:embed attribute contains the relationship ID
+                                if attr.key.as_ref() == b"r:embed" || attr.key.as_ref() == b"embed"
+                                {
+                                    img.rel_id = String::from_utf8_lossy(&attr.value).into_owned();
+                                }
+                            }
+                        }
+                    }
+                    // Wrap type for anchored images
+                    name if current_anchored_image.is_some() => {
+                        if let Some(wrap_type) = WrapType::from_element(name)
+                            && let Some(img) = current_anchored_image.as_mut()
+                        {
+                            img.wrap_type = wrap_type;
                         }
                     }
                     // Page size (w:pgSz)
@@ -4112,6 +4403,15 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     } else {
                         run.instr_text = Some(text.into_owned());
                     }
+                } else if in_pos_offset && let Some(img) = current_anchored_image.as_mut() {
+                    // Parse position offset value for anchored images
+                    if let Ok(offset) = text.parse::<i64>() {
+                        if in_pos_h {
+                            img.pos_x = offset;
+                        } else if in_pos_v {
+                            img.pos_y = offset;
+                        }
+                    }
                 }
             }
             Ok(Event::End(e)) => {
@@ -4276,6 +4576,27 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         {
                             drawing.images.push(img);
                         }
+                    }
+                    // End of anchored image - add to current drawing
+                    name if name == EL_ANCHOR => {
+                        if let Some(img) = current_anchored_image.take()
+                            && !img.rel_id.is_empty()
+                            && let Some(drawing) = current_drawing.as_mut()
+                        {
+                            drawing.anchored_images.push(img);
+                        }
+                    }
+                    // End of position offset
+                    name if name == EL_POS_OFFSET => {
+                        in_pos_offset = false;
+                    }
+                    // End of horizontal position
+                    name if name == EL_POS_H => {
+                        in_pos_h = false;
+                    }
+                    // End of vertical position
+                    name if name == EL_POS_V => {
+                        in_pos_v = false;
                     }
                     // End of drawing - add to current run
                     name if name == EL_DRAWING => {

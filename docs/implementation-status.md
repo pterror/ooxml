@@ -126,7 +126,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | Element | Status | Notes |
 |---------|--------|-------|
 | `wp:inline` | ✅ | Inline images |
-| `wp:anchor` | ❌ | Anchored/floating images |
+| `wp:anchor` | ✅ | Anchored/floating images with text wrapping |
 | `a:blip` | ✅ | Image reference |
 | `wp:extent` | ✅ | Image dimensions |
 | `wp:docPr` | ✅ | Image description/alt text |
@@ -203,7 +203,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 ### Medium Priority (affects 5-20% of documents)
 
 7. **Headers/Footers** - Present in ~8% of documents
-8. **Anchored images** - Floating images exist but are rarer than inline
+8. ~~**Anchored images**~~ ✅ Now supports floating images with text wrapping
 9. ~~**Tab stops**~~ ✅ Now supports custom tab stop definitions
 
 ### Lower Priority (affects <5% of documents)

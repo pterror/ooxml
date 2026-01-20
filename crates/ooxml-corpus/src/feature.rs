@@ -322,9 +322,10 @@ fn process_run(run: &ooxml_wml::Run, features: &mut DocumentFeatures) {
         features.page_break_count += 1;
     }
 
-    // Check for images
+    // Check for images (both inline and anchored)
     for drawing in run.drawings() {
         features.image_count += drawing.images().len() as u32;
+        features.image_count += drawing.anchored_images().len() as u32;
     }
 
     // Check run properties

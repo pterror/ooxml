@@ -4,11 +4,11 @@
 //! and saving existing documents.
 
 use crate::document::{
-    BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth,
-    DocGridType, Drawing, GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties,
-    PageOrientation, Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row,
-    RowHeight, RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
-    TableProperties, TableWidth, VerticalMerge,
+    AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
+    CellWidth, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink, InlineImage,
+    NumberingProperties, PageOrientation, Paragraph, ParagraphBorders, ParagraphContent,
+    ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties, SectionProperties,
+    TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge, WrapType,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -1062,8 +1062,14 @@ fn serialize_run(run: &Run, xml: &mut String) {
 /// Serialize a drawing element.
 fn serialize_drawing(drawing: &Drawing, xml: &mut String) {
     xml.push_str("<w:drawing>");
-    for (idx, image) in drawing.images().iter().enumerate() {
-        serialize_inline_image(image, idx + 1, xml);
+    let mut doc_id = 1;
+    for image in drawing.images() {
+        serialize_inline_image(image, doc_id, xml);
+        doc_id += 1;
+    }
+    for image in drawing.anchored_images() {
+        serialize_anchored_image(image, doc_id, xml);
+        doc_id += 1;
     }
     serialize_unknown_children(&drawing.unknown_children, xml);
     xml.push_str("</w:drawing>");
@@ -1130,6 +1136,106 @@ fn serialize_inline_image(image: &InlineImage, doc_id: usize, xml: &mut String) 
     xml.push_str(r#"</a:graphicData>"#);
     xml.push_str(r#"</a:graphic>"#);
     xml.push_str(r#"</wp:inline>"#);
+}
+
+/// Serialize an anchored (floating) image.
+///
+/// Generates the DrawingML structure required for an anchored image with text wrapping.
+fn serialize_anchored_image(image: &AnchoredImage, doc_id: usize, xml: &mut String) {
+    // Default dimensions: 1 inch x 1 inch (914400 EMUs)
+    let cx = image.width_emu().unwrap_or(914400);
+    let cy = image.height_emu().unwrap_or(914400);
+    let rel_id = image.rel_id();
+    let descr = image.description().unwrap_or("Image");
+    let behind_doc = if image.is_behind_doc() { "1" } else { "0" };
+
+    // Anchor element with positioning attributes
+    xml.push_str(&format!(
+        r#"<wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251658240" behindDoc="{}" locked="0" layoutInCell="1" allowOverlap="1">"#,
+        behind_doc
+    ));
+
+    // Simple position (unused but required)
+    xml.push_str(r#"<wp:simplePos x="0" y="0"/>"#);
+
+    // Horizontal position
+    xml.push_str(r#"<wp:positionH relativeFrom="column">"#);
+    xml.push_str(&format!(
+        r#"<wp:posOffset>{}</wp:posOffset>"#,
+        image.pos_x()
+    ));
+    xml.push_str(r#"</wp:positionH>"#);
+
+    // Vertical position
+    xml.push_str(r#"<wp:positionV relativeFrom="paragraph">"#);
+    xml.push_str(&format!(
+        r#"<wp:posOffset>{}</wp:posOffset>"#,
+        image.pos_y()
+    ));
+    xml.push_str(r#"</wp:positionV>"#);
+
+    // Extent
+    xml.push_str(&format!(r#"<wp:extent cx="{}" cy="{}"/>"#, cx, cy));
+
+    // Effect extent (no effects)
+    xml.push_str(r#"<wp:effectExtent l="0" t="0" r="0" b="0"/>"#);
+
+    // Wrap type
+    match image.wrap_type() {
+        WrapType::None => xml.push_str(r#"<wp:wrapNone/>"#),
+        WrapType::Square => xml.push_str(r#"<wp:wrapSquare wrapText="bothSides"/>"#),
+        WrapType::Tight => xml.push_str(r#"<wp:wrapTight wrapText="bothSides"><wp:wrapPolygon edited="0"><wp:start x="0" y="0"/><wp:lineTo x="0" y="21600"/><wp:lineTo x="21600" y="21600"/><wp:lineTo x="21600" y="0"/><wp:lineTo x="0" y="0"/></wp:wrapPolygon></wp:wrapTight>"#),
+        WrapType::Through => xml.push_str(r#"<wp:wrapThrough wrapText="bothSides"><wp:wrapPolygon edited="0"><wp:start x="0" y="0"/><wp:lineTo x="0" y="21600"/><wp:lineTo x="21600" y="21600"/><wp:lineTo x="21600" y="0"/><wp:lineTo x="0" y="0"/></wp:wrapPolygon></wp:wrapThrough>"#),
+        WrapType::TopAndBottom => xml.push_str(r#"<wp:wrapTopAndBottom/>"#),
+    }
+
+    // Document properties
+    xml.push_str(&format!(
+        r#"<wp:docPr id="{}" name="Picture {}" descr="{}"/>"#,
+        doc_id,
+        doc_id,
+        escape_xml(descr)
+    ));
+
+    // Graphic frame lock
+    xml.push_str(
+        r#"<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>"#,
+    );
+
+    // Graphic container
+    xml.push_str(r#"<a:graphic>"#);
+    xml.push_str(
+        r#"<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">"#,
+    );
+
+    // Picture element
+    xml.push_str(r#"<pic:pic>"#);
+
+    // Non-visual properties
+    xml.push_str(&format!(
+        r#"<pic:nvPicPr><pic:cNvPr id="{}" name="Picture {}"/><pic:cNvPicPr/></pic:nvPicPr>"#,
+        doc_id, doc_id
+    ));
+
+    // Blip fill (references the image relationship)
+    xml.push_str(r#"<pic:blipFill>"#);
+    xml.push_str(&format!(r#"<a:blip r:embed="{}"/>"#, rel_id));
+    xml.push_str(r#"<a:stretch><a:fillRect/></a:stretch>"#);
+    xml.push_str(r#"</pic:blipFill>"#);
+
+    // Shape properties
+    xml.push_str(r#"<pic:spPr>"#);
+    xml.push_str(r#"<a:xfrm>"#);
+    xml.push_str(r#"<a:off x="0" y="0"/>"#);
+    xml.push_str(&format!(r#"<a:ext cx="{}" cy="{}"/>"#, cx, cy));
+    xml.push_str(r#"</a:xfrm>"#);
+    xml.push_str(r#"<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
+    xml.push_str(r#"</pic:spPr>"#);
+
+    xml.push_str(r#"</pic:pic>"#);
+    xml.push_str(r#"</a:graphicData>"#);
+    xml.push_str(r#"</a:graphic>"#);
+    xml.push_str(r#"</wp:anchor>"#);
 }
 
 /// Serialize run properties.
