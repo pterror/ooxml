@@ -159,8 +159,8 @@ impl Slide {
 pub struct Shape {
     /// Shape name (if any).
     name: Option<String>,
-    /// Text content (paragraphs joined).
-    text_content: Option<String>,
+    /// Text paragraphs (DrawingML).
+    paragraphs: Vec<ooxml_dml::Paragraph>,
 }
 
 impl Shape {
@@ -169,9 +169,29 @@ impl Shape {
         self.name.as_deref()
     }
 
-    /// Get the text content.
-    pub fn text(&self) -> Option<&str> {
-        self.text_content.as_deref()
+    /// Get the text paragraphs.
+    pub fn paragraphs(&self) -> &[ooxml_dml::Paragraph] {
+        &self.paragraphs
+    }
+
+    /// Get the text content (paragraphs joined).
+    pub fn text(&self) -> Option<String> {
+        if self.paragraphs.is_empty() {
+            None
+        } else {
+            Some(
+                self.paragraphs
+                    .iter()
+                    .map(|p| p.text())
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            )
+        }
+    }
+
+    /// Check if the shape has text content.
+    pub fn has_text(&self) -> bool {
+        !self.paragraphs.is_empty()
     }
 }
 
@@ -225,12 +245,8 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
     let mut shapes = Vec::new();
 
     let mut current_shape_name: Option<String> = None;
-    let mut current_text = String::new();
+    let mut current_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
     let mut in_sp = false; // Inside a shape
-    let mut in_txbody = false; // Inside text body
-    let mut in_p = false; // Inside paragraph
-    let mut in_t = false; // Inside text element
-    let mut text_depth = 0;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -241,11 +257,11 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
                     b"p:sp" => {
                         in_sp = true;
                         current_shape_name = None;
-                        current_text.clear();
+                        current_paragraphs.clear();
                     }
-                    b"p:nvSpPr" | b"p:cNvPr" => {
+                    b"p:cNvPr" => {
                         // Non-visual shape properties - get name
-                        if in_sp && name == b"p:cNvPr" {
+                        if in_sp {
                             for attr in e.attributes().filter_map(|a| a.ok()) {
                                 if attr.key.as_ref() == b"name" {
                                     current_shape_name =
@@ -255,27 +271,14 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
                         }
                     }
                     b"p:txBody" => {
-                        in_txbody = true;
-                    }
-                    b"a:p" => {
-                        if in_txbody {
-                            in_p = true;
-                            if !current_text.is_empty() {
-                                current_text.push('\n');
-                            }
+                        // Use DML parser for text body content
+                        if in_sp
+                            && let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader)
+                        {
+                            current_paragraphs = paras;
                         }
                     }
-                    b"a:t" => {
-                        if in_p {
-                            in_t = true;
-                            text_depth = 1;
-                        }
-                    }
-                    _ => {
-                        if in_t {
-                            text_depth += 1;
-                        }
-                    }
+                    _ => {}
                 }
             }
             Ok(Event::Empty(e)) => {
@@ -291,45 +294,16 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
                     }
                 }
             }
-            Ok(Event::Text(e)) => {
-                if in_t {
-                    current_text.push_str(&e.decode().unwrap_or_default());
-                }
-            }
             Ok(Event::End(e)) => {
                 let name = e.name();
                 let name = name.as_ref();
-                match name {
-                    b"p:sp" => {
-                        // End of shape
-                        let text_content = if current_text.is_empty() {
-                            None
-                        } else {
-                            Some(std::mem::take(&mut current_text))
-                        };
-                        shapes.push(Shape {
-                            name: current_shape_name.take(),
-                            text_content,
-                        });
-                        in_sp = false;
-                    }
-                    b"p:txBody" => {
-                        in_txbody = false;
-                    }
-                    b"a:p" => {
-                        in_p = false;
-                    }
-                    b"a:t" => {
-                        text_depth -= 1;
-                        if text_depth == 0 {
-                            in_t = false;
-                        }
-                    }
-                    _ => {
-                        if in_t && text_depth > 0 {
-                            text_depth -= 1;
-                        }
-                    }
+                if name == b"p:sp" {
+                    // End of shape
+                    shapes.push(Shape {
+                        name: current_shape_name.take(),
+                        paragraphs: std::mem::take(&mut current_paragraphs),
+                    });
+                    in_sp = false;
                 }
             }
             Ok(Event::Eof) => break,

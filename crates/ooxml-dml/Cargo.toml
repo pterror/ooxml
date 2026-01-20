@@ -1,14 +1,12 @@
 [package]
-name = "ooxml-pml"
+name = "ooxml-dml"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "PresentationML (PPTX) support for the ooxml library"
+description = "DrawingML support for the ooxml library (shared by Word, Excel, PowerPoint)"
 
 [dependencies]
-ooxml.workspace = true
-ooxml-dml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true

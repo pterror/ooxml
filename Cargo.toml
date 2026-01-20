@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "crates/ooxml",
+    "crates/ooxml-dml",
     "crates/ooxml-wml",
     "crates/ooxml-sml",
     "crates/ooxml-pml",
@@ -18,6 +19,7 @@ repository = "https://github.com/pterror/ooxml"
 [workspace.dependencies]
 # Internal crates
 ooxml = { path = "crates/ooxml" }
+ooxml-dml = { path = "crates/ooxml-dml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
 ooxml-sml = { path = "crates/ooxml-sml" }
 ooxml-pml = { path = "crates/ooxml-pml" }

@@ -587,10 +587,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ooxml-dml"
+version = "0.1.0"
+dependencies = [
+ "quick-xml",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "ooxml-pml"
 version = "0.1.0"
 dependencies = [
  "ooxml",
+ "ooxml-dml",
  "quick-xml",
  "serde",
  "thiserror",
