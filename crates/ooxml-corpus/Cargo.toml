@@ -6,6 +6,10 @@ license.workspace = true
 repository.workspace = true
 description = "Corpus analysis tools for OOXML documents"
 
+[lib]
+name = "ooxml_corpus"
+path = "src/lib.rs"
+
 [[bin]]
 name = "ooxml-corpus"
 path = "src/main.rs"
@@ -16,4 +20,8 @@ ooxml-wml.workspace = true
 zip.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+serde_yaml.workspace = true
 rayon.workspace = true
+rusqlite.workspace = true
+clap.workspace = true
+quick-xml.workspace = true
