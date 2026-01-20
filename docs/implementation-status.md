@@ -106,12 +106,14 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:tblGrid` | ❌ | Column definitions |
 | `w:gridCol` | ❌ | Column width |
 | `w:trPr` | ❌ | Row properties |
-| `w:tcPr` | ❌ | Cell properties |
+| `w:tcPr` | ✅ | Cell properties (width, borders, shading, merge, alignment) |
 | `w:tblBorders` | ❌ | Table borders |
-| `w:tcBorders` | ❌ | Cell borders |
-| `w:gridSpan` | ❌ | Horizontal cell merge |
-| `w:vMerge` | ❌ | Vertical cell merge |
-| `w:shd` | ❌ | Cell shading |
+| `w:tcBorders` | ✅ | Cell borders (top, bottom, left, right, insideH, insideV) |
+| `w:gridSpan` | ✅ | Horizontal cell merge |
+| `w:vMerge` | ✅ | Vertical cell merge (restart/continue) |
+| `w:shd` | ✅ | Cell shading (fill, pattern) |
+| `w:tcW` | ✅ | Cell width (dxa, pct, auto) |
+| `w:vAlign` | ✅ | Cell vertical alignment |
 
 ### Images (DrawingML)
 
@@ -187,7 +189,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 1. ~~**Underline styles**~~ ✅ Now supports all 17 underline styles
 2. ~~**Highlight colors**~~ ✅ Now supports all 16 standard highlight colors
-3. **Table cell properties** - Borders, shading, merging
+3. ~~**Table cell properties**~~ ✅ Now supports borders, shading, width, and merging
 
 ### Medium Priority (affects 5-20% of documents)
 

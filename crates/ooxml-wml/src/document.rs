@@ -449,6 +449,8 @@ impl Row {
 pub struct Cell {
     /// Paragraphs in the cell.
     paragraphs: Vec<Paragraph>,
+    /// Cell properties (borders, shading, merge, etc.).
+    properties: Option<CellProperties>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -474,6 +476,21 @@ impl Cell {
     pub fn add_paragraph(&mut self) -> &mut Paragraph {
         self.paragraphs.push(Paragraph::new());
         self.paragraphs.last_mut().unwrap()
+    }
+
+    /// Get cell properties.
+    pub fn properties(&self) -> Option<&CellProperties> {
+        self.properties.as_ref()
+    }
+
+    /// Get mutable reference to cell properties.
+    pub fn properties_mut(&mut self) -> &mut Option<CellProperties> {
+        &mut self.properties
+    }
+
+    /// Set cell properties.
+    pub fn set_properties(&mut self, props: CellProperties) {
+        self.properties = Some(props);
     }
 
     /// Extract all text from the cell.
@@ -855,6 +872,450 @@ pub struct NumberingProperties {
     pub num_id: u32,
     /// Indentation level (0-8). 0 is the first level.
     pub ilvl: u32,
+}
+
+/// Properties of a table cell.
+///
+/// Corresponds to the `<w:tcPr>` element.
+/// ECMA-376 Part 1, Section 17.4.66 (tcPr).
+#[derive(Debug, Clone, Default)]
+pub struct CellProperties {
+    /// Cell width in twips.
+    pub width: Option<CellWidth>,
+    /// Cell borders.
+    pub borders: Option<CellBorders>,
+    /// Cell shading/background.
+    pub shading: Option<CellShading>,
+    /// Horizontal span (number of grid columns this cell covers).
+    pub grid_span: Option<u32>,
+    /// Vertical merge type.
+    pub vertical_merge: Option<VerticalMerge>,
+    /// Vertical alignment of content within the cell.
+    pub vertical_align: Option<CellVerticalAlign>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Cell width specification.
+///
+/// Corresponds to the `<w:tcW>` element.
+#[derive(Debug, Clone, Copy)]
+pub struct CellWidth {
+    /// Width value (interpretation depends on width_type).
+    pub width: u32,
+    /// Width type.
+    pub width_type: WidthType,
+}
+
+/// Width measurement type.
+///
+/// ECMA-376 Part 1, Section 17.18.107 (ST_TblWidth).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum WidthType {
+    /// Width in twips.
+    #[default]
+    Dxa,
+    /// Width in fiftieths of a percent (pct).
+    Pct,
+    /// Automatically determined width.
+    Auto,
+    /// No width specified.
+    Nil,
+}
+
+impl WidthType {
+    /// Parse from the w:type attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "dxa" => Self::Dxa,
+            "pct" => Self::Pct,
+            "auto" => Self::Auto,
+            "nil" => Self::Nil,
+            _ => Self::Dxa,
+        }
+    }
+
+    /// Convert to the w:type attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Dxa => "dxa",
+            Self::Pct => "pct",
+            Self::Auto => "auto",
+            Self::Nil => "nil",
+        }
+    }
+}
+
+/// Cell borders.
+///
+/// Corresponds to the `<w:tcBorders>` element.
+#[derive(Debug, Clone, Default)]
+pub struct CellBorders {
+    /// Top border.
+    pub top: Option<Border>,
+    /// Bottom border.
+    pub bottom: Option<Border>,
+    /// Left (start) border.
+    pub left: Option<Border>,
+    /// Right (end) border.
+    pub right: Option<Border>,
+    /// Inside horizontal border (for merged cells).
+    pub inside_h: Option<Border>,
+    /// Inside vertical border (for merged cells).
+    pub inside_v: Option<Border>,
+}
+
+/// A border definition.
+///
+/// ECMA-376 Part 1, Section 17.3.4 (border).
+#[derive(Debug, Clone)]
+pub struct Border {
+    /// Border style.
+    pub style: BorderStyle,
+    /// Border width in eighths of a point.
+    pub size: Option<u32>,
+    /// Border color (hex RGB, e.g., "FF0000" for red).
+    pub color: Option<String>,
+    /// Space between border and content in points.
+    pub space: Option<u32>,
+}
+
+/// Border style.
+///
+/// ECMA-376 Part 1, Section 17.18.2 (ST_Border).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum BorderStyle {
+    /// No border.
+    #[default]
+    Nil,
+    /// No border (same as nil).
+    None,
+    /// Single line border.
+    Single,
+    /// Thick single line.
+    Thick,
+    /// Double line border.
+    Double,
+    /// Dotted border.
+    Dotted,
+    /// Dashed border.
+    Dashed,
+    /// Dot-dash pattern.
+    DotDash,
+    /// Dot-dot-dash pattern.
+    DotDotDash,
+    /// Triple line border.
+    Triple,
+    /// Thin-thick small gap.
+    ThinThickSmallGap,
+    /// Thick-thin small gap.
+    ThickThinSmallGap,
+    /// Thin-thick-thin small gap.
+    ThinThickThinSmallGap,
+    /// Thin-thick medium gap.
+    ThinThickMediumGap,
+    /// Thick-thin medium gap.
+    ThickThinMediumGap,
+    /// Thin-thick-thin medium gap.
+    ThinThickThinMediumGap,
+    /// Thin-thick large gap.
+    ThinThickLargeGap,
+    /// Thick-thin large gap.
+    ThickThinLargeGap,
+    /// Thin-thick-thin large gap.
+    ThinThickThinLargeGap,
+    /// Wavy border.
+    Wave,
+    /// Double wavy border.
+    DoubleWave,
+    /// Dash small gap.
+    DashSmallGap,
+    /// Dash-dot stroked.
+    DashDotStroked,
+    /// 3D emboss effect.
+    ThreeDEmboss,
+    /// 3D engrave effect.
+    ThreeDEngrave,
+    /// Outset border.
+    Outset,
+    /// Inset border.
+    Inset,
+}
+
+impl BorderStyle {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "nil" => Self::Nil,
+            "none" => Self::None,
+            "single" => Self::Single,
+            "thick" => Self::Thick,
+            "double" => Self::Double,
+            "dotted" => Self::Dotted,
+            "dashed" => Self::Dashed,
+            "dotDash" => Self::DotDash,
+            "dotDotDash" => Self::DotDotDash,
+            "triple" => Self::Triple,
+            "thinThickSmallGap" => Self::ThinThickSmallGap,
+            "thickThinSmallGap" => Self::ThickThinSmallGap,
+            "thinThickThinSmallGap" => Self::ThinThickThinSmallGap,
+            "thinThickMediumGap" => Self::ThinThickMediumGap,
+            "thickThinMediumGap" => Self::ThickThinMediumGap,
+            "thinThickThinMediumGap" => Self::ThinThickThinMediumGap,
+            "thinThickLargeGap" => Self::ThinThickLargeGap,
+            "thickThinLargeGap" => Self::ThickThinLargeGap,
+            "thinThickThinLargeGap" => Self::ThinThickThinLargeGap,
+            "wave" => Self::Wave,
+            "doubleWave" => Self::DoubleWave,
+            "dashSmallGap" => Self::DashSmallGap,
+            "dashDotStroked" => Self::DashDotStroked,
+            "threeDEmboss" => Self::ThreeDEmboss,
+            "threeDEngrave" => Self::ThreeDEngrave,
+            "outset" => Self::Outset,
+            "inset" => Self::Inset,
+            _ => Self::Single,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Nil => "nil",
+            Self::None => "none",
+            Self::Single => "single",
+            Self::Thick => "thick",
+            Self::Double => "double",
+            Self::Dotted => "dotted",
+            Self::Dashed => "dashed",
+            Self::DotDash => "dotDash",
+            Self::DotDotDash => "dotDotDash",
+            Self::Triple => "triple",
+            Self::ThinThickSmallGap => "thinThickSmallGap",
+            Self::ThickThinSmallGap => "thickThinSmallGap",
+            Self::ThinThickThinSmallGap => "thinThickThinSmallGap",
+            Self::ThinThickMediumGap => "thinThickMediumGap",
+            Self::ThickThinMediumGap => "thickThinMediumGap",
+            Self::ThinThickThinMediumGap => "thinThickThinMediumGap",
+            Self::ThinThickLargeGap => "thinThickLargeGap",
+            Self::ThickThinLargeGap => "thickThinLargeGap",
+            Self::ThinThickThinLargeGap => "thinThickThinLargeGap",
+            Self::Wave => "wave",
+            Self::DoubleWave => "doubleWave",
+            Self::DashSmallGap => "dashSmallGap",
+            Self::DashDotStroked => "dashDotStroked",
+            Self::ThreeDEmboss => "threeDEmboss",
+            Self::ThreeDEngrave => "threeDEngrave",
+            Self::Outset => "outset",
+            Self::Inset => "inset",
+        }
+    }
+}
+
+/// Cell shading/background.
+///
+/// Corresponds to the `<w:shd>` element.
+#[derive(Debug, Clone)]
+pub struct CellShading {
+    /// Fill color (hex RGB, e.g., "FFFF00" for yellow).
+    pub fill: Option<String>,
+    /// Pattern color.
+    pub color: Option<String>,
+    /// Shading pattern.
+    pub pattern: Option<ShadingPattern>,
+}
+
+/// Shading pattern type.
+///
+/// ECMA-376 Part 1, Section 17.18.78 (ST_Shd).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ShadingPattern {
+    /// No pattern (solid fill).
+    #[default]
+    Clear,
+    /// Solid fill.
+    Solid,
+    /// Horizontal stripe pattern.
+    HorzStripe,
+    /// Vertical stripe pattern.
+    VertStripe,
+    /// Reverse diagonal stripe.
+    ReverseDiagStripe,
+    /// Diagonal stripe.
+    DiagStripe,
+    /// Horizontal cross pattern.
+    HorzCross,
+    /// Diagonal cross pattern.
+    DiagCross,
+    /// Thin horizontal stripe.
+    ThinHorzStripe,
+    /// Thin vertical stripe.
+    ThinVertStripe,
+    /// Thin reverse diagonal stripe.
+    ThinReverseDiagStripe,
+    /// Thin diagonal stripe.
+    ThinDiagStripe,
+    /// Thin horizontal cross.
+    ThinHorzCross,
+    /// Thin diagonal cross.
+    ThinDiagCross,
+    /// 5% pattern.
+    Pct5,
+    /// 10% pattern.
+    Pct10,
+    /// 12.5% pattern.
+    Pct12,
+    /// 15% pattern.
+    Pct15,
+    /// 20% pattern.
+    Pct20,
+    /// 25% pattern.
+    Pct25,
+    /// 30% pattern.
+    Pct30,
+    /// 35% pattern.
+    Pct35,
+    /// 37.5% pattern.
+    Pct37,
+    /// 40% pattern.
+    Pct40,
+    /// 45% pattern.
+    Pct45,
+    /// 50% pattern.
+    Pct50,
+    /// 55% pattern.
+    Pct55,
+    /// 60% pattern.
+    Pct60,
+    /// 62.5% pattern.
+    Pct62,
+    /// 65% pattern.
+    Pct65,
+    /// 70% pattern.
+    Pct70,
+    /// 75% pattern.
+    Pct75,
+    /// 80% pattern.
+    Pct80,
+    /// 85% pattern.
+    Pct85,
+    /// 87.5% pattern.
+    Pct87,
+    /// 90% pattern.
+    Pct90,
+    /// 95% pattern.
+    Pct95,
+}
+
+impl ShadingPattern {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "clear" => Self::Clear,
+            "solid" => Self::Solid,
+            "horzStripe" => Self::HorzStripe,
+            "vertStripe" => Self::VertStripe,
+            "reverseDiagStripe" => Self::ReverseDiagStripe,
+            "diagStripe" => Self::DiagStripe,
+            "horzCross" => Self::HorzCross,
+            "diagCross" => Self::DiagCross,
+            "thinHorzStripe" => Self::ThinHorzStripe,
+            "thinVertStripe" => Self::ThinVertStripe,
+            "thinReverseDiagStripe" => Self::ThinReverseDiagStripe,
+            "thinDiagStripe" => Self::ThinDiagStripe,
+            "thinHorzCross" => Self::ThinHorzCross,
+            "thinDiagCross" => Self::ThinDiagCross,
+            "pct5" => Self::Pct5,
+            "pct10" => Self::Pct10,
+            "pct12" => Self::Pct12,
+            "pct15" => Self::Pct15,
+            "pct20" => Self::Pct20,
+            "pct25" => Self::Pct25,
+            "pct30" => Self::Pct30,
+            "pct35" => Self::Pct35,
+            "pct37" => Self::Pct37,
+            "pct40" => Self::Pct40,
+            "pct45" => Self::Pct45,
+            "pct50" => Self::Pct50,
+            "pct55" => Self::Pct55,
+            "pct60" => Self::Pct60,
+            "pct62" => Self::Pct62,
+            "pct65" => Self::Pct65,
+            "pct70" => Self::Pct70,
+            "pct75" => Self::Pct75,
+            "pct80" => Self::Pct80,
+            "pct85" => Self::Pct85,
+            "pct87" => Self::Pct87,
+            "pct90" => Self::Pct90,
+            "pct95" => Self::Pct95,
+            _ => Self::Clear,
+        }
+    }
+}
+
+/// Vertical merge state for a cell.
+///
+/// ECMA-376 Part 1, Section 17.18.99 (ST_Merge).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VerticalMerge {
+    /// Start of a vertically merged region.
+    Restart,
+    /// Continuation of a vertically merged region.
+    Continue,
+}
+
+impl VerticalMerge {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "restart" => Some(Self::Restart),
+            "continue" => Some(Self::Continue),
+            _ => None,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Restart => "restart",
+            Self::Continue => "continue",
+        }
+    }
+}
+
+/// Vertical alignment of cell content.
+///
+/// ECMA-376 Part 1, Section 17.18.101 (ST_VerticalJc).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum CellVerticalAlign {
+    /// Align to top.
+    #[default]
+    Top,
+    /// Align to center.
+    Center,
+    /// Align to bottom.
+    Bottom,
+}
+
+impl CellVerticalAlign {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "top" => Self::Top,
+            "center" => Self::Center,
+            "bottom" => Self::Bottom,
+            "both" => Self::Center, // Treat justify as center
+            _ => Self::Top,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Top => "top",
+            Self::Center => "center",
+            Self::Bottom => "bottom",
+        }
+    }
 }
 
 /// A text run in the document.
@@ -1398,6 +1859,22 @@ const EL_TBL: &[u8] = b"tbl";
 const EL_TR: &[u8] = b"tr";
 const EL_TC: &[u8] = b"tc";
 
+// Cell properties elements
+const EL_TC_PR: &[u8] = b"tcPr";
+const EL_TC_W: &[u8] = b"tcW";
+const EL_TC_BORDERS: &[u8] = b"tcBorders";
+const EL_GRID_SPAN: &[u8] = b"gridSpan";
+const EL_V_MERGE: &[u8] = b"vMerge";
+const EL_V_ALIGN: &[u8] = b"vAlign";
+const EL_SHD: &[u8] = b"shd";
+// Border element names (shared for table, cell, paragraph borders)
+const EL_TOP: &[u8] = b"top";
+const EL_BOTTOM: &[u8] = b"bottom";
+const EL_LEFT: &[u8] = b"left";
+const EL_RIGHT: &[u8] = b"right";
+const EL_INSIDE_H: &[u8] = b"insideH";
+const EL_INSIDE_V: &[u8] = b"insideV";
+
 // Hyperlink element
 const EL_HYPERLINK: &[u8] = b"hyperlink";
 
@@ -1461,6 +1938,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_sect_pr = false;
     let mut sect_pr_child_idx: usize = 0;
 
+    // Cell properties parsing state
+    let mut current_tc_pr: Option<CellProperties> = None;
+    let mut in_tc_pr = false;
+    let mut in_tc_borders = false;
+    let mut current_tc_borders: Option<CellBorders> = None;
+    let mut _tc_pr_child_idx: usize = 0;
+
     // Child position counters for round-trip ordering preservation
     let mut body_child_idx: usize = 0;
     let mut table_child_idx: usize = 0;
@@ -1496,6 +1980,17 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         current_cell = Some(Cell::new());
                         cell_child_idx = 0;
                         row_child_idx += 1;
+                    }
+                    name if name == EL_TC_PR && current_cell.is_some() => {
+                        in_tc_pr = true;
+                        current_tc_pr = Some(CellProperties::default());
+                        _tc_pr_child_idx = 0;
+                        cell_child_idx += 1;
+                    }
+                    name if name == EL_TC_BORDERS && in_tc_pr => {
+                        in_tc_borders = true;
+                        current_tc_borders = Some(CellBorders::default());
+                        _tc_pr_child_idx += 1;
                     }
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
@@ -2019,9 +2514,143 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             sect_pr_child_idx += 1;
                         }
                     }
+                    // Cell width (w:tcW)
+                    name if name == EL_TC_W && in_tc_pr => {
+                        if let Some(tc_pr) = current_tc_pr.as_mut() {
+                            let mut width = 0u32;
+                            let mut width_type = WidthType::Dxa;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:w" | b"w" => {
+                                            width = s.parse().unwrap_or(0);
+                                        }
+                                        b"w:type" | b"type" => {
+                                            width_type = WidthType::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            tc_pr.width = Some(CellWidth { width, width_type });
+                            _tc_pr_child_idx += 1;
+                        }
+                    }
+                    // Grid span (w:gridSpan)
+                    name if name == EL_GRID_SPAN && in_tc_pr => {
+                        if let Some(tc_pr) = current_tc_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tc_pr.grid_span = s.parse().ok();
+                                }
+                            }
+                            _tc_pr_child_idx += 1;
+                        }
+                    }
+                    // Vertical merge (w:vMerge)
+                    name if name == EL_V_MERGE && in_tc_pr => {
+                        if let Some(tc_pr) = current_tc_pr.as_mut() {
+                            // If vMerge has no val attribute, it means "continue"
+                            let mut found_val = false;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tc_pr.vertical_merge = VerticalMerge::parse(s);
+                                    found_val = true;
+                                }
+                            }
+                            if !found_val {
+                                // Empty vMerge means continue
+                                tc_pr.vertical_merge = Some(VerticalMerge::Continue);
+                            }
+                            _tc_pr_child_idx += 1;
+                        }
+                    }
+                    // Vertical alignment (w:vAlign)
+                    name if name == EL_V_ALIGN && in_tc_pr => {
+                        if let Some(tc_pr) = current_tc_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tc_pr.vertical_align = Some(CellVerticalAlign::parse(s));
+                                }
+                            }
+                            _tc_pr_child_idx += 1;
+                        }
+                    }
+                    // Shading (w:shd) - can appear in tcPr or rPr/pPr
+                    name if name == EL_SHD && in_tc_pr => {
+                        if let Some(tc_pr) = current_tc_pr.as_mut() {
+                            let mut shading = CellShading {
+                                fill: None,
+                                color: None,
+                                pattern: None,
+                            };
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:fill" | b"fill" => {
+                                            if s != "auto" {
+                                                shading.fill = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:color" | b"color" => {
+                                            if s != "auto" {
+                                                shading.color = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:val" | b"val" => {
+                                            shading.pattern = Some(ShadingPattern::parse(s));
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            tc_pr.shading = Some(shading);
+                            _tc_pr_child_idx += 1;
+                        }
+                    }
+                    // Border elements inside tcBorders
+                    name if name == EL_TOP && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.top = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_BOTTOM && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.bottom = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_LEFT && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.left = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_RIGHT && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.right = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_INSIDE_H && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.inside_h = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_INSIDE_V && in_tc_borders => {
+                        if let Some(borders) = current_tc_borders.as_mut() {
+                            borders.inside_v = Some(parse_border(&e));
+                        }
+                    }
                     _ => {
                         // Only capture unknown self-closing elements when in a container context
-                        let should_capture = in_sect_pr
+                        let should_capture = in_tc_pr
+                            || in_sect_pr
                             || in_rpr
                             || (in_ppr && !in_numpr)
                             || current_image.is_some()
@@ -2126,11 +2755,23 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         }
                     }
                     name if name == EL_TC => {
-                        if let Some(cell) = current_cell.take()
+                        if let Some(mut cell) = current_cell.take()
                             && let Some(row) = current_row.as_mut()
                         {
+                            cell.properties = current_tc_pr.take();
                             row.cells.push(cell);
                         }
+                    }
+                    name if name == EL_TC_PR => {
+                        in_tc_pr = false;
+                    }
+                    name if name == EL_TC_BORDERS => {
+                        if let Some(borders) = current_tc_borders.take()
+                            && let Some(tc_pr) = current_tc_pr.as_mut()
+                        {
+                            tc_pr.borders = Some(borders);
+                        }
+                        in_tc_borders = false;
                     }
                     name if name == EL_P && current_para.is_some() => {
                         if let Some(mut para) = current_para.take() {
@@ -2245,6 +2886,39 @@ fn parse_toggle_val(e: &quick_xml::events::BytesStart) -> bool {
     }
     // No val attribute means true
     true
+}
+
+/// Parse a border element's attributes.
+fn parse_border(e: &quick_xml::events::BytesStart) -> Border {
+    let mut border = Border {
+        style: BorderStyle::Single,
+        size: None,
+        color: None,
+        space: None,
+    };
+    for attr in e.attributes().filter_map(|a| a.ok()) {
+        let key = attr.key.as_ref();
+        if let Ok(s) = std::str::from_utf8(&attr.value) {
+            match key {
+                b"w:val" | b"val" => {
+                    border.style = BorderStyle::parse(s);
+                }
+                b"w:sz" | b"sz" => {
+                    border.size = s.parse().ok();
+                }
+                b"w:color" | b"color" => {
+                    if s != "auto" {
+                        border.color = Some(s.to_string());
+                    }
+                }
+                b"w:space" | b"space" => {
+                    border.space = s.parse().ok();
+                }
+                _ => {}
+            }
+        }
+    }
+    border
 }
 
 #[cfg(test)]
@@ -2769,5 +3443,93 @@ mod tests {
         assert_eq!(pg_sz.width, 15840);
         assert_eq!(pg_sz.height, 12240);
         assert_eq!(pg_sz.orientation, PageOrientation::Landscape);
+    }
+
+    #[test]
+    fn test_parse_cell_properties() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="2400" w:type="dxa"/>
+            <w:gridSpan w:val="2"/>
+            <w:vMerge w:val="restart"/>
+            <w:shd w:fill="FFFF00" w:val="clear"/>
+            <w:vAlign w:val="center"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:sz="4" w:color="000000"/>
+              <w:bottom w:val="double" w:sz="8"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p><w:r><w:t>Cell content</w:t></w:r></w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let table = body.tables().next().expect("should have table");
+        let cell = &table.rows()[0].cells()[0];
+        let props = cell.properties().expect("should have cell properties");
+
+        // Check width
+        let width = props.width.as_ref().expect("should have width");
+        assert_eq!(width.width, 2400);
+        assert_eq!(width.width_type, WidthType::Dxa);
+
+        // Check grid span
+        assert_eq!(props.grid_span, Some(2));
+
+        // Check vertical merge
+        assert_eq!(props.vertical_merge, Some(VerticalMerge::Restart));
+
+        // Check shading
+        let shading = props.shading.as_ref().expect("should have shading");
+        assert_eq!(shading.fill, Some("FFFF00".to_string()));
+
+        // Check vertical alignment
+        assert_eq!(props.vertical_align, Some(CellVerticalAlign::Center));
+
+        // Check borders
+        let borders = props.borders.as_ref().expect("should have borders");
+        let top = borders.top.as_ref().expect("should have top border");
+        assert_eq!(top.style, BorderStyle::Single);
+        assert_eq!(top.size, Some(4));
+        assert_eq!(top.color, Some("000000".to_string()));
+
+        let bottom = borders.bottom.as_ref().expect("should have bottom border");
+        assert_eq!(bottom.style, BorderStyle::Double);
+        assert_eq!(bottom.size, Some(8));
+    }
+
+    #[test]
+    fn test_parse_cell_vertical_merge_continue() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:tbl>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:vMerge/>
+          </w:tcPr>
+          <w:p><w:r><w:t>Merged</w:t></w:r></w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let table = body.tables().next().expect("should have table");
+        let cell = &table.rows()[0].cells()[0];
+        let props = cell.properties().expect("should have cell properties");
+
+        // Empty vMerge means continue
+        assert_eq!(props.vertical_merge, Some(VerticalMerge::Continue));
     }
 }

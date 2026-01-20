@@ -4,9 +4,9 @@
 //! and saving existing documents.
 
 use crate::document::{
-    BlockContent, Body, Cell, Drawing, Hyperlink, InlineImage, NumberingProperties,
-    PageOrientation, Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties,
-    SectionProperties, Table,
+    BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth, Drawing,
+    Hyperlink, InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphContent,
+    ParagraphProperties, Row, Run, RunProperties, SectionProperties, Table, VerticalMerge,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -411,11 +411,158 @@ fn serialize_row(row: &Row, xml: &mut String) {
 /// Serialize a table cell.
 fn serialize_cell(cell: &Cell, xml: &mut String) {
     xml.push_str("<w:tc>");
+    // Cell properties must come first
+    if let Some(props) = cell.properties() {
+        serialize_cell_properties(props, xml);
+    }
     for para in cell.paragraphs() {
         serialize_paragraph(para, xml);
     }
     serialize_unknown_children(&cell.unknown_children, xml);
     xml.push_str("</w:tc>");
+}
+
+/// Serialize cell properties.
+fn serialize_cell_properties(props: &CellProperties, xml: &mut String) {
+    xml.push_str("<w:tcPr>");
+
+    // Cell width
+    if let Some(width) = &props.width {
+        serialize_cell_width(width, xml);
+    }
+
+    // Grid span (horizontal merge)
+    if let Some(span) = props.grid_span
+        && span > 1
+    {
+        xml.push_str("<w:gridSpan w:val=\"");
+        xml.push_str(&span.to_string());
+        xml.push_str("\"/>");
+    }
+
+    // Vertical merge
+    if let Some(merge) = &props.vertical_merge {
+        xml.push_str("<w:vMerge");
+        match merge {
+            VerticalMerge::Restart => xml.push_str(" w:val=\"restart\""),
+            VerticalMerge::Continue => {} // Empty vMerge means continue
+        }
+        xml.push_str("/>");
+    }
+
+    // Borders
+    if let Some(borders) = &props.borders {
+        serialize_cell_borders(borders, xml);
+    }
+
+    // Shading
+    if let Some(shading) = &props.shading {
+        serialize_cell_shading(shading, xml);
+    }
+
+    // Vertical alignment
+    if let Some(valign) = &props.vertical_align {
+        xml.push_str("<w:vAlign w:val=\"");
+        xml.push_str(valign.as_str());
+        xml.push_str("\"/>");
+    }
+
+    // Unknown children for round-trip preservation
+    serialize_unknown_children(&props.unknown_children, xml);
+
+    xml.push_str("</w:tcPr>");
+}
+
+/// Serialize cell width.
+fn serialize_cell_width(width: &CellWidth, xml: &mut String) {
+    xml.push_str("<w:tcW w:w=\"");
+    xml.push_str(&width.width.to_string());
+    xml.push_str("\" w:type=\"");
+    xml.push_str(width.width_type.as_str());
+    xml.push_str("\"/>");
+}
+
+/// Serialize cell borders.
+fn serialize_cell_borders(borders: &CellBorders, xml: &mut String) {
+    xml.push_str("<w:tcBorders>");
+    if let Some(border) = &borders.top {
+        xml.push_str("<w:top");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.left {
+        xml.push_str("<w:left");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.bottom {
+        xml.push_str("<w:bottom");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.right {
+        xml.push_str("<w:right");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.inside_h {
+        xml.push_str("<w:insideH");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.inside_v {
+        xml.push_str("<w:insideV");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    xml.push_str("</w:tcBorders>");
+}
+
+/// Serialize border attributes.
+fn serialize_border_attrs(border: &Border, xml: &mut String) {
+    xml.push_str(" w:val=\"");
+    xml.push_str(border.style.as_str());
+    xml.push('"');
+    if let Some(sz) = border.size {
+        xml.push_str(" w:sz=\"");
+        xml.push_str(&sz.to_string());
+        xml.push('"');
+    }
+    if let Some(color) = &border.color {
+        xml.push_str(" w:color=\"");
+        xml.push_str(color);
+        xml.push('"');
+    }
+    if let Some(space) = border.space {
+        xml.push_str(" w:space=\"");
+        xml.push_str(&space.to_string());
+        xml.push('"');
+    }
+}
+
+/// Serialize cell shading.
+fn serialize_cell_shading(shading: &CellShading, xml: &mut String) {
+    xml.push_str("<w:shd");
+    if let Some(pattern) = &shading.pattern {
+        xml.push_str(" w:val=\"");
+        xml.push_str(match pattern {
+            crate::document::ShadingPattern::Clear => "clear",
+            crate::document::ShadingPattern::Solid => "solid",
+            _ => "clear", // Simplified - full mapping would be extensive
+        });
+        xml.push('"');
+    }
+    if let Some(fill) = &shading.fill {
+        xml.push_str(" w:fill=\"");
+        xml.push_str(fill);
+        xml.push('"');
+    }
+    if let Some(color) = &shading.color {
+        xml.push_str(" w:color=\"");
+        xml.push_str(color);
+        xml.push('"');
+    }
+    xml.push_str("/>");
 }
 
 /// Serialize a paragraph.
