@@ -1,0 +1,186 @@
+# OOXML Implementation Status
+
+This document tracks what's implemented, partially implemented, and missing in the ooxml-wml crate.
+
+## Reading (Parsing)
+
+### Document Structure
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `w:document` | ✅ | Root element |
+| `w:body` | ✅ | Document body |
+| `w:sectPr` | ❌ | Section properties (page size, margins) |
+
+### Block-Level Content
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `w:p` | ✅ | Paragraphs |
+| `w:tbl` | ✅ | Tables |
+| `w:sdt` | ❌ | Structured document tags (content controls) |
+| `w:customXml` | ❌ | Custom XML blocks |
+
+### Paragraph Content
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `w:r` | ✅ | Runs (text spans) |
+| `w:hyperlink` | ✅ | Hyperlinks |
+| `w:bookmarkStart` | ❌ | Bookmark anchors |
+| `w:bookmarkEnd` | ❌ | Bookmark anchors |
+| `w:commentRangeStart` | ❌ | Comment anchors |
+| `w:commentRangeEnd` | ❌ | Comment anchors |
+| `w:fldSimple` | ❌ | Simple fields |
+| `w:fldChar` | ❌ | Complex fields |
+
+### Run Content
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `w:t` | ✅ | Text |
+| `w:tab` | ✅ | Tab characters (converted to `\t`) |
+| `w:br` | ✅ | Line breaks (converted to `\n`) |
+| `w:br w:type="page"` | ✅ | Page breaks |
+| `w:sym` | ❌ | Symbol characters |
+| `w:drawing` | ✅ | DrawingML container |
+| `w:pict` | ❌ | VML pictures (legacy) |
+| `w:object` | ❌ | Embedded objects |
+
+### Paragraph Properties (`w:pPr`)
+
+| Property | Status | Notes |
+|----------|--------|-------|
+| `w:pStyle` | ✅ | Paragraph style reference |
+| `w:jc` | ✅ | Alignment (left, center, right, justify) |
+| `w:ind` | ✅ | Indentation (left, right, firstLine, hanging) |
+| `w:spacing` | ✅ | Spacing (before, after, line) |
+| `w:numPr` | ✅ | List numbering |
+| `w:pBdr` | ❌ | Paragraph borders |
+| `w:shd` | ❌ | Shading/background |
+| `w:tabs` | ❌ | Tab stop definitions |
+| `w:outlineLvl` | ❌ | Outline level |
+| `w:keepNext` | ❌ | Keep with next paragraph |
+| `w:keepLines` | ❌ | Keep lines together |
+| `w:pageBreakBefore` | ❌ | Page break before |
+| `w:widowControl` | ❌ | Widow/orphan control |
+
+### Run Properties (`w:rPr`)
+
+| Property | Status | Notes |
+|----------|--------|-------|
+| `w:rStyle` | ✅ | Character style reference |
+| `w:b` | ✅ | Bold |
+| `w:i` | ✅ | Italic |
+| `w:u` | ✅ | Underline (presence only, not style) |
+| `w:strike` | ✅ | Strikethrough |
+| `w:dstrike` | ❌ | Double strikethrough |
+| `w:color` | ✅ | Text color |
+| `w:sz` | ✅ | Font size (in half-points) |
+| `w:rFonts` | ✅ | Font (ascii attribute only) |
+| `w:highlight` | ❌ | Highlight color |
+| `w:vertAlign` | ❌ | Superscript/subscript |
+| `w:caps` | ❌ | All capitals |
+| `w:smallCaps` | ❌ | Small capitals |
+| `w:vanish` | ❌ | Hidden text |
+| `w:shd` | ❌ | Shading/background |
+
+### Table Elements
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `w:tbl` | ✅ | Table container |
+| `w:tr` | ✅ | Table row |
+| `w:tc` | ✅ | Table cell |
+| `w:tblPr` | ❌ | Table properties |
+| `w:tblGrid` | ❌ | Column definitions |
+| `w:gridCol` | ❌ | Column width |
+| `w:trPr` | ❌ | Row properties |
+| `w:tcPr` | ❌ | Cell properties |
+| `w:tblBorders` | ❌ | Table borders |
+| `w:tcBorders` | ❌ | Cell borders |
+| `w:gridSpan` | ❌ | Horizontal cell merge |
+| `w:vMerge` | ❌ | Vertical cell merge |
+| `w:shd` | ❌ | Cell shading |
+
+### Images (DrawingML)
+
+| Element | Status | Notes |
+|---------|--------|-------|
+| `wp:inline` | ✅ | Inline images |
+| `wp:anchor` | ❌ | Anchored/floating images |
+| `a:blip` | ✅ | Image reference |
+| `wp:extent` | ✅ | Image dimensions |
+| `wp:docPr` | ✅ | Image description/alt text |
+
+### Document Parts
+
+| Part | Status | Notes |
+|------|--------|-------|
+| `word/document.xml` | ✅ | Main document |
+| `word/styles.xml` | ✅ | Style definitions |
+| `word/numbering.xml` | ✅ | List definitions |
+| `word/_rels/document.xml.rels` | ✅ | Document relationships |
+| `word/header*.xml` | ❌ | Headers |
+| `word/footer*.xml` | ❌ | Footers |
+| `word/footnotes.xml` | ❌ | Footnotes |
+| `word/endnotes.xml` | ❌ | Endnotes |
+| `word/comments.xml` | ❌ | Comments |
+| `word/settings.xml` | ❌ | Document settings |
+
+## Writing (Serialization)
+
+### DocumentBuilder API
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| `add_paragraph()` | ✅ | Basic paragraphs |
+| `add_heading()` | ✅ | Heading paragraphs |
+| `add_formatted_text()` | ✅ | Bold, italic, underline, strike, color |
+| `add_page_break()` | ✅ | Page breaks |
+| `add_hyperlink()` | ✅ | Hyperlinks |
+| `add_image()` | ✅ | Inline images |
+| `add_table()` | ✅ | Basic tables |
+| `add_list()` | ✅ | Bulleted and numbered lists |
+
+### Run Properties Written
+
+| Property | Status |
+|----------|--------|
+| Bold | ✅ |
+| Italic | ✅ |
+| Underline | ✅ |
+| Strikethrough | ✅ |
+| Font size | ✅ |
+| Font family | ✅ |
+| Text color | ✅ |
+| Highlight | ❌ |
+
+## Priority Gaps
+
+Based on [corpus analysis](./corpus-analysis.md), these are the most impactful missing features:
+
+### High Priority (affects 20%+ of documents)
+
+1. **Underline styles** - We detect underline but not the style (single, double, wavy, etc.)
+2. **Highlight colors** - Text highlighting is common
+3. **Table cell properties** - Borders, shading, merging
+
+### Medium Priority (affects 5-20% of documents)
+
+4. **Headers/Footers** - Present in ~8% of documents
+5. **Anchored images** - Floating images exist but are rarer than inline
+6. **Tab stops** - Custom tab stops (we handle `w:tab` characters)
+
+### Lower Priority (affects <5% of documents)
+
+7. **Footnotes/Endnotes** - ~3% of documents
+8. **Comments** - Rarely present in final documents
+9. **Superscript/Subscript** - Limited usage
+10. **Content controls** - Enterprise/form documents
+
+## Roundtrip Preservation
+
+Currently, unknown elements are **not preserved** during roundtrip. This is a known limitation.
+
+Future work: Add catch-all fields to store unparsed XML for roundtrip fidelity.

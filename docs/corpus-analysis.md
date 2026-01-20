@@ -159,27 +159,27 @@ Based on corpus analysis, recommended implementation order:
 
 ### Tier 1: Core (Required for 95%+ of documents)
 
-1. **Document structure**: `w:document`, `w:body`, `w:sectPr` ✅
+1. **Document structure**: `w:document`, `w:body` ✅ | `w:sectPr` ❌
 2. **Paragraphs**: `w:p`, `w:pPr` ✅
 3. **Runs**: `w:r`, `w:rPr`, `w:t` ✅
-4. **Basic formatting**: `w:b`, `w:i`, `w:u`, `w:sz`, `w:color` ✅
+4. **Basic formatting**: `w:b`, `w:i`, `w:u`, `w:strike`, `w:sz`, `w:color` ✅
 5. **Styles**: `w:styles`, `w:style`, inheritance ✅
 6. **Alignment**: `w:jc` ✅
 
 ### Tier 2: High Priority (Required for 60-95% of documents)
 
-7. **Tables**: `w:tbl`, `w:tr`, `w:tc`, `w:tblPr` ✅
+7. **Tables**: `w:tbl`, `w:tr`, `w:tc` ✅ | `w:tblPr`, cell merging ❌
 8. **Lists**: `w:numPr`, `w:numbering.xml` ✅
 9. **Hyperlinks**: `w:hyperlink` ✅
-10. **Spacing**: `w:spacing`, `w:ind` ⚠️ Partial
-11. **Fonts**: `w:rFonts` ⚠️ Partial
+10. **Spacing/Indentation**: `w:spacing`, `w:ind` ✅
+11. **Fonts**: `w:rFonts` ✅ (ascii only)
 
 ### Tier 3: Medium Priority (Required for 10-60% of documents)
 
-12. **Images**: `w:drawing`, `wp:inline`, `wp:anchor` ✅
-13. **Page breaks**: `w:br` with `w:type="page"` ✅
-14. **Tabs**: `w:tab`, `w:tabs` ❌
-15. **Underline styles**: `w:u` with style attribute ⚠️ Partial
+12. **Inline images**: `wp:inline` ✅ | `wp:anchor` (floating) ❌
+13. **Page breaks**: `w:br w:type="page"` ✅
+14. **Line breaks/Tabs**: `w:br`, `w:tab` ✅ | `w:tabs` (tab stops) ❌
+15. **Underline styles**: `w:u` ⚠️ (presence only, not style variants)
 16. **Highlighting**: `w:highlight` ❌
 
 ### Tier 4: Lower Priority (Required for <10% of documents)
@@ -189,13 +189,16 @@ Based on corpus analysis, recommended implementation order:
 19. **Comments**: `w:comment`, `w:commentRangeStart` ❌
 20. **Bookmarks**: `w:bookmarkStart`, `w:bookmarkEnd` ❌
 21. **Fields**: `w:fldSimple`, `w:fldChar` ❌
-22. **Strikethrough**: `w:strike`, `w:dstrike` ❌
+22. **Double strikethrough**: `w:dstrike` ❌
+23. **Superscript/Subscript**: `w:vertAlign` ❌
 
 ### Legend
 
 - ✅ Implemented
 - ⚠️ Partial implementation
 - ❌ Not yet implemented
+
+See [implementation-status.md](./implementation-status.md) for detailed feature matrix.
 
 ## Test Fixture Recommendations
 
