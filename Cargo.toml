@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/ooxml",
     "crates/ooxml-wml",
+    "crates/ooxml-sml",
     "crates/ooxml-codegen",
     "crates/ooxml-corpus",
 ]
@@ -17,6 +18,7 @@ repository = "https://github.com/pterror/ooxml"
 # Internal crates
 ooxml = { path = "crates/ooxml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
+ooxml-sml = { path = "crates/ooxml-sml" }
 ooxml-codegen = { path = "crates/ooxml-codegen" }
 ooxml-corpus = { path = "crates/ooxml-corpus" }
 

@@ -587,6 +587,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ooxml-sml"
+version = "0.1.0"
+dependencies = [
+ "ooxml",
+ "quick-xml",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
 name = "ooxml-wml"
 version = "0.1.0"
 dependencies = [
