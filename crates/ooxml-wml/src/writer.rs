@@ -450,6 +450,24 @@ fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
         xml.push_str("/>");
     }
 
+    // Header references
+    for header_ref in &props.headers {
+        xml.push_str("<w:headerReference w:type=\"");
+        xml.push_str(header_ref.hf_type.as_str());
+        xml.push_str("\" r:id=\"");
+        xml.push_str(&header_ref.rel_id);
+        xml.push_str("\"/>");
+    }
+
+    // Footer references
+    for footer_ref in &props.footers {
+        xml.push_str("<w:footerReference w:type=\"");
+        xml.push_str(footer_ref.hf_type.as_str());
+        xml.push_str("\" r:id=\"");
+        xml.push_str(&footer_ref.rel_id);
+        xml.push_str("\"/>");
+    }
+
     // Unknown children for round-trip preservation
     serialize_unknown_children(&props.unknown_children, xml);
 

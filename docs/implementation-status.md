@@ -139,8 +139,8 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `word/styles.xml` | ✅ | Style definitions |
 | `word/numbering.xml` | ✅ | List definitions |
 | `word/_rels/document.xml.rels` | ✅ | Document relationships |
-| `word/header*.xml` | ❌ | Headers |
-| `word/footer*.xml` | ❌ | Footers |
+| `word/header*.xml` | 🔶 | Header references parsed, content parts not loaded |
+| `word/footer*.xml` | 🔶 | Footer references parsed, content parts not loaded |
 | `word/footnotes.xml` | ❌ | Footnotes |
 | `word/endnotes.xml` | ❌ | Endnotes |
 | `word/comments.xml` | ❌ | Comments |
@@ -202,7 +202,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 ### Medium Priority (affects 5-20% of documents)
 
-7. **Headers/Footers** - Present in ~8% of documents
+7. **Headers/Footers** - 🔶 References parsed, content parts pending
 8. ~~**Anchored images**~~ ✅ Now supports floating images with text wrapping
 9. ~~**Tab stops**~~ ✅ Now supports custom tab stop definitions
 

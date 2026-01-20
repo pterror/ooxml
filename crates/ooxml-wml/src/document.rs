@@ -916,8 +916,58 @@ pub struct SectionProperties {
     pub columns: Option<Columns>,
     /// Document grid settings.
     pub doc_grid: Option<DocGrid>,
+    /// Header references for this section.
+    pub headers: Vec<HeaderFooterRef>,
+    /// Footer references for this section.
+    pub footers: Vec<HeaderFooterRef>,
     /// Unknown child elements preserved for round-trip fidelity.
     pub unknown_children: Vec<PositionedNode>,
+}
+
+/// A reference to a header or footer part.
+///
+/// Corresponds to the `<w:headerReference>` and `<w:footerReference>` elements.
+/// ECMA-376 Part 1, Section 17.10.5 (headerReference, footerReference).
+#[derive(Debug, Clone)]
+pub struct HeaderFooterRef {
+    /// The relationship ID referencing the header/footer part.
+    pub rel_id: String,
+    /// The type of header/footer (default, first, even).
+    pub hf_type: HeaderFooterType,
+}
+
+/// Type of header or footer.
+///
+/// ECMA-376 Part 1, Section 17.18.36 (ST_HdrFtr).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum HeaderFooterType {
+    /// Default header/footer used on most pages.
+    #[default]
+    Default,
+    /// Header/footer for the first page only.
+    First,
+    /// Header/footer for even pages (when different odd/even is enabled).
+    Even,
+}
+
+impl HeaderFooterType {
+    /// Parse from the w:type attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "first" => HeaderFooterType::First,
+            "even" => HeaderFooterType::Even,
+            _ => HeaderFooterType::Default,
+        }
+    }
+
+    /// Convert to the w:type attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            HeaderFooterType::Default => "default",
+            HeaderFooterType::First => "first",
+            HeaderFooterType::Even => "even",
+        }
+    }
 }
 
 /// Page size definition.
@@ -2840,6 +2890,8 @@ const EL_SECT_TYPE: &[u8] = b"type";
 const EL_COLS: &[u8] = b"cols";
 const EL_COL: &[u8] = b"col";
 const EL_DOC_GRID: &[u8] = b"docGrid";
+const EL_HEADER_REFERENCE: &[u8] = b"headerReference";
+const EL_FOOTER_REFERENCE: &[u8] = b"footerReference";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -3998,6 +4050,56 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 }
                             }
                             sect_pr.doc_grid = Some(doc_grid);
+                            sect_pr_child_idx += 1;
+                        }
+                    }
+                    // Header reference (w:headerReference)
+                    name if name == EL_HEADER_REFERENCE && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut rel_id = String::new();
+                            let mut hf_type = HeaderFooterType::Default;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"r:id" | b"id" => {
+                                            rel_id = s.to_string();
+                                        }
+                                        b"w:type" | b"type" => {
+                                            hf_type = HeaderFooterType::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            if !rel_id.is_empty() {
+                                sect_pr.headers.push(HeaderFooterRef { rel_id, hf_type });
+                            }
+                            sect_pr_child_idx += 1;
+                        }
+                    }
+                    // Footer reference (w:footerReference)
+                    name if name == EL_FOOTER_REFERENCE && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut rel_id = String::new();
+                            let mut hf_type = HeaderFooterType::Default;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"r:id" | b"id" => {
+                                            rel_id = s.to_string();
+                                        }
+                                        b"w:type" | b"type" => {
+                                            hf_type = HeaderFooterType::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            if !rel_id.is_empty() {
+                                sect_pr.footers.push(HeaderFooterRef { rel_id, hf_type });
+                            }
                             sect_pr_child_idx += 1;
                         }
                     }
