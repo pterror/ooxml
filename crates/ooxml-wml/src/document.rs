@@ -1324,7 +1324,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
             }
             Ok(Event::Text(e)) => {
                 if in_text && let Some(run) = current_run.as_mut() {
-                    let text = e.unescape().unwrap_or_default();
+                    let text = e.decode().unwrap_or_default();
                     run.text.push_str(&text);
                 }
             }

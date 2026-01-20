@@ -21,13 +21,13 @@ ooxml-codegen = { path = "crates/ooxml-codegen" }
 ooxml-corpus = { path = "crates/ooxml-corpus" }
 
 # External dependencies
-zip = "2"
-quick-xml = { version = "0.36", features = ["serialize"] }
+zip = "7"
+quick-xml = { version = "0.39", features = ["serialize"] }
 thiserror = "2"
 insta = "1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_yaml = "0.9"
 rayon = "1"
-rusqlite = { version = "0.32", features = ["bundled"] }
+rusqlite = { version = "0.38", features = ["bundled"] }
 clap = { version = "4", features = ["derive"] }
