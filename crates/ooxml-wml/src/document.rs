@@ -253,6 +253,49 @@ pub enum BlockContent {
     Paragraph(Paragraph),
     /// A table.
     Table(Table),
+    /// A content control (structured document tag).
+    ContentControl(ContentControl),
+}
+
+/// A content control (structured document tag).
+///
+/// Corresponds to the `<w:sdt>` element.
+/// ECMA-376 Part 1, Section 17.5.2.29 (sdt).
+#[derive(Debug, Clone, Default)]
+pub struct ContentControl {
+    /// The tag value (used for programmatic access).
+    pub tag: Option<String>,
+    /// Human-readable alias/title.
+    pub alias: Option<String>,
+    /// The content type (e.g., "text", "richText", "picture").
+    pub content_type: Option<SdtContentType>,
+    /// Block-level content within the control.
+    pub content: Vec<BlockContent>,
+    /// Unknown properties preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Content type for a structured document tag.
+///
+/// ECMA-376 Part 1, Section 17.5.2.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SdtContentType {
+    /// Plain text content.
+    Text,
+    /// Rich text content.
+    RichText,
+    /// Combo box (dropdown list).
+    ComboBox,
+    /// Drop-down list.
+    DropDownList,
+    /// Date picker.
+    Date,
+    /// Document part gallery.
+    DocPartGallery,
+    /// Picture.
+    Picture,
+    /// Checkbox.
+    CheckBox,
 }
 
 impl Body {
@@ -261,23 +304,29 @@ impl Body {
         Self::default()
     }
 
-    /// Get all paragraphs in the body (flattened, including those in tables).
+    /// Get all paragraphs in the body (flattened, including those in tables and content controls).
     pub fn paragraphs(&self) -> Vec<&Paragraph> {
-        let mut paras = Vec::new();
-        for block in &self.content {
-            match block {
-                BlockContent::Paragraph(p) => paras.push(p),
-                BlockContent::Table(t) => {
-                    for row in t.rows() {
-                        for cell in row.cells() {
-                            for p in cell.paragraphs() {
-                                paras.push(p);
+        fn collect_paragraphs<'a>(blocks: &'a [BlockContent], paras: &mut Vec<&'a Paragraph>) {
+            for block in blocks {
+                match block {
+                    BlockContent::Paragraph(p) => paras.push(p),
+                    BlockContent::Table(t) => {
+                        for row in t.rows() {
+                            for cell in row.cells() {
+                                for p in cell.paragraphs() {
+                                    paras.push(p);
+                                }
                             }
                         }
+                    }
+                    BlockContent::ContentControl(c) => {
+                        collect_paragraphs(&c.content, paras);
                     }
                 }
             }
         }
+        let mut paras = Vec::new();
+        collect_paragraphs(&self.content, &mut paras);
         paras
     }
 
@@ -324,6 +373,7 @@ impl Body {
             .map(|block| match block {
                 BlockContent::Paragraph(p) => p.text(),
                 BlockContent::Table(t) => t.text(),
+                BlockContent::ContentControl(c) => c.text(),
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -420,6 +470,82 @@ impl Table {
             .map(|r| r.text())
             .collect::<Vec<_>>()
             .join("\n")
+    }
+}
+
+impl ContentControl {
+    /// Create a new empty content control.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get the tag value.
+    pub fn tag(&self) -> Option<&str> {
+        self.tag.as_deref()
+    }
+
+    /// Get the alias/title.
+    pub fn alias(&self) -> Option<&str> {
+        self.alias.as_deref()
+    }
+
+    /// Get the content type.
+    pub fn content_type(&self) -> Option<SdtContentType> {
+        self.content_type
+    }
+
+    /// Get the content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get mutable reference to content.
+    pub fn content_mut(&mut self) -> &mut Vec<BlockContent> {
+        &mut self.content
+    }
+
+    /// Extract all text from the content control.
+    pub fn text(&self) -> String {
+        self.content
+            .iter()
+            .map(|block| match block {
+                BlockContent::Paragraph(p) => p.text(),
+                BlockContent::Table(t) => t.text(),
+                BlockContent::ContentControl(c) => c.text(),
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+impl SdtContentType {
+    /// Parse from the XML element name.
+    pub fn parse(name: &str) -> Option<Self> {
+        match name {
+            "text" => Some(SdtContentType::Text),
+            "richText" => Some(SdtContentType::RichText),
+            "comboBox" => Some(SdtContentType::ComboBox),
+            "dropDownList" => Some(SdtContentType::DropDownList),
+            "date" => Some(SdtContentType::Date),
+            "docPartGallery" | "docPartObj" => Some(SdtContentType::DocPartGallery),
+            "picture" => Some(SdtContentType::Picture),
+            "checkbox" => Some(SdtContentType::CheckBox),
+            _ => None,
+        }
+    }
+
+    /// Convert to XML element name.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            SdtContentType::Text => "text",
+            SdtContentType::RichText => "richText",
+            SdtContentType::ComboBox => "comboBox",
+            SdtContentType::DropDownList => "dropDownList",
+            SdtContentType::Date => "date",
+            SdtContentType::DocPartGallery => "docPartGallery",
+            SdtContentType::Picture => "picture",
+            SdtContentType::CheckBox => "checkbox",
+        }
     }
 }
 
@@ -2962,6 +3088,13 @@ const EL_FOOTNOTE_REFERENCE: &[u8] = b"footnoteReference";
 const EL_ENDNOTE_REFERENCE: &[u8] = b"endnoteReference";
 const EL_COMMENT_REFERENCE: &[u8] = b"commentReference";
 
+// Content control (SDT) elements
+const EL_SDT: &[u8] = b"sdt";
+const EL_SDT_PR: &[u8] = b"sdtPr";
+const EL_SDT_CONTENT: &[u8] = b"sdtContent";
+const EL_TAG: &[u8] = b"tag";
+const EL_ALIAS: &[u8] = b"alias";
+
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut reader = Reader::from_reader(xml);
@@ -2989,6 +3122,12 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
 
     // Simple field parsing state
     let mut current_fld_simple: Option<SimpleField> = None;
+
+    // Content control (SDT) parsing state
+    let mut current_sdt: Option<ContentControl> = None;
+    let mut in_sdt_pr = false;
+    let mut in_sdt_content = false;
+    let mut _sdt_child_idx: usize = 0;
 
     // Numbering parsing state
     let mut in_numpr = false;
@@ -3109,6 +3248,26 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         in_tc_borders = true;
                         current_tc_borders = Some(CellBorders::default());
                         _tc_pr_child_idx += 1;
+                    }
+                    // Content control (SDT)
+                    name if name == EL_SDT && in_body => {
+                        current_sdt = Some(ContentControl::new());
+                        _sdt_child_idx = 0;
+                        if current_cell.is_some() {
+                            cell_child_idx += 1;
+                        } else {
+                            body_child_idx += 1;
+                        }
+                    }
+                    // SDT properties
+                    name if name == EL_SDT_PR && current_sdt.is_some() => {
+                        in_sdt_pr = true;
+                        _sdt_child_idx += 1;
+                    }
+                    // SDT content
+                    name if name == EL_SDT_CONTENT && current_sdt.is_some() => {
+                        in_sdt_content = true;
+                        _sdt_child_idx += 1;
                     }
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
@@ -3460,6 +3619,30 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 && let Some(run) = current_run.as_mut()
                             {
                                 run.comment_ref = Some(CommentReference { id });
+                            }
+                        }
+                    }
+                    // SDT tag
+                    name if name == EL_TAG && in_sdt_pr => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if (key == b"w:val" || key == b"val")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                                && let Some(sdt) = current_sdt.as_mut()
+                            {
+                                sdt.tag = Some(s.to_string());
+                            }
+                        }
+                    }
+                    // SDT alias
+                    name if name == EL_ALIAS && in_sdt_pr => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if (key == b"w:val" || key == b"val")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                                && let Some(sdt) = current_sdt.as_mut()
+                            {
+                                sdt.alias = Some(s.to_string());
                             }
                         }
                     }
@@ -4633,7 +4816,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_TBL => {
                         if let Some(table) = current_table.take() {
-                            body.content.push(BlockContent::Table(table));
+                            if in_sdt_content {
+                                if let Some(sdt) = current_sdt.as_mut() {
+                                    sdt.content.push(BlockContent::Table(table));
+                                }
+                            } else {
+                                body.content.push(BlockContent::Table(table));
+                            }
                         }
                     }
                     name if name == EL_TBL_PR => {
@@ -4688,9 +4877,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_P && current_para.is_some() => {
                         if let Some(mut para) = current_para.take() {
                             para.properties = current_ppr.take();
-                            // Add to cell if inside table, otherwise to body
+                            // Add to cell if inside table, SDT if inside content control, otherwise to body
                             if let Some(cell) = current_cell.as_mut() {
                                 cell.paragraphs.push(para);
+                            } else if in_sdt_content {
+                                if let Some(sdt) = current_sdt.as_mut() {
+                                    sdt.content.push(BlockContent::Paragraph(para));
+                                }
                             } else {
                                 body.content.push(BlockContent::Paragraph(para));
                             }
@@ -4814,6 +5007,30 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             && let Some(run) = current_run.as_mut()
                         {
                             run.drawings.push(drawing);
+                        }
+                    }
+                    // End of SDT properties
+                    name if name == EL_SDT_PR => {
+                        in_sdt_pr = false;
+                    }
+                    // End of SDT content
+                    name if name == EL_SDT_CONTENT => {
+                        in_sdt_content = false;
+                    }
+                    // End of SDT - add to body or cell
+                    name if name == EL_SDT => {
+                        if let Some(sdt) = current_sdt.take() {
+                            if let Some(cell) = current_cell.as_mut() {
+                                // SDTs in table cells - add content directly to cell
+                                // (cell doesn't support SDT directly, so flatten)
+                                for block in sdt.content {
+                                    if let BlockContent::Paragraph(para) = block {
+                                        cell.paragraphs.push(para);
+                                    }
+                                }
+                            } else {
+                                body.content.push(BlockContent::ContentControl(sdt));
+                            }
                         }
                     }
                     _ => {}

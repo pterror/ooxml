@@ -5,10 +5,11 @@
 
 use crate::document::{
     AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
-    CellWidth, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink, InlineImage,
-    NumberingProperties, PageOrientation, Paragraph, ParagraphBorders, ParagraphContent,
-    ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties, SectionProperties,
-    TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge, WrapType,
+    CellWidth, ContentControl, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink,
+    InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphBorders,
+    ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties,
+    SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge,
+    WrapType,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -325,10 +326,7 @@ pub fn serialize_document(body: &Body) -> String {
 /// Serialize body contents.
 fn serialize_body(body: &Body, xml: &mut String) {
     for block in body.content() {
-        match block {
-            BlockContent::Paragraph(para) => serialize_paragraph(para, xml),
-            BlockContent::Table(table) => serialize_table(table, xml),
-        }
+        serialize_block_content(block, xml);
     }
     // Section properties (must come after all block content)
     if let Some(sect_pr) = body.section_properties() {
@@ -336,6 +334,47 @@ fn serialize_body(body: &Body, xml: &mut String) {
     }
     // Write unknown children preserved for round-trip fidelity
     serialize_unknown_children(&body.unknown_children, xml);
+}
+
+/// Serialize a block content element.
+fn serialize_block_content(block: &BlockContent, xml: &mut String) {
+    match block {
+        BlockContent::Paragraph(para) => serialize_paragraph(para, xml),
+        BlockContent::Table(table) => serialize_table(table, xml),
+        BlockContent::ContentControl(sdt) => serialize_content_control(sdt, xml),
+    }
+}
+
+/// Serialize a content control (SDT).
+fn serialize_content_control(sdt: &ContentControl, xml: &mut String) {
+    xml.push_str("<w:sdt>");
+
+    // SDT properties
+    let has_props = sdt.tag.is_some() || sdt.alias.is_some();
+    if has_props {
+        xml.push_str("<w:sdtPr>");
+        if let Some(tag) = &sdt.tag {
+            xml.push_str("<w:tag w:val=\"");
+            xml.push_str(&escape_xml(tag));
+            xml.push_str("\"/>");
+        }
+        if let Some(alias) = &sdt.alias {
+            xml.push_str("<w:alias w:val=\"");
+            xml.push_str(&escape_xml(alias));
+            xml.push_str("\"/>");
+        }
+        xml.push_str("</w:sdtPr>");
+    }
+
+    // SDT content
+    xml.push_str("<w:sdtContent>");
+    for block in &sdt.content {
+        serialize_block_content(block, xml);
+    }
+    xml.push_str("</w:sdtContent>");
+
+    serialize_unknown_children(&sdt.unknown_children, xml);
+    xml.push_str("</w:sdt>");
 }
 
 /// Serialize section properties.

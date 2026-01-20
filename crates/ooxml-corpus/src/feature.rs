@@ -311,6 +311,12 @@ fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_de
                 }
             }
         }
+        BlockContent::ContentControl(sdt) => {
+            // Process content control's nested content
+            for block in sdt.content() {
+                process_block(block, features, table_depth);
+            }
+        }
     }
 }
 

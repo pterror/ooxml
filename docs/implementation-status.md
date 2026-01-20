@@ -18,7 +18,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 |---------|--------|-------|
 | `w:p` | ✅ | Paragraphs |
 | `w:tbl` | ✅ | Tables |
-| `w:sdt` | ❌ | Structured document tags (content controls) |
+| `w:sdt` | ✅ | Structured document tags (content controls) |
 | `w:customXml` | ❌ | Custom XML blocks |
 
 ### Paragraph Content
@@ -211,7 +211,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 10. **Footnotes/Endnotes** - 🔶 References parsed, content parts pending
 11. **Comments** - 🔶 References and ranges parsed, content parts pending
 12. ~~**Superscript/Subscript**~~ ✅ Now implemented
-13. **Content controls** - Enterprise/form documents
+13. ~~**Content controls**~~ ✅ Now supports structured document tags (w:sdt)
 
 ## Roundtrip Preservation
 
