@@ -4,6 +4,7 @@ members = [
     "crates/ooxml",
     "crates/ooxml-wml",
     "crates/ooxml-sml",
+    "crates/ooxml-pml",
     "crates/ooxml-codegen",
     "crates/ooxml-corpus",
 ]
@@ -19,6 +20,7 @@ repository = "https://github.com/pterror/ooxml"
 ooxml = { path = "crates/ooxml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
 ooxml-sml = { path = "crates/ooxml-sml" }
+ooxml-pml = { path = "crates/ooxml-pml" }
 ooxml-codegen = { path = "crates/ooxml-codegen" }
 ooxml-corpus = { path = "crates/ooxml-corpus" }
 
