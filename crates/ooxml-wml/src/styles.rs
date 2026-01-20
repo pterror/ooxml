@@ -19,7 +19,7 @@
 //! }
 //! ```
 
-use crate::document::{ParagraphProperties, RunProperties};
+use crate::document::{ParagraphProperties, RunProperties, UnderlineStyle};
 use crate::error::{Error, Result};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -190,11 +190,14 @@ pub fn merge_run_properties(target: &mut RunProperties, source: &RunProperties) 
     if source.italic {
         target.italic = true;
     }
-    if source.underline {
-        target.underline = true;
+    if source.underline.is_some() {
+        target.underline = source.underline;
     }
     if source.strike {
         target.strike = true;
+    }
+    if source.double_strike {
+        target.double_strike = true;
     }
     if source.size.is_some() {
         target.size = source.size;
@@ -204,6 +207,21 @@ pub fn merge_run_properties(target: &mut RunProperties, source: &RunProperties) 
     }
     if source.style.is_some() {
         target.style = source.style.clone();
+    }
+    if source.color.is_some() {
+        target.color = source.color.clone();
+    }
+    if source.highlight.is_some() {
+        target.highlight = source.highlight;
+    }
+    if source.vertical_align.is_some() {
+        target.vertical_align = source.vertical_align;
+    }
+    if source.all_caps {
+        target.all_caps = true;
+    }
+    if source.small_caps {
+        target.small_caps = true;
     }
 }
 
@@ -318,12 +336,24 @@ fn parse_styles<R: Read>(reader: R) -> Result<Styles> {
                             rpr.italic = parse_toggle_val(&e);
                         }
                         name if name == EL_U => {
-                            rpr.underline = true;
+                            let mut style = UnderlineStyle::Single;
                             for attr in e.attributes().filter_map(|a| a.ok()) {
                                 let key = local_name(attr.key.as_ref());
-                                if key == b"val" && attr.value.as_ref() == b"none" {
-                                    rpr.underline = false;
+                                if key == b"val" {
+                                    if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                        if let Some(parsed) = UnderlineStyle::parse(s) {
+                                            style = parsed;
+                                        } else {
+                                            rpr.underline = None;
+                                            break;
+                                        }
+                                    }
+                                    rpr.underline = Some(style);
+                                    break;
                                 }
+                            }
+                            if rpr.underline.is_none() {
+                                rpr.underline = Some(UnderlineStyle::Single);
                             }
                         }
                         name if name == EL_STRIKE => {

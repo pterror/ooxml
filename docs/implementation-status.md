@@ -10,7 +10,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 |---------|--------|-------|
 | `w:document` | ✅ | Root element |
 | `w:body` | ✅ | Document body |
-| `w:sectPr` | ❌ | Section properties (page size, margins) |
+| `w:sectPr` | ✅ | Section properties (page size, margins, orientation) |
 
 ### Block-Level Content
 
@@ -72,18 +72,28 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:rStyle` | ✅ | Character style reference |
 | `w:b` | ✅ | Bold |
 | `w:i` | ✅ | Italic |
-| `w:u` | ✅ | Underline (presence only, not style) |
+| `w:u` | ✅ | Underline with styles (single, double, wavy, dotted, etc.) |
 | `w:strike` | ✅ | Strikethrough |
-| `w:dstrike` | ❌ | Double strikethrough |
+| `w:dstrike` | ✅ | Double strikethrough |
 | `w:color` | ✅ | Text color |
 | `w:sz` | ✅ | Font size (in half-points) |
 | `w:rFonts` | ✅ | Font (ascii attribute only) |
-| `w:highlight` | ❌ | Highlight color |
-| `w:vertAlign` | ❌ | Superscript/subscript |
-| `w:caps` | ❌ | All capitals |
-| `w:smallCaps` | ❌ | Small capitals |
+| `w:highlight` | ✅ | Highlight color (16 standard colors) |
+| `w:vertAlign` | ✅ | Superscript/subscript |
+| `w:caps` | ✅ | All capitals |
+| `w:smallCaps` | ✅ | Small capitals |
 | `w:vanish` | ❌ | Hidden text |
 | `w:shd` | ❌ | Shading/background |
+
+### Section Properties (`w:sectPr`)
+
+| Property | Status | Notes |
+|----------|--------|-------|
+| `w:pgSz` | ✅ | Page size (width, height, orientation) |
+| `w:pgMar` | ✅ | Page margins (top, bottom, left, right, header, footer, gutter) |
+| `w:cols` | ❌ | Column definitions |
+| `w:docGrid` | ❌ | Document grid settings |
+| `w:type` | ❌ | Section type (continuous, nextPage, etc.) |
 
 ### Table Elements
 
@@ -150,11 +160,24 @@ This document tracks what's implemented, partially implemented, and missing in t
 | Bold | ✅ |
 | Italic | ✅ |
 | Underline | ✅ |
+| Underline styles | ✅ |
 | Strikethrough | ✅ |
+| Double strikethrough | ✅ |
 | Font size | ✅ |
 | Font family | ✅ |
 | Text color | ✅ |
-| Highlight | ❌ |
+| Highlight | ✅ |
+| Superscript/subscript | ✅ |
+| All caps | ✅ |
+| Small caps | ✅ |
+
+### Section Properties Written
+
+| Property | Status |
+|----------|--------|
+| Page size | ✅ |
+| Page orientation | ✅ |
+| Page margins | ✅ |
 
 ## Priority Gaps
 
@@ -162,8 +185,8 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 ### High Priority (affects 20%+ of documents)
 
-1. **Underline styles** - We detect underline but not the style (single, double, wavy, etc.)
-2. **Highlight colors** - Text highlighting is common
+1. ~~**Underline styles**~~ ✅ Now supports all 17 underline styles
+2. ~~**Highlight colors**~~ ✅ Now supports all 16 standard highlight colors
 3. **Table cell properties** - Borders, shading, merging
 
 ### Medium Priority (affects 5-20% of documents)
@@ -176,11 +199,15 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 7. **Footnotes/Endnotes** - ~3% of documents
 8. **Comments** - Rarely present in final documents
-9. **Superscript/Subscript** - Limited usage
+9. ~~**Superscript/Subscript**~~ ✅ Now implemented
 10. **Content controls** - Enterprise/form documents
 
 ## Roundtrip Preservation
 
-Currently, unknown elements are **not preserved** during roundtrip. This is a known limitation.
+Unknown elements and attributes **are preserved** during roundtrip via position-tracking:
 
-Future work: Add catch-all fields to store unparsed XML for roundtrip fidelity.
+- `PositionedNode` - stores unknown XML elements with their original position
+- `PositionedAttr` - stores unknown attributes with their original position
+- Elements are serialized back in their original order relative to known elements
+
+This enables lossless roundtripping of documents containing elements we don't explicitly parse.

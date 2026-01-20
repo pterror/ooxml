@@ -324,7 +324,7 @@ fn process_run(run: &ooxml_wml::Run, features: &mut DocumentFeatures) {
         if props.italic {
             features.has_italic = true;
         }
-        if props.underline {
+        if props.underline.is_some() {
             features.has_underline = true;
         }
         if props.strike {

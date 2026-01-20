@@ -4,8 +4,9 @@
 //! and saving existing documents.
 
 use crate::document::{
-    BlockContent, Body, Cell, Drawing, Hyperlink, InlineImage, NumberingProperties, Paragraph,
-    ParagraphContent, ParagraphProperties, Row, Run, RunProperties, Table,
+    BlockContent, Body, Cell, Drawing, Hyperlink, InlineImage, NumberingProperties,
+    PageOrientation, Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties,
+    SectionProperties, Table,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -327,8 +328,64 @@ fn serialize_body(body: &Body, xml: &mut String) {
             BlockContent::Table(table) => serialize_table(table, xml),
         }
     }
+    // Section properties (must come after all block content)
+    if let Some(sect_pr) = body.section_properties() {
+        serialize_section_properties(sect_pr, xml);
+    }
     // Write unknown children preserved for round-trip fidelity
     serialize_unknown_children(&body.unknown_children, xml);
+}
+
+/// Serialize section properties.
+fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
+    xml.push_str("<w:sectPr>");
+
+    // Page size
+    if let Some(pg_sz) = &props.page_size {
+        xml.push_str("<w:pgSz w:w=\"");
+        xml.push_str(&pg_sz.width.to_string());
+        xml.push_str("\" w:h=\"");
+        xml.push_str(&pg_sz.height.to_string());
+        xml.push('"');
+        if pg_sz.orientation == PageOrientation::Landscape {
+            xml.push_str(" w:orient=\"landscape\"");
+        }
+        xml.push_str("/>");
+    }
+
+    // Page margins
+    if let Some(margins) = &props.margins {
+        xml.push_str("<w:pgMar w:top=\"");
+        xml.push_str(&margins.top.to_string());
+        xml.push_str("\" w:bottom=\"");
+        xml.push_str(&margins.bottom.to_string());
+        xml.push_str("\" w:left=\"");
+        xml.push_str(&margins.left.to_string());
+        xml.push_str("\" w:right=\"");
+        xml.push_str(&margins.right.to_string());
+        xml.push('"');
+        if let Some(header) = margins.header {
+            xml.push_str(" w:header=\"");
+            xml.push_str(&header.to_string());
+            xml.push('"');
+        }
+        if let Some(footer) = margins.footer {
+            xml.push_str(" w:footer=\"");
+            xml.push_str(&footer.to_string());
+            xml.push('"');
+        }
+        if let Some(gutter) = margins.gutter {
+            xml.push_str(" w:gutter=\"");
+            xml.push_str(&gutter.to_string());
+            xml.push('"');
+        }
+        xml.push_str("/>");
+    }
+
+    // Unknown children for round-trip preservation
+    serialize_unknown_children(&props.unknown_children, xml);
+
+    xml.push_str("</w:sectPr>");
 }
 
 /// Serialize a table.
@@ -599,12 +656,17 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
     // Only output if there are properties to write
     let has_props = props.bold
         || props.italic
-        || props.underline
+        || props.underline.is_some()
         || props.strike
+        || props.double_strike
         || props.size.is_some()
         || props.font.is_some()
         || props.style.is_some()
         || props.color.is_some()
+        || props.highlight.is_some()
+        || props.vertical_align.is_some()
+        || props.all_caps
+        || props.small_caps
         || !props.unknown_children.is_empty();
 
     if !has_props {
@@ -629,12 +691,35 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         xml.push_str("<w:i/>");
     }
 
-    if props.underline {
-        xml.push_str(r#"<w:u w:val="single"/>"#);
+    if let Some(underline) = props.underline {
+        xml.push_str(&format!(r#"<w:u w:val="{}"/>"#, underline.as_str()));
     }
 
     if props.strike {
         xml.push_str("<w:strike/>");
+    }
+
+    if props.double_strike {
+        xml.push_str("<w:dstrike/>");
+    }
+
+    if props.all_caps {
+        xml.push_str("<w:caps/>");
+    }
+
+    if props.small_caps {
+        xml.push_str("<w:smallCaps/>");
+    }
+
+    if let Some(highlight) = props.highlight {
+        xml.push_str(&format!(r#"<w:highlight w:val="{}"/>"#, highlight.as_str()));
+    }
+
+    if let Some(vertical_align) = props.vertical_align {
+        xml.push_str(&format!(
+            r#"<w:vertAlign w:val="{}"/>"#,
+            vertical_align.as_str()
+        ));
     }
 
     if let Some(size) = props.size {

@@ -238,6 +238,8 @@ fn content_type_from_path(path: &str) -> String {
 pub struct Body {
     /// Block-level content (paragraphs and tables in order).
     content: Vec<BlockContent>,
+    /// Section properties (page size, margins, etc.).
+    section_properties: Option<SectionProperties>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -324,6 +326,21 @@ impl Body {
             })
             .collect::<Vec<_>>()
             .join("\n")
+    }
+
+    /// Get section properties (page size, margins, etc.).
+    pub fn section_properties(&self) -> Option<&SectionProperties> {
+        self.section_properties.as_ref()
+    }
+
+    /// Get mutable reference to section properties.
+    pub fn section_properties_mut(&mut self) -> &mut Option<SectionProperties> {
+        &mut self.section_properties
+    }
+
+    /// Set section properties.
+    pub fn set_section_properties(&mut self, props: SectionProperties) {
+        self.section_properties = Some(props);
     }
 }
 
@@ -692,6 +709,112 @@ impl Alignment {
     }
 }
 
+/// Section properties defining page layout.
+///
+/// Corresponds to the `<w:sectPr>` element.
+/// ECMA-376 Part 1, Section 17.6.17 (sectPr).
+#[derive(Debug, Clone, Default)]
+pub struct SectionProperties {
+    /// Page size (width and height).
+    pub page_size: Option<PageSize>,
+    /// Page margins.
+    pub margins: Option<PageMargins>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Page size definition.
+///
+/// Corresponds to the `<w:pgSz>` element.
+/// ECMA-376 Part 1, Section 17.6.13 (pgSz).
+#[derive(Debug, Clone, Copy)]
+pub struct PageSize {
+    /// Page width in twips (1/20 of a point, 1440 twips = 1 inch).
+    pub width: u32,
+    /// Page height in twips.
+    pub height: u32,
+    /// Page orientation.
+    pub orientation: PageOrientation,
+}
+
+impl Default for PageSize {
+    fn default() -> Self {
+        // US Letter: 8.5" x 11" = 12240 x 15840 twips
+        Self {
+            width: 12240,
+            height: 15840,
+            orientation: PageOrientation::Portrait,
+        }
+    }
+}
+
+/// Page orientation.
+///
+/// ECMA-376 Part 1, Section 17.18.65 (ST_PageOrientation).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PageOrientation {
+    /// Portrait orientation (default).
+    #[default]
+    Portrait,
+    /// Landscape orientation.
+    Landscape,
+}
+
+impl PageOrientation {
+    /// Parse from the w:orient attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "landscape" => PageOrientation::Landscape,
+            _ => PageOrientation::Portrait,
+        }
+    }
+
+    /// Convert to the w:orient attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            PageOrientation::Portrait => "portrait",
+            PageOrientation::Landscape => "landscape",
+        }
+    }
+}
+
+/// Page margins.
+///
+/// Corresponds to the `<w:pgMar>` element.
+/// ECMA-376 Part 1, Section 17.6.11 (pgMar).
+#[derive(Debug, Clone, Copy)]
+pub struct PageMargins {
+    /// Top margin in twips.
+    pub top: i32,
+    /// Bottom margin in twips.
+    pub bottom: i32,
+    /// Left margin in twips.
+    pub left: u32,
+    /// Right margin in twips.
+    pub right: u32,
+    /// Header distance from page edge in twips.
+    pub header: Option<u32>,
+    /// Footer distance from page edge in twips.
+    pub footer: Option<u32>,
+    /// Gutter margin in twips.
+    pub gutter: Option<u32>,
+}
+
+impl Default for PageMargins {
+    fn default() -> Self {
+        // Standard 1" margins = 1440 twips
+        Self {
+            top: 1440,
+            bottom: 1440,
+            left: 1440,
+            right: 1440,
+            header: None,
+            footer: None,
+            gutter: None,
+        }
+    }
+}
+
 /// Properties of a paragraph.
 ///
 /// Corresponds to the `<w:pPr>` element.
@@ -835,7 +958,58 @@ impl Run {
 
     /// Check if the run is underlined.
     pub fn is_underline(&self) -> bool {
-        self.properties.as_ref().is_some_and(|p| p.underline)
+        self.properties
+            .as_ref()
+            .is_some_and(|p| p.underline.is_some())
+    }
+
+    /// Get the underline style, if any.
+    pub fn underline_style(&self) -> Option<UnderlineStyle> {
+        self.properties.as_ref().and_then(|p| p.underline)
+    }
+
+    /// Check if the run has strikethrough.
+    pub fn is_strikethrough(&self) -> bool {
+        self.properties.as_ref().is_some_and(|p| p.strike)
+    }
+
+    /// Check if the run has double strikethrough.
+    pub fn is_double_strikethrough(&self) -> bool {
+        self.properties.as_ref().is_some_and(|p| p.double_strike)
+    }
+
+    /// Get the highlight color, if any.
+    pub fn highlight(&self) -> Option<HighlightColor> {
+        self.properties.as_ref().and_then(|p| p.highlight)
+    }
+
+    /// Get the vertical alignment (superscript/subscript), if any.
+    pub fn vertical_align(&self) -> Option<VerticalAlign> {
+        self.properties.as_ref().and_then(|p| p.vertical_align)
+    }
+
+    /// Check if the run is superscript.
+    pub fn is_superscript(&self) -> bool {
+        self.properties
+            .as_ref()
+            .is_some_and(|p| p.vertical_align == Some(VerticalAlign::Superscript))
+    }
+
+    /// Check if the run is subscript.
+    pub fn is_subscript(&self) -> bool {
+        self.properties
+            .as_ref()
+            .is_some_and(|p| p.vertical_align == Some(VerticalAlign::Subscript))
+    }
+
+    /// Check if the run is all caps.
+    pub fn is_all_caps(&self) -> bool {
+        self.properties.as_ref().is_some_and(|p| p.all_caps)
+    }
+
+    /// Check if the run is small caps.
+    pub fn is_small_caps(&self) -> bool {
+        self.properties.as_ref().is_some_and(|p| p.small_caps)
     }
 
     /// Get drawings (images) in this run.
@@ -961,6 +1135,206 @@ impl InlineImage {
     }
 }
 
+/// Underline style for text.
+///
+/// Corresponds to the `w:val` attribute of `<w:u>`.
+/// Reference: ECMA-376 Part 1, §17.18.99 (ST_Underline)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum UnderlineStyle {
+    /// Single line underline (default).
+    #[default]
+    Single,
+    /// Double line underline.
+    Double,
+    /// Thick single line.
+    Thick,
+    /// Dotted underline.
+    Dotted,
+    /// Dotted heavy underline.
+    DottedHeavy,
+    /// Dashed underline.
+    Dash,
+    /// Dashed heavy underline.
+    DashedHeavy,
+    /// Long dashed underline.
+    DashLong,
+    /// Long dashed heavy underline.
+    DashLongHeavy,
+    /// Dot-dash underline.
+    DotDash,
+    /// Dot-dash heavy underline.
+    DashDotHeavy,
+    /// Dot-dot-dash underline.
+    DotDotDash,
+    /// Dot-dot-dash heavy underline.
+    DashDotDotHeavy,
+    /// Wavy underline.
+    Wave,
+    /// Wavy heavy underline.
+    WavyHeavy,
+    /// Double wavy underline.
+    WavyDouble,
+    /// Words only (spaces not underlined).
+    Words,
+}
+
+impl UnderlineStyle {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "single" => Some(Self::Single),
+            "double" => Some(Self::Double),
+            "thick" => Some(Self::Thick),
+            "dotted" => Some(Self::Dotted),
+            "dottedHeavy" => Some(Self::DottedHeavy),
+            "dash" => Some(Self::Dash),
+            "dashedHeavy" => Some(Self::DashedHeavy),
+            "dashLong" => Some(Self::DashLong),
+            "dashLongHeavy" => Some(Self::DashLongHeavy),
+            "dotDash" => Some(Self::DotDash),
+            "dashDotHeavy" => Some(Self::DashDotHeavy),
+            "dotDotDash" => Some(Self::DotDotDash),
+            "dashDotDotHeavy" => Some(Self::DashDotDotHeavy),
+            "wave" => Some(Self::Wave),
+            "wavyHeavy" => Some(Self::WavyHeavy),
+            "wavyDouble" => Some(Self::WavyDouble),
+            "words" => Some(Self::Words),
+            "none" => None,
+            _ => Some(Self::Single), // Default to single for unknown values
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Single => "single",
+            Self::Double => "double",
+            Self::Thick => "thick",
+            Self::Dotted => "dotted",
+            Self::DottedHeavy => "dottedHeavy",
+            Self::Dash => "dash",
+            Self::DashedHeavy => "dashedHeavy",
+            Self::DashLong => "dashLong",
+            Self::DashLongHeavy => "dashLongHeavy",
+            Self::DotDash => "dotDash",
+            Self::DashDotHeavy => "dashDotHeavy",
+            Self::DotDotDash => "dotDotDash",
+            Self::DashDotDotHeavy => "dashDotDotHeavy",
+            Self::Wave => "wave",
+            Self::WavyHeavy => "wavyHeavy",
+            Self::WavyDouble => "wavyDouble",
+            Self::Words => "words",
+        }
+    }
+}
+
+/// Highlight color for text.
+///
+/// Corresponds to the `w:val` attribute of `<w:highlight>`.
+/// Reference: ECMA-376 Part 1, §17.18.40 (ST_HighlightColor)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum HighlightColor {
+    Black,
+    Blue,
+    Cyan,
+    DarkBlue,
+    DarkCyan,
+    DarkGray,
+    DarkGreen,
+    DarkMagenta,
+    DarkRed,
+    DarkYellow,
+    Green,
+    LightGray,
+    Magenta,
+    Red,
+    White,
+    Yellow,
+}
+
+impl HighlightColor {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "black" => Some(Self::Black),
+            "blue" => Some(Self::Blue),
+            "cyan" => Some(Self::Cyan),
+            "darkBlue" => Some(Self::DarkBlue),
+            "darkCyan" => Some(Self::DarkCyan),
+            "darkGray" => Some(Self::DarkGray),
+            "darkGreen" => Some(Self::DarkGreen),
+            "darkMagenta" => Some(Self::DarkMagenta),
+            "darkRed" => Some(Self::DarkRed),
+            "darkYellow" => Some(Self::DarkYellow),
+            "green" => Some(Self::Green),
+            "lightGray" => Some(Self::LightGray),
+            "magenta" => Some(Self::Magenta),
+            "red" => Some(Self::Red),
+            "white" => Some(Self::White),
+            "yellow" => Some(Self::Yellow),
+            "none" => None,
+            _ => None,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Black => "black",
+            Self::Blue => "blue",
+            Self::Cyan => "cyan",
+            Self::DarkBlue => "darkBlue",
+            Self::DarkCyan => "darkCyan",
+            Self::DarkGray => "darkGray",
+            Self::DarkGreen => "darkGreen",
+            Self::DarkMagenta => "darkMagenta",
+            Self::DarkRed => "darkRed",
+            Self::DarkYellow => "darkYellow",
+            Self::Green => "green",
+            Self::LightGray => "lightGray",
+            Self::Magenta => "magenta",
+            Self::Red => "red",
+            Self::White => "white",
+            Self::Yellow => "yellow",
+        }
+    }
+}
+
+/// Vertical alignment for text (superscript/subscript).
+///
+/// Corresponds to the `w:val` attribute of `<w:vertAlign>`.
+/// Reference: ECMA-376 Part 1, §17.18.96 (ST_VerticalAlignRun)
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VerticalAlign {
+    /// Normal baseline alignment.
+    Baseline,
+    /// Superscript.
+    Superscript,
+    /// Subscript.
+    Subscript,
+}
+
+impl VerticalAlign {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "baseline" => Some(Self::Baseline),
+            "superscript" => Some(Self::Superscript),
+            "subscript" => Some(Self::Subscript),
+            _ => None,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Baseline => "baseline",
+            Self::Superscript => "superscript",
+            Self::Subscript => "subscript",
+        }
+    }
+}
+
 /// Properties of a text run.
 ///
 /// Corresponds to the `<w:rPr>` element.
@@ -970,10 +1344,12 @@ pub struct RunProperties {
     pub bold: bool,
     /// Italic formatting.
     pub italic: bool,
-    /// Underline formatting.
-    pub underline: bool,
+    /// Underline style. None means no underline.
+    pub underline: Option<UnderlineStyle>,
     /// Strike-through formatting.
     pub strike: bool,
+    /// Double strike-through formatting.
+    pub double_strike: bool,
     /// Font size in half-points.
     pub size: Option<u32>,
     /// Font name.
@@ -982,6 +1358,14 @@ pub struct RunProperties {
     pub style: Option<String>,
     /// Text color as hex RGB (e.g., "FF0000" for red, without # prefix).
     pub color: Option<String>,
+    /// Highlight/background color.
+    pub highlight: Option<HighlightColor>,
+    /// Vertical alignment (superscript/subscript).
+    pub vertical_align: Option<VerticalAlign>,
+    /// All capitals.
+    pub all_caps: bool,
+    /// Small capitals.
+    pub small_caps: bool,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -1000,6 +1384,11 @@ const EL_B: &[u8] = b"b";
 const EL_I: &[u8] = b"i";
 const EL_U: &[u8] = b"u";
 const EL_STRIKE: &[u8] = b"strike";
+const EL_DSTRIKE: &[u8] = b"dstrike";
+const EL_HIGHLIGHT: &[u8] = b"highlight";
+const EL_VERT_ALIGN: &[u8] = b"vertAlign";
+const EL_CAPS: &[u8] = b"caps";
+const EL_SMALL_CAPS: &[u8] = b"smallCaps";
 const EL_SZ: &[u8] = b"sz";
 const EL_RFONTS: &[u8] = b"rFonts";
 const EL_COLOR: &[u8] = b"color";
@@ -1028,6 +1417,11 @@ const EL_INLINE: &[u8] = b"inline";
 const EL_EXTENT: &[u8] = b"extent";
 const EL_DOCPR: &[u8] = b"docPr";
 const EL_BLIP: &[u8] = b"blip";
+
+// Section properties elements
+const EL_SECT_PR: &[u8] = b"sectPr";
+const EL_PG_SZ: &[u8] = b"pgSz";
+const EL_PG_MAR: &[u8] = b"pgMar";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -1061,6 +1455,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     // Drawing/image parsing state
     let mut current_drawing: Option<Drawing> = None;
     let mut current_image: Option<InlineImage> = None;
+
+    // Section properties parsing state
+    let mut current_sect_pr: Option<SectionProperties> = None;
+    let mut in_sect_pr = false;
+    let mut sect_pr_child_idx: usize = 0;
 
     // Child position counters for round-trip ordering preservation
     let mut body_child_idx: usize = 0;
@@ -1180,11 +1579,19 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         // Start of an inline image - create with placeholder rel_id
                         current_image = Some(InlineImage::new(""));
                     }
+                    name if name == EL_SECT_PR && in_body => {
+                        // Section properties at document level (defines last section)
+                        current_sect_pr = Some(SectionProperties::default());
+                        in_sect_pr = true;
+                        sect_pr_child_idx = 0;
+                        body_child_idx += 1;
+                    }
                     _ => {
                         // Only capture unknown elements when we're in a container context
                         // IMPORTANT: Don't capture while inside drawing/inline contexts -
                         // we need to continue parsing to find nested elements like blip
-                        let should_capture = in_rpr
+                        let should_capture = in_sect_pr
+                            || in_rpr
                             || (in_ppr && !in_numpr)
                             || (current_run.is_some()
                                 && current_drawing.is_none()
@@ -1196,14 +1603,24 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             || (current_cell.is_some() && current_para.is_none())
                             || (current_row.is_some() && current_cell.is_none())
                             || (current_table.is_some() && current_row.is_none())
-                            || (in_body && current_table.is_none() && current_para.is_none());
+                            || (in_body
+                                && current_table.is_none()
+                                && current_para.is_none()
+                                && !in_sect_pr);
 
                         if should_capture {
                             // Capture unknown elements for round-trip preservation
                             let raw = RawXmlElement::from_reader(&mut reader, &e)?;
                             let node = RawXmlNode::Element(raw);
                             // Add to the innermost active container with position
-                            if in_rpr {
+                            if in_sect_pr {
+                                if let Some(sect_pr) = current_sect_pr.as_mut() {
+                                    sect_pr
+                                        .unknown_children
+                                        .push(PositionedNode::new(sect_pr_child_idx, node));
+                                    sect_pr_child_idx += 1;
+                                }
+                            } else if in_rpr {
                                 if let Some(rpr) = current_rpr.as_mut() {
                                     rpr.unknown_children
                                         .push(PositionedNode::new(rpr_child_idx, node));
@@ -1388,20 +1805,71 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_U && in_rpr => {
                         if let Some(rpr) = current_rpr.as_mut() {
-                            // Underline is present if <w:u> exists with val != "none"
-                            rpr.underline = true;
+                            // Parse underline style from w:val attribute
+                            let mut style = UnderlineStyle::Single;
                             for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
-                                    && attr.value.as_ref() == b"none"
-                                {
-                                    rpr.underline = false;
+                                if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
+                                    if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                        if let Some(parsed) = UnderlineStyle::parse(s) {
+                                            style = parsed;
+                                        } else {
+                                            // "none" returns None, meaning no underline
+                                            rpr.underline = None;
+                                            break;
+                                        }
+                                    }
+                                    rpr.underline = Some(style);
+                                    break;
                                 }
+                            }
+                            // If no val attribute, default to single underline
+                            if rpr.underline.is_none() {
+                                rpr.underline = Some(UnderlineStyle::Single);
                             }
                         }
                     }
                     name if name == EL_STRIKE && in_rpr => {
                         if let Some(rpr) = current_rpr.as_mut() {
                             rpr.strike = parse_toggle_val(&e);
+                        }
+                    }
+                    name if name == EL_DSTRIKE && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            rpr.double_strike = parse_toggle_val(&e);
+                        }
+                    }
+                    name if name == EL_HIGHLIGHT && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
+                                    if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                        rpr.highlight = HighlightColor::parse(s);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_VERT_ALIGN && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
+                                    if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                        rpr.vertical_align = VerticalAlign::parse(s);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    name if name == EL_CAPS && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            rpr.all_caps = parse_toggle_val(&e);
+                        }
+                    }
+                    name if name == EL_SMALL_CAPS && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            rpr.small_caps = parse_toggle_val(&e);
                         }
                     }
                     name if name == EL_SZ && in_rpr => {
@@ -1483,9 +1951,78 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
+                    // Page size (w:pgSz)
+                    name if name == EL_PG_SZ && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut width = 12240u32; // Default US Letter width
+                            let mut height = 15840u32; // Default US Letter height
+                            let mut orient = PageOrientation::Portrait;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:w" | b"w" => {
+                                            width = s.parse().unwrap_or(12240);
+                                        }
+                                        b"w:h" | b"h" => {
+                                            height = s.parse().unwrap_or(15840);
+                                        }
+                                        b"w:orient" | b"orient" => {
+                                            orient = PageOrientation::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            sect_pr.page_size = Some(PageSize {
+                                width,
+                                height,
+                                orientation: orient,
+                            });
+                            sect_pr_child_idx += 1;
+                        }
+                    }
+                    // Page margins (w:pgMar)
+                    name if name == EL_PG_MAR && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut margins = PageMargins::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:top" | b"top" => {
+                                            margins.top = s.parse().unwrap_or(1440);
+                                        }
+                                        b"w:bottom" | b"bottom" => {
+                                            margins.bottom = s.parse().unwrap_or(1440);
+                                        }
+                                        b"w:left" | b"left" => {
+                                            margins.left = s.parse().unwrap_or(1440);
+                                        }
+                                        b"w:right" | b"right" => {
+                                            margins.right = s.parse().unwrap_or(1440);
+                                        }
+                                        b"w:header" | b"header" => {
+                                            margins.header = s.parse().ok();
+                                        }
+                                        b"w:footer" | b"footer" => {
+                                            margins.footer = s.parse().ok();
+                                        }
+                                        b"w:gutter" | b"gutter" => {
+                                            margins.gutter = s.parse().ok();
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            sect_pr.margins = Some(margins);
+                            sect_pr_child_idx += 1;
+                        }
+                    }
                     _ => {
                         // Only capture unknown self-closing elements when in a container context
-                        let should_capture = in_rpr
+                        let should_capture = in_sect_pr
+                            || in_rpr
                             || (in_ppr && !in_numpr)
                             || current_image.is_some()
                             || current_drawing.is_some()
@@ -1502,7 +2039,14 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             let raw = RawXmlElement::from_empty(&e);
                             let node = RawXmlNode::Element(raw);
                             // Add to the innermost active container with position
-                            if in_rpr {
+                            if in_sect_pr {
+                                if let Some(sect_pr) = current_sect_pr.as_mut() {
+                                    sect_pr
+                                        .unknown_children
+                                        .push(PositionedNode::new(sect_pr_child_idx, node));
+                                    sect_pr_child_idx += 1;
+                                }
+                            } else if in_rpr {
                                 if let Some(rpr) = current_rpr.as_mut() {
                                     rpr.unknown_children
                                         .push(PositionedNode::new(rpr_child_idx, node));
@@ -1637,6 +2181,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_RPR => {
                         in_rpr = false;
+                    }
+                    // End of section properties - add to body
+                    name if name == EL_SECT_PR => {
+                        if let Some(sect_pr) = current_sect_pr.take() {
+                            body.section_properties = Some(sect_pr);
+                        }
+                        in_sect_pr = false;
                     }
                     // End of inline image - add to current drawing
                     name if name == EL_INLINE => {
@@ -2157,5 +2708,66 @@ mod tests {
         } else {
             panic!("Expected element node");
         }
+    }
+
+    #[test]
+    fn test_parse_section_properties() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:r><w:t>Test</w:t></w:r>
+    </w:p>
+    <w:sectPr>
+      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
+      <w:pgMar w:top="1440" w:bottom="1440" w:left="1800" w:right="1800" w:header="720" w:footer="720"/>
+    </w:sectPr>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Check that section properties are parsed
+        let sect_pr = body
+            .section_properties()
+            .expect("should have section properties");
+
+        // Check page size
+        let pg_sz = sect_pr.page_size.as_ref().expect("should have page size");
+        assert_eq!(pg_sz.width, 12240);
+        assert_eq!(pg_sz.height, 15840);
+        assert_eq!(pg_sz.orientation, PageOrientation::Portrait);
+
+        // Check margins
+        let margins = sect_pr.margins.as_ref().expect("should have margins");
+        assert_eq!(margins.top, 1440);
+        assert_eq!(margins.bottom, 1440);
+        assert_eq!(margins.left, 1800);
+        assert_eq!(margins.right, 1800);
+        assert_eq!(margins.header, Some(720));
+        assert_eq!(margins.footer, Some(720));
+    }
+
+    #[test]
+    fn test_parse_section_properties_landscape() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>Test</w:t></w:r></w:p>
+    <w:sectPr>
+      <w:pgSz w:w="15840" w:h="12240" w:orient="landscape"/>
+    </w:sectPr>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+        let sect_pr = body
+            .section_properties()
+            .expect("should have section properties");
+        let pg_sz = sect_pr.page_size.as_ref().expect("should have page size");
+
+        assert_eq!(pg_sz.width, 15840);
+        assert_eq!(pg_sz.height, 12240);
+        assert_eq!(pg_sz.orientation, PageOrientation::Landscape);
     }
 }
