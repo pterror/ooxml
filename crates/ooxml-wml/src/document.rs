@@ -2021,6 +2021,8 @@ pub struct Run {
     footnote_ref: Option<FootnoteReference>,
     /// Endnote reference (if this run contains one).
     endnote_ref: Option<EndnoteReference>,
+    /// Comment reference (if this run contains one).
+    comment_ref: Option<CommentReference>,
     /// Whether this run contains a page break.
     page_break: bool,
     /// Unknown child elements preserved for round-trip fidelity.
@@ -2173,6 +2175,16 @@ pub struct FootnoteReference {
 #[derive(Debug, Clone)]
 pub struct EndnoteReference {
     /// The endnote ID (references an endnote in word/endnotes.xml).
+    pub id: u32,
+}
+
+/// A reference to a comment (the comment mark/bubble).
+///
+/// Corresponds to the `<w:commentReference>` element.
+/// ECMA-376 Part 1, Section 17.13.4.5 (commentReference).
+#[derive(Debug, Clone)]
+pub struct CommentReference {
+    /// The comment ID (references a comment in word/comments.xml).
     pub id: u32,
 }
 
@@ -2342,6 +2354,16 @@ impl Run {
     /// Set endnote reference.
     pub fn set_endnote_ref(&mut self, endnote_ref: EndnoteReference) {
         self.endnote_ref = Some(endnote_ref);
+    }
+
+    /// Get comment reference if present.
+    pub fn comment_ref(&self) -> Option<&CommentReference> {
+        self.comment_ref.as_ref()
+    }
+
+    /// Set comment reference.
+    pub fn set_comment_ref(&mut self, comment_ref: CommentReference) {
+        self.comment_ref = Some(comment_ref);
     }
 }
 
@@ -2938,6 +2960,7 @@ const EL_HEADER_REFERENCE: &[u8] = b"headerReference";
 const EL_FOOTER_REFERENCE: &[u8] = b"footerReference";
 const EL_FOOTNOTE_REFERENCE: &[u8] = b"footnoteReference";
 const EL_ENDNOTE_REFERENCE: &[u8] = b"endnoteReference";
+const EL_COMMENT_REFERENCE: &[u8] = b"commentReference";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -3424,6 +3447,19 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 && let Some(run) = current_run.as_mut()
                             {
                                 run.endnote_ref = Some(EndnoteReference { id });
+                            }
+                        }
+                    }
+                    // Comment reference
+                    name if name == EL_COMMENT_REFERENCE && current_run.is_some() => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if (key == b"w:id" || key == b"id")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                                && let Ok(id) = s.parse::<u32>()
+                                && let Some(run) = current_run.as_mut()
+                            {
+                                run.comment_ref = Some(CommentReference { id });
                             }
                         }
                     }

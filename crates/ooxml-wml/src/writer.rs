@@ -1069,6 +1069,13 @@ fn serialize_run(run: &Run, xml: &mut String) {
         xml.push_str("\"/>");
     }
 
+    // Comment reference
+    if let Some(comment_ref) = run.comment_ref() {
+        xml.push_str("<w:commentReference w:id=\"");
+        xml.push_str(&comment_ref.id.to_string());
+        xml.push_str("\"/>");
+    }
+
     // Text content
     let text = run.text();
     if !text.is_empty() {
