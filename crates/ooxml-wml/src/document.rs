@@ -569,6 +569,32 @@ pub enum ParagraphContent {
     Run(Run),
     /// A hyperlink containing runs.
     Hyperlink(Hyperlink),
+    /// Start of a bookmark.
+    BookmarkStart(BookmarkStart),
+    /// End of a bookmark.
+    BookmarkEnd(BookmarkEnd),
+}
+
+/// A bookmark start marker.
+///
+/// Corresponds to the `<w:bookmarkStart>` element.
+/// ECMA-376 Part 1, Section 17.13.6.2 (bookmarkStart).
+#[derive(Debug, Clone)]
+pub struct BookmarkStart {
+    /// Unique ID for the bookmark (matches bookmarkEnd).
+    pub id: u32,
+    /// Name of the bookmark.
+    pub name: String,
+}
+
+/// A bookmark end marker.
+///
+/// Corresponds to the `<w:bookmarkEnd>` element.
+/// ECMA-376 Part 1, Section 17.13.6.1 (bookmarkEnd).
+#[derive(Debug, Clone)]
+pub struct BookmarkEnd {
+    /// Unique ID for the bookmark (matches bookmarkStart).
+    pub id: u32,
 }
 
 /// A hyperlink in the document.
@@ -607,6 +633,9 @@ impl Paragraph {
                     for run in &link.runs {
                         runs.push(run);
                     }
+                }
+                ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
+                    // Bookmarks don't contain runs
                 }
             }
         }
@@ -667,6 +696,9 @@ impl Paragraph {
             .map(|c| match c {
                 ParagraphContent::Run(run) => run.text().to_string(),
                 ParagraphContent::Hyperlink(link) => link.text(),
+                ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
+                    String::new()
+                }
             })
             .collect()
     }
@@ -777,6 +809,8 @@ impl Alignment {
 /// ECMA-376 Part 1, Section 17.6.17 (sectPr).
 #[derive(Debug, Clone, Default)]
 pub struct SectionProperties {
+    /// Section type (how the section break behaves).
+    pub section_type: Option<SectionType>,
     /// Page size (width and height).
     pub page_size: Option<PageSize>,
     /// Page margins.
@@ -836,6 +870,48 @@ impl PageOrientation {
         match self {
             PageOrientation::Portrait => "portrait",
             PageOrientation::Landscape => "landscape",
+        }
+    }
+}
+
+/// Section type - determines how the section break behaves.
+///
+/// ECMA-376 Part 1, Section 17.18.77 (ST_SectionMark).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SectionType {
+    /// Section begins on the same page (continuous section break).
+    Continuous,
+    /// Section begins on the next even page.
+    EvenPage,
+    /// Section begins in the next column (for multi-column sections).
+    NextColumn,
+    /// Section begins on the next page (default).
+    #[default]
+    NextPage,
+    /// Section begins on the next odd page.
+    OddPage,
+}
+
+impl SectionType {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "continuous" => SectionType::Continuous,
+            "evenPage" => SectionType::EvenPage,
+            "nextColumn" => SectionType::NextColumn,
+            "oddPage" => SectionType::OddPage,
+            _ => SectionType::NextPage,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            SectionType::Continuous => "continuous",
+            SectionType::EvenPage => "evenPage",
+            SectionType::NextColumn => "nextColumn",
+            SectionType::NextPage => "nextPage",
+            SectionType::OddPage => "oddPage",
         }
     }
 }
@@ -916,6 +992,8 @@ pub struct ParagraphProperties {
     pub page_break_before: bool,
     /// Enable widow/orphan control (prevent single lines at top/bottom of page).
     pub widow_control: Option<bool>,
+    /// Custom tab stops.
+    pub tabs: Vec<TabStop>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -939,6 +1017,112 @@ pub struct ParagraphBorders {
     pub between: Option<Border>,
     /// Border around paragraph (shorthand for all sides).
     pub bar: Option<Border>,
+}
+
+/// A tab stop definition.
+///
+/// Corresponds to the `<w:tab>` element within `<w:tabs>`.
+/// ECMA-376 Part 1, Section 17.3.1.38 (tab).
+#[derive(Debug, Clone, Copy)]
+pub struct TabStop {
+    /// Position of the tab stop in twips.
+    pub position: i32,
+    /// Type of tab stop alignment.
+    pub tab_type: TabStopType,
+    /// Leader character to fill space before tab.
+    pub leader: Option<TabLeader>,
+}
+
+/// Tab stop alignment type.
+///
+/// ECMA-376 Part 1, Section 17.18.83 (ST_TabJc).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TabStopType {
+    /// Left-aligned tab stop (default).
+    #[default]
+    Left,
+    /// Center-aligned tab stop.
+    Center,
+    /// Right-aligned tab stop.
+    Right,
+    /// Decimal-aligned tab stop.
+    Decimal,
+    /// Bar tab stop (draws a vertical line).
+    Bar,
+    /// Clear tab stop at this position.
+    Clear,
+}
+
+impl TabStopType {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "center" => Self::Center,
+            "right" | "end" => Self::Right,
+            "decimal" | "num" => Self::Decimal,
+            "bar" => Self::Bar,
+            "clear" => Self::Clear,
+            _ => Self::Left,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Center => "center",
+            Self::Right => "right",
+            Self::Decimal => "decimal",
+            Self::Bar => "bar",
+            Self::Clear => "clear",
+        }
+    }
+}
+
+/// Tab leader character.
+///
+/// ECMA-376 Part 1, Section 17.18.82 (ST_TabTlc).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TabLeader {
+    /// No leader (default).
+    None,
+    /// Dot leader (....).
+    Dot,
+    /// Hyphen leader (----).
+    Hyphen,
+    /// Underscore leader (____).
+    Underscore,
+    /// Heavy line leader.
+    Heavy,
+    /// Middle dot leader (····).
+    MiddleDot,
+}
+
+impl TabLeader {
+    /// Parse from the w:leader attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "none" => Some(Self::None),
+            "dot" => Some(Self::Dot),
+            "hyphen" => Some(Self::Hyphen),
+            "underscore" => Some(Self::Underscore),
+            "heavy" => Some(Self::Heavy),
+            "middleDot" => Some(Self::MiddleDot),
+            _ => None,
+        }
+    }
+
+    /// Convert to the w:leader attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Dot => "dot",
+            Self::Hyphen => "hyphen",
+            Self::Underscore => "underscore",
+            Self::Heavy => "heavy",
+            Self::MiddleDot => "middleDot",
+        }
+    }
 }
 
 /// Numbering properties for a paragraph.
@@ -2164,6 +2348,10 @@ const EL_INSIDE_V: &[u8] = b"insideV";
 // Hyperlink element
 const EL_HYPERLINK: &[u8] = b"hyperlink";
 
+// Bookmark elements
+const EL_BOOKMARK_START: &[u8] = b"bookmarkStart";
+const EL_BOOKMARK_END: &[u8] = b"bookmarkEnd";
+
 // Numbering elements
 const EL_NUMPR: &[u8] = b"numPr";
 const EL_NUMID: &[u8] = b"numId";
@@ -2179,6 +2367,8 @@ const EL_KEEP_NEXT: &[u8] = b"keepNext";
 const EL_KEEP_LINES: &[u8] = b"keepLines";
 const EL_PAGE_BREAK_BEFORE: &[u8] = b"pageBreakBefore";
 const EL_WIDOW_CONTROL: &[u8] = b"widowControl";
+const EL_TABS: &[u8] = b"tabs";
+const EL_TAB_DEF: &[u8] = b"tab"; // Tab definition in w:tabs (not the tab character in runs)
 const EL_BETWEEN: &[u8] = b"between";
 const EL_BAR: &[u8] = b"bar";
 
@@ -2193,6 +2383,7 @@ const EL_BLIP: &[u8] = b"blip";
 const EL_SECT_PR: &[u8] = b"sectPr";
 const EL_PG_SZ: &[u8] = b"pgSz";
 const EL_PG_MAR: &[u8] = b"pgMar";
+const EL_SECT_TYPE: &[u8] = b"type";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -2226,6 +2417,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     // Paragraph border parsing state
     let mut in_p_bdr = false;
     let mut current_p_borders: Option<ParagraphBorders> = None;
+
+    // Tab stops parsing state
+    let mut in_tabs = false;
+    let mut current_tabs: Vec<TabStop> = Vec::new();
 
     // Drawing/image parsing state
     let mut current_drawing: Option<Drawing> = None;
@@ -2399,6 +2594,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         current_p_borders = Some(ParagraphBorders::default());
                         ppr_child_idx += 1;
                     }
+                    name if name == EL_TABS && in_ppr => {
+                        in_tabs = true;
+                        current_tabs.clear();
+                        ppr_child_idx += 1;
+                    }
                     name if name == EL_RPR && current_run.is_some() => {
                         in_rpr = true;
                         current_rpr = Some(RunProperties::default());
@@ -2532,6 +2732,49 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         // Tab character
                         if let Some(run) = current_run.as_mut() {
                             run.text.push('\t');
+                        }
+                    }
+                    // Bookmark start
+                    name if name == EL_BOOKMARK_START && current_para.is_some() => {
+                        let mut id = 0u32;
+                        let mut bookmark_name = String::new();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:id" | b"id" => {
+                                        id = s.parse().unwrap_or(0);
+                                    }
+                                    b"w:name" | b"name" => {
+                                        bookmark_name = s.to_string();
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                        if let Some(para) = current_para.as_mut() {
+                            para.content
+                                .push(ParagraphContent::BookmarkStart(BookmarkStart {
+                                    id,
+                                    name: bookmark_name,
+                                }));
+                            para_child_idx += 1;
+                        }
+                    }
+                    // Bookmark end
+                    name if name == EL_BOOKMARK_END && current_para.is_some() => {
+                        let mut id = 0u32;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:id" || attr.key.as_ref() == b"id")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                id = s.parse().unwrap_or(0);
+                            }
+                        }
+                        if let Some(para) = current_para.as_mut() {
+                            para.content
+                                .push(ParagraphContent::BookmarkEnd(BookmarkEnd { id }));
+                            para_child_idx += 1;
                         }
                     }
                     name if name == EL_PSTYLE && in_ppr => {
@@ -2699,6 +2942,34 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         if let Some(borders) = current_p_borders.as_mut() {
                             borders.bar = Some(parse_border(&e));
                         }
+                    }
+                    // Tab stop definition (w:tab in w:tabs)
+                    name if name == EL_TAB_DEF && in_tabs => {
+                        let mut position: i32 = 0;
+                        let mut tab_type = TabStopType::Left;
+                        let mut leader = None;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:pos" | b"pos" => {
+                                        position = s.parse().unwrap_or(0);
+                                    }
+                                    b"w:val" | b"val" => {
+                                        tab_type = TabStopType::parse(s);
+                                    }
+                                    b"w:leader" | b"leader" => {
+                                        leader = TabLeader::parse(s);
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                        current_tabs.push(TabStop {
+                            position,
+                            tab_type,
+                            leader,
+                        });
                     }
                     name if name == EL_RSTYLE && in_rpr => {
                         if let Some(rpr) = current_rpr.as_mut() {
@@ -2985,6 +3256,20 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 }
                             }
                             sect_pr.margins = Some(margins);
+                            sect_pr_child_idx += 1;
+                        }
+                    }
+                    // Section type (w:type)
+                    name if name == EL_SECT_TYPE && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value)
+                                    && (key == b"w:val" || key == b"val")
+                                {
+                                    sect_pr.section_type = Some(SectionType::parse(s));
+                                }
+                            }
                             sect_pr_child_idx += 1;
                         }
                     }
@@ -3496,6 +3781,12 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             ppr.borders = Some(borders);
                         }
                         in_p_bdr = false;
+                    }
+                    name if name == EL_TABS => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            ppr.tabs = std::mem::take(&mut current_tabs);
+                        }
+                        in_tabs = false;
                     }
                     name if name == EL_PPR => {
                         in_ppr = false;

@@ -282,6 +282,9 @@ fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_de
                             process_run(run, features);
                         }
                     }
+                    ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
+                        // Bookmarks don't affect feature counts currently
+                    }
                 }
             }
         }

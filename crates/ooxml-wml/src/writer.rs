@@ -7,8 +7,8 @@ use crate::document::{
     BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth, Drawing,
     GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation,
     Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row, RowHeight,
-    RowProperties, Run, RunProperties, SectionProperties, Table, TableBorders, TableProperties,
-    TableWidth, VerticalMerge,
+    RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
+    TableProperties, TableWidth, VerticalMerge,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -341,6 +341,13 @@ fn serialize_body(body: &Body, xml: &mut String) {
 /// Serialize section properties.
 fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
     xml.push_str("<w:sectPr>");
+
+    // Section type
+    if let Some(section_type) = &props.section_type {
+        xml.push_str("<w:type w:val=\"");
+        xml.push_str(section_type.as_str());
+        xml.push_str("\"/>");
+    }
 
     // Page size
     if let Some(pg_sz) = &props.page_size {
@@ -701,11 +708,21 @@ fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
         serialize_paragraph_properties(props, xml);
     }
 
-    // Content (runs and hyperlinks)
+    // Content (runs, hyperlinks, bookmarks)
     for content in para.content() {
         match content {
             ParagraphContent::Run(run) => serialize_run(run, xml),
             ParagraphContent::Hyperlink(link) => serialize_hyperlink(link, xml),
+            ParagraphContent::BookmarkStart(bookmark) => {
+                xml.push_str(&format!(
+                    r#"<w:bookmarkStart w:id="{}" w:name="{}"/>"#,
+                    bookmark.id,
+                    escape_xml(&bookmark.name)
+                ));
+            }
+            ParagraphContent::BookmarkEnd(bookmark) => {
+                xml.push_str(&format!(r#"<w:bookmarkEnd w:id="{}"/>"#, bookmark.id));
+            }
         }
     }
 
@@ -827,8 +844,32 @@ fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String)
         }
     }
 
+    // Tab stops
+    if !props.tabs.is_empty() {
+        serialize_tab_stops(&props.tabs, xml);
+    }
+
     serialize_unknown_children(&props.unknown_children, xml);
     xml.push_str("</w:pPr>");
+}
+
+/// Serialize tab stops.
+fn serialize_tab_stops(tabs: &[TabStop], xml: &mut String) {
+    xml.push_str("<w:tabs>");
+    for tab in tabs {
+        xml.push_str("<w:tab w:val=\"");
+        xml.push_str(tab.tab_type.as_str());
+        xml.push_str("\" w:pos=\"");
+        xml.push_str(&tab.position.to_string());
+        xml.push('"');
+        if let Some(leader) = tab.leader {
+            xml.push_str(" w:leader=\"");
+            xml.push_str(leader.as_str());
+            xml.push('"');
+        }
+        xml.push_str("/>");
+    }
+    xml.push_str("</w:tabs>");
 }
 
 /// Serialize paragraph borders.

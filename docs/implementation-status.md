@@ -27,8 +27,8 @@ This document tracks what's implemented, partially implemented, and missing in t
 |---------|--------|-------|
 | `w:r` | ✅ | Runs (text spans) |
 | `w:hyperlink` | ✅ | Hyperlinks |
-| `w:bookmarkStart` | ❌ | Bookmark anchors |
-| `w:bookmarkEnd` | ❌ | Bookmark anchors |
+| `w:bookmarkStart` | ✅ | Bookmark anchors |
+| `w:bookmarkEnd` | ✅ | Bookmark anchors |
 | `w:commentRangeStart` | ❌ | Comment anchors |
 | `w:commentRangeEnd` | ❌ | Comment anchors |
 | `w:fldSimple` | ❌ | Simple fields |
@@ -58,7 +58,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:numPr` | ✅ | List numbering |
 | `w:pBdr` | ✅ | Paragraph borders (top, bottom, left, right, between, bar) |
 | `w:shd` | ✅ | Shading/background |
-| `w:tabs` | ❌ | Tab stop definitions |
+| `w:tabs` | ✅ | Tab stop definitions |
 | `w:outlineLvl` | ✅ | Outline level (0-9) |
 | `w:keepNext` | ✅ | Keep with next paragraph |
 | `w:keepLines` | ✅ | Keep lines together |
@@ -93,7 +93,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:pgMar` | ✅ | Page margins (top, bottom, left, right, header, footer, gutter) |
 | `w:cols` | ❌ | Column definitions |
 | `w:docGrid` | ❌ | Document grid settings |
-| `w:type` | ❌ | Section type (continuous, nextPage, etc.) |
+| `w:type` | ✅ | Section type (continuous, nextPage, etc.) |
 
 ### Table Elements
 
@@ -204,7 +204,7 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 7. **Headers/Footers** - Present in ~8% of documents
 8. **Anchored images** - Floating images exist but are rarer than inline
-9. **Tab stops** - Custom tab stops (we handle `w:tab` characters)
+9. ~~**Tab stops**~~ ✅ Now supports custom tab stop definitions
 
 ### Lower Priority (affects <5% of documents)
 
