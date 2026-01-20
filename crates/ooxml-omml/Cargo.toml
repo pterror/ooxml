@@ -1,0 +1,11 @@
+[package]
+name = "ooxml-omml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Office Math Markup Language (OMML) support for the ooxml library"
+
+[dependencies]
+quick-xml.workspace = true
+thiserror.workspace = true

@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/ooxml",
     "crates/ooxml-dml",
+    "crates/ooxml-omml",
     "crates/ooxml-wml",
     "crates/ooxml-sml",
     "crates/ooxml-pml",
@@ -23,6 +24,7 @@ ooxml-dml = { path = "crates/ooxml-dml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
 ooxml-sml = { path = "crates/ooxml-sml" }
 ooxml-pml = { path = "crates/ooxml-pml" }
+ooxml-omml = { path = "crates/ooxml-omml" }
 ooxml-codegen = { path = "crates/ooxml-codegen" }
 ooxml-corpus = { path = "crates/ooxml-corpus" }
 

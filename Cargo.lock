@@ -596,6 +596,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ooxml-omml"
+version = "0.1.0"
+dependencies = [
+ "quick-xml",
+ "thiserror",
+]
+
+[[package]]
 name = "ooxml-pml"
 version = "0.1.0"
 dependencies = [
