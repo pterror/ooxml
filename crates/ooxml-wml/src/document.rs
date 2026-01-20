@@ -247,6 +247,7 @@ pub struct Body {
 
 /// Block-level content in the document body.
 #[derive(Debug, Clone)]
+#[allow(clippy::large_enum_variant)] // Table is larger due to properties/grid, but boxing adds indirection
 pub enum BlockContent {
     /// A paragraph.
     Paragraph(Paragraph),
@@ -349,6 +350,10 @@ impl Body {
 /// Corresponds to the `<w:tbl>` element.
 #[derive(Debug, Clone, Default)]
 pub struct Table {
+    /// Table properties.
+    properties: Option<TableProperties>,
+    /// Grid column definitions (defines the column structure).
+    grid_columns: Vec<GridColumn>,
     /// Rows in the table.
     rows: Vec<Row>,
     /// Unknown child elements preserved for round-trip fidelity.
@@ -388,6 +393,26 @@ impl Table {
         self.rows.first().map(|r| r.cells().len()).unwrap_or(0)
     }
 
+    /// Get table properties.
+    pub fn properties(&self) -> Option<&TableProperties> {
+        self.properties.as_ref()
+    }
+
+    /// Get mutable reference to table properties.
+    pub fn properties_mut(&mut self) -> &mut Option<TableProperties> {
+        &mut self.properties
+    }
+
+    /// Get grid column definitions.
+    pub fn grid_columns(&self) -> &[GridColumn] {
+        &self.grid_columns
+    }
+
+    /// Get mutable reference to grid columns.
+    pub fn grid_columns_mut(&mut self) -> &mut Vec<GridColumn> {
+        &mut self.grid_columns
+    }
+
     /// Extract all text from the table.
     pub fn text(&self) -> String {
         self.rows
@@ -403,6 +428,8 @@ impl Table {
 /// Corresponds to the `<w:tr>` element.
 #[derive(Debug, Clone, Default)]
 pub struct Row {
+    /// Row properties.
+    properties: Option<RowProperties>,
     /// Cells in the row.
     cells: Vec<Cell>,
     /// Unknown child elements preserved for round-trip fidelity.
@@ -430,6 +457,24 @@ impl Row {
     pub fn add_cell(&mut self) -> &mut Cell {
         self.cells.push(Cell::new());
         self.cells.last_mut().unwrap()
+    }
+
+    /// Get row properties.
+    pub fn properties(&self) -> Option<&RowProperties> {
+        self.properties.as_ref()
+    }
+
+    /// Get mutable reference to row properties.
+    pub fn properties_mut(&mut self) -> &mut Option<RowProperties> {
+        &mut self.properties
+    }
+
+    /// Check if this row is a header row.
+    pub fn is_header(&self) -> bool {
+        self.properties
+            .as_ref()
+            .map(|p| p.is_header)
+            .unwrap_or(false)
     }
 
     /// Extract all text from the row (cells separated by tabs).
@@ -874,6 +919,192 @@ pub struct NumberingProperties {
     pub ilvl: u32,
 }
 
+/// Properties of a table.
+///
+/// Corresponds to the `<w:tblPr>` element.
+/// ECMA-376 Part 1, Section 17.4.59 (tblPr).
+#[derive(Debug, Clone, Default)]
+pub struct TableProperties {
+    /// Table width.
+    pub width: Option<TableWidth>,
+    /// Table justification/alignment.
+    pub justification: Option<TableJustification>,
+    /// Table indentation from leading margin.
+    pub indent: Option<i32>,
+    /// Table borders.
+    pub borders: Option<TableBorders>,
+    /// Table shading/background.
+    pub shading: Option<CellShading>,
+    /// Table layout algorithm.
+    pub layout: Option<TableLayout>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Table width specification.
+///
+/// Corresponds to the `<w:tblW>` element.
+#[derive(Debug, Clone, Copy)]
+pub struct TableWidth {
+    /// Width value (interpretation depends on width_type).
+    pub width: i32,
+    /// Width type.
+    pub width_type: WidthType,
+}
+
+/// Table justification/alignment.
+///
+/// ECMA-376 Part 1, Section 17.18.45 (ST_Jc) for table alignment.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TableJustification {
+    /// Left aligned (default).
+    #[default]
+    Left,
+    /// Center aligned.
+    Center,
+    /// Right aligned.
+    Right,
+}
+
+impl TableJustification {
+    /// Parse from the w:val attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "center" => Self::Center,
+            "right" | "end" => Self::Right,
+            _ => Self::Left,
+        }
+    }
+
+    /// Convert to the w:val attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Center => "center",
+            Self::Right => "right",
+        }
+    }
+}
+
+/// Table layout algorithm.
+///
+/// ECMA-376 Part 1, Section 17.18.87 (ST_TblLayoutType).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TableLayout {
+    /// Autofit layout (default) - columns resize based on content.
+    #[default]
+    Autofit,
+    /// Fixed layout - columns maintain specified widths.
+    Fixed,
+}
+
+impl TableLayout {
+    /// Parse from the w:type attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "fixed" => Self::Fixed,
+            _ => Self::Autofit,
+        }
+    }
+
+    /// Convert to the w:type attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Autofit => "autofit",
+            Self::Fixed => "fixed",
+        }
+    }
+}
+
+/// Table borders.
+///
+/// Corresponds to the `<w:tblBorders>` element.
+#[derive(Debug, Clone, Default)]
+pub struct TableBorders {
+    /// Top border.
+    pub top: Option<Border>,
+    /// Bottom border.
+    pub bottom: Option<Border>,
+    /// Left (start) border.
+    pub left: Option<Border>,
+    /// Right (end) border.
+    pub right: Option<Border>,
+    /// Inside horizontal borders (between rows).
+    pub inside_h: Option<Border>,
+    /// Inside vertical borders (between columns).
+    pub inside_v: Option<Border>,
+}
+
+/// Table grid column width.
+///
+/// Corresponds to the `<w:gridCol>` element within `<w:tblGrid>`.
+#[derive(Debug, Clone, Copy)]
+pub struct GridColumn {
+    /// Column width in twips.
+    pub width: u32,
+}
+
+/// Properties of a table row.
+///
+/// Corresponds to the `<w:trPr>` element.
+/// ECMA-376 Part 1, Section 17.4.78 (trPr).
+#[derive(Debug, Clone, Default)]
+pub struct RowProperties {
+    /// Row height specification.
+    pub height: Option<RowHeight>,
+    /// Whether this row should be repeated as a header row on each page.
+    pub is_header: bool,
+    /// Whether this row can be split across pages.
+    pub cant_split: bool,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Row height specification.
+///
+/// Corresponds to the `<w:trHeight>` element.
+#[derive(Debug, Clone, Copy)]
+pub struct RowHeight {
+    /// Height value in twips.
+    pub value: u32,
+    /// Height rule.
+    pub rule: HeightRule,
+}
+
+/// Height rule for table rows.
+///
+/// ECMA-376 Part 1, Section 17.18.37 (ST_HeightRule).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum HeightRule {
+    /// Automatically determined height based on content (default).
+    #[default]
+    Auto,
+    /// Exact height (content may be clipped).
+    Exact,
+    /// Minimum height (row can grow if needed).
+    AtLeast,
+}
+
+impl HeightRule {
+    /// Parse from the w:hRule attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "exact" => Self::Exact,
+            "atLeast" => Self::AtLeast,
+            _ => Self::Auto,
+        }
+    }
+
+    /// Convert to the w:hRule attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Auto => "auto",
+            Self::Exact => "exact",
+            Self::AtLeast => "atLeast",
+        }
+    }
+}
+
 /// Properties of a table cell.
 ///
 /// Corresponds to the `<w:tcPr>` element.
@@ -1114,7 +1345,7 @@ impl BorderStyle {
 /// Cell shading/background.
 ///
 /// Corresponds to the `<w:shd>` element.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct CellShading {
     /// Fill color (hex RGB, e.g., "FFFF00" for yellow).
     pub fill: Option<String>,
@@ -1859,6 +2090,21 @@ const EL_TBL: &[u8] = b"tbl";
 const EL_TR: &[u8] = b"tr";
 const EL_TC: &[u8] = b"tc";
 
+// Table properties elements
+const EL_TBL_PR: &[u8] = b"tblPr";
+const EL_TBL_W: &[u8] = b"tblW";
+const EL_TBL_BORDERS: &[u8] = b"tblBorders";
+const EL_TBL_IND: &[u8] = b"tblInd";
+const EL_TBL_LAYOUT: &[u8] = b"tblLayout";
+const EL_TBL_GRID: &[u8] = b"tblGrid";
+const EL_GRID_COL: &[u8] = b"gridCol";
+
+// Row properties elements
+const EL_TR_PR: &[u8] = b"trPr";
+const EL_TR_HEIGHT: &[u8] = b"trHeight";
+const EL_TBL_HEADER: &[u8] = b"tblHeader";
+const EL_CANT_SPLIT: &[u8] = b"cantSplit";
+
 // Cell properties elements
 const EL_TC_PR: &[u8] = b"tcPr";
 const EL_TC_W: &[u8] = b"tcW";
@@ -1867,6 +2113,7 @@ const EL_GRID_SPAN: &[u8] = b"gridSpan";
 const EL_V_MERGE: &[u8] = b"vMerge";
 const EL_V_ALIGN: &[u8] = b"vAlign";
 const EL_SHD: &[u8] = b"shd";
+
 // Border element names (shared for table, cell, paragraph borders)
 const EL_TOP: &[u8] = b"top";
 const EL_BOTTOM: &[u8] = b"bottom";
@@ -1938,6 +2185,21 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_sect_pr = false;
     let mut sect_pr_child_idx: usize = 0;
 
+    // Table properties parsing state
+    let mut current_tbl_pr: Option<TableProperties> = None;
+    let mut in_tbl_pr = false;
+    let mut in_tbl_borders = false;
+    let mut current_tbl_borders: Option<TableBorders> = None;
+    let mut _tbl_pr_child_idx: usize = 0;
+
+    // Table grid parsing state
+    let mut in_tbl_grid = false;
+
+    // Row properties parsing state
+    let mut current_tr_pr: Option<RowProperties> = None;
+    let mut in_tr_pr = false;
+    let mut _tr_pr_child_idx: usize = 0;
+
     // Cell properties parsing state
     let mut current_tc_pr: Option<CellProperties> = None;
     let mut in_tc_pr = false;
@@ -1971,10 +2233,31 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         table_child_idx = 0;
                         body_child_idx += 1;
                     }
+                    name if name == EL_TBL_PR && current_table.is_some() => {
+                        in_tbl_pr = true;
+                        current_tbl_pr = Some(TableProperties::default());
+                        _tbl_pr_child_idx = 0;
+                        table_child_idx += 1;
+                    }
+                    name if name == EL_TBL_BORDERS && in_tbl_pr => {
+                        in_tbl_borders = true;
+                        current_tbl_borders = Some(TableBorders::default());
+                        _tbl_pr_child_idx += 1;
+                    }
+                    name if name == EL_TBL_GRID && current_table.is_some() => {
+                        in_tbl_grid = true;
+                        table_child_idx += 1;
+                    }
                     name if name == EL_TR && current_table.is_some() => {
                         current_row = Some(Row::new());
                         row_child_idx = 0;
                         table_child_idx += 1;
+                    }
+                    name if name == EL_TR_PR && current_row.is_some() => {
+                        in_tr_pr = true;
+                        current_tr_pr = Some(RowProperties::default());
+                        _tr_pr_child_idx = 0;
+                        row_child_idx += 1;
                     }
                     name if name == EL_TC && current_row.is_some() => {
                         current_cell = Some(Cell::new());
@@ -2514,6 +2797,148 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             sect_pr_child_idx += 1;
                         }
                     }
+                    // Table width (w:tblW)
+                    name if name == EL_TBL_W && in_tbl_pr => {
+                        if let Some(tbl_pr) = current_tbl_pr.as_mut() {
+                            let mut width: i32 = 0;
+                            let mut width_type = WidthType::Dxa;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:w" | b"w" => {
+                                            width = s.parse().unwrap_or(0);
+                                        }
+                                        b"w:type" | b"type" => {
+                                            width_type = WidthType::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            tbl_pr.width = Some(TableWidth { width, width_type });
+                            _tbl_pr_child_idx += 1;
+                        }
+                    }
+                    // Table justification (w:jc)
+                    name if name == EL_JC && in_tbl_pr => {
+                        if let Some(tbl_pr) = current_tbl_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tbl_pr.justification = Some(TableJustification::parse(s));
+                                }
+                            }
+                            _tbl_pr_child_idx += 1;
+                        }
+                    }
+                    // Table indent (w:tblInd)
+                    name if name == EL_TBL_IND && in_tbl_pr => {
+                        if let Some(tbl_pr) = current_tbl_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:w" || attr.key.as_ref() == b"w")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tbl_pr.indent = s.parse().ok();
+                                }
+                            }
+                            _tbl_pr_child_idx += 1;
+                        }
+                    }
+                    // Table layout (w:tblLayout)
+                    name if name == EL_TBL_LAYOUT && in_tbl_pr => {
+                        if let Some(tbl_pr) = current_tbl_pr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:type" || attr.key.as_ref() == b"type")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    tbl_pr.layout = Some(TableLayout::parse(s));
+                                }
+                            }
+                            _tbl_pr_child_idx += 1;
+                        }
+                    }
+                    // Table shading (w:shd in tblPr)
+                    name if name == EL_SHD && in_tbl_pr && !in_tbl_borders => {
+                        if let Some(tbl_pr) = current_tbl_pr.as_mut() {
+                            let mut shading = CellShading::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:fill" | b"fill" => {
+                                            if s != "auto" {
+                                                shading.fill = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:color" | b"color" => {
+                                            if s != "auto" {
+                                                shading.color = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:val" | b"val" => {
+                                            shading.pattern = Some(ShadingPattern::parse(s));
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            tbl_pr.shading = Some(shading);
+                            _tbl_pr_child_idx += 1;
+                        }
+                    }
+                    // Grid column (w:gridCol)
+                    name if name == EL_GRID_COL && in_tbl_grid => {
+                        if let Some(table) = current_table.as_mut() {
+                            let mut width = 0u32;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:w" || attr.key.as_ref() == b"w")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    width = s.parse().unwrap_or(0);
+                                }
+                            }
+                            table.grid_columns.push(GridColumn { width });
+                        }
+                    }
+                    // Row height (w:trHeight)
+                    name if name == EL_TR_HEIGHT && in_tr_pr => {
+                        if let Some(tr_pr) = current_tr_pr.as_mut() {
+                            let mut value = 0u32;
+                            let mut rule = HeightRule::Auto;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:val" | b"val" => {
+                                            value = s.parse().unwrap_or(0);
+                                        }
+                                        b"w:hRule" | b"hRule" => {
+                                            rule = HeightRule::parse(s);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            tr_pr.height = Some(RowHeight { value, rule });
+                            _tr_pr_child_idx += 1;
+                        }
+                    }
+                    // Header row (w:tblHeader)
+                    name if name == EL_TBL_HEADER && in_tr_pr => {
+                        if let Some(tr_pr) = current_tr_pr.as_mut() {
+                            tr_pr.is_header = true;
+                            _tr_pr_child_idx += 1;
+                        }
+                    }
+                    // Can't split row (w:cantSplit)
+                    name if name == EL_CANT_SPLIT && in_tr_pr => {
+                        if let Some(tr_pr) = current_tr_pr.as_mut() {
+                            tr_pr.cant_split = true;
+                            _tr_pr_child_idx += 1;
+                        }
+                    }
                     // Cell width (w:tcW)
                     name if name == EL_TC_W && in_tc_pr => {
                         if let Some(tc_pr) = current_tc_pr.as_mut() {
@@ -2616,6 +3041,37 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             _tc_pr_child_idx += 1;
                         }
                     }
+                    // Border elements inside tblBorders
+                    name if name == EL_TOP && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.top = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_BOTTOM && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.bottom = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_LEFT && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.left = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_RIGHT && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.right = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_INSIDE_H && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.inside_h = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_INSIDE_V && in_tbl_borders => {
+                        if let Some(borders) = current_tbl_borders.as_mut() {
+                            borders.inside_v = Some(parse_border(&e));
+                        }
+                    }
                     // Border elements inside tcBorders
                     name if name == EL_TOP && in_tc_borders => {
                         if let Some(borders) = current_tc_borders.as_mut() {
@@ -2649,7 +3105,9 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     _ => {
                         // Only capture unknown self-closing elements when in a container context
-                        let should_capture = in_tc_pr
+                        let should_capture = in_tbl_pr
+                            || in_tr_pr
+                            || in_tc_pr
                             || in_sect_pr
                             || in_rpr
                             || (in_ppr && !in_numpr)
@@ -2747,12 +3205,35 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             body.content.push(BlockContent::Table(table));
                         }
                     }
-                    name if name == EL_TR => {
-                        if let Some(row) = current_row.take()
+                    name if name == EL_TBL_PR => {
+                        if let Some(tbl_pr) = current_tbl_pr.take()
                             && let Some(table) = current_table.as_mut()
                         {
+                            table.properties = Some(tbl_pr);
+                        }
+                        in_tbl_pr = false;
+                    }
+                    name if name == EL_TBL_BORDERS => {
+                        if let Some(borders) = current_tbl_borders.take()
+                            && let Some(tbl_pr) = current_tbl_pr.as_mut()
+                        {
+                            tbl_pr.borders = Some(borders);
+                        }
+                        in_tbl_borders = false;
+                    }
+                    name if name == EL_TBL_GRID => {
+                        in_tbl_grid = false;
+                    }
+                    name if name == EL_TR => {
+                        if let Some(mut row) = current_row.take()
+                            && let Some(table) = current_table.as_mut()
+                        {
+                            row.properties = current_tr_pr.take();
                             table.rows.push(row);
                         }
+                    }
+                    name if name == EL_TR_PR => {
+                        in_tr_pr = false;
                     }
                     name if name == EL_TC => {
                         if let Some(mut cell) = current_cell.take()

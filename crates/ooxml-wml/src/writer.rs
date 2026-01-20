@@ -5,8 +5,10 @@
 
 use crate::document::{
     BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth, Drawing,
-    Hyperlink, InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphContent,
-    ParagraphProperties, Row, Run, RunProperties, SectionProperties, Table, VerticalMerge,
+    GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation,
+    Paragraph, ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run,
+    RunProperties, SectionProperties, Table, TableBorders, TableProperties, TableWidth,
+    VerticalMerge,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -391,6 +393,12 @@ fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
 /// Serialize a table.
 fn serialize_table(table: &Table, xml: &mut String) {
     xml.push_str("<w:tbl>");
+    if let Some(props) = table.properties() {
+        serialize_table_properties(props, xml);
+    }
+    if !table.grid_columns().is_empty() {
+        serialize_table_grid(table.grid_columns(), xml);
+    }
     for row in table.rows() {
         serialize_row(row, xml);
     }
@@ -398,14 +406,133 @@ fn serialize_table(table: &Table, xml: &mut String) {
     xml.push_str("</w:tbl>");
 }
 
+/// Serialize table properties.
+fn serialize_table_properties(props: &TableProperties, xml: &mut String) {
+    xml.push_str("<w:tblPr>");
+    if let Some(width) = &props.width {
+        serialize_table_width(width, xml);
+    }
+    if let Some(justification) = props.justification {
+        xml.push_str("<w:jc w:val=\"");
+        xml.push_str(justification.as_str());
+        xml.push_str("\"/>");
+    }
+    if let Some(indent) = props.indent {
+        xml.push_str("<w:tblInd w:w=\"");
+        xml.push_str(&indent.to_string());
+        xml.push_str("\" w:type=\"dxa\"/>");
+    }
+    if let Some(borders) = &props.borders {
+        serialize_table_borders(borders, xml);
+    }
+    if let Some(shading) = &props.shading {
+        serialize_cell_shading(shading, xml);
+    }
+    if let Some(layout) = props.layout {
+        xml.push_str("<w:tblLayout w:type=\"");
+        xml.push_str(layout.as_str());
+        xml.push_str("\"/>");
+    }
+    serialize_unknown_children(&props.unknown_children, xml);
+    xml.push_str("</w:tblPr>");
+}
+
+/// Serialize table width.
+fn serialize_table_width(width: &TableWidth, xml: &mut String) {
+    xml.push_str("<w:tblW w:w=\"");
+    xml.push_str(&width.width.to_string());
+    xml.push_str("\" w:type=\"");
+    xml.push_str(width.width_type.as_str());
+    xml.push_str("\"/>");
+}
+
+/// Serialize table borders.
+fn serialize_table_borders(borders: &TableBorders, xml: &mut String) {
+    xml.push_str("<w:tblBorders>");
+    if let Some(border) = &borders.top {
+        xml.push_str("<w:top");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.left {
+        xml.push_str("<w:left");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.bottom {
+        xml.push_str("<w:bottom");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.right {
+        xml.push_str("<w:right");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.inside_h {
+        xml.push_str("<w:insideH");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.inside_v {
+        xml.push_str("<w:insideV");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    xml.push_str("</w:tblBorders>");
+}
+
+/// Serialize table grid columns.
+fn serialize_table_grid(columns: &[GridColumn], xml: &mut String) {
+    xml.push_str("<w:tblGrid>");
+    for col in columns {
+        xml.push_str("<w:gridCol w:w=\"");
+        xml.push_str(&col.width.to_string());
+        xml.push_str("\"/>");
+    }
+    xml.push_str("</w:tblGrid>");
+}
+
 /// Serialize a table row.
 fn serialize_row(row: &Row, xml: &mut String) {
     xml.push_str("<w:tr>");
+    if let Some(props) = row.properties() {
+        serialize_row_properties(props, xml);
+    }
     for cell in row.cells() {
         serialize_cell(cell, xml);
     }
     serialize_unknown_children(&row.unknown_children, xml);
     xml.push_str("</w:tr>");
+}
+
+/// Serialize row properties.
+fn serialize_row_properties(props: &RowProperties, xml: &mut String) {
+    xml.push_str("<w:trPr>");
+    if let Some(height) = &props.height {
+        serialize_row_height(height, xml);
+    }
+    if props.is_header {
+        xml.push_str("<w:tblHeader/>");
+    }
+    if props.cant_split {
+        xml.push_str("<w:cantSplit/>");
+    }
+    serialize_unknown_children(&props.unknown_children, xml);
+    xml.push_str("</w:trPr>");
+}
+
+/// Serialize row height.
+fn serialize_row_height(height: &RowHeight, xml: &mut String) {
+    xml.push_str("<w:trHeight w:val=\"");
+    xml.push_str(&height.value.to_string());
+    xml.push('"');
+    if height.rule != HeightRule::Auto {
+        xml.push_str(" w:hRule=\"");
+        xml.push_str(height.rule.as_str());
+        xml.push('"');
+    }
+    xml.push_str("/>");
 }
 
 /// Serialize a table cell.

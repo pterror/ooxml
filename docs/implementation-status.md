@@ -102,18 +102,24 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:tbl` | ✅ | Table container |
 | `w:tr` | ✅ | Table row |
 | `w:tc` | ✅ | Table cell |
-| `w:tblPr` | ❌ | Table properties |
-| `w:tblGrid` | ❌ | Column definitions |
-| `w:gridCol` | ❌ | Column width |
-| `w:trPr` | ❌ | Row properties |
+| `w:tblPr` | ✅ | Table properties (width, justification, indent, layout, borders, shading) |
+| `w:tblGrid` | ✅ | Column definitions |
+| `w:gridCol` | ✅ | Column width |
+| `w:trPr` | ✅ | Row properties (height, header, cantSplit) |
 | `w:tcPr` | ✅ | Cell properties (width, borders, shading, merge, alignment) |
-| `w:tblBorders` | ❌ | Table borders |
+| `w:tblBorders` | ✅ | Table borders |
 | `w:tcBorders` | ✅ | Cell borders (top, bottom, left, right, insideH, insideV) |
 | `w:gridSpan` | ✅ | Horizontal cell merge |
 | `w:vMerge` | ✅ | Vertical cell merge (restart/continue) |
 | `w:shd` | ✅ | Cell shading (fill, pattern) |
 | `w:tcW` | ✅ | Cell width (dxa, pct, auto) |
 | `w:vAlign` | ✅ | Cell vertical alignment |
+| `w:trHeight` | ✅ | Row height (exact, atLeast, auto) |
+| `w:tblHeader` | ✅ | Header row (repeats on each page) |
+| `w:tblW` | ✅ | Table width |
+| `w:tblInd` | ✅ | Table indent |
+| `w:tblLayout` | ✅ | Table layout (fixed, autofit) |
+| `w:jc` (in tblPr) | ✅ | Table justification (left, center, right) |
 
 ### Images (DrawingML)
 
@@ -190,19 +196,22 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 1. ~~**Underline styles**~~ ✅ Now supports all 17 underline styles
 2. ~~**Highlight colors**~~ ✅ Now supports all 16 standard highlight colors
 3. ~~**Table cell properties**~~ ✅ Now supports borders, shading, width, and merging
+4. ~~**Table properties**~~ ✅ Now supports width, justification, indent, layout, borders, shading
+5. ~~**Row properties**~~ ✅ Now supports height, header rows, and cantSplit
+6. ~~**Table grid**~~ ✅ Now supports column width definitions
 
 ### Medium Priority (affects 5-20% of documents)
 
-4. **Headers/Footers** - Present in ~8% of documents
-5. **Anchored images** - Floating images exist but are rarer than inline
-6. **Tab stops** - Custom tab stops (we handle `w:tab` characters)
+7. **Headers/Footers** - Present in ~8% of documents
+8. **Anchored images** - Floating images exist but are rarer than inline
+9. **Tab stops** - Custom tab stops (we handle `w:tab` characters)
 
 ### Lower Priority (affects <5% of documents)
 
-7. **Footnotes/Endnotes** - ~3% of documents
-8. **Comments** - Rarely present in final documents
-9. ~~**Superscript/Subscript**~~ ✅ Now implemented
-10. **Content controls** - Enterprise/form documents
+10. **Footnotes/Endnotes** - ~3% of documents
+11. **Comments** - Rarely present in final documents
+12. ~~**Superscript/Subscript**~~ ✅ Now implemented
+13. **Content controls** - Enterprise/form documents
 
 ## Roundtrip Preservation
 
