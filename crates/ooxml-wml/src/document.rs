@@ -563,6 +563,9 @@ pub struct Paragraph {
 }
 
 /// Content that can appear inside a paragraph.
+// Run is larger than other variants, but boxing would be a breaking API change.
+// The size difference is acceptable for the ergonomic benefit of direct access.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone)]
 pub enum ParagraphContent {
     /// A text run.
@@ -633,6 +636,50 @@ pub struct SimpleField {
     pub instruction: String,
     /// Runs containing the field's displayed result.
     pub runs: Vec<Run>,
+}
+
+/// A field character marker in a complex field.
+///
+/// Corresponds to the `<w:fldChar>` element.
+/// ECMA-376 Part 1, Section 17.16.18 (fldChar).
+#[derive(Debug, Clone)]
+pub struct FieldChar {
+    /// Type of field character.
+    pub field_type: FieldCharType,
+}
+
+/// Type of field character marker.
+///
+/// ECMA-376 Part 1, Section 17.18.29 (ST_FldCharType).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum FieldCharType {
+    /// Beginning of a complex field.
+    Begin,
+    /// Separator between field code and field result.
+    Separate,
+    /// End of a complex field.
+    End,
+}
+
+impl FieldCharType {
+    /// Parse from the w:fldCharType attribute value.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "begin" => Some(FieldCharType::Begin),
+            "separate" => Some(FieldCharType::Separate),
+            "end" => Some(FieldCharType::End),
+            _ => None,
+        }
+    }
+
+    /// Convert to the w:fldCharType attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            FieldCharType::Begin => "begin",
+            FieldCharType::Separate => "separate",
+            FieldCharType::End => "end",
+        }
+    }
 }
 
 /// A hyperlink in the document.
@@ -1916,6 +1963,10 @@ pub struct Run {
     drawings: Vec<Drawing>,
     /// Symbols in the run.
     symbols: Vec<Symbol>,
+    /// Field character marker (for complex fields).
+    field_char: Option<FieldChar>,
+    /// Field instruction text (for complex fields).
+    instr_text: Option<String>,
     /// Whether this run contains a page break.
     page_break: bool,
     /// Unknown child elements preserved for round-trip fidelity.
@@ -2105,6 +2156,26 @@ impl Run {
     /// Add a symbol to this run.
     pub fn add_symbol(&mut self, symbol: Symbol) {
         self.symbols.push(symbol);
+    }
+
+    /// Get field character marker if present.
+    pub fn field_char(&self) -> Option<&FieldChar> {
+        self.field_char.as_ref()
+    }
+
+    /// Set field character marker.
+    pub fn set_field_char(&mut self, field_char: FieldChar) {
+        self.field_char = Some(field_char);
+    }
+
+    /// Get field instruction text if present.
+    pub fn instr_text(&self) -> Option<&str> {
+        self.instr_text.as_deref()
+    }
+
+    /// Set field instruction text.
+    pub fn set_instr_text(&mut self, text: impl Into<String>) {
+        self.instr_text = Some(text.into());
     }
 }
 
@@ -2518,6 +2589,8 @@ const EL_COMMENT_RANGE_END: &[u8] = b"commentRangeEnd";
 
 // Field elements
 const EL_FLD_SIMPLE: &[u8] = b"fldSimple";
+const EL_FLD_CHAR: &[u8] = b"fldChar";
+const EL_INSTR_TEXT: &[u8] = b"instrText";
 
 // Numbering elements
 const EL_NUMPR: &[u8] = b"numPr";
@@ -2570,6 +2643,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_ppr = false;
     let mut in_rpr = false;
     let mut in_text = false;
+    let mut in_instr_text = false;
 
     // Table parsing state
     let mut current_table: Option<Table> = None;
@@ -2765,6 +2839,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_T && current_run.is_some() => {
                         in_text = true;
+                        run_child_idx += 1;
+                    }
+                    name if name == EL_INSTR_TEXT && current_run.is_some() => {
+                        in_instr_text = true;
                         run_child_idx += 1;
                     }
                     name if name == EL_PPR && current_para.is_some() => {
@@ -2970,6 +3048,19 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         }
                         if let Some(run) = current_run.as_mut() {
                             run.symbols.push(Symbol { font, char_code });
+                        }
+                    }
+                    // Field character (complex field marker)
+                    name if name == EL_FLD_CHAR && current_run.is_some() => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if (key == b"w:fldCharType" || key == b"fldCharType")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                                && let Some(field_type) = FieldCharType::parse(s)
+                                && let Some(run) = current_run.as_mut()
+                            {
+                                run.field_char = Some(FieldChar { field_type });
+                            }
                         }
                     }
                     // Bookmark start
@@ -4010,9 +4101,17 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 }
             }
             Ok(Event::Text(e)) => {
-                if in_text && let Some(run) = current_run.as_mut() {
-                    let text = e.decode().unwrap_or_default();
-                    run.text.push_str(&text);
+                let text = e.decode().unwrap_or_default();
+                if in_text {
+                    if let Some(run) = current_run.as_mut() {
+                        run.text.push_str(&text);
+                    }
+                } else if in_instr_text && let Some(run) = current_run.as_mut() {
+                    if let Some(ref mut instr) = run.instr_text {
+                        instr.push_str(&text);
+                    } else {
+                        run.instr_text = Some(text.into_owned());
+                    }
                 }
             }
             Ok(Event::End(e)) => {
@@ -4116,6 +4215,9 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_T => {
                         in_text = false;
+                    }
+                    name if name == EL_INSTR_TEXT => {
+                        in_instr_text = false;
                     }
                     name if name == EL_NUMPR => {
                         in_numpr = false;

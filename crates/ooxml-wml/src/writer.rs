@@ -1023,6 +1023,20 @@ fn serialize_run(run: &Run, xml: &mut String) {
         xml.push_str("\"/>");
     }
 
+    // Field character (complex field marker)
+    if let Some(field_char) = run.field_char() {
+        xml.push_str("<w:fldChar w:fldCharType=\"");
+        xml.push_str(field_char.field_type.as_str());
+        xml.push_str("\"/>");
+    }
+
+    // Field instruction text
+    if let Some(instr_text) = run.instr_text() {
+        xml.push_str("<w:instrText>");
+        xml.push_str(&escape_xml(instr_text));
+        xml.push_str("</w:instrText>");
+    }
+
     // Text content
     let text = run.text();
     if !text.is_empty() {

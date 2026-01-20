@@ -32,7 +32,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:commentRangeStart` | ✅ | Comment anchors |
 | `w:commentRangeEnd` | ✅ | Comment anchors |
 | `w:fldSimple` | ✅ | Simple fields |
-| `w:fldChar` | ❌ | Complex fields |
+| `w:fldChar` | ✅ | Complex fields (begin/separate/end markers) |
 
 ### Run Content
 
