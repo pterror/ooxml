@@ -223,6 +223,12 @@ pub fn merge_run_properties(target: &mut RunProperties, source: &RunProperties) 
     if source.small_caps {
         target.small_caps = true;
     }
+    if source.hidden {
+        target.hidden = true;
+    }
+    if source.shading.is_some() {
+        target.shading = source.shading.clone();
+    }
 }
 
 /// Merge source paragraph properties into target.

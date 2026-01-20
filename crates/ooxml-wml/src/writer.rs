@@ -1010,6 +1010,8 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         || props.vertical_align.is_some()
         || props.all_caps
         || props.small_caps
+        || props.hidden
+        || props.shading.is_some()
         || !props.unknown_children.is_empty();
 
     if !has_props {
@@ -1071,6 +1073,14 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
 
     if let Some(ref color) = props.color {
         xml.push_str(&format!(r#"<w:color w:val="{}"/>"#, escape_xml(color)));
+    }
+
+    if props.hidden {
+        xml.push_str("<w:vanish/>");
+    }
+
+    if let Some(ref shading) = props.shading {
+        serialize_cell_shading(shading, xml);
     }
 
     serialize_unknown_children(&props.unknown_children, xml);

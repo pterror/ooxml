@@ -2092,6 +2092,10 @@ pub struct RunProperties {
     pub all_caps: bool,
     /// Small capitals.
     pub small_caps: bool,
+    /// Hidden text (w:vanish).
+    pub hidden: bool,
+    /// Run shading/background.
+    pub shading: Option<CellShading>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
@@ -2115,6 +2119,7 @@ const EL_HIGHLIGHT: &[u8] = b"highlight";
 const EL_VERT_ALIGN: &[u8] = b"vertAlign";
 const EL_CAPS: &[u8] = b"caps";
 const EL_SMALL_CAPS: &[u8] = b"smallCaps";
+const EL_VANISH: &[u8] = b"vanish";
 const EL_SZ: &[u8] = b"sz";
 const EL_RFONTS: &[u8] = b"rFonts";
 const EL_COLOR: &[u8] = b"color";
@@ -2800,6 +2805,40 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_SMALL_CAPS && in_rpr => {
                         if let Some(rpr) = current_rpr.as_mut() {
                             rpr.small_caps = parse_toggle_val(&e);
+                        }
+                    }
+                    name if name == EL_VANISH && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            rpr.hidden = parse_toggle_val(&e);
+                        }
+                    }
+                    // Run shading (w:shd in rPr)
+                    name if name == EL_SHD && in_rpr => {
+                        if let Some(rpr) = current_rpr.as_mut() {
+                            let mut shading = CellShading::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:fill" | b"fill" => {
+                                            if s != "auto" {
+                                                shading.fill = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:color" | b"color" => {
+                                            if s != "auto" {
+                                                shading.color = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:val" | b"val" => {
+                                            shading.pattern = Some(ShadingPattern::parse(s));
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            rpr.shading = Some(shading);
+                            rpr_child_idx += 1;
                         }
                     }
                     name if name == EL_SZ && in_rpr => {

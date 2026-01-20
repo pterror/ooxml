@@ -82,8 +82,8 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:vertAlign` | ✅ | Superscript/subscript |
 | `w:caps` | ✅ | All capitals |
 | `w:smallCaps` | ✅ | Small capitals |
-| `w:vanish` | ❌ | Hidden text |
-| `w:shd` | ❌ | Shading/background |
+| `w:vanish` | ✅ | Hidden text |
+| `w:shd` | ✅ | Shading/background |
 
 ### Section Properties (`w:sectPr`)
 
