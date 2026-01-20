@@ -27,6 +27,7 @@
 
 pub mod document;
 pub mod error;
+pub mod raw_xml;
 pub mod styles;
 pub mod writer;
 
@@ -43,6 +44,7 @@ pub use document::{
     Table,
 };
 pub use error::{Error, Result};
+pub use raw_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 pub use styles::{Style, StyleType, Styles};
 pub use writer::{DocumentBuilder, ListType};
 

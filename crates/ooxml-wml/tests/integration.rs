@@ -579,3 +579,69 @@ fn test_roundtrip_paragraph_properties() {
     assert_eq!(props2.indent_left, Some(720));
     assert_eq!(props2.indent_first_line, Some(360));
 }
+
+/// Test that unknown XML elements survive a roundtrip.
+///
+/// This verifies the core round-trip preservation functionality:
+/// elements we don't explicitly understand are captured during parse
+/// and written back during serialize.
+#[test]
+fn test_roundtrip_unknown_elements() {
+    use ooxml_wml::{PositionedNode, RawXmlElement, RawXmlNode, RunProperties};
+
+    // Create a document with unknown elements added programmatically
+    let mut builder = DocumentBuilder::new();
+
+    {
+        let para = builder.body_mut().add_paragraph();
+
+        // Add a run with text and unknown children in rPr
+        let run = para.add_run();
+        run.set_text("Hello with custom props");
+
+        // Create RunProperties with unknown children
+        let mut rpr = RunProperties {
+            bold: true,
+            ..Default::default()
+        };
+
+        // Add a fake unknown element to rPr
+        let unknown_elem = RawXmlElement {
+            name: "w:customTracking".to_string(),
+            attributes: vec![("w:val".to_string(), "strict".to_string())],
+            children: vec![],
+            self_closing: true,
+        };
+        rpr.unknown_children
+            .push(PositionedNode::new(0, RawXmlNode::Element(unknown_elem)));
+        run.set_properties(rpr);
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read the raw XML to verify unknown element is present
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify the known content
+    let para = &doc.body().paragraphs()[0];
+    let run = &para.runs()[0];
+    assert_eq!(run.text(), "Hello with custom props");
+    assert!(run.is_bold());
+
+    // Verify the unknown element was preserved
+    let rpr = run.properties().unwrap();
+    assert_eq!(rpr.unknown_children.len(), 1);
+
+    if let RawXmlNode::Element(elem) = &rpr.unknown_children[0].node {
+        assert_eq!(elem.name, "w:customTracking");
+        assert_eq!(elem.attributes.len(), 1);
+        assert_eq!(elem.attributes[0].0, "w:val");
+        assert_eq!(elem.attributes[0].1, "strict");
+        assert!(elem.self_closing);
+    } else {
+        panic!("Expected Element node");
+    }
+}

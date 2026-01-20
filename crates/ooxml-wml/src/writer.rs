@@ -8,6 +8,7 @@ use crate::document::{
     ParagraphContent, ParagraphProperties, Row, Run, RunProperties, Table,
 };
 use crate::error::Result;
+use crate::raw_xml::{PositionedNode, RawXmlNode};
 use crate::styles::Styles;
 use ooxml::{PackageWriter, Relationship, Relationships, content_type, rel_type};
 use std::collections::HashMap;
@@ -326,6 +327,8 @@ fn serialize_body(body: &Body, xml: &mut String) {
             BlockContent::Table(table) => serialize_table(table, xml),
         }
     }
+    // Write unknown children preserved for round-trip fidelity
+    serialize_unknown_children(&body.unknown_children, xml);
 }
 
 /// Serialize a table.
@@ -334,6 +337,7 @@ fn serialize_table(table: &Table, xml: &mut String) {
     for row in table.rows() {
         serialize_row(row, xml);
     }
+    serialize_unknown_children(&table.unknown_children, xml);
     xml.push_str("</w:tbl>");
 }
 
@@ -343,6 +347,7 @@ fn serialize_row(row: &Row, xml: &mut String) {
     for cell in row.cells() {
         serialize_cell(cell, xml);
     }
+    serialize_unknown_children(&row.unknown_children, xml);
     xml.push_str("</w:tr>");
 }
 
@@ -352,6 +357,7 @@ fn serialize_cell(cell: &Cell, xml: &mut String) {
     for para in cell.paragraphs() {
         serialize_paragraph(para, xml);
     }
+    serialize_unknown_children(&cell.unknown_children, xml);
     xml.push_str("</w:tc>");
 }
 
@@ -372,6 +378,7 @@ fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
         }
     }
 
+    serialize_unknown_children(&para.unknown_children, xml);
     xml.push_str("</w:p>");
 }
 
@@ -386,12 +393,22 @@ fn serialize_hyperlink(link: &Hyperlink, xml: &mut String) {
         xml.push_str(&format!(r#" w:anchor="{}""#, escape_xml(anchor)));
     }
 
+    // Write unknown attributes preserved for round-trip fidelity
+    for (key, value) in &link.unknown_attrs {
+        xml.push(' ');
+        xml.push_str(key);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(value));
+        xml.push('"');
+    }
+
     xml.push('>');
 
     for run in link.runs() {
         serialize_run(run, xml);
     }
 
+    serialize_unknown_children(&link.unknown_children, xml);
     xml.push_str("</w:hyperlink>");
 }
 
@@ -452,6 +469,7 @@ fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String)
         xml.push_str("/>");
     }
 
+    serialize_unknown_children(&props.unknown_children, xml);
     xml.push_str("</w:pPr>");
 }
 
@@ -465,7 +483,18 @@ fn serialize_numbering_properties(props: &NumberingProperties, xml: &mut String)
 
 /// Serialize a run.
 fn serialize_run(run: &Run, xml: &mut String) {
-    xml.push_str("<w:r>");
+    xml.push_str("<w:r");
+
+    // Write unknown attributes preserved for round-trip fidelity
+    for (key, value) in &run.unknown_attrs {
+        xml.push(' ');
+        xml.push_str(key);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(value));
+        xml.push('"');
+    }
+
+    xml.push('>');
 
     // Run properties
     if let Some(props) = run.properties() {
@@ -500,6 +529,7 @@ fn serialize_run(run: &Run, xml: &mut String) {
         xml.push_str("</w:t>");
     }
 
+    serialize_unknown_children(&run.unknown_children, xml);
     xml.push_str("</w:r>");
 }
 
@@ -509,6 +539,7 @@ fn serialize_drawing(drawing: &Drawing, xml: &mut String) {
     for (idx, image) in drawing.images().iter().enumerate() {
         serialize_inline_image(image, idx + 1, xml);
     }
+    serialize_unknown_children(&drawing.unknown_children, xml);
     xml.push_str("</w:drawing>");
 }
 
@@ -585,7 +616,8 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         || props.size.is_some()
         || props.font.is_some()
         || props.style.is_some()
-        || props.color.is_some();
+        || props.color.is_some()
+        || !props.unknown_children.is_empty();
 
     if !has_props {
         return;
@@ -625,6 +657,7 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         xml.push_str(&format!(r#"<w:color w:val="{}"/>"#, escape_xml(color)));
     }
 
+    serialize_unknown_children(&props.unknown_children, xml);
     xml.push_str("</w:rPr>");
 }
 
@@ -642,6 +675,61 @@ fn escape_xml(s: &str) -> String {
         }
     }
     result
+}
+
+/// Serialize a RawXmlNode (preserved unknown element) to XML string.
+fn serialize_raw_xml_node(node: &RawXmlNode, xml: &mut String) {
+    match node {
+        RawXmlNode::Element(elem) => serialize_raw_xml_element(elem, xml),
+        RawXmlNode::Text(text) => xml.push_str(&escape_xml(text)),
+        RawXmlNode::CData(text) => {
+            xml.push_str("<![CDATA[");
+            xml.push_str(text);
+            xml.push_str("]]>");
+        }
+        RawXmlNode::Comment(text) => {
+            xml.push_str("<!--");
+            xml.push_str(text);
+            xml.push_str("-->");
+        }
+    }
+}
+
+/// Serialize a RawXmlElement (preserved unknown element) to XML string.
+fn serialize_raw_xml_element(elem: &crate::raw_xml::RawXmlElement, xml: &mut String) {
+    xml.push('<');
+    xml.push_str(&elem.name);
+
+    for (key, value) in &elem.attributes {
+        xml.push(' ');
+        xml.push_str(key);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(value));
+        xml.push('"');
+    }
+
+    if elem.self_closing && elem.children.is_empty() {
+        xml.push_str("/>");
+    } else {
+        xml.push('>');
+        for child in &elem.children {
+            serialize_raw_xml_node(child, xml);
+        }
+        xml.push_str("</");
+        xml.push_str(&elem.name);
+        xml.push('>');
+    }
+}
+
+/// Serialize unknown children preserved for round-trip fidelity.
+/// Children are sorted by position to maintain original order.
+fn serialize_unknown_children(children: &[PositionedNode], xml: &mut String) {
+    // Sort by position to interleave correctly with known elements
+    let mut sorted: Vec<_> = children.iter().collect();
+    sorted.sort_by_key(|pn| pn.position);
+    for pn in sorted {
+        serialize_raw_xml_node(&pn.node, xml);
+    }
 }
 
 /// Get file extension from MIME content type.

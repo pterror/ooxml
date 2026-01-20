@@ -17,6 +17,7 @@
 //! ```
 
 use crate::error::{Error, Result};
+use crate::raw_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 use crate::styles::{Styles, merge_run_properties};
 use ooxml::{Package, Relationships, rel_type, rels_path_for};
 use quick_xml::Reader;
@@ -237,6 +238,9 @@ fn content_type_from_path(path: &str) -> String {
 pub struct Body {
     /// Block-level content (paragraphs and tables in order).
     content: Vec<BlockContent>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 /// Block-level content in the document body.
@@ -330,6 +334,9 @@ impl Body {
 pub struct Table {
     /// Rows in the table.
     rows: Vec<Row>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 impl Table {
@@ -381,6 +388,9 @@ impl Table {
 pub struct Row {
     /// Cells in the row.
     cells: Vec<Cell>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 impl Row {
@@ -422,6 +432,9 @@ impl Row {
 pub struct Cell {
     /// Paragraphs in the cell.
     paragraphs: Vec<Paragraph>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 impl Cell {
@@ -465,6 +478,9 @@ pub struct Paragraph {
     content: Vec<ParagraphContent>,
     /// Paragraph properties (style, alignment, etc.).
     properties: Option<ParagraphProperties>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 /// Content that can appear inside a paragraph.
@@ -488,6 +504,11 @@ pub struct Hyperlink {
     rel_id: Option<String>,
     /// Anchor for internal document links (bookmarks).
     anchor: Option<String>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
+    /// Unknown attributes preserved for round-trip fidelity.
+    pub unknown_attrs: Vec<(String, String)>,
 }
 
 impl Paragraph {
@@ -695,6 +716,9 @@ pub struct ParagraphProperties {
     pub indent_first_line: Option<i32>,
     /// Hanging indentation in twips (overrides indent_first_line if set).
     pub indent_hanging: Option<u32>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 /// Numbering properties for a paragraph.
@@ -723,6 +747,11 @@ pub struct Run {
     drawings: Vec<Drawing>,
     /// Whether this run contains a page break.
     page_break: bool,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
+    /// Unknown attributes preserved for round-trip fidelity.
+    pub unknown_attrs: Vec<(String, String)>,
 }
 
 /// A drawing element containing images.
@@ -733,6 +762,9 @@ pub struct Run {
 pub struct Drawing {
     /// Images in this drawing.
     images: Vec<InlineImage>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 /// An inline image in a drawing.
@@ -749,6 +781,9 @@ pub struct InlineImage {
     height_emu: Option<i64>,
     /// Optional description/alt text for the image.
     description: Option<String>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 /// Image data loaded from the package.
@@ -859,6 +894,7 @@ impl InlineImage {
             width_emu: None,
             height_emu: None,
             description: None,
+            unknown_children: Vec::new(), // (position, node) pairs
         }
     }
 
@@ -944,6 +980,9 @@ pub struct RunProperties {
     pub style: Option<String>,
     /// Text color as hex RGB (e.g., "FF0000" for red, without # prefix).
     pub color: Option<String>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_children: Vec<PositionedNode>,
 }
 
 // XML element names (local names)
@@ -1021,6 +1060,17 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut current_drawing: Option<Drawing> = None;
     let mut current_image: Option<InlineImage> = None;
 
+    // Child position counters for round-trip ordering preservation
+    let mut body_child_idx: usize = 0;
+    let mut table_child_idx: usize = 0;
+    let mut row_child_idx: usize = 0;
+    let mut cell_child_idx: usize = 0;
+    let mut para_child_idx: usize = 0;
+    let mut hyperlink_child_idx: usize = 0;
+    let mut run_child_idx: usize = 0;
+    let mut ppr_child_idx: usize = 0;
+    let mut rpr_child_idx: usize = 0;
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
@@ -1029,18 +1079,31 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 match local {
                     name if name == EL_BODY => {
                         in_body = true;
+                        body_child_idx = 0;
                     }
                     name if name == EL_TBL && in_body => {
                         current_table = Some(Table::new());
+                        table_child_idx = 0;
+                        body_child_idx += 1;
                     }
                     name if name == EL_TR && current_table.is_some() => {
                         current_row = Some(Row::new());
+                        row_child_idx = 0;
+                        table_child_idx += 1;
                     }
                     name if name == EL_TC && current_row.is_some() => {
                         current_cell = Some(Cell::new());
+                        cell_child_idx = 0;
+                        row_child_idx += 1;
                     }
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
+                        para_child_idx = 0;
+                        if current_cell.is_some() {
+                            cell_child_idx += 1;
+                        } else {
+                            body_child_idx += 1;
+                        }
                     }
                     name if name == EL_HYPERLINK && current_para.is_some() => {
                         let mut hyperlink = Hyperlink::new();
@@ -1057,34 +1120,117 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                         current_hyperlink = Some(hyperlink);
+                        hyperlink_child_idx = 0;
+                        para_child_idx += 1;
                     }
                     name if name == EL_R && current_para.is_some() => {
                         current_run = Some(Run::new());
+                        run_child_idx = 0;
+                        if current_hyperlink.is_some() {
+                            hyperlink_child_idx += 1;
+                        } else {
+                            para_child_idx += 1;
+                        }
                     }
                     name if name == EL_T && current_run.is_some() => {
                         in_text = true;
+                        run_child_idx += 1;
                     }
                     name if name == EL_PPR && current_para.is_some() => {
                         in_ppr = true;
                         current_ppr = Some(ParagraphProperties::default());
+                        ppr_child_idx = 0;
+                        para_child_idx += 1;
                     }
                     name if name == EL_NUMPR && in_ppr => {
                         in_numpr = true;
                         current_numid = None;
                         current_ilvl = None;
+                        ppr_child_idx += 1;
                     }
                     name if name == EL_RPR && current_run.is_some() => {
                         in_rpr = true;
                         current_rpr = Some(RunProperties::default());
+                        rpr_child_idx = 0;
+                        run_child_idx += 1;
                     }
                     name if name == EL_DRAWING && current_run.is_some() => {
                         current_drawing = Some(Drawing::new());
+                        run_child_idx += 1;
                     }
                     name if name == EL_INLINE && current_drawing.is_some() => {
                         // Start of an inline image - create with placeholder rel_id
                         current_image = Some(InlineImage::new(""));
                     }
-                    _ => {}
+                    _ => {
+                        // Only capture unknown elements when we're in a container context
+                        // IMPORTANT: Don't capture while inside drawing/inline contexts -
+                        // we need to continue parsing to find nested elements like blip
+                        let should_capture = in_rpr
+                            || (in_ppr && !in_numpr)
+                            || (current_run.is_some()
+                                && current_drawing.is_none()
+                                && current_image.is_none())
+                            || current_hyperlink.is_some()
+                            || (current_para.is_some()
+                                && current_run.is_none()
+                                && current_hyperlink.is_none())
+                            || (current_cell.is_some() && current_para.is_none())
+                            || (current_row.is_some() && current_cell.is_none())
+                            || (current_table.is_some() && current_row.is_none())
+                            || (in_body && current_table.is_none() && current_para.is_none());
+
+                        if should_capture {
+                            // Capture unknown elements for round-trip preservation
+                            let raw = RawXmlElement::from_reader(&mut reader, &e)?;
+                            let node = RawXmlNode::Element(raw);
+                            // Add to the innermost active container with position
+                            if in_rpr {
+                                if let Some(rpr) = current_rpr.as_mut() {
+                                    rpr.unknown_children
+                                        .push(PositionedNode::new(rpr_child_idx, node));
+                                    rpr_child_idx += 1;
+                                }
+                            } else if in_ppr && !in_numpr {
+                                if let Some(ppr) = current_ppr.as_mut() {
+                                    ppr.unknown_children
+                                        .push(PositionedNode::new(ppr_child_idx, node));
+                                    ppr_child_idx += 1;
+                                }
+                            } else if let Some(run) = current_run.as_mut() {
+                                run.unknown_children
+                                    .push(PositionedNode::new(run_child_idx, node));
+                                run_child_idx += 1;
+                            } else if let Some(hyperlink) = current_hyperlink.as_mut() {
+                                hyperlink
+                                    .unknown_children
+                                    .push(PositionedNode::new(hyperlink_child_idx, node));
+                                hyperlink_child_idx += 1;
+                            } else if let Some(para) = current_para.as_mut() {
+                                para.unknown_children
+                                    .push(PositionedNode::new(para_child_idx, node));
+                                para_child_idx += 1;
+                            } else if let Some(cell) = current_cell.as_mut() {
+                                cell.unknown_children
+                                    .push(PositionedNode::new(cell_child_idx, node));
+                                cell_child_idx += 1;
+                            } else if let Some(row) = current_row.as_mut() {
+                                row.unknown_children
+                                    .push(PositionedNode::new(row_child_idx, node));
+                                row_child_idx += 1;
+                            } else if let Some(table) = current_table.as_mut() {
+                                table
+                                    .unknown_children
+                                    .push(PositionedNode::new(table_child_idx, node));
+                                table_child_idx += 1;
+                            } else if in_body {
+                                body.unknown_children
+                                    .push(PositionedNode::new(body_child_idx, node));
+                                body_child_idx += 1;
+                            }
+                        }
+                        // If not in any container or inside drawing/image parsing, skip
+                    }
                 }
             }
             Ok(Event::Empty(e)) => {
@@ -1319,7 +1465,77 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             }
                         }
                     }
-                    _ => {}
+                    _ => {
+                        // Only capture unknown self-closing elements when in a container context
+                        let should_capture = in_rpr
+                            || (in_ppr && !in_numpr)
+                            || current_image.is_some()
+                            || current_drawing.is_some()
+                            || current_run.is_some()
+                            || current_hyperlink.is_some()
+                            || current_para.is_some()
+                            || current_cell.is_some()
+                            || current_row.is_some()
+                            || current_table.is_some()
+                            || in_body;
+
+                        if should_capture {
+                            // Capture unknown self-closing elements for round-trip preservation
+                            let raw = RawXmlElement::from_empty(&e);
+                            let node = RawXmlNode::Element(raw);
+                            // Add to the innermost active container with position
+                            if in_rpr {
+                                if let Some(rpr) = current_rpr.as_mut() {
+                                    rpr.unknown_children
+                                        .push(PositionedNode::new(rpr_child_idx, node));
+                                    rpr_child_idx += 1;
+                                }
+                            } else if in_ppr && !in_numpr {
+                                if let Some(ppr) = current_ppr.as_mut() {
+                                    ppr.unknown_children
+                                        .push(PositionedNode::new(ppr_child_idx, node));
+                                    ppr_child_idx += 1;
+                                }
+                            } else if let Some(img) = current_image.as_mut() {
+                                // Images don't track child positions (DrawingML is complex)
+                                img.unknown_children.push(PositionedNode::new(0, node));
+                            } else if let Some(drawing) = current_drawing.as_mut() {
+                                // Drawings don't track child positions (DrawingML is complex)
+                                drawing.unknown_children.push(PositionedNode::new(0, node));
+                            } else if let Some(run) = current_run.as_mut() {
+                                run.unknown_children
+                                    .push(PositionedNode::new(run_child_idx, node));
+                                run_child_idx += 1;
+                            } else if let Some(hyperlink) = current_hyperlink.as_mut() {
+                                hyperlink
+                                    .unknown_children
+                                    .push(PositionedNode::new(hyperlink_child_idx, node));
+                                hyperlink_child_idx += 1;
+                            } else if let Some(para) = current_para.as_mut() {
+                                para.unknown_children
+                                    .push(PositionedNode::new(para_child_idx, node));
+                                para_child_idx += 1;
+                            } else if let Some(cell) = current_cell.as_mut() {
+                                cell.unknown_children
+                                    .push(PositionedNode::new(cell_child_idx, node));
+                                cell_child_idx += 1;
+                            } else if let Some(row) = current_row.as_mut() {
+                                row.unknown_children
+                                    .push(PositionedNode::new(row_child_idx, node));
+                                row_child_idx += 1;
+                            } else if let Some(table) = current_table.as_mut() {
+                                table
+                                    .unknown_children
+                                    .push(PositionedNode::new(table_child_idx, node));
+                                table_child_idx += 1;
+                            } else if in_body {
+                                body.unknown_children
+                                    .push(PositionedNode::new(body_child_idx, node));
+                                body_child_idx += 1;
+                            }
+                        }
+                        // If not in any container, silently skip (pre-body content)
+                    }
                 }
             }
             Ok(Event::Text(e)) => {
@@ -1867,5 +2083,61 @@ mod tests {
         assert_eq!(link.anchor(), Some("section1"));
         assert!(!link.is_external());
         assert_eq!(link.text(), "Jump to section 1");
+    }
+
+    #[test]
+    fn test_unknown_elements_preserved() {
+        // Document with unknown elements that should be preserved
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Normal"/>
+        <w:customElement w:custom="value"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:unknownProp w:foo="bar"/>
+        </w:rPr>
+        <w:t>Hello</w:t>
+      </w:r>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Check that known elements are parsed
+        let para = &body.paragraphs()[0];
+        assert_eq!(para.text(), "Hello");
+        assert!(para.runs()[0].is_bold());
+
+        // Check that unknown elements in pPr are preserved
+        let ppr = para.properties().unwrap();
+        assert_eq!(ppr.unknown_children.len(), 1);
+        if let crate::raw_xml::RawXmlNode::Element(elem) = &ppr.unknown_children[0].node {
+            assert_eq!(elem.name, "w:customElement");
+            assert_eq!(
+                elem.attributes,
+                vec![("w:custom".to_string(), "value".to_string())]
+            );
+        } else {
+            panic!("Expected element node");
+        }
+
+        // Check that unknown elements in rPr are preserved
+        let rpr = para.runs()[0].properties().unwrap();
+        assert_eq!(rpr.unknown_children.len(), 1);
+        if let crate::raw_xml::RawXmlNode::Element(elem) = &rpr.unknown_children[0].node {
+            assert_eq!(elem.name, "w:unknownProp");
+            assert_eq!(
+                elem.attributes,
+                vec![("w:foo".to_string(), "bar".to_string())]
+            );
+        } else {
+            panic!("Expected element node");
+        }
     }
 }
