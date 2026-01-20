@@ -902,9 +902,43 @@ pub struct ParagraphProperties {
     pub indent_first_line: Option<i32>,
     /// Hanging indentation in twips (overrides indent_first_line if set).
     pub indent_hanging: Option<u32>,
+    /// Paragraph borders.
+    pub borders: Option<ParagraphBorders>,
+    /// Paragraph shading/background.
+    pub shading: Option<CellShading>,
+    /// Outline level (0-9, used for TOC and document map).
+    pub outline_level: Option<u8>,
+    /// Keep paragraph with next paragraph on same page.
+    pub keep_next: bool,
+    /// Keep all lines of paragraph on same page.
+    pub keep_lines: bool,
+    /// Start paragraph on new page.
+    pub page_break_before: bool,
+    /// Enable widow/orphan control (prevent single lines at top/bottom of page).
+    pub widow_control: Option<bool>,
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Paragraph borders.
+///
+/// Corresponds to the `<w:pBdr>` element.
+/// ECMA-376 Part 1, Section 17.3.1.24 (pBdr).
+#[derive(Debug, Clone, Default)]
+pub struct ParagraphBorders {
+    /// Top border.
+    pub top: Option<Border>,
+    /// Bottom border.
+    pub bottom: Option<Border>,
+    /// Left border.
+    pub left: Option<Border>,
+    /// Right border.
+    pub right: Option<Border>,
+    /// Border between this and previous paragraph (if identical borders).
+    pub between: Option<Border>,
+    /// Border around paragraph (shorthand for all sides).
+    pub bar: Option<Border>,
 }
 
 /// Numbering properties for a paragraph.
@@ -2134,6 +2168,14 @@ const EL_ILVL: &[u8] = b"ilvl";
 const EL_JC: &[u8] = b"jc";
 const EL_SPACING: &[u8] = b"spacing";
 const EL_IND: &[u8] = b"ind";
+const EL_P_BDR: &[u8] = b"pBdr";
+const EL_OUTLINE_LVL: &[u8] = b"outlineLvl";
+const EL_KEEP_NEXT: &[u8] = b"keepNext";
+const EL_KEEP_LINES: &[u8] = b"keepLines";
+const EL_PAGE_BREAK_BEFORE: &[u8] = b"pageBreakBefore";
+const EL_WIDOW_CONTROL: &[u8] = b"widowControl";
+const EL_BETWEEN: &[u8] = b"between";
+const EL_BAR: &[u8] = b"bar";
 
 // Drawing element names (DrawingML)
 const EL_DRAWING: &[u8] = b"drawing";
@@ -2175,6 +2217,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_numpr = false;
     let mut current_numid: Option<u32> = None;
     let mut current_ilvl: Option<u32> = None;
+
+    // Paragraph border parsing state
+    let mut in_p_bdr = false;
+    let mut current_p_borders: Option<ParagraphBorders> = None;
 
     // Drawing/image parsing state
     let mut current_drawing: Option<Drawing> = None;
@@ -2341,6 +2387,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         in_numpr = true;
                         current_numid = None;
                         current_ilvl = None;
+                        ppr_child_idx += 1;
+                    }
+                    name if name == EL_P_BDR && in_ppr => {
+                        in_p_bdr = true;
+                        current_p_borders = Some(ParagraphBorders::default());
                         ppr_child_idx += 1;
                     }
                     name if name == EL_RPR && current_run.is_some() => {
@@ -2541,6 +2592,107 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                     }
                                 }
                             }
+                        }
+                    }
+                    // Paragraph shading (w:shd in pPr)
+                    name if name == EL_SHD && in_ppr && !in_p_bdr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            let mut shading = CellShading::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:fill" | b"fill" => {
+                                            if s != "auto" {
+                                                shading.fill = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:color" | b"color" => {
+                                            if s != "auto" {
+                                                shading.color = Some(s.to_string());
+                                            }
+                                        }
+                                        b"w:val" | b"val" => {
+                                            shading.pattern = Some(ShadingPattern::parse(s));
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            ppr.shading = Some(shading);
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Outline level (w:outlineLvl)
+                    name if name == EL_OUTLINE_LVL && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if (attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val")
+                                    && let Ok(s) = std::str::from_utf8(&attr.value)
+                                {
+                                    ppr.outline_level = s.parse().ok();
+                                }
+                            }
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Keep with next (w:keepNext)
+                    name if name == EL_KEEP_NEXT && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            ppr.keep_next = parse_toggle_val(&e);
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Keep lines together (w:keepLines)
+                    name if name == EL_KEEP_LINES && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            ppr.keep_lines = parse_toggle_val(&e);
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Page break before (w:pageBreakBefore)
+                    name if name == EL_PAGE_BREAK_BEFORE && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            ppr.page_break_before = parse_toggle_val(&e);
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Widow/orphan control (w:widowControl)
+                    name if name == EL_WIDOW_CONTROL && in_ppr => {
+                        if let Some(ppr) = current_ppr.as_mut() {
+                            ppr.widow_control = Some(parse_toggle_val(&e));
+                            ppr_child_idx += 1;
+                        }
+                    }
+                    // Paragraph border elements (in pBdr)
+                    name if name == EL_TOP && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.top = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_BOTTOM && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.bottom = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_LEFT && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.left = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_RIGHT && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.right = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_BETWEEN && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.between = Some(parse_border(&e));
+                        }
+                    }
+                    name if name == EL_BAR && in_p_bdr => {
+                        if let Some(borders) = current_p_borders.as_mut() {
+                            borders.bar = Some(parse_border(&e));
                         }
                     }
                     name if name == EL_RSTYLE && in_rpr => {
@@ -3297,6 +3449,14 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 ilvl: current_ilvl.take().unwrap_or(0),
                             });
                         }
+                    }
+                    name if name == EL_P_BDR => {
+                        if let Some(borders) = current_p_borders.take()
+                            && let Some(ppr) = current_ppr.as_mut()
+                        {
+                            ppr.borders = Some(borders);
+                        }
+                        in_p_bdr = false;
                     }
                     name if name == EL_PPR => {
                         in_ppr = false;

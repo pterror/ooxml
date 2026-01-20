@@ -56,14 +56,14 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:ind` | ✅ | Indentation (left, right, firstLine, hanging) |
 | `w:spacing` | ✅ | Spacing (before, after, line) |
 | `w:numPr` | ✅ | List numbering |
-| `w:pBdr` | ❌ | Paragraph borders |
-| `w:shd` | ❌ | Shading/background |
+| `w:pBdr` | ✅ | Paragraph borders (top, bottom, left, right, between, bar) |
+| `w:shd` | ✅ | Shading/background |
 | `w:tabs` | ❌ | Tab stop definitions |
-| `w:outlineLvl` | ❌ | Outline level |
-| `w:keepNext` | ❌ | Keep with next paragraph |
-| `w:keepLines` | ❌ | Keep lines together |
-| `w:pageBreakBefore` | ❌ | Page break before |
-| `w:widowControl` | ❌ | Widow/orphan control |
+| `w:outlineLvl` | ✅ | Outline level (0-9) |
+| `w:keepNext` | ✅ | Keep with next paragraph |
+| `w:keepLines` | ✅ | Keep lines together |
+| `w:pageBreakBefore` | ✅ | Page break before |
+| `w:widowControl` | ✅ | Widow/orphan control |
 
 ### Run Properties (`w:rPr`)
 

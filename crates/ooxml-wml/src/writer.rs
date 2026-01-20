@@ -6,9 +6,9 @@
 use crate::document::{
     BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth, Drawing,
     GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation,
-    Paragraph, ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run,
-    RunProperties, SectionProperties, Table, TableBorders, TableProperties, TableWidth,
-    VerticalMerge,
+    Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row, RowHeight,
+    RowProperties, Run, RunProperties, SectionProperties, Table, TableBorders, TableProperties,
+    TableWidth, VerticalMerge,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -794,8 +794,77 @@ fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String)
         xml.push_str("/>");
     }
 
+    // Paragraph borders
+    if let Some(borders) = &props.borders {
+        serialize_paragraph_borders(borders, xml);
+    }
+
+    // Paragraph shading
+    if let Some(shading) = &props.shading {
+        serialize_cell_shading(shading, xml);
+    }
+
+    // Outline level
+    if let Some(level) = props.outline_level {
+        xml.push_str(&format!(r#"<w:outlineLvl w:val="{}"/>"#, level));
+    }
+
+    // Flow control properties
+    if props.keep_next {
+        xml.push_str("<w:keepNext/>");
+    }
+    if props.keep_lines {
+        xml.push_str("<w:keepLines/>");
+    }
+    if props.page_break_before {
+        xml.push_str("<w:pageBreakBefore/>");
+    }
+    if let Some(widow_control) = props.widow_control {
+        if widow_control {
+            xml.push_str("<w:widowControl/>");
+        } else {
+            xml.push_str(r#"<w:widowControl w:val="0"/>"#);
+        }
+    }
+
     serialize_unknown_children(&props.unknown_children, xml);
     xml.push_str("</w:pPr>");
+}
+
+/// Serialize paragraph borders.
+fn serialize_paragraph_borders(borders: &ParagraphBorders, xml: &mut String) {
+    xml.push_str("<w:pBdr>");
+    if let Some(border) = &borders.top {
+        xml.push_str("<w:top");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.left {
+        xml.push_str("<w:left");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.bottom {
+        xml.push_str("<w:bottom");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.right {
+        xml.push_str("<w:right");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.between {
+        xml.push_str("<w:between");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    if let Some(border) = &borders.bar {
+        xml.push_str("<w:bar");
+        serialize_border_attrs(border, xml);
+        xml.push_str("/>");
+    }
+    xml.push_str("</w:pBdr>");
 }
 
 /// Serialize numbering properties (within pPr).
