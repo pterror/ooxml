@@ -29,6 +29,31 @@ impl PositionedNode {
     }
 }
 
+/// An XML attribute with its original position for correct round-trip ordering.
+///
+/// When unknown attributes are captured during parsing, we store their position
+/// among sibling attributes so they can be serialized in the original order.
+#[derive(Clone, Debug, PartialEq)]
+pub struct PositionedAttr {
+    /// Original position among sibling attributes (0-indexed).
+    pub position: usize,
+    /// The attribute name (including namespace prefix if present).
+    pub name: String,
+    /// The attribute value.
+    pub value: String,
+}
+
+impl PositionedAttr {
+    /// Create a new positioned attribute.
+    pub fn new(position: usize, name: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            position,
+            name: name.into(),
+            value: value.into(),
+        }
+    }
+}
+
 /// A raw XML node that can be preserved during round-trip.
 #[derive(Clone, Debug, PartialEq)]
 pub enum RawXmlNode {

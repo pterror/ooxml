@@ -17,7 +17,7 @@
 //! ```
 
 use crate::error::{Error, Result};
-use crate::raw_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 use crate::styles::{Styles, merge_run_properties};
 use ooxml::{Package, Relationships, rel_type, rels_path_for};
 use quick_xml::Reader;
@@ -508,7 +508,8 @@ pub struct Hyperlink {
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
     /// Unknown attributes preserved for round-trip fidelity.
-    pub unknown_attrs: Vec<(String, String)>,
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_attrs: Vec<PositionedAttr>,
 }
 
 impl Paragraph {
@@ -751,7 +752,8 @@ pub struct Run {
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
     /// Unknown attributes preserved for round-trip fidelity.
-    pub unknown_attrs: Vec<(String, String)>,
+    /// Stored with original position index for correct ordering during serialization.
+    pub unknown_attrs: Vec<PositionedAttr>,
 }
 
 /// A drawing element containing images.
@@ -1107,16 +1109,22 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_HYPERLINK && current_para.is_some() => {
                         let mut hyperlink = Hyperlink::new();
-                        // Extract r:id attribute for external links
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"r:id" {
+                        // Extract known attributes and capture unknown ones
+                        for (attr_idx, attr) in e.attributes().filter_map(|a| a.ok()).enumerate() {
+                            let key = attr.key.as_ref();
+                            if key == b"r:id" {
                                 hyperlink.rel_id =
                                     Some(String::from_utf8_lossy(&attr.value).into_owned());
-                            } else if attr.key.as_ref() == b"w:anchor"
-                                || attr.key.as_ref() == b"anchor"
-                            {
+                            } else if key == b"w:anchor" || key == b"anchor" {
                                 hyperlink.anchor =
                                     Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            } else {
+                                // Unknown attribute - preserve with position
+                                hyperlink.unknown_attrs.push(PositionedAttr::new(
+                                    attr_idx,
+                                    String::from_utf8_lossy(key),
+                                    String::from_utf8_lossy(&attr.value),
+                                ));
                             }
                         }
                         current_hyperlink = Some(hyperlink);
@@ -1124,7 +1132,17 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         para_child_idx += 1;
                     }
                     name if name == EL_R && current_para.is_some() => {
-                        current_run = Some(Run::new());
+                        let mut run = Run::new();
+                        // Capture unknown attributes with position
+                        for (attr_idx, attr) in e.attributes().filter_map(|a| a.ok()).enumerate() {
+                            // Run element has no known attributes we parse, capture all
+                            run.unknown_attrs.push(PositionedAttr::new(
+                                attr_idx,
+                                String::from_utf8_lossy(attr.key.as_ref()),
+                                String::from_utf8_lossy(&attr.value),
+                            ));
+                        }
+                        current_run = Some(run);
                         run_child_idx = 0;
                         if current_hyperlink.is_some() {
                             hyperlink_child_idx += 1;

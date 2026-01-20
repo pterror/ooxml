@@ -8,7 +8,7 @@ use crate::document::{
     ParagraphContent, ParagraphProperties, Row, Run, RunProperties, Table,
 };
 use crate::error::Result;
-use crate::raw_xml::{PositionedNode, RawXmlNode};
+use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
 use crate::styles::Styles;
 use ooxml::{PackageWriter, Relationship, Relationships, content_type, rel_type};
 use std::collections::HashMap;
@@ -394,13 +394,7 @@ fn serialize_hyperlink(link: &Hyperlink, xml: &mut String) {
     }
 
     // Write unknown attributes preserved for round-trip fidelity
-    for (key, value) in &link.unknown_attrs {
-        xml.push(' ');
-        xml.push_str(key);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(value));
-        xml.push('"');
-    }
+    serialize_unknown_attrs(&link.unknown_attrs, xml);
 
     xml.push('>');
 
@@ -486,13 +480,7 @@ fn serialize_run(run: &Run, xml: &mut String) {
     xml.push_str("<w:r");
 
     // Write unknown attributes preserved for round-trip fidelity
-    for (key, value) in &run.unknown_attrs {
-        xml.push(' ');
-        xml.push_str(key);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(value));
-        xml.push('"');
-    }
+    serialize_unknown_attrs(&run.unknown_attrs, xml);
 
     xml.push('>');
 
@@ -729,6 +717,21 @@ fn serialize_unknown_children(children: &[PositionedNode], xml: &mut String) {
     sorted.sort_by_key(|pn| pn.position);
     for pn in sorted {
         serialize_raw_xml_node(&pn.node, xml);
+    }
+}
+
+/// Serialize unknown attributes preserved for round-trip fidelity.
+/// Attributes are sorted by position to maintain original order.
+fn serialize_unknown_attrs(attrs: &[PositionedAttr], xml: &mut String) {
+    // Sort by position to preserve original attribute order
+    let mut sorted: Vec<_> = attrs.iter().collect();
+    sorted.sort_by_key(|pa| pa.position);
+    for pa in sorted {
+        xml.push(' ');
+        xml.push_str(&pa.name);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(&pa.value));
+        xml.push('"');
     }
 }
 

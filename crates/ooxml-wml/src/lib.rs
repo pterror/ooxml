@@ -44,7 +44,7 @@ pub use document::{
     Table,
 };
 pub use error::{Error, Result};
-pub use raw_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 pub use styles::{Style, StyleType, Styles};
 pub use writer::{DocumentBuilder, ListType};
 
