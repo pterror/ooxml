@@ -282,8 +282,16 @@ fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_de
                             process_run(run, features);
                         }
                     }
-                    ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
-                        // Bookmarks don't affect feature counts currently
+                    ParagraphContent::SimpleField(field) => {
+                        for run in &field.runs {
+                            process_run(run, features);
+                        }
+                    }
+                    ParagraphContent::BookmarkStart(_)
+                    | ParagraphContent::BookmarkEnd(_)
+                    | ParagraphContent::CommentRangeStart(_)
+                    | ParagraphContent::CommentRangeEnd(_) => {
+                        // Bookmarks and comment ranges don't affect feature counts currently
                     }
                 }
             }

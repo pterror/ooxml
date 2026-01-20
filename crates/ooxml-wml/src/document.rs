@@ -573,6 +573,12 @@ pub enum ParagraphContent {
     BookmarkStart(BookmarkStart),
     /// End of a bookmark.
     BookmarkEnd(BookmarkEnd),
+    /// Start of a comment range.
+    CommentRangeStart(CommentRangeStart),
+    /// End of a comment range.
+    CommentRangeEnd(CommentRangeEnd),
+    /// A simple field (e.g., PAGE, DATE).
+    SimpleField(SimpleField),
 }
 
 /// A bookmark start marker.
@@ -595,6 +601,38 @@ pub struct BookmarkStart {
 pub struct BookmarkEnd {
     /// Unique ID for the bookmark (matches bookmarkStart).
     pub id: u32,
+}
+
+/// A comment range start marker.
+///
+/// Corresponds to the `<w:commentRangeStart>` element.
+/// ECMA-376 Part 1, Section 17.13.4.4 (commentRangeStart).
+#[derive(Debug, Clone)]
+pub struct CommentRangeStart {
+    /// Unique ID for the comment (references comment in comments.xml).
+    pub id: u32,
+}
+
+/// A comment range end marker.
+///
+/// Corresponds to the `<w:commentRangeEnd>` element.
+/// ECMA-376 Part 1, Section 17.13.4.3 (commentRangeEnd).
+#[derive(Debug, Clone)]
+pub struct CommentRangeEnd {
+    /// Unique ID for the comment (matches commentRangeStart).
+    pub id: u32,
+}
+
+/// A simple field in the document.
+///
+/// Corresponds to the `<w:fldSimple>` element.
+/// ECMA-376 Part 1, Section 17.16.19 (fldSimple).
+#[derive(Debug, Clone, Default)]
+pub struct SimpleField {
+    /// Field instruction code (e.g., "PAGE", "DATE", "TOC").
+    pub instruction: String,
+    /// Runs containing the field's displayed result.
+    pub runs: Vec<Run>,
 }
 
 /// A hyperlink in the document.
@@ -634,8 +672,16 @@ impl Paragraph {
                         runs.push(run);
                     }
                 }
-                ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
-                    // Bookmarks don't contain runs
+                ParagraphContent::SimpleField(field) => {
+                    for run in &field.runs {
+                        runs.push(run);
+                    }
+                }
+                ParagraphContent::BookmarkStart(_)
+                | ParagraphContent::BookmarkEnd(_)
+                | ParagraphContent::CommentRangeStart(_)
+                | ParagraphContent::CommentRangeEnd(_) => {
+                    // Bookmarks and comment ranges don't contain runs
                 }
             }
         }
@@ -696,9 +742,13 @@ impl Paragraph {
             .map(|c| match c {
                 ParagraphContent::Run(run) => run.text().to_string(),
                 ParagraphContent::Hyperlink(link) => link.text(),
-                ParagraphContent::BookmarkStart(_) | ParagraphContent::BookmarkEnd(_) => {
-                    String::new()
+                ParagraphContent::SimpleField(field) => {
+                    field.runs.iter().map(|r| r.text()).collect::<String>()
                 }
+                ParagraphContent::BookmarkStart(_)
+                | ParagraphContent::BookmarkEnd(_)
+                | ParagraphContent::CommentRangeStart(_)
+                | ParagraphContent::CommentRangeEnd(_) => String::new(),
             })
             .collect()
     }
@@ -815,6 +865,10 @@ pub struct SectionProperties {
     pub page_size: Option<PageSize>,
     /// Page margins.
     pub margins: Option<PageMargins>,
+    /// Column definitions.
+    pub columns: Option<Columns>,
+    /// Document grid settings.
+    pub doc_grid: Option<DocGrid>,
     /// Unknown child elements preserved for round-trip fidelity.
     pub unknown_children: Vec<PositionedNode>,
 }
@@ -949,6 +1003,87 @@ impl Default for PageMargins {
             header: None,
             footer: None,
             gutter: None,
+        }
+    }
+}
+
+/// Column definitions for a section.
+///
+/// Corresponds to the `<w:cols>` element.
+/// ECMA-376 Part 1, Section 17.6.4 (cols).
+#[derive(Debug, Clone, Default)]
+pub struct Columns {
+    /// Number of columns (default 1).
+    pub num: Option<u32>,
+    /// Space between columns in twips (default 720 = 0.5 inch).
+    pub space: Option<u32>,
+    /// Whether columns have equal width.
+    pub equal_width: bool,
+    /// Whether there's a separator line between columns.
+    pub separator: bool,
+    /// Individual column definitions (used when equal_width is false).
+    pub columns: Vec<Column>,
+}
+
+/// A single column definition.
+///
+/// Corresponds to the `<w:col>` element within `<w:cols>`.
+#[derive(Debug, Clone, Copy)]
+pub struct Column {
+    /// Column width in twips.
+    pub width: u32,
+    /// Space after this column in twips.
+    pub space: Option<u32>,
+}
+
+/// Document grid settings for a section.
+///
+/// Corresponds to the `<w:docGrid>` element.
+/// ECMA-376 Part 1, Section 17.6.5 (docGrid).
+#[derive(Debug, Clone, Copy, Default)]
+pub struct DocGrid {
+    /// Grid type.
+    pub grid_type: DocGridType,
+    /// Line pitch (distance between lines) in twips.
+    pub line_pitch: Option<u32>,
+    /// Character pitch (distance between characters) in twips.
+    pub char_space: Option<i32>,
+}
+
+/// Document grid type.
+///
+/// ECMA-376 Part 1, Section 17.18.14 (ST_DocGrid).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DocGridType {
+    /// No document grid.
+    #[default]
+    Default,
+    /// Line grid only.
+    Lines,
+    /// Line and character grid.
+    LinesAndChars,
+    /// Snap to characters.
+    SnapToChars,
+}
+
+impl DocGridType {
+    /// Parse from the w:type attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "lines" => DocGridType::Lines,
+            "linesAndChars" => DocGridType::LinesAndChars,
+            "snapToChars" => DocGridType::SnapToChars,
+            _ => DocGridType::Default,
+        }
+    }
+
+    /// Convert to the w:type attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            DocGridType::Default => "default",
+            DocGridType::Lines => "lines",
+            DocGridType::LinesAndChars => "linesAndChars",
+            DocGridType::SnapToChars => "snapToChars",
         }
     }
 }
@@ -1779,6 +1914,8 @@ pub struct Run {
     properties: Option<RunProperties>,
     /// Drawings (images) in the run.
     drawings: Vec<Drawing>,
+    /// Symbols in the run.
+    symbols: Vec<Symbol>,
     /// Whether this run contains a page break.
     page_break: bool,
     /// Unknown child elements preserved for round-trip fidelity.
@@ -1828,6 +1965,18 @@ pub struct ImageData {
     pub content_type: String,
     /// Raw image bytes.
     pub data: Vec<u8>,
+}
+
+/// A symbol character from a specific font.
+///
+/// Corresponds to the `<w:sym>` element.
+/// ECMA-376 Part 1, Section 17.3.3.30 (sym).
+#[derive(Debug, Clone)]
+pub struct Symbol {
+    /// Font name containing the symbol.
+    pub font: String,
+    /// Character code (typically hex, e.g., "F020").
+    pub char_code: String,
 }
 
 impl Run {
@@ -1946,6 +2095,16 @@ impl Run {
     pub fn set_page_break(&mut self, has_break: bool) -> &mut Self {
         self.page_break = has_break;
         self
+    }
+
+    /// Get symbols in this run.
+    pub fn symbols(&self) -> &[Symbol] {
+        &self.symbols
+    }
+
+    /// Add a symbol to this run.
+    pub fn add_symbol(&mut self, symbol: Symbol) {
+        self.symbols.push(symbol);
     }
 }
 
@@ -2309,6 +2468,7 @@ const EL_RFONTS: &[u8] = b"rFonts";
 const EL_COLOR: &[u8] = b"color";
 const EL_BR: &[u8] = b"br";
 const EL_TAB: &[u8] = b"tab";
+const EL_SYM: &[u8] = b"sym";
 const EL_TBL: &[u8] = b"tbl";
 const EL_TR: &[u8] = b"tr";
 const EL_TC: &[u8] = b"tc";
@@ -2352,6 +2512,13 @@ const EL_HYPERLINK: &[u8] = b"hyperlink";
 const EL_BOOKMARK_START: &[u8] = b"bookmarkStart";
 const EL_BOOKMARK_END: &[u8] = b"bookmarkEnd";
 
+// Comment range elements
+const EL_COMMENT_RANGE_START: &[u8] = b"commentRangeStart";
+const EL_COMMENT_RANGE_END: &[u8] = b"commentRangeEnd";
+
+// Field elements
+const EL_FLD_SIMPLE: &[u8] = b"fldSimple";
+
 // Numbering elements
 const EL_NUMPR: &[u8] = b"numPr";
 const EL_NUMID: &[u8] = b"numId";
@@ -2384,6 +2551,9 @@ const EL_SECT_PR: &[u8] = b"sectPr";
 const EL_PG_SZ: &[u8] = b"pgSz";
 const EL_PG_MAR: &[u8] = b"pgMar";
 const EL_SECT_TYPE: &[u8] = b"type";
+const EL_COLS: &[u8] = b"cols";
+const EL_COL: &[u8] = b"col";
+const EL_DOC_GRID: &[u8] = b"docGrid";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -2409,6 +2579,9 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     // Hyperlink parsing state
     let mut current_hyperlink: Option<Hyperlink> = None;
 
+    // Simple field parsing state
+    let mut current_fld_simple: Option<SimpleField> = None;
+
     // Numbering parsing state
     let mut in_numpr = false;
     let mut current_numid: Option<u32> = None;
@@ -2430,6 +2603,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut current_sect_pr: Option<SectionProperties> = None;
     let mut in_sect_pr = false;
     let mut sect_pr_child_idx: usize = 0;
+
+    // Columns parsing state (within section properties)
+    let mut current_cols: Option<Columns> = None;
+    let mut in_cols = false;
 
     // Table properties parsing state
     let mut current_tbl_pr: Option<TableProperties> = None;
@@ -2554,6 +2731,19 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         hyperlink_child_idx = 0;
                         para_child_idx += 1;
                     }
+                    // Simple field (w:fldSimple)
+                    name if name == EL_FLD_SIMPLE && current_para.is_some() => {
+                        let mut field = SimpleField::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if key == b"w:instr" || key == b"instr" {
+                                field.instruction =
+                                    String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                        }
+                        current_fld_simple = Some(field);
+                        para_child_idx += 1;
+                    }
                     name if name == EL_R && current_para.is_some() => {
                         let mut run = Run::new();
                         // Capture unknown attributes with position
@@ -2619,6 +2809,32 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         in_sect_pr = true;
                         sect_pr_child_idx = 0;
                         body_child_idx += 1;
+                    }
+                    // Start of columns definition (w:cols)
+                    name if name == EL_COLS && in_sect_pr => {
+                        let mut cols = Columns::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:num" | b"num" => {
+                                        cols.num = s.parse().ok();
+                                    }
+                                    b"w:space" | b"space" => {
+                                        cols.space = s.parse().ok();
+                                    }
+                                    b"w:equalWidth" | b"equalWidth" => {
+                                        cols.equal_width = matches!(s, "true" | "1" | "on");
+                                    }
+                                    b"w:sep" | b"sep" => {
+                                        cols.separator = matches!(s, "true" | "1" | "on");
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                        current_cols = Some(cols);
+                        in_cols = true;
                     }
                     _ => {
                         // Only capture unknown elements when we're in a container context
@@ -2734,6 +2950,28 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             run.text.push('\t');
                         }
                     }
+                    // Symbol character
+                    name if name == EL_SYM && current_run.is_some() => {
+                        let mut font = String::new();
+                        let mut char_code = String::new();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:font" | b"font" => {
+                                        font = s.to_string();
+                                    }
+                                    b"w:char" | b"char" => {
+                                        char_code = s.to_string();
+                                    }
+                                    _ => {}
+                                }
+                            }
+                        }
+                        if let Some(run) = current_run.as_mut() {
+                            run.symbols.push(Symbol { font, char_code });
+                        }
+                    }
                     // Bookmark start
                     name if name == EL_BOOKMARK_START && current_para.is_some() => {
                         let mut id = 0u32;
@@ -2774,6 +3012,39 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         if let Some(para) = current_para.as_mut() {
                             para.content
                                 .push(ParagraphContent::BookmarkEnd(BookmarkEnd { id }));
+                            para_child_idx += 1;
+                        }
+                    }
+                    // Comment range start
+                    name if name == EL_COMMENT_RANGE_START && current_para.is_some() => {
+                        let mut id = 0u32;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:id" || attr.key.as_ref() == b"id")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                id = s.parse().unwrap_or(0);
+                            }
+                        }
+                        if let Some(para) = current_para.as_mut() {
+                            para.content.push(ParagraphContent::CommentRangeStart(
+                                CommentRangeStart { id },
+                            ));
+                            para_child_idx += 1;
+                        }
+                    }
+                    // Comment range end
+                    name if name == EL_COMMENT_RANGE_END && current_para.is_some() => {
+                        let mut id = 0u32;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if (attr.key.as_ref() == b"w:id" || attr.key.as_ref() == b"id")
+                                && let Ok(s) = std::str::from_utf8(&attr.value)
+                            {
+                                id = s.parse().unwrap_or(0);
+                            }
+                        }
+                        if let Some(para) = current_para.as_mut() {
+                            para.content
+                                .push(ParagraphContent::CommentRangeEnd(CommentRangeEnd { id }));
                             para_child_idx += 1;
                         }
                     }
@@ -3273,6 +3544,81 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             sect_pr_child_idx += 1;
                         }
                     }
+                    // Columns (w:cols) - self-closing case
+                    name if name == EL_COLS && in_sect_pr && !in_cols => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut cols = Columns::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:num" | b"num" => {
+                                            cols.num = s.parse().ok();
+                                        }
+                                        b"w:space" | b"space" => {
+                                            cols.space = s.parse().ok();
+                                        }
+                                        b"w:equalWidth" | b"equalWidth" => {
+                                            cols.equal_width = matches!(s, "true" | "1" | "on");
+                                        }
+                                        b"w:sep" | b"sep" => {
+                                            cols.separator = matches!(s, "true" | "1" | "on");
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            sect_pr.columns = Some(cols);
+                            sect_pr_child_idx += 1;
+                        }
+                    }
+                    // Individual column definition (w:col)
+                    name if name == EL_COL && in_cols => {
+                        if let Some(cols) = current_cols.as_mut() {
+                            let mut width = 0u32;
+                            let mut space = None;
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:w" | b"w" => {
+                                            width = s.parse().unwrap_or(0);
+                                        }
+                                        b"w:space" | b"space" => {
+                                            space = s.parse().ok();
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            cols.columns.push(Column { width, space });
+                        }
+                    }
+                    // Document grid (w:docGrid)
+                    name if name == EL_DOC_GRID && in_sect_pr => {
+                        if let Some(sect_pr) = current_sect_pr.as_mut() {
+                            let mut doc_grid = DocGrid::default();
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                let key = attr.key.as_ref();
+                                if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                    match key {
+                                        b"w:type" | b"type" => {
+                                            doc_grid.grid_type = DocGridType::parse(s);
+                                        }
+                                        b"w:linePitch" | b"linePitch" => {
+                                            doc_grid.line_pitch = s.parse().ok();
+                                        }
+                                        b"w:charSpace" | b"charSpace" => {
+                                            doc_grid.char_space = s.parse().ok();
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                            }
+                            sect_pr.doc_grid = Some(doc_grid);
+                            sect_pr_child_idx += 1;
+                        }
+                    }
                     // Table width (w:tblW)
                     name if name == EL_TBL_W && in_tbl_pr => {
                         if let Some(tbl_pr) = current_tbl_pr.as_mut() {
@@ -3744,9 +4090,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_R && current_run.is_some() => {
                         if let Some(mut run) = current_run.take() {
                             run.properties = current_rpr.take();
-                            // Add run to hyperlink if inside one, otherwise to paragraph
+                            // Add run to hyperlink/field if inside one, otherwise to paragraph
                             if let Some(hyperlink) = current_hyperlink.as_mut() {
                                 hyperlink.runs.push(run);
+                            } else if let Some(field) = current_fld_simple.as_mut() {
+                                field.runs.push(run);
                             } else if let Some(para) = current_para.as_mut() {
                                 para.content.push(ParagraphContent::Run(run));
                             }
@@ -3757,6 +4105,13 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                             && let Some(para) = current_para.as_mut()
                         {
                             para.content.push(ParagraphContent::Hyperlink(hyperlink));
+                        }
+                    }
+                    name if name == EL_FLD_SIMPLE => {
+                        if let Some(field) = current_fld_simple.take()
+                            && let Some(para) = current_para.as_mut()
+                        {
+                            para.content.push(ParagraphContent::SimpleField(field));
                         }
                     }
                     name if name == EL_T => {
@@ -3793,6 +4148,16 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_RPR => {
                         in_rpr = false;
+                    }
+                    // End of columns definition - add to section properties
+                    name if name == EL_COLS => {
+                        if let Some(cols) = current_cols.take()
+                            && let Some(sect_pr) = current_sect_pr.as_mut()
+                        {
+                            sect_pr.columns = Some(cols);
+                            sect_pr_child_idx += 1;
+                        }
+                        in_cols = false;
                     }
                     // End of section properties - add to body
                     name if name == EL_SECT_PR => {

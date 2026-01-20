@@ -29,9 +29,9 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:hyperlink` | ✅ | Hyperlinks |
 | `w:bookmarkStart` | ✅ | Bookmark anchors |
 | `w:bookmarkEnd` | ✅ | Bookmark anchors |
-| `w:commentRangeStart` | ❌ | Comment anchors |
-| `w:commentRangeEnd` | ❌ | Comment anchors |
-| `w:fldSimple` | ❌ | Simple fields |
+| `w:commentRangeStart` | ✅ | Comment anchors |
+| `w:commentRangeEnd` | ✅ | Comment anchors |
+| `w:fldSimple` | ✅ | Simple fields |
 | `w:fldChar` | ❌ | Complex fields |
 
 ### Run Content
@@ -42,7 +42,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:tab` | ✅ | Tab characters (converted to `\t`) |
 | `w:br` | ✅ | Line breaks (converted to `\n`) |
 | `w:br w:type="page"` | ✅ | Page breaks |
-| `w:sym` | ❌ | Symbol characters |
+| `w:sym` | ✅ | Symbol characters |
 | `w:drawing` | ✅ | DrawingML container |
 | `w:pict` | ❌ | VML pictures (legacy) |
 | `w:object` | ❌ | Embedded objects |
@@ -91,8 +91,8 @@ This document tracks what's implemented, partially implemented, and missing in t
 |----------|--------|-------|
 | `w:pgSz` | ✅ | Page size (width, height, orientation) |
 | `w:pgMar` | ✅ | Page margins (top, bottom, left, right, header, footer, gutter) |
-| `w:cols` | ❌ | Column definitions |
-| `w:docGrid` | ❌ | Document grid settings |
+| `w:cols` | ✅ | Column definitions |
+| `w:docGrid` | ✅ | Document grid settings |
 | `w:type` | ✅ | Section type (continuous, nextPage, etc.) |
 
 ### Table Elements

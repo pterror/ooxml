@@ -4,10 +4,10 @@
 //! and saving existing documents.
 
 use crate::document::{
-    BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth, Drawing,
-    GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation,
-    Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row, RowHeight,
-    RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
+    BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading, CellWidth,
+    DocGridType, Drawing, GridColumn, HeightRule, Hyperlink, InlineImage, NumberingProperties,
+    PageOrientation, Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row,
+    RowHeight, RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
     TableProperties, TableWidth, VerticalMerge,
 };
 use crate::error::Result;
@@ -391,6 +391,65 @@ fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
         xml.push_str("/>");
     }
 
+    // Columns
+    if let Some(cols) = &props.columns {
+        xml.push_str("<w:cols");
+        if let Some(num) = cols.num {
+            xml.push_str(" w:num=\"");
+            xml.push_str(&num.to_string());
+            xml.push('"');
+        }
+        if let Some(space) = cols.space {
+            xml.push_str(" w:space=\"");
+            xml.push_str(&space.to_string());
+            xml.push('"');
+        }
+        if cols.equal_width {
+            xml.push_str(" w:equalWidth=\"true\"");
+        }
+        if cols.separator {
+            xml.push_str(" w:sep=\"true\"");
+        }
+        if cols.columns.is_empty() {
+            xml.push_str("/>");
+        } else {
+            xml.push('>');
+            for col in &cols.columns {
+                xml.push_str("<w:col w:w=\"");
+                xml.push_str(&col.width.to_string());
+                xml.push('"');
+                if let Some(space) = col.space {
+                    xml.push_str(" w:space=\"");
+                    xml.push_str(&space.to_string());
+                    xml.push('"');
+                }
+                xml.push_str("/>");
+            }
+            xml.push_str("</w:cols>");
+        }
+    }
+
+    // Document grid
+    if let Some(doc_grid) = &props.doc_grid {
+        xml.push_str("<w:docGrid");
+        if doc_grid.grid_type != DocGridType::Default {
+            xml.push_str(" w:type=\"");
+            xml.push_str(doc_grid.grid_type.as_str());
+            xml.push('"');
+        }
+        if let Some(line_pitch) = doc_grid.line_pitch {
+            xml.push_str(" w:linePitch=\"");
+            xml.push_str(&line_pitch.to_string());
+            xml.push('"');
+        }
+        if let Some(char_space) = doc_grid.char_space {
+            xml.push_str(" w:charSpace=\"");
+            xml.push_str(&char_space.to_string());
+            xml.push('"');
+        }
+        xml.push_str("/>");
+    }
+
     // Unknown children for round-trip preservation
     serialize_unknown_children(&props.unknown_children, xml);
 
@@ -723,6 +782,21 @@ fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
             ParagraphContent::BookmarkEnd(bookmark) => {
                 xml.push_str(&format!(r#"<w:bookmarkEnd w:id="{}"/>"#, bookmark.id));
             }
+            ParagraphContent::CommentRangeStart(comment) => {
+                xml.push_str(&format!(r#"<w:commentRangeStart w:id="{}"/>"#, comment.id));
+            }
+            ParagraphContent::CommentRangeEnd(comment) => {
+                xml.push_str(&format!(r#"<w:commentRangeEnd w:id="{}"/>"#, comment.id));
+            }
+            ParagraphContent::SimpleField(field) => {
+                xml.push_str("<w:fldSimple w:instr=\"");
+                xml.push_str(&escape_xml(&field.instruction));
+                xml.push_str("\">");
+                for run in &field.runs {
+                    serialize_run(run, xml);
+                }
+                xml.push_str("</w:fldSimple>");
+            }
         }
     }
 
@@ -938,6 +1012,15 @@ fn serialize_run(run: &Run, xml: &mut String) {
     // Drawings (images)
     for drawing in run.drawings() {
         serialize_drawing(drawing, xml);
+    }
+
+    // Symbols
+    for symbol in run.symbols() {
+        xml.push_str("<w:sym w:font=\"");
+        xml.push_str(&escape_xml(&symbol.font));
+        xml.push_str("\" w:char=\"");
+        xml.push_str(&escape_xml(&symbol.char_code));
+        xml.push_str("\"/>");
     }
 
     // Text content
