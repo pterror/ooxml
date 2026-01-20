@@ -1,0 +1,3 @@
+CT_AdditionalCharacteristics
+CT_Characteristic
+ST_Relation

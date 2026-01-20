@@ -1,0 +1,6 @@
+blipFill
+cNvPicPr
+cNvPr
+nvPicPr
+pic
+spPr

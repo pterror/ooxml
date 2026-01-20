@@ -1,0 +1,6 @@
+anchorlock
+borderbottom
+borderleft
+borderright
+bordertop
+wrap

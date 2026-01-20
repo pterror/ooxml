@@ -1,0 +1,17 @@
+Art
+ArticleInAPeriodical
+Book
+BookSection
+Case
+ConferenceProceedings
+DocumentFromInternetSite
+ElectronicSource
+Film
+InternetSite
+Interview
+JournalArticle
+Misc
+Patent
+Performance
+Report
+SoundRecording

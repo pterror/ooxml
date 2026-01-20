@@ -1,0 +1,15 @@
+CT_AbsSizeAnchor
+CT_Connector
+CT_ConnectorNonVisual
+CT_Drawing
+CT_GraphicFrame
+CT_GraphicFrameNonVisual
+CT_GroupShape
+CT_GroupShapeNonVisual
+CT_Marker
+CT_Picture
+CT_PictureNonVisual
+CT_RelSizeAnchor
+CT_Shape
+CT_ShapeNonVisual
+ST_MarkerCoordinate

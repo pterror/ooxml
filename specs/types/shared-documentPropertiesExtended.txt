@@ -1,0 +1,4 @@
+CT_DigSigBlob
+CT_Properties
+CT_VectorLpstr
+CT_VectorVariant

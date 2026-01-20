@@ -1,0 +1,3 @@
+CT_ClientData
+ST_CF
+ST_ObjectType
