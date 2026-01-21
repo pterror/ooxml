@@ -44,7 +44,7 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 
 ### v0.1 - Core + Word Basics
 
-**ooxml (core):**
+**ooxml-opc (core):**
 - [x] OPC packaging (ZIP read/write)
 - [x] Relationships (.rels files)
 - [x] Content types ([Content_Types].xml)
@@ -57,36 +57,47 @@ See [ECOSYSTEM.md](ECOSYSTEM.md) for details on fixtures and specs.
 - [x] Runs (`<w:r>`) and text (`<w:t>`)
 - [x] Basic formatting: bold, italic, underline, strikethrough
 - [x] Font, size, color
-- [ ] Paragraph properties: alignment, spacing, indentation
+- [x] Paragraph properties: alignment, spacing, indentation
 - [x] Headings (via paragraph styles)
 - [x] Lists (numbering definitions + abstract numbering)
 - [x] Tables (basic: rows, cells)
 - [x] Hyperlinks (internal and external)
-- [x] Images (embedded in word/media/)
+- [x] Images (inline, embedded in word/media/)
 - [x] Styles (styles.xml) - read and apply
 - [ ] Styles (styles.xml) - write
 - [x] Page breaks
-- [ ] Section breaks
+- [x] Section breaks
+- [x] Document settings (word/settings.xml)
 
-### v0.2 - Extended Word
+### v0.2 - Extended Word (Reading)
 
-- [ ] Headers and footers
-- [ ] Footnotes and endnotes
+- [x] Headers and footers
+- [x] Footnotes and endnotes
 - [ ] Table of contents (read)
 - [ ] Bookmarks
-- [ ] Complex tables (merged cells, nested tables)
+- [x] Complex tables (merged cells, nested tables)
 - [ ] Text boxes
-- [ ] Tabs and tab stops
-- [ ] Borders and shading
-- [ ] Table borders
+- [x] Tabs and tab stops
+- [x] Borders and shading
+- [x] Table borders
+- [x] Content controls (w:sdt)
+- [x] Custom XML blocks (w:customXml)
+- [x] VML pictures (w:pict)
+- [x] Embedded objects (w:object)
+- [x] Comments
+
+### v0.2 - Extended Word (Writing)
+
+- [ ] Headers and footers creation
+- [ ] Footnotes and endnotes creation
+- [ ] Comments creation
+- [ ] Anchored/floating images
 
 ### v0.3 - Advanced Word
 
-- [ ] Track changes (revisions)
-- [ ] Comments
-- [ ] Form fields and content controls
-- [ ] Custom XML parts
-- [ ] Math (OMML)
+- [ ] Track changes (revisions: w:ins, w:del)
+- [ ] Form fields
+- [ ] Math (OMML integration)
 - [ ] SmartArt (limited)
 - [ ] Charts (limited)
 
