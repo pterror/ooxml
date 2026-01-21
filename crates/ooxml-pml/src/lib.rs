@@ -19,11 +19,26 @@
 //! }
 //! # Ok::<(), ooxml_pml::Error>(())
 //! ```
+//!
+//! # Writing Presentations
+//!
+//! ```no_run
+//! use ooxml_pml::PresentationBuilder;
+//!
+//! let mut pres = PresentationBuilder::new();
+//! let slide = pres.add_slide();
+//! slide.add_title("Hello World");
+//! slide.add_text("Created with ooxml-pml");
+//! pres.save("output.pptx")?;
+//! # Ok::<(), ooxml_pml::Error>(())
+//! ```
 
 pub mod error;
 pub mod presentation;
+pub mod writer;
 
 pub use error::{Error, Result};
 pub use presentation::{
     ImageData, Picture, Presentation, Shape, Slide, Transition, TransitionSpeed, TransitionType,
 };
+pub use writer::{PresentationBuilder, SlideBuilder};
