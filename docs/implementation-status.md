@@ -139,11 +139,11 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `word/styles.xml` | ✅ | Style definitions |
 | `word/numbering.xml` | ✅ | List definitions |
 | `word/_rels/document.xml.rels` | ✅ | Document relationships |
-| `word/header*.xml` | 🔶 | Header references parsed, content parts not loaded |
-| `word/footer*.xml` | 🔶 | Footer references parsed, content parts not loaded |
-| `word/footnotes.xml` | 🔶 | Footnote references parsed, content parts not loaded |
-| `word/endnotes.xml` | 🔶 | Endnote references parsed, content parts not loaded |
-| `word/comments.xml` | 🔶 | Comment references parsed, content parts not loaded |
+| `word/header*.xml` | ✅ | Header content fully loaded via `get_header()` |
+| `word/footer*.xml` | ✅ | Footer content fully loaded via `get_footer()` |
+| `word/footnotes.xml` | ✅ | Footnotes fully loaded via `get_footnotes()` |
+| `word/endnotes.xml` | ✅ | Endnotes fully loaded via `get_endnotes()` |
+| `word/comments.xml` | ✅ | Comments fully loaded via `get_comments()` |
 | `word/settings.xml` | ❌ | Document settings |
 
 ## Writing (Serialization)
@@ -202,14 +202,14 @@ Based on [corpus analysis](./corpus-analysis.md), these are the most impactful m
 
 ### Medium Priority (affects 5-20% of documents)
 
-7. **Headers/Footers** - 🔶 References parsed, content parts pending
+7. ~~**Headers/Footers**~~ ✅ Now loads header/footer content via `get_header()`/`get_footer()`
 8. ~~**Anchored images**~~ ✅ Now supports floating images with text wrapping
 9. ~~**Tab stops**~~ ✅ Now supports custom tab stop definitions
 
 ### Lower Priority (affects <5% of documents)
 
-10. **Footnotes/Endnotes** - 🔶 References parsed, content parts pending
-11. **Comments** - 🔶 References and ranges parsed, content parts pending
+10. ~~**Footnotes/Endnotes**~~ ✅ Now loads content via `get_footnotes()`/`get_endnotes()`
+11. ~~**Comments**~~ ✅ Now loads comment content via `get_comments()`
 12. ~~**Superscript/Subscript**~~ ✅ Now implemented
 13. ~~**Content controls**~~ ✅ Now supports structured document tags (w:sdt)
 

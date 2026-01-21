@@ -198,6 +198,106 @@ impl<R: Read + Seek> Document<R> {
     pub fn doc_relationships(&self) -> &Relationships {
         &self.doc_rels
     }
+
+    /// Load a header part by its relationship ID.
+    ///
+    /// Returns the parsed header content. The relationship ID comes from
+    /// `SectionProperties.headers[].rel_id`.
+    ///
+    /// # Example
+    /// ```ignore
+    /// if let Some(sect_pr) = doc.body().section_properties() {
+    ///     for header_ref in &sect_pr.headers {
+    ///         let header = doc.get_header(&header_ref.rel_id)?;
+    ///         for para in header.paragraphs() {
+    ///             println!("{}", para.text());
+    ///         }
+    ///     }
+    /// }
+    /// ```
+    pub fn get_header(&mut self, rel_id: &str) -> Result<HeaderPart> {
+        let rel = self
+            .doc_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::MissingPart(format!("header relationship {}", rel_id)))?;
+
+        let header_path = resolve_path(&self.doc_path, &rel.target);
+        let header_xml = self.package.read_part(&header_path)?;
+        parse_header_footer(&header_xml, true)
+    }
+
+    /// Load a footer part by its relationship ID.
+    ///
+    /// Returns the parsed footer content. The relationship ID comes from
+    /// `SectionProperties.footers[].rel_id`.
+    pub fn get_footer(&mut self, rel_id: &str) -> Result<FooterPart> {
+        let rel = self
+            .doc_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::MissingPart(format!("footer relationship {}", rel_id)))?;
+
+        let footer_path = resolve_path(&self.doc_path, &rel.target);
+        let footer_xml = self.package.read_part(&footer_path)?;
+        parse_header_footer(&footer_xml, false)
+    }
+
+    /// Load the footnotes part.
+    ///
+    /// Returns the parsed footnotes. Individual footnotes can be looked up by ID
+    /// using `FootnotesPart::get()`.
+    ///
+    /// Returns `Error::MissingPart` if the document has no footnotes.xml.
+    pub fn get_footnotes(&mut self) -> Result<FootnotesPart> {
+        // Footnotes are referenced via relationship from document.xml.rels
+        let footnotes_rel = self
+            .doc_rels
+            .get_by_type(
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes",
+            )
+            .ok_or_else(|| Error::MissingPart("footnotes relationship".into()))?;
+
+        let footnotes_path = resolve_path(&self.doc_path, &footnotes_rel.target);
+        let footnotes_xml = self.package.read_part(&footnotes_path)?;
+        parse_footnotes(&footnotes_xml)
+    }
+
+    /// Load the endnotes part.
+    ///
+    /// Returns the parsed endnotes. Individual endnotes can be looked up by ID
+    /// using `EndnotesPart::get()`.
+    ///
+    /// Returns `Error::MissingPart` if the document has no endnotes.xml.
+    pub fn get_endnotes(&mut self) -> Result<EndnotesPart> {
+        let endnotes_rel = self
+            .doc_rels
+            .get_by_type(
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes",
+            )
+            .ok_or_else(|| Error::MissingPart("endnotes relationship".into()))?;
+
+        let endnotes_path = resolve_path(&self.doc_path, &endnotes_rel.target);
+        let endnotes_xml = self.package.read_part(&endnotes_path)?;
+        parse_footnotes(&endnotes_xml) // Same structure as footnotes
+    }
+
+    /// Load the comments part.
+    ///
+    /// Returns the parsed comments. Individual comments can be looked up by ID
+    /// using `CommentsPart::get()`.
+    ///
+    /// Returns `Error::MissingPart` if the document has no comments.xml.
+    pub fn get_comments(&mut self) -> Result<CommentsPart> {
+        let comments_rel = self
+            .doc_rels
+            .get_by_type(
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
+            )
+            .ok_or_else(|| Error::MissingPart("comments relationship".into()))?;
+
+        let comments_path = resolve_path(&self.doc_path, &comments_rel.target);
+        let comments_xml = self.package.read_part(&comments_path)?;
+        parse_comments(&comments_xml)
+    }
 }
 
 /// Resolve a relative path against a base path.
@@ -243,6 +343,73 @@ pub struct Body {
     /// Unknown child elements preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_children: Vec<PositionedNode>,
+}
+
+/// A header part containing block-level content.
+///
+/// Corresponds to the `<w:hdr>` element in header*.xml parts.
+/// ECMA-376 Part 1, Section 17.10.3 (hdr).
+#[derive(Debug, Clone, Default)]
+pub struct HeaderPart {
+    /// Block-level content (paragraphs and tables).
+    content: Vec<BlockContent>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+impl HeaderPart {
+    /// Create a new empty header.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get the block-level content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get all paragraphs in the header (including those in tables and content controls).
+    pub fn paragraphs(&self) -> Vec<&Paragraph> {
+        collect_paragraphs(&self.content)
+    }
+
+    /// Extract all text from the header.
+    pub fn text(&self) -> String {
+        self.paragraphs()
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// A footer part containing block-level content.
+///
+/// Corresponds to the `<w:ftr>` element in footer*.xml parts.
+/// ECMA-376 Part 1, Section 17.10.2 (ftr).
+pub type FooterPart = HeaderPart;
+
+/// Collect paragraphs from block content (including nested in tables/content controls).
+fn collect_paragraphs(blocks: &[BlockContent]) -> Vec<&Paragraph> {
+    let mut paras = Vec::new();
+    for block in blocks {
+        match block {
+            BlockContent::Paragraph(p) => paras.push(p),
+            BlockContent::Table(t) => {
+                for row in t.rows() {
+                    for cell in row.cells() {
+                        for p in cell.paragraphs() {
+                            paras.push(p);
+                        }
+                    }
+                }
+            }
+            BlockContent::ContentControl(c) => {
+                paras.extend(collect_paragraphs(&c.content));
+            }
+        }
+    }
+    paras
 }
 
 /// Block-level content in the document body.
@@ -306,28 +473,7 @@ impl Body {
 
     /// Get all paragraphs in the body (flattened, including those in tables and content controls).
     pub fn paragraphs(&self) -> Vec<&Paragraph> {
-        fn collect_paragraphs<'a>(blocks: &'a [BlockContent], paras: &mut Vec<&'a Paragraph>) {
-            for block in blocks {
-                match block {
-                    BlockContent::Paragraph(p) => paras.push(p),
-                    BlockContent::Table(t) => {
-                        for row in t.rows() {
-                            for cell in row.cells() {
-                                for p in cell.paragraphs() {
-                                    paras.push(p);
-                                }
-                            }
-                        }
-                    }
-                    BlockContent::ContentControl(c) => {
-                        collect_paragraphs(&c.content, paras);
-                    }
-                }
-            }
-        }
-        let mut paras = Vec::new();
-        collect_paragraphs(&self.content, &mut paras);
-        paras
+        collect_paragraphs(&self.content)
     }
 
     /// Get block-level content.
@@ -338,6 +484,13 @@ impl Body {
     /// Get mutable reference to block-level content.
     pub fn content_mut(&mut self) -> &mut Vec<BlockContent> {
         &mut self.content
+    }
+
+    /// Consume the body and return its parts.
+    ///
+    /// Used internally for converting parsed body content to HeaderPart/FooterPart.
+    pub(crate) fn into_parts(self) -> (Vec<BlockContent>, Vec<PositionedNode>) {
+        (self.content, self.unknown_children)
     }
 
     /// Get all tables in the body.
@@ -2314,6 +2467,133 @@ pub struct CommentReference {
     pub id: u32,
 }
 
+/// A single footnote.
+///
+/// Corresponds to the `<w:footnote>` element in word/footnotes.xml.
+/// ECMA-376 Part 1, Section 17.11.10 (footnote).
+#[derive(Debug, Clone)]
+pub struct Footnote {
+    /// The footnote ID (referenced by FootnoteReference).
+    pub id: i32,
+    /// The type of footnote (normal, separator, continuationSeparator).
+    pub footnote_type: Option<String>,
+    /// Block-level content (paragraphs, tables).
+    content: Vec<BlockContent>,
+}
+
+impl Footnote {
+    /// Get the block-level content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get all paragraphs in the footnote.
+    pub fn paragraphs(&self) -> Vec<&Paragraph> {
+        collect_paragraphs(&self.content)
+    }
+
+    /// Extract all text from the footnote.
+    pub fn text(&self) -> String {
+        self.paragraphs()
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// The footnotes part containing all footnotes.
+///
+/// Corresponds to the `<w:footnotes>` element in word/footnotes.xml.
+#[derive(Debug, Clone, Default)]
+pub struct FootnotesPart {
+    /// All footnotes in the document.
+    footnotes: Vec<Footnote>,
+}
+
+impl FootnotesPart {
+    /// Get all footnotes.
+    pub fn footnotes(&self) -> &[Footnote] {
+        &self.footnotes
+    }
+
+    /// Get a footnote by its ID.
+    pub fn get(&self, id: i32) -> Option<&Footnote> {
+        self.footnotes.iter().find(|f| f.id == id)
+    }
+}
+
+/// A single endnote.
+///
+/// Corresponds to the `<w:endnote>` element in word/endnotes.xml.
+/// ECMA-376 Part 1, Section 17.11.2 (endnote).
+pub type Endnote = Footnote;
+
+/// The endnotes part containing all endnotes.
+///
+/// Corresponds to the `<w:endnotes>` element in word/endnotes.xml.
+pub type EndnotesPart = FootnotesPart;
+
+/// A single comment.
+///
+/// Corresponds to the `<w:comment>` element in word/comments.xml.
+/// ECMA-376 Part 1, Section 17.13.4.2 (comment).
+#[derive(Debug, Clone)]
+pub struct Comment {
+    /// The comment ID (referenced by CommentReference and comment ranges).
+    pub id: i32,
+    /// The author of the comment.
+    pub author: Option<String>,
+    /// The date/time of the comment.
+    pub date: Option<String>,
+    /// The author's initials.
+    pub initials: Option<String>,
+    /// Block-level content (paragraphs, tables).
+    content: Vec<BlockContent>,
+}
+
+impl Comment {
+    /// Get the block-level content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get all paragraphs in the comment.
+    pub fn paragraphs(&self) -> Vec<&Paragraph> {
+        collect_paragraphs(&self.content)
+    }
+
+    /// Extract all text from the comment.
+    pub fn text(&self) -> String {
+        self.paragraphs()
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// The comments part containing all comments.
+///
+/// Corresponds to the `<w:comments>` element in word/comments.xml.
+#[derive(Debug, Clone, Default)]
+pub struct CommentsPart {
+    /// All comments in the document.
+    comments: Vec<Comment>,
+}
+
+impl CommentsPart {
+    /// Get all comments.
+    pub fn comments(&self) -> &[Comment] {
+        &self.comments
+    }
+
+    /// Get a comment by its ID.
+    pub fn get(&self, id: i32) -> Option<&Comment> {
+        self.comments.iter().find(|c| c.id == id)
+    }
+}
+
 impl Run {
     /// Create an empty run.
     pub fn new() -> Self {
@@ -2968,6 +3248,14 @@ pub struct RunProperties {
 
 // XML element names (local names)
 const EL_BODY: &[u8] = b"body";
+const EL_HDR: &[u8] = b"hdr";
+const EL_FTR: &[u8] = b"ftr";
+const EL_FOOTNOTES: &[u8] = b"footnotes";
+const EL_ENDNOTES: &[u8] = b"endnotes";
+const EL_FOOTNOTE: &[u8] = b"footnote";
+const EL_ENDNOTE: &[u8] = b"endnote";
+const EL_COMMENTS: &[u8] = b"comments";
+const EL_COMMENT: &[u8] = b"comment";
 const EL_P: &[u8] = b"p";
 const EL_R: &[u8] = b"r";
 const EL_T: &[u8] = b"t";
@@ -3198,7 +3486,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 let name = e.name();
                 let local = local_name(name.as_ref());
                 match local {
-                    name if name == EL_BODY => {
+                    name if name == EL_BODY || name == EL_HDR || name == EL_FTR => {
                         in_body = true;
                         body_child_idx = 0;
                     }
@@ -4811,7 +5099,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 let name = e.name();
                 let local = local_name(name.as_ref());
                 match local {
-                    name if name == EL_BODY => {
+                    name if name == EL_BODY || name == EL_HDR || name == EL_FTR => {
                         in_body = false;
                     }
                     name if name == EL_TBL => {
@@ -5044,6 +5332,270 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     }
 
     Ok(body)
+}
+
+/// Parse a header or footer part.
+///
+/// Headers (`<w:hdr>`) and footers (`<w:ftr>`) have the same structure:
+/// block-level content (paragraphs, tables) without section properties.
+fn parse_header_footer(xml: &[u8], _is_header: bool) -> Result<HeaderPart> {
+    // Headers/footers use the same content model as body
+    // We reuse parse_document which now also handles hdr/ftr elements
+    let body = parse_document(xml)?;
+    let (content, unknown_children) = body.into_parts();
+
+    Ok(HeaderPart {
+        content,
+        unknown_children,
+    })
+}
+
+/// Parse a footnotes or endnotes part.
+///
+/// The structure is: `<w:footnotes>` containing `<w:footnote w:id="...">` elements,
+/// each of which contains paragraphs.
+fn parse_footnotes(xml: &[u8]) -> Result<FootnotesPart> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut footnotes = Vec::new();
+    let mut current_footnote: Option<(i32, Option<String>, Vec<u8>)> = None;
+    let mut depth = 0;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if (local == EL_FOOTNOTE || local == EL_ENDNOTE) && current_footnote.is_none() {
+                    // Parse footnote/endnote attributes
+                    let mut id: i32 = 0;
+                    let mut fn_type: Option<String> = None;
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"id" {
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                id = s.parse().unwrap_or(0);
+                            }
+                        } else if key == b"type" {
+                            fn_type = std::str::from_utf8(&attr.value).ok().map(String::from);
+                        }
+                    }
+                    // Start capturing inner XML
+                    current_footnote = Some((id, fn_type, Vec::new()));
+                    depth = 1;
+                } else if current_footnote.is_some() {
+                    depth += 1;
+                    // Append this start tag to the captured content
+                    if let Some((_, _, ref mut content)) = current_footnote {
+                        content.extend_from_slice(b"<");
+                        content.extend_from_slice(e.name().as_ref());
+                        for attr in e.attributes().flatten() {
+                            content.extend_from_slice(b" ");
+                            content.extend_from_slice(attr.key.as_ref());
+                            content.extend_from_slice(b"=\"");
+                            content.extend_from_slice(&attr.value);
+                            content.extend_from_slice(b"\"");
+                        }
+                        content.extend_from_slice(b">");
+                    }
+                }
+            }
+            Ok(Event::Empty(e)) => {
+                if let Some((_, _, ref mut content)) = current_footnote {
+                    content.extend_from_slice(b"<");
+                    content.extend_from_slice(e.name().as_ref());
+                    for attr in e.attributes().flatten() {
+                        content.extend_from_slice(b" ");
+                        content.extend_from_slice(attr.key.as_ref());
+                        content.extend_from_slice(b"=\"");
+                        content.extend_from_slice(&attr.value);
+                        content.extend_from_slice(b"\"");
+                    }
+                    content.extend_from_slice(b"/>");
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if current_footnote.is_some() {
+                    depth -= 1;
+                    if depth == 0 {
+                        // End of footnote - parse the captured content
+                        if let Some((id, fn_type, inner_xml)) = current_footnote.take() {
+                            // Wrap in a body element for parsing
+                            let mut wrapped = b"<?xml version=\"1.0\"?><w:body xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">".to_vec();
+                            wrapped.extend_from_slice(&inner_xml);
+                            wrapped.extend_from_slice(b"</w:body>");
+
+                            if let Ok(body) = parse_document(&wrapped) {
+                                let (content, _) = body.into_parts();
+                                footnotes.push(Footnote {
+                                    id,
+                                    footnote_type: fn_type,
+                                    content,
+                                });
+                            }
+                        }
+                    } else {
+                        // Append end tag to captured content
+                        if let Some((_, _, ref mut content)) = current_footnote {
+                            content.extend_from_slice(b"</");
+                            content.extend_from_slice(e.name().as_ref());
+                            content.extend_from_slice(b">");
+                        }
+                    }
+                }
+                if local == EL_FOOTNOTES || local == EL_ENDNOTES {
+                    break;
+                }
+            }
+            Ok(Event::Text(e)) => {
+                if let Some((_, _, ref mut content)) = current_footnote {
+                    content.extend_from_slice(&e);
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(FootnotesPart { footnotes })
+}
+
+/// Parse a comments part.
+///
+/// The structure is: `<w:comments>` containing `<w:comment w:id="...">` elements,
+/// each of which contains paragraphs.
+fn parse_comments(xml: &[u8]) -> Result<CommentsPart> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut comments = Vec::new();
+    #[allow(clippy::type_complexity)]
+    let mut current_comment: Option<(
+        i32,
+        Option<String>,
+        Option<String>,
+        Option<String>,
+        Vec<u8>,
+    )> = None;
+    let mut depth = 0;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == EL_COMMENT && current_comment.is_none() {
+                    // Parse comment attributes
+                    let mut id: i32 = 0;
+                    let mut author: Option<String> = None;
+                    let mut date: Option<String> = None;
+                    let mut initials: Option<String> = None;
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"id" {
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                id = s.parse().unwrap_or(0);
+                            }
+                        } else if key == b"author" {
+                            author = std::str::from_utf8(&attr.value).ok().map(String::from);
+                        } else if key == b"date" {
+                            date = std::str::from_utf8(&attr.value).ok().map(String::from);
+                        } else if key == b"initials" {
+                            initials = std::str::from_utf8(&attr.value).ok().map(String::from);
+                        }
+                    }
+                    current_comment = Some((id, author, date, initials, Vec::new()));
+                    depth = 1;
+                } else if current_comment.is_some() {
+                    depth += 1;
+                    if let Some((_, _, _, _, ref mut content)) = current_comment {
+                        content.extend_from_slice(b"<");
+                        content.extend_from_slice(e.name().as_ref());
+                        for attr in e.attributes().flatten() {
+                            content.extend_from_slice(b" ");
+                            content.extend_from_slice(attr.key.as_ref());
+                            content.extend_from_slice(b"=\"");
+                            content.extend_from_slice(&attr.value);
+                            content.extend_from_slice(b"\"");
+                        }
+                        content.extend_from_slice(b">");
+                    }
+                }
+            }
+            Ok(Event::Empty(e)) => {
+                if let Some((_, _, _, _, ref mut content)) = current_comment {
+                    content.extend_from_slice(b"<");
+                    content.extend_from_slice(e.name().as_ref());
+                    for attr in e.attributes().flatten() {
+                        content.extend_from_slice(b" ");
+                        content.extend_from_slice(attr.key.as_ref());
+                        content.extend_from_slice(b"=\"");
+                        content.extend_from_slice(&attr.value);
+                        content.extend_from_slice(b"\"");
+                    }
+                    content.extend_from_slice(b"/>");
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if current_comment.is_some() {
+                    depth -= 1;
+                    if depth == 0 {
+                        if let Some((id, author, date, initials, inner_xml)) =
+                            current_comment.take()
+                        {
+                            let mut wrapped = b"<?xml version=\"1.0\"?><w:body xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">".to_vec();
+                            wrapped.extend_from_slice(&inner_xml);
+                            wrapped.extend_from_slice(b"</w:body>");
+
+                            if let Ok(body) = parse_document(&wrapped) {
+                                let (content, _) = body.into_parts();
+                                comments.push(Comment {
+                                    id,
+                                    author,
+                                    date,
+                                    initials,
+                                    content,
+                                });
+                            }
+                        }
+                    } else if let Some((_, _, _, _, ref mut content)) = current_comment {
+                        content.extend_from_slice(b"</");
+                        content.extend_from_slice(e.name().as_ref());
+                        content.extend_from_slice(b">");
+                    }
+                }
+                if local == EL_COMMENTS {
+                    break;
+                }
+            }
+            Ok(Event::Text(e)) => {
+                if let Some((_, _, _, _, ref mut content)) = current_comment {
+                    content.extend_from_slice(&e);
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(CommentsPart { comments })
 }
 
 /// Extract the local name from a potentially namespaced element name.
@@ -5717,5 +6269,104 @@ mod tests {
 
         // Empty vMerge means continue
         assert_eq!(props.vertical_merge, Some(VerticalMerge::Continue));
+    }
+
+    #[test]
+    fn test_parse_header() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:hdr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:p>
+    <w:r><w:t>Header content</w:t></w:r>
+  </w:p>
+</w:hdr>"#;
+
+        let header = parse_header_footer(xml, true).unwrap();
+
+        assert_eq!(header.paragraphs().len(), 1);
+        assert_eq!(header.text(), "Header content");
+    }
+
+    #[test]
+    fn test_parse_footer() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:p>
+    <w:r><w:t>Page </w:t></w:r>
+  </w:p>
+  <w:p>
+    <w:r><w:t>Footer line 2</w:t></w:r>
+  </w:p>
+</w:ftr>"#;
+
+        let footer = parse_header_footer(xml, false).unwrap();
+
+        assert_eq!(footer.paragraphs().len(), 2);
+        assert_eq!(footer.text(), "Page \nFooter line 2");
+    }
+
+    #[test]
+    fn test_parse_footnotes() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:footnotes xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:footnote w:type="separator" w:id="-1">
+    <w:p><w:r><w:separator/></w:r></w:p>
+  </w:footnote>
+  <w:footnote w:id="1">
+    <w:p><w:r><w:t>First footnote content.</w:t></w:r></w:p>
+  </w:footnote>
+  <w:footnote w:id="2">
+    <w:p><w:r><w:t>Second footnote.</w:t></w:r></w:p>
+  </w:footnote>
+</w:footnotes>"#;
+
+        let footnotes = parse_footnotes(xml).unwrap();
+
+        assert_eq!(footnotes.footnotes().len(), 3);
+
+        // Check the separator footnote
+        let sep = footnotes.get(-1).expect("should have separator");
+        assert_eq!(sep.footnote_type, Some("separator".to_string()));
+
+        // Check the first real footnote
+        let fn1 = footnotes.get(1).expect("should have footnote 1");
+        assert_eq!(fn1.id, 1);
+        assert_eq!(fn1.text(), "First footnote content.");
+
+        // Check the second footnote
+        let fn2 = footnotes.get(2).expect("should have footnote 2");
+        assert_eq!(fn2.text(), "Second footnote.");
+    }
+
+    #[test]
+    fn test_parse_comments() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:comments xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:comment w:id="0" w:author="John Doe" w:date="2024-01-15T10:30:00Z" w:initials="JD">
+    <w:p><w:r><w:t>This needs revision.</w:t></w:r></w:p>
+  </w:comment>
+  <w:comment w:id="1" w:author="Jane Smith">
+    <w:p><w:r><w:t>I agree with John.</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Let's discuss tomorrow.</w:t></w:r></w:p>
+  </w:comment>
+</w:comments>"#;
+
+        let comments = parse_comments(xml).unwrap();
+
+        assert_eq!(comments.comments().len(), 2);
+
+        // Check the first comment
+        let c0 = comments.get(0).expect("should have comment 0");
+        assert_eq!(c0.id, 0);
+        assert_eq!(c0.author, Some("John Doe".to_string()));
+        assert_eq!(c0.date, Some("2024-01-15T10:30:00Z".to_string()));
+        assert_eq!(c0.initials, Some("JD".to_string()));
+        assert_eq!(c0.text(), "This needs revision.");
+
+        // Check the second comment (multiple paragraphs)
+        let c1 = comments.get(1).expect("should have comment 1");
+        assert_eq!(c1.author, Some("Jane Smith".to_string()));
+        assert_eq!(c1.date, None);
+        assert_eq!(c1.paragraphs().len(), 2);
+        assert_eq!(c1.text(), "I agree with John.\nLet's discuss tomorrow.");
     }
 }
