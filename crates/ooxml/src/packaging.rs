@@ -336,6 +336,26 @@ pub mod content_type {
     pub const WORDPROCESSING_NUMBERING: &str =
         "application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml";
 
+    /// WordprocessingML header.
+    pub const WORDPROCESSING_HEADER: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml";
+
+    /// WordprocessingML footer.
+    pub const WORDPROCESSING_FOOTER: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml";
+
+    /// WordprocessingML footnotes.
+    pub const WORDPROCESSING_FOOTNOTES: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml";
+
+    /// WordprocessingML endnotes.
+    pub const WORDPROCESSING_ENDNOTES: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml";
+
+    /// WordprocessingML comments.
+    pub const WORDPROCESSING_COMMENTS: &str =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml";
+
     /// Core properties (Dublin Core metadata).
     pub const CORE_PROPERTIES: &str = "application/vnd.openxmlformats-package.core-properties+xml";
 

@@ -39,14 +39,18 @@ pub mod types {
 }
 
 pub use document::{
-    Alignment, BlockContent, Body, Cell, Document, Drawing, Hyperlink, ImageData, InlineImage,
-    NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties,
-    Table,
+    Alignment, BlockContent, Body, Cell, CommentRangeEnd, CommentRangeStart, CommentReference,
+    Document, Drawing, EndnoteReference, FootnoteReference, HeaderFooterType, Hyperlink, ImageData,
+    InlineImage, NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run,
+    RunProperties, Table,
 };
 pub use error::{Error, Result};
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 pub use styles::{Style, StyleType, Styles};
-pub use writer::{DocumentBuilder, ListType};
+pub use writer::{
+    CommentBuilder, DocumentBuilder, EndnoteBuilder, FooterBuilder, FootnoteBuilder, HeaderBuilder,
+    ListType,
+};
 
 // Re-export commonly used generated types at the crate root
 pub use types::ns;

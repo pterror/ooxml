@@ -1110,6 +1110,28 @@ impl Paragraph {
         }
     }
 
+    /// Add a comment range start marker.
+    ///
+    /// This marks the beginning of text that a comment applies to.
+    /// Use with `add_comment_range_end()` and a `CommentReference` in a run.
+    pub fn add_comment_range_start(&mut self, comment_id: u32) {
+        self.content
+            .push(ParagraphContent::CommentRangeStart(CommentRangeStart {
+                id: comment_id,
+            }));
+    }
+
+    /// Add a comment range end marker.
+    ///
+    /// This marks the end of text that a comment applies to.
+    /// Use with `add_comment_range_start()` and a `CommentReference` in a run.
+    pub fn add_comment_range_end(&mut self, comment_id: u32) {
+        self.content
+            .push(ParagraphContent::CommentRangeEnd(CommentRangeEnd {
+                id: comment_id,
+            }));
+    }
+
     /// Get all hyperlinks in the paragraph.
     pub fn hyperlinks(&self) -> impl Iterator<Item = &Hyperlink> {
         self.content.iter().filter_map(|c| match c {

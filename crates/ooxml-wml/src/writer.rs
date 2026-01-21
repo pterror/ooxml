@@ -6,10 +6,10 @@
 use crate::document::{
     AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
     CellWidth, ContentControl, CustomXml, DocGridType, Drawing, EmbeddedObject, GridColumn,
-    HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation, Paragraph,
-    ParagraphBorders, ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run,
-    RunProperties, SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth,
-    VerticalMerge, VmlPicture, WrapType,
+    HeaderFooterRef, HeaderFooterType, HeightRule, Hyperlink, InlineImage, NumberingProperties,
+    PageOrientation, Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row,
+    RowHeight, RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
+    TableProperties, TableWidth, VerticalMerge, VmlPicture, WrapType,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -81,6 +81,250 @@ pub struct PendingNumbering {
     pub list_type: ListType,
 }
 
+/// A pending header to be written to the package.
+#[derive(Clone)]
+pub struct PendingHeader {
+    /// Header content (paragraphs, tables, etc.).
+    pub body: Body,
+    /// Assigned relationship ID.
+    pub rel_id: String,
+    /// Header type (default, first, even).
+    pub header_type: HeaderFooterType,
+    /// Generated filename (e.g., "header1.xml").
+    pub filename: String,
+}
+
+/// A pending footer to be written to the package.
+#[derive(Clone)]
+pub struct PendingFooter {
+    /// Footer content (paragraphs, tables, etc.).
+    pub body: Body,
+    /// Assigned relationship ID.
+    pub rel_id: String,
+    /// Footer type (default, first, even).
+    pub footer_type: HeaderFooterType,
+    /// Generated filename (e.g., "footer1.xml").
+    pub filename: String,
+}
+
+/// Builder for header content.
+///
+/// Provides a fluent API for building header content.
+pub struct HeaderBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    rel_id: String,
+}
+
+impl<'a> HeaderBuilder<'a> {
+    /// Get a mutable reference to the header body.
+    pub fn body_mut(&mut self) -> &mut Body {
+        &mut self
+            .builder
+            .headers
+            .get_mut(&self.rel_id)
+            .expect("header should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the header.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the relationship ID for this header.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+}
+
+/// Builder for footer content.
+///
+/// Provides a fluent API for building footer content.
+pub struct FooterBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    rel_id: String,
+}
+
+/// A pending footnote to be written to the package.
+#[derive(Clone)]
+pub struct PendingFootnote {
+    /// Footnote ID (referenced by FootnoteReference).
+    pub id: i32,
+    /// Footnote content (paragraphs, tables, etc.).
+    pub body: Body,
+}
+
+/// A pending endnote to be written to the package.
+#[derive(Clone)]
+pub struct PendingEndnote {
+    /// Endnote ID (referenced by EndnoteReference).
+    pub id: i32,
+    /// Endnote content (paragraphs, tables, etc.).
+    pub body: Body,
+}
+
+/// A pending comment to be written to the package.
+#[derive(Clone)]
+pub struct PendingComment {
+    /// Comment ID (referenced by CommentReference and comment ranges).
+    pub id: i32,
+    /// Comment author.
+    pub author: Option<String>,
+    /// Comment date (ISO 8601 format).
+    pub date: Option<String>,
+    /// Comment initials.
+    pub initials: Option<String>,
+    /// Comment content (paragraphs, tables, etc.).
+    pub body: Body,
+}
+
+/// Builder for comment content.
+pub struct CommentBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    id: i32,
+}
+
+impl<'a> CommentBuilder<'a> {
+    /// Get a mutable reference to the comment body.
+    pub fn body_mut(&mut self) -> &mut Body {
+        &mut self
+            .builder
+            .comments
+            .get_mut(&self.id)
+            .expect("comment should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the comment.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Set the comment author.
+    pub fn set_author(&mut self, author: &str) -> &mut Self {
+        self.builder
+            .comments
+            .get_mut(&self.id)
+            .expect("comment should exist")
+            .author = Some(author.to_string());
+        self
+    }
+
+    /// Set the comment date (ISO 8601 format, e.g., "2024-01-15T10:30:00Z").
+    pub fn set_date(&mut self, date: &str) -> &mut Self {
+        self.builder
+            .comments
+            .get_mut(&self.id)
+            .expect("comment should exist")
+            .date = Some(date.to_string());
+        self
+    }
+
+    /// Set the comment initials.
+    pub fn set_initials(&mut self, initials: &str) -> &mut Self {
+        self.builder
+            .comments
+            .get_mut(&self.id)
+            .expect("comment should exist")
+            .initials = Some(initials.to_string());
+        self
+    }
+
+    /// Get the comment ID for use in CommentReference and comment ranges.
+    ///
+    /// The returned ID is always positive (user-created comments start at 0).
+    pub fn id(&self) -> u32 {
+        self.id as u32
+    }
+}
+
+/// Builder for footnote content.
+pub struct FootnoteBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    id: i32,
+}
+
+impl<'a> FootnoteBuilder<'a> {
+    /// Get a mutable reference to the footnote body.
+    pub fn body_mut(&mut self) -> &mut Body {
+        &mut self
+            .builder
+            .footnotes
+            .get_mut(&self.id)
+            .expect("footnote should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the footnote.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the footnote ID for use in FootnoteReference.
+    ///
+    /// The returned ID is always positive (user-created footnotes start at 1).
+    pub fn id(&self) -> u32 {
+        self.id as u32
+    }
+}
+
+/// Builder for endnote content.
+pub struct EndnoteBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    id: i32,
+}
+
+impl<'a> EndnoteBuilder<'a> {
+    /// Get a mutable reference to the endnote body.
+    pub fn body_mut(&mut self) -> &mut Body {
+        &mut self
+            .builder
+            .endnotes
+            .get_mut(&self.id)
+            .expect("endnote should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the endnote.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the endnote ID for use in EndnoteReference.
+    ///
+    /// The returned ID is always positive (user-created endnotes start at 1).
+    pub fn id(&self) -> u32 {
+        self.id as u32
+    }
+}
+
+impl<'a> FooterBuilder<'a> {
+    /// Get a mutable reference to the footer body.
+    pub fn body_mut(&mut self) -> &mut Body {
+        &mut self
+            .builder
+            .footers
+            .get_mut(&self.rel_id)
+            .expect("footer should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the footer.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the relationship ID for this footer.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+}
+
 /// Builder for creating new Word documents.
 pub struct DocumentBuilder {
     body: Body,
@@ -91,10 +335,32 @@ pub struct DocumentBuilder {
     hyperlinks: HashMap<String, PendingHyperlink>,
     /// Numbering definitions, keyed by num_id.
     numberings: HashMap<u32, PendingNumbering>,
+    /// Pending headers, keyed by rel_id.
+    headers: HashMap<String, PendingHeader>,
+    /// Pending footers, keyed by rel_id.
+    footers: HashMap<String, PendingFooter>,
+    /// Pending footnotes, keyed by ID.
+    footnotes: HashMap<i32, PendingFootnote>,
+    /// Pending endnotes, keyed by ID.
+    endnotes: HashMap<i32, PendingEndnote>,
+    /// Pending comments, keyed by ID.
+    comments: HashMap<i32, PendingComment>,
     /// Counter for generating unique IDs.
     next_rel_id: u32,
     /// Counter for generating unique numbering IDs.
     next_num_id: u32,
+    /// Counter for generating unique header IDs.
+    next_header_id: u32,
+    /// Counter for generating unique footer IDs.
+    next_footer_id: u32,
+    /// Counter for generating unique footnote IDs.
+    /// Starts at 1 because 0 is reserved for the separator footnote.
+    next_footnote_id: i32,
+    /// Counter for generating unique endnote IDs.
+    /// Starts at 1 because 0 is reserved for the separator endnote.
+    next_endnote_id: i32,
+    /// Counter for generating unique comment IDs.
+    next_comment_id: i32,
 }
 
 impl Default for DocumentBuilder {
@@ -112,8 +378,18 @@ impl DocumentBuilder {
             images: HashMap::new(),
             hyperlinks: HashMap::new(),
             numberings: HashMap::new(),
+            headers: HashMap::new(),
+            footers: HashMap::new(),
+            footnotes: HashMap::new(),
+            endnotes: HashMap::new(),
+            comments: HashMap::new(),
             next_rel_id: 1,
             next_num_id: 1,
+            next_header_id: 1,
+            next_footer_id: 1,
+            next_footnote_id: 1,
+            next_endnote_id: 1,
+            next_comment_id: 0,
         }
     }
 
@@ -193,6 +469,187 @@ impl DocumentBuilder {
         num_id
     }
 
+    /// Add a header and return a builder for its content.
+    ///
+    /// The header will be automatically linked to the document's section properties.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut builder = DocumentBuilder::new();
+    /// let mut header = builder.add_header(HeaderFooterType::Default);
+    /// header.add_paragraph("Document Title");
+    /// ```
+    pub fn add_header(&mut self, header_type: HeaderFooterType) -> HeaderBuilder<'_> {
+        let id = self.next_rel_id;
+        self.next_rel_id += 1;
+        let header_num = self.next_header_id;
+        self.next_header_id += 1;
+
+        let rel_id = format!("rId{}", id);
+        let filename = format!("header{}.xml", header_num);
+
+        self.headers.insert(
+            rel_id.clone(),
+            PendingHeader {
+                body: Body::new(),
+                rel_id: rel_id.clone(),
+                header_type,
+                filename,
+            },
+        );
+
+        HeaderBuilder {
+            builder: self,
+            rel_id,
+        }
+    }
+
+    /// Add a footer and return a builder for its content.
+    ///
+    /// The footer will be automatically linked to the document's section properties.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut builder = DocumentBuilder::new();
+    /// let mut footer = builder.add_footer(HeaderFooterType::Default);
+    /// footer.add_paragraph("Page 1");
+    /// ```
+    pub fn add_footer(&mut self, footer_type: HeaderFooterType) -> FooterBuilder<'_> {
+        let id = self.next_rel_id;
+        self.next_rel_id += 1;
+        let footer_num = self.next_footer_id;
+        self.next_footer_id += 1;
+
+        let rel_id = format!("rId{}", id);
+        let filename = format!("footer{}.xml", footer_num);
+
+        self.footers.insert(
+            rel_id.clone(),
+            PendingFooter {
+                body: Body::new(),
+                rel_id: rel_id.clone(),
+                footer_type,
+                filename,
+            },
+        );
+
+        FooterBuilder {
+            builder: self,
+            rel_id,
+        }
+    }
+
+    /// Add a footnote and return a builder for its content.
+    ///
+    /// Use the returned `id` when adding a `FootnoteReference` to a Run.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use ooxml_wml::document::FootnoteReference;
+    ///
+    /// let mut builder = DocumentBuilder::new();
+    /// let mut footnote = builder.add_footnote();
+    /// footnote.add_paragraph("This is a footnote.");
+    /// let footnote_id = footnote.id();
+    ///
+    /// // In a paragraph, add a reference to the footnote
+    /// let run = builder.body_mut().add_paragraph().add_run();
+    /// run.set_text("Some text");
+    /// run.set_footnote_ref(FootnoteReference { id: footnote_id });
+    /// ```
+    pub fn add_footnote(&mut self) -> FootnoteBuilder<'_> {
+        let id = self.next_footnote_id;
+        self.next_footnote_id += 1;
+
+        self.footnotes.insert(
+            id,
+            PendingFootnote {
+                id,
+                body: Body::new(),
+            },
+        );
+
+        FootnoteBuilder { builder: self, id }
+    }
+
+    /// Add an endnote and return a builder for its content.
+    ///
+    /// Use the returned `id` when adding an `EndnoteReference` to a Run.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use ooxml_wml::document::EndnoteReference;
+    ///
+    /// let mut builder = DocumentBuilder::new();
+    /// let mut endnote = builder.add_endnote();
+    /// endnote.add_paragraph("This is an endnote.");
+    /// let endnote_id = endnote.id();
+    ///
+    /// // In a paragraph, add a reference to the endnote
+    /// let run = builder.body_mut().add_paragraph().add_run();
+    /// run.set_text("Some text");
+    /// run.set_endnote_ref(EndnoteReference { id: endnote_id });
+    /// ```
+    pub fn add_endnote(&mut self) -> EndnoteBuilder<'_> {
+        let id = self.next_endnote_id;
+        self.next_endnote_id += 1;
+
+        self.endnotes.insert(
+            id,
+            PendingEndnote {
+                id,
+                body: Body::new(),
+            },
+        );
+
+        EndnoteBuilder { builder: self, id }
+    }
+
+    /// Add a comment and return a builder for its content.
+    ///
+    /// Use the returned `id` when adding comment ranges and references to the document.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use ooxml_wml::document::{CommentReference, CommentRangeStart, CommentRangeEnd};
+    ///
+    /// let mut builder = DocumentBuilder::new();
+    /// let mut comment = builder.add_comment();
+    /// comment.set_author("John Doe");
+    /// comment.add_paragraph("This needs review.");
+    /// let comment_id = comment.id();
+    ///
+    /// // In a paragraph, mark the commented text with ranges and reference
+    /// let para = builder.body_mut().add_paragraph();
+    /// para.add_comment_range_start(comment_id);
+    /// para.add_run().set_text("Commented text");
+    /// para.add_comment_range_end(comment_id);
+    /// // Add the comment reference (shows the comment marker)
+    /// para.add_run().set_comment_ref(CommentReference { id: comment_id });
+    /// ```
+    pub fn add_comment(&mut self) -> CommentBuilder<'_> {
+        let id = self.next_comment_id;
+        self.next_comment_id += 1;
+
+        self.comments.insert(
+            id,
+            PendingComment {
+                id,
+                author: None,
+                date: None,
+                initials: None,
+                body: Body::new(),
+            },
+        );
+
+        CommentBuilder { builder: self, id }
+    }
+
     /// Get a mutable reference to the body.
     pub fn body_mut(&mut self) -> &mut Body {
         &mut self.body
@@ -213,7 +670,7 @@ impl DocumentBuilder {
     }
 
     /// Write the document to a writer.
-    pub fn write<W: Write + Seek>(self, writer: W) -> Result<()> {
+    pub fn write<W: Write + Seek>(mut self, writer: W) -> Result<()> {
         let mut pkg = PackageWriter::new(writer);
 
         // Add default content types
@@ -225,6 +682,35 @@ impl DocumentBuilder {
         pkg.add_default_content_type("jpg", "image/jpeg");
         pkg.add_default_content_type("jpeg", "image/jpeg");
         pkg.add_default_content_type("gif", "image/gif");
+
+        // Build document relationships
+        let mut doc_rels = Relationships::new();
+
+        // Add header/footer references to section properties
+        if !self.headers.is_empty() || !self.footers.is_empty() {
+            // Ensure body has section properties
+            if self.body.section_properties().is_none() {
+                self.body
+                    .set_section_properties(SectionProperties::default());
+            }
+            let sect_pr = self.body.section_properties_mut().as_mut().unwrap();
+
+            // Add header references
+            for header in self.headers.values() {
+                sect_pr.headers.push(HeaderFooterRef {
+                    rel_id: header.rel_id.clone(),
+                    hf_type: header.header_type,
+                });
+            }
+
+            // Add footer references
+            for footer in self.footers.values() {
+                sect_pr.footers.push(HeaderFooterRef {
+                    rel_id: footer.rel_id.clone(),
+                    hf_type: footer.footer_type,
+                });
+            }
+        }
 
         // Write document.xml
         let doc_xml = serialize_document(&self.body);
@@ -247,9 +733,6 @@ impl DocumentBuilder {
             pkg_rels.serialize().as_bytes(),
         )?;
 
-        // Build document relationships
-        let mut doc_rels = Relationships::new();
-
         // Add image relationships and write image files
         for image in self.images.values() {
             doc_rels.add(Relationship::new(
@@ -268,6 +751,94 @@ impl DocumentBuilder {
                 &hyperlink.rel_id,
                 rel_type::HYPERLINK,
                 &hyperlink.url,
+            ));
+        }
+
+        // Write headers and add relationships
+        for header in self.headers.values() {
+            let header_xml = serialize_header(&header.body);
+            let header_path = format!("word/{}", header.filename);
+            pkg.add_part(
+                &header_path,
+                content_type::WORDPROCESSING_HEADER,
+                header_xml.as_bytes(),
+            )?;
+
+            doc_rels.add(Relationship::new(
+                &header.rel_id,
+                rel_type::HEADER,
+                &header.filename,
+            ));
+        }
+
+        // Write footers and add relationships
+        for footer in self.footers.values() {
+            let footer_xml = serialize_footer(&footer.body);
+            let footer_path = format!("word/{}", footer.filename);
+            pkg.add_part(
+                &footer_path,
+                content_type::WORDPROCESSING_FOOTER,
+                footer_xml.as_bytes(),
+            )?;
+
+            doc_rels.add(Relationship::new(
+                &footer.rel_id,
+                rel_type::FOOTER,
+                &footer.filename,
+            ));
+        }
+
+        // Write footnotes.xml if we have any footnotes
+        if !self.footnotes.is_empty() {
+            let footnotes_xml = serialize_footnotes(&self.footnotes);
+            pkg.add_part(
+                "word/footnotes.xml",
+                content_type::WORDPROCESSING_FOOTNOTES,
+                footnotes_xml.as_bytes(),
+            )?;
+
+            let footnotes_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
+            doc_rels.add(Relationship::new(
+                &footnotes_rel_id,
+                rel_type::FOOTNOTES,
+                "footnotes.xml",
+            ));
+        }
+
+        // Write endnotes.xml if we have any endnotes
+        if !self.endnotes.is_empty() {
+            let endnotes_xml = serialize_endnotes(&self.endnotes);
+            pkg.add_part(
+                "word/endnotes.xml",
+                content_type::WORDPROCESSING_ENDNOTES,
+                endnotes_xml.as_bytes(),
+            )?;
+
+            let endnotes_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
+            doc_rels.add(Relationship::new(
+                &endnotes_rel_id,
+                rel_type::ENDNOTES,
+                "endnotes.xml",
+            ));
+        }
+
+        // Write comments.xml if we have any comments
+        if !self.comments.is_empty() {
+            let comments_xml = serialize_comments(&self.comments);
+            pkg.add_part(
+                "word/comments.xml",
+                content_type::WORDPROCESSING_COMMENTS,
+                comments_xml.as_bytes(),
+            )?;
+
+            let comments_rel_id = format!("rId{}", self.next_rel_id);
+            self.next_rel_id += 1;
+            doc_rels.add(Relationship::new(
+                &comments_rel_id,
+                rel_type::COMMENTS,
+                "comments.xml",
             ));
         }
 
@@ -320,6 +891,185 @@ pub fn serialize_document(body: &Body) -> String {
     xml.push_str("</w:body>");
 
     xml.push_str("</w:document>");
+    xml
+}
+
+/// Serialize header content to XML.
+///
+/// Headers use the `<w:hdr>` root element with the same content model as body.
+pub fn serialize_header(body: &Body) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Header element with namespaces
+    xml.push_str(&format!(
+        r#"<w:hdr xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
+    ));
+
+    // Content (paragraphs, tables, etc.)
+    for block in body.content() {
+        serialize_block_content(block, &mut xml);
+    }
+    serialize_unknown_children(&body.unknown_children, &mut xml);
+
+    xml.push_str("</w:hdr>");
+    xml
+}
+
+/// Serialize footer content to XML.
+///
+/// Footers use the `<w:ftr>` root element with the same content model as body.
+pub fn serialize_footer(body: &Body) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Footer element with namespaces
+    xml.push_str(&format!(
+        r#"<w:ftr xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
+    ));
+
+    // Content (paragraphs, tables, etc.)
+    for block in body.content() {
+        serialize_block_content(block, &mut xml);
+    }
+    serialize_unknown_children(&body.unknown_children, &mut xml);
+
+    xml.push_str("</w:ftr>");
+    xml
+}
+
+/// Serialize footnotes to XML.
+///
+/// Footnotes use the `<w:footnotes>` root element containing individual `<w:footnote>` elements.
+fn serialize_footnotes(footnotes: &HashMap<i32, PendingFootnote>) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Footnotes element with namespaces
+    xml.push_str(&format!(
+        r#"<w:footnotes xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
+    ));
+
+    // Add separator footnotes (required by Word)
+    // ID -1: separator, ID 0: continuation separator
+    xml.push_str(r#"<w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote>"#);
+    xml.push_str(r#"<w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>"#);
+
+    // Sort footnotes by ID for deterministic output
+    let mut sorted: Vec<_> = footnotes.values().collect();
+    sorted.sort_by_key(|f| f.id);
+
+    // Serialize each footnote
+    for footnote in sorted {
+        xml.push_str(&format!(r#"<w:footnote w:id="{}">"#, footnote.id));
+        for block in footnote.body.content() {
+            serialize_block_content(block, &mut xml);
+        }
+        serialize_unknown_children(&footnote.body.unknown_children, &mut xml);
+        xml.push_str("</w:footnote>");
+    }
+
+    xml.push_str("</w:footnotes>");
+    xml
+}
+
+/// Serialize endnotes to XML.
+///
+/// Endnotes use the `<w:endnotes>` root element containing individual `<w:endnote>` elements.
+fn serialize_endnotes(endnotes: &HashMap<i32, PendingEndnote>) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Endnotes element with namespaces
+    xml.push_str(&format!(
+        r#"<w:endnotes xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
+    ));
+
+    // Add separator endnotes (required by Word)
+    xml.push_str(r#"<w:endnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:endnote>"#);
+    xml.push_str(r#"<w:endnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:endnote>"#);
+
+    // Sort endnotes by ID for deterministic output
+    let mut sorted: Vec<_> = endnotes.values().collect();
+    sorted.sort_by_key(|e| e.id);
+
+    // Serialize each endnote
+    for endnote in sorted {
+        xml.push_str(&format!(r#"<w:endnote w:id="{}">"#, endnote.id));
+        for block in endnote.body.content() {
+            serialize_block_content(block, &mut xml);
+        }
+        serialize_unknown_children(&endnote.body.unknown_children, &mut xml);
+        xml.push_str("</w:endnote>");
+    }
+
+    xml.push_str("</w:endnotes>");
+    xml
+}
+
+/// Serialize comments to XML.
+///
+/// Comments use the `<w:comments>` root element containing individual `<w:comment>` elements.
+fn serialize_comments(comments: &HashMap<i32, PendingComment>) -> String {
+    let mut xml = String::new();
+
+    // XML declaration
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+
+    // Comments element with namespaces
+    xml.push_str(&format!(
+        r#"<w:comments xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
+        NS_W, NS_R, NS_WP, NS_A, NS_PIC
+    ));
+
+    // Sort comments by ID for deterministic output
+    let mut sorted: Vec<_> = comments.values().collect();
+    sorted.sort_by_key(|c| c.id);
+
+    // Serialize each comment
+    for comment in sorted {
+        xml.push_str(&format!(r#"<w:comment w:id="{}""#, comment.id));
+
+        // Add optional attributes
+        if let Some(ref author) = comment.author {
+            xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
+        }
+        if let Some(ref date) = comment.date {
+            xml.push_str(&format!(r#" w:date="{}""#, date));
+        }
+        if let Some(ref initials) = comment.initials {
+            xml.push_str(&format!(r#" w:initials="{}""#, escape_xml(initials)));
+        }
+
+        xml.push('>');
+
+        // Comment content
+        for block in comment.body.content() {
+            serialize_block_content(block, &mut xml);
+        }
+        serialize_unknown_children(&comment.body.unknown_children, &mut xml);
+
+        xml.push_str("</w:comment>");
+    }
+
+    xml.push_str("</w:comments>");
     xml
 }
 
@@ -1851,5 +2601,227 @@ mod tests {
         assert_eq!(extension_from_content_type("image/jpeg"), "jpg");
         assert_eq!(extension_from_content_type("image/gif"), "gif");
         assert_eq!(extension_from_content_type("unknown/type"), "bin");
+    }
+
+    #[test]
+    fn test_serialize_header() {
+        let mut body = Body::new();
+        body.add_paragraph().add_run().set_text("Header text");
+
+        let xml = serialize_header(&body);
+
+        assert!(xml.contains("<w:hdr"));
+        assert!(xml.contains("</w:hdr>"));
+        assert!(xml.contains("<w:t>Header text</w:t>"));
+    }
+
+    #[test]
+    fn test_serialize_footer() {
+        let mut body = Body::new();
+        body.add_paragraph().add_run().set_text("Footer text");
+
+        let xml = serialize_footer(&body);
+
+        assert!(xml.contains("<w:ftr"));
+        assert!(xml.contains("</w:ftr>"));
+        assert!(xml.contains("<w:t>Footer text</w:t>"));
+    }
+
+    #[test]
+    fn test_document_builder_with_header_footer() {
+        use crate::Document;
+        use std::io::Cursor;
+
+        // Create a document with header and footer
+        let mut builder = DocumentBuilder::new();
+
+        {
+            let mut header = builder.add_header(HeaderFooterType::Default);
+            header.add_paragraph("Document Header");
+        }
+
+        {
+            let mut footer = builder.add_footer(HeaderFooterType::Default);
+            footer.add_paragraph("Page Footer");
+        }
+
+        builder.add_paragraph("Body content");
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back and verify
+        buffer.set_position(0);
+        let mut doc = Document::from_reader(buffer).unwrap();
+
+        // Verify body content
+        assert_eq!(doc.body().paragraphs().len(), 1);
+        assert_eq!(doc.text(), "Body content");
+
+        // Verify section properties have header/footer references
+        let sect_pr = doc
+            .body()
+            .section_properties()
+            .expect("should have section properties");
+        assert_eq!(sect_pr.headers.len(), 1);
+        assert_eq!(sect_pr.footers.len(), 1);
+
+        // Get rel_ids before mutable borrows
+        let header_rel_id = sect_pr.headers[0].rel_id.clone();
+        let footer_rel_id = sect_pr.footers[0].rel_id.clone();
+
+        // Verify we can read the header content
+        let header = doc.get_header(&header_rel_id).unwrap();
+        assert_eq!(header.text(), "Document Header");
+
+        // Verify we can read the footer content
+        let footer = doc.get_footer(&footer_rel_id).unwrap();
+        assert_eq!(footer.text(), "Page Footer");
+    }
+
+    #[test]
+    fn test_document_builder_with_footnote() {
+        use crate::Document;
+        use crate::document::FootnoteReference;
+        use std::io::Cursor;
+
+        // Create a document with a footnote
+        let mut builder = DocumentBuilder::new();
+
+        // Add a footnote first
+        let footnote_id = {
+            let mut footnote = builder.add_footnote();
+            footnote.add_paragraph("This is a footnote.");
+            footnote.id()
+        };
+
+        // Add body content with footnote reference
+        {
+            let para = builder.body_mut().add_paragraph();
+            let run = para.add_run();
+            run.set_text("Some text");
+            run.set_footnote_ref(FootnoteReference { id: footnote_id });
+        }
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back and verify
+        buffer.set_position(0);
+        let mut doc = Document::from_reader(buffer).unwrap();
+
+        // Verify body content has footnote reference
+        let para = &doc.body().paragraphs()[0];
+        let run = &para.runs()[0];
+        assert!(run.footnote_ref().is_some());
+        assert_eq!(run.footnote_ref().unwrap().id, footnote_id);
+
+        // Verify we can read the footnotes part
+        let footnotes = doc.get_footnotes().unwrap();
+
+        // Find our footnote (ID 1) - cast to i32 for the get() method
+        let fn1 = footnotes
+            .get(footnote_id as i32)
+            .expect("should find footnote");
+        assert_eq!(fn1.text(), "This is a footnote.");
+    }
+
+    #[test]
+    fn test_document_builder_with_endnote() {
+        use crate::Document;
+        use crate::document::EndnoteReference;
+        use std::io::Cursor;
+
+        // Create a document with an endnote
+        let mut builder = DocumentBuilder::new();
+
+        // Add an endnote first
+        let endnote_id = {
+            let mut endnote = builder.add_endnote();
+            endnote.add_paragraph("This is an endnote.");
+            endnote.id()
+        };
+
+        // Add body content with endnote reference
+        {
+            let para = builder.body_mut().add_paragraph();
+            let run = para.add_run();
+            run.set_text("Some text");
+            run.set_endnote_ref(EndnoteReference { id: endnote_id });
+        }
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back and verify
+        buffer.set_position(0);
+        let mut doc = Document::from_reader(buffer).unwrap();
+
+        // Verify body content has endnote reference
+        let para = &doc.body().paragraphs()[0];
+        let run = &para.runs()[0];
+        assert!(run.endnote_ref().is_some());
+        assert_eq!(run.endnote_ref().unwrap().id, endnote_id);
+
+        // Verify we can read the endnotes part
+        let endnotes = doc.get_endnotes().unwrap();
+
+        // Find our endnote (ID 1) - cast to i32 for the get() method
+        let en1 = endnotes
+            .get(endnote_id as i32)
+            .expect("should find endnote");
+        assert_eq!(en1.text(), "This is an endnote.");
+    }
+
+    #[test]
+    fn test_document_builder_with_comment() {
+        use crate::Document;
+        use crate::document::CommentReference;
+        use std::io::Cursor;
+
+        // Create a document with a comment
+        let mut builder = DocumentBuilder::new();
+
+        // Add a comment first
+        let comment_id = {
+            let mut comment = builder.add_comment();
+            comment.set_author("Test Author");
+            comment.add_paragraph("This needs review.");
+            comment.id()
+        };
+
+        // Add body content with comment ranges and reference
+        {
+            let para = builder.body_mut().add_paragraph();
+            para.add_comment_range_start(comment_id);
+            para.add_run().set_text("Commented text");
+            para.add_comment_range_end(comment_id);
+            para.add_run()
+                .set_comment_ref(CommentReference { id: comment_id });
+        }
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        builder.write(&mut buffer).unwrap();
+
+        // Read it back and verify
+        buffer.set_position(0);
+        let mut doc = Document::from_reader(buffer).unwrap();
+
+        // Verify body content
+        assert!(!doc.body().paragraphs().is_empty());
+
+        // Verify we can read the comments part
+        let comments = doc.get_comments().unwrap();
+
+        // Find our comment (ID 0)
+        let c0 = comments
+            .get(comment_id as i32)
+            .expect("should find comment");
+        assert_eq!(c0.author.as_deref(), Some("Test Author"));
+        assert_eq!(c0.text(), "This needs review.");
     }
 }
