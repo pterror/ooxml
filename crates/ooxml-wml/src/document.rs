@@ -2341,6 +2341,8 @@ pub struct Run {
     drawings: Vec<Drawing>,
     /// VML pictures (legacy image format) in the run.
     vml_pictures: Vec<VmlPicture>,
+    /// Embedded OLE objects in the run.
+    embedded_objects: Vec<EmbeddedObject>,
     /// Symbols in the run.
     symbols: Vec<Symbol>,
     /// Field character marker (for complex fields).
@@ -2372,6 +2374,19 @@ pub struct Run {
 #[derive(Debug, Clone, Default)]
 pub struct VmlPicture {
     /// Attributes on the w:pict element.
+    pub attributes: Vec<(String, String)>,
+    /// Child content preserved as raw XML nodes.
+    pub children: Vec<RawXmlNode>,
+}
+
+/// An embedded OLE object.
+///
+/// Corresponds to the `<w:object>` element which contains embedded objects like
+/// Excel charts, equations, or other OLE-linked content. The content is preserved
+/// as raw XML for roundtrip fidelity since OLE objects are complex.
+#[derive(Debug, Clone, Default)]
+pub struct EmbeddedObject {
+    /// Attributes on the w:object element.
     pub attributes: Vec<(String, String)>,
     /// Child content preserved as raw XML nodes.
     pub children: Vec<RawXmlNode>,
@@ -2771,9 +2786,24 @@ impl Run {
         &mut self.vml_pictures
     }
 
+    /// Get embedded OLE objects in this run.
+    pub fn embedded_objects(&self) -> &[EmbeddedObject] {
+        &self.embedded_objects
+    }
+
+    /// Get mutable reference to embedded objects.
+    pub fn embedded_objects_mut(&mut self) -> &mut Vec<EmbeddedObject> {
+        &mut self.embedded_objects
+    }
+
     /// Check if this run contains any images (including VML pictures).
     pub fn has_images(&self) -> bool {
         self.drawings.iter().any(|d| !d.images.is_empty()) || !self.vml_pictures.is_empty()
+    }
+
+    /// Check if this run contains any embedded objects.
+    pub fn has_embedded_objects(&self) -> bool {
+        !self.embedded_objects.is_empty()
     }
 
     /// Check if this run contains a page break.
@@ -3440,6 +3470,9 @@ const EL_POS_OFFSET: &[u8] = b"posOffset";
 // VML picture element (legacy image format)
 const EL_PICT: &[u8] = b"pict";
 
+// Embedded object element
+const EL_OBJECT: &[u8] = b"object";
+
 // Section properties elements
 const EL_SECT_PR: &[u8] = b"sectPr";
 const EL_PG_SZ: &[u8] = b"pgSz";
@@ -3787,6 +3820,32 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
 
                         if let Some(run) = current_run.as_mut() {
                             run.vml_pictures.push(vml_pict);
+                        }
+                        run_child_idx += 1;
+                    }
+                    name if name == EL_OBJECT && current_run.is_some() => {
+                        // Embedded OLE object - capture entire content
+                        let attributes = e
+                            .attributes()
+                            .filter_map(|a| a.ok())
+                            .map(|a| {
+                                (
+                                    String::from_utf8_lossy(a.key.as_ref()).to_string(),
+                                    String::from_utf8_lossy(&a.value).to_string(),
+                                )
+                            })
+                            .collect();
+
+                        // Parse children using RawXmlElement helper approach
+                        let obj_elem = RawXmlElement::from_reader(&mut reader, &e)?;
+
+                        let embedded_obj = EmbeddedObject {
+                            attributes,
+                            children: obj_elem.children,
+                        };
+
+                        if let Some(run) = current_run.as_mut() {
+                            run.embedded_objects.push(embedded_obj);
                         }
                         run_child_idx += 1;
                     }

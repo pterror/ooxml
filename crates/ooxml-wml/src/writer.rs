@@ -5,11 +5,11 @@
 
 use crate::document::{
     AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
-    CellWidth, ContentControl, CustomXml, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink,
-    InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphBorders,
-    ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties,
-    SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge,
-    VmlPicture, WrapType,
+    CellWidth, ContentControl, CustomXml, DocGridType, Drawing, EmbeddedObject, GridColumn,
+    HeightRule, Hyperlink, InlineImage, NumberingProperties, PageOrientation, Paragraph,
+    ParagraphBorders, ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run,
+    RunProperties, SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth,
+    VerticalMerge, VmlPicture, WrapType,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -1100,6 +1100,11 @@ fn serialize_run(run: &Run, xml: &mut String) {
         serialize_vml_picture(vml_pict, xml);
     }
 
+    // Embedded objects
+    for obj in run.embedded_objects() {
+        serialize_embedded_object(obj, xml);
+    }
+
     // Symbols
     for symbol in run.symbols() {
         xml.push_str("<w:sym w:font=\"");
@@ -1200,6 +1205,26 @@ fn serialize_vml_picture(vml_pict: &VmlPicture, xml: &mut String) {
     }
 
     xml.push_str("</w:pict>");
+}
+
+/// Serialize an embedded OLE object.
+fn serialize_embedded_object(obj: &EmbeddedObject, xml: &mut String) {
+    xml.push_str("<w:object");
+    for (key, value) in &obj.attributes {
+        xml.push(' ');
+        xml.push_str(key);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(value));
+        xml.push('"');
+    }
+    xml.push('>');
+
+    // Serialize children using the RawXmlNode serialization
+    for child in &obj.children {
+        serialize_raw_xml_node(child, xml);
+    }
+
+    xml.push_str("</w:object>");
 }
 
 /// Serialize an inline image.

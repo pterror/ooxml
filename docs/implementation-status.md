@@ -45,7 +45,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:sym` | ✅ | Symbol characters |
 | `w:drawing` | ✅ | DrawingML container |
 | `w:pict` | ✅ | VML pictures (legacy) |
-| `w:object` | ❌ | Embedded objects |
+| `w:object` | ✅ | Embedded objects |
 
 ### Paragraph Properties (`w:pPr`)
 
