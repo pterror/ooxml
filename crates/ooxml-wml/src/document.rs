@@ -4475,7 +4475,7 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         let mut is_page_break = false;
                         for attr in e.attributes().filter_map(|a| a.ok()) {
                             if (attr.key.as_ref() == b"w:type" || attr.key.as_ref() == b"type")
-                                && attr.value.as_ref() == b"page"
+                                && &*attr.value == b"page"
                             {
                                 is_page_break = true;
                             }
@@ -6446,7 +6446,7 @@ fn parse_settings(xml: &[u8]) -> Result<DocumentSettings> {
                     // Look for w:name="compatibilityMode"
                     for attr in e.attributes().flatten() {
                         let key = local_name(attr.key.as_ref());
-                        if key == b"name" && attr.value.as_ref() == b"compatibilityMode" {
+                        if key == b"name" && &*attr.value == b"compatibilityMode" {
                             // Get the w:val attribute
                             for attr2 in e.attributes().flatten() {
                                 let key2 = local_name(attr2.key.as_ref());
@@ -6683,10 +6683,8 @@ fn local_name(name: &[u8]) -> &[u8] {
 fn parse_toggle_val(e: &quick_xml::events::BytesStart) -> bool {
     for attr in e.attributes().filter_map(|a| a.ok()) {
         if attr.key.as_ref() == b"w:val" || attr.key.as_ref() == b"val" {
-            return matches!(
-                attr.value.as_ref(),
-                b"true" | b"1" | b"on" | b"True" | b"On"
-            );
+            let val: &[u8] = &attr.value;
+            return matches!(val, b"true" | b"1" | b"on" | b"True" | b"On");
         }
     }
     // No val attribute means true

@@ -510,10 +510,8 @@ fn parse_toggle_val(e: &quick_xml::events::BytesStart) -> bool {
     for attr in e.attributes().filter_map(|a| a.ok()) {
         let key = local_name(attr.key.as_ref());
         if key == b"val" {
-            return matches!(
-                attr.value.as_ref(),
-                b"true" | b"1" | b"on" | b"True" | b"On"
-            );
+            let val: &[u8] = &attr.value;
+            return matches!(val, b"true" | b"1" | b"on" | b"True" | b"On");
         }
     }
     true
