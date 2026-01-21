@@ -67,6 +67,19 @@ fn main() -> ooxml_pml::Result<()> {
                 println!();
             }
         }
+
+        // Show transition if present
+        if let Some(trans) = slide.transition() {
+            println!("\n--- Transition ---");
+            if let Some(ref tt) = trans.transition_type {
+                println!("  Type: {:?}", tt);
+            }
+            println!("  Speed: {:?}", trans.speed);
+            println!("  Advance on click: {}", trans.advance_on_click);
+            if let Some(ms) = trans.advance_time_ms {
+                println!("  Auto-advance: {}ms", ms);
+            }
+        }
     }
 
     Ok(())

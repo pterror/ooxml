@@ -60,7 +60,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Shapes and text - Shape with name(), paragraphs(), text(), has_text()
 - [x] Slide notes - Slide::notes(), has_notes()
 - [x] Images - Slide::pictures(), Picture with rel_id/name/description, get_image_data()
-- [ ] Basic transitions
+- [x] Basic transitions - Slide::transition(), Transition with type/speed/advance settings
 
 ### DrawingML - ooxml-dml
 

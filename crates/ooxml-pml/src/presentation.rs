@@ -187,6 +187,78 @@ pub struct Slide {
     slide_path: String,
     /// Speaker notes for this slide.
     notes: Option<String>,
+    /// Slide transition effect.
+    transition: Option<Transition>,
+}
+
+/// Slide transition effect.
+///
+/// Represents the animation effect when advancing to this slide.
+#[derive(Debug, Clone, Default)]
+pub struct Transition {
+    /// Transition type (fade, push, wipe, etc.)
+    pub transition_type: Option<TransitionType>,
+    /// Transition speed.
+    pub speed: TransitionSpeed,
+    /// Advance on mouse click.
+    pub advance_on_click: bool,
+    /// Auto-advance time in milliseconds (if set).
+    pub advance_time_ms: Option<u32>,
+}
+
+/// Type of slide transition effect.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TransitionType {
+    /// Fade transition.
+    Fade,
+    /// Push transition.
+    Push,
+    /// Wipe transition.
+    Wipe,
+    /// Split transition.
+    Split,
+    /// Blinds transition.
+    Blinds,
+    /// Checker transition.
+    Checker,
+    /// Circle transition.
+    Circle,
+    /// Dissolve transition.
+    Dissolve,
+    /// Comb transition.
+    Comb,
+    /// Cover transition.
+    Cover,
+    /// Cut transition.
+    Cut,
+    /// Diamond transition.
+    Diamond,
+    /// Plus transition.
+    Plus,
+    /// Random transition.
+    Random,
+    /// Strips transition.
+    Strips,
+    /// Wedge transition.
+    Wedge,
+    /// Wheel transition.
+    Wheel,
+    /// Zoom transition.
+    Zoom,
+    /// Unknown/unsupported transition type.
+    Other(String),
+}
+
+/// Speed of the slide transition.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TransitionSpeed {
+    /// Slow transition.
+    Slow,
+    /// Medium transition (default).
+    #[default]
+    Medium,
+    /// Fast transition.
+    Fast,
 }
 
 impl Slide {
@@ -227,6 +299,16 @@ impl Slide {
     /// Get the path to this slide part (for resolving image relationships).
     pub(crate) fn slide_path(&self) -> &str {
         &self.slide_path
+    }
+
+    /// Get the slide transition effect (if any).
+    pub fn transition(&self) -> Option<&Transition> {
+        self.transition.as_ref()
+    }
+
+    /// Check if this slide has a transition effect.
+    pub fn has_transition(&self) -> bool {
+        self.transition.is_some()
     }
 }
 
@@ -361,6 +443,10 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut current_pic_descr: Option<String> = None;
     let mut current_pic_rel_id: Option<String> = None;
 
+    // Transition state
+    let mut transition: Option<Transition> = None;
+    let mut in_transition = false;
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
@@ -377,6 +463,10 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                         current_pic_name = None;
                         current_pic_descr = None;
                         current_pic_rel_id = None;
+                    }
+                    b"p:transition" => {
+                        in_transition = true;
+                        transition = Some(parse_transition_attrs(&e));
                     }
                     b"p:cNvPr" => {
                         // Non-visual properties - get name and description
@@ -411,7 +501,15 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                             current_paragraphs = paras;
                         }
                     }
-                    _ => {}
+                    _ => {
+                        // Check for transition type elements inside p:transition
+                        if in_transition
+                            && let Some(ref mut trans) = transition
+                            && let Some(tt) = parse_transition_type_element(name)
+                        {
+                            trans.transition_type = Some(tt);
+                        }
+                    }
                 }
             }
             Ok(Event::Empty(e)) => {
@@ -454,7 +552,19 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                             }
                         }
                     }
-                    _ => {}
+                    b"p:transition" => {
+                        // Self-closing transition element
+                        transition = Some(parse_transition_attrs(&e));
+                    }
+                    _ => {
+                        // Check for self-closing transition type elements
+                        if in_transition
+                            && let Some(ref mut trans) = transition
+                            && let Some(tt) = parse_transition_type_element(name)
+                        {
+                            trans.transition_type = Some(tt);
+                        }
+                    }
                 }
             }
             Ok(Event::End(e)) => {
@@ -480,6 +590,9 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                         }
                         in_pic = false;
                     }
+                    b"p:transition" => {
+                        in_transition = false;
+                    }
                     _ => {}
                 }
             }
@@ -496,7 +609,78 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
         pictures,
         slide_path: slide_path.to_string(),
         notes: None,
+        transition,
     })
+}
+
+/// Parse transition attributes from a p:transition element.
+fn parse_transition_attrs(e: &quick_xml::events::BytesStart) -> Transition {
+    let mut trans = Transition {
+        advance_on_click: true, // Default is true
+        ..Default::default()
+    };
+
+    for attr in e.attributes().filter_map(|a| a.ok()) {
+        let value = String::from_utf8_lossy(&attr.value);
+        match attr.key.as_ref() {
+            b"spd" => {
+                trans.speed = match value.as_ref() {
+                    "slow" => TransitionSpeed::Slow,
+                    "fast" => TransitionSpeed::Fast,
+                    _ => TransitionSpeed::Medium,
+                };
+            }
+            b"advClick" => {
+                trans.advance_on_click = value != "0" && value != "false";
+            }
+            b"advTm" => {
+                trans.advance_time_ms = value.parse().ok();
+            }
+            _ => {}
+        }
+    }
+
+    trans
+}
+
+/// Parse a transition type from an element name.
+fn parse_transition_type_element(name: &[u8]) -> Option<TransitionType> {
+    // Remove namespace prefix if present
+    let local = if let Some(pos) = name.iter().position(|&b| b == b':') {
+        &name[pos + 1..]
+    } else {
+        name
+    };
+
+    match local {
+        b"fade" => Some(TransitionType::Fade),
+        b"push" => Some(TransitionType::Push),
+        b"wipe" => Some(TransitionType::Wipe),
+        b"split" => Some(TransitionType::Split),
+        b"blinds" => Some(TransitionType::Blinds),
+        b"checker" => Some(TransitionType::Checker),
+        b"circle" => Some(TransitionType::Circle),
+        b"dissolve" => Some(TransitionType::Dissolve),
+        b"comb" => Some(TransitionType::Comb),
+        b"cover" => Some(TransitionType::Cover),
+        b"cut" => Some(TransitionType::Cut),
+        b"diamond" => Some(TransitionType::Diamond),
+        b"plus" => Some(TransitionType::Plus),
+        b"random" => Some(TransitionType::Random),
+        b"strips" => Some(TransitionType::Strips),
+        b"wedge" => Some(TransitionType::Wedge),
+        b"wheel" => Some(TransitionType::Wheel),
+        b"zoom" => Some(TransitionType::Zoom),
+        _ => {
+            let name_str = String::from_utf8_lossy(local);
+            // Only return Other for elements that look like transitions
+            if name_str.chars().all(|c| c.is_ascii_alphabetic()) && name_str.len() > 2 {
+                Some(TransitionType::Other(name_str.into_owned()))
+            } else {
+                None
+            }
+        }
+    }
 }
 
 /// Parse a notes slide XML file and extract the text content.
