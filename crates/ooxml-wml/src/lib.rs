@@ -45,7 +45,7 @@ pub use document::{
     Hyperlink, ImageData, InlineImage, Insertion, NumberingProperties, Paragraph, ParagraphContent,
     ParagraphProperties, Row, Run, RunProperties, Table, TextBoxContent, VmlPicture,
 };
-pub use error::{Error, Result};
+pub use error::{Error, ParseContext, Result, position_to_line_col};
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 pub use styles::{Style, StyleType, Styles};
 pub use writer::{

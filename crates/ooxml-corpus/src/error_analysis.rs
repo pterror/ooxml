@@ -170,6 +170,22 @@ pub fn analyze_error(error: &ooxml_wml::Error) -> AnalyzedError {
             location: None,
             raw_error,
         },
+        ooxml_wml::Error::Parse {
+            context,
+            message,
+            position,
+        } => AnalyzedError {
+            category: ErrorCategory::XmlMalformed,
+            subcategory: Some(context.clone()),
+            message: message.clone(),
+            location: Some(ErrorLocation {
+                part_path: Some(context.clone()),
+                element_path: None,
+                line: None,
+                column: position.map(|p| p as u32),
+            }),
+            raw_error,
+        },
     }
 }
 

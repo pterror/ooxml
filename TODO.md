@@ -30,7 +30,7 @@ DocumentBuilder handles common cases but doesn't expose:
 
 ## Developer Experience
 
-- [ ] Better error messages with context (line numbers, element paths)
+- [x] Better error messages with context - ParseContext, Error::Parse with position, position_to_line_col()
 - [ ] More examples in docs
 - [x] Real-world usage examples in `examples/` directory (read_docx, create_docx, read_metadata)
 - [ ] API documentation improvements

@@ -6043,7 +6043,11 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("word/document.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
@@ -6178,7 +6182,11 @@ fn parse_footnotes(xml: &[u8]) -> Result<FootnotesPart> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("word/footnotes.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
@@ -6307,7 +6315,11 @@ fn parse_comments(xml: &[u8]) -> Result<CommentsPart> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("word/comments.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
@@ -6465,7 +6477,11 @@ fn parse_settings(xml: &[u8]) -> Result<DocumentSettings> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("word/settings.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
@@ -6542,7 +6558,11 @@ fn parse_core_properties(xml: &[u8]) -> Result<CoreProperties> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("docProps/core.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
@@ -6632,7 +6652,11 @@ fn parse_app_properties(xml: &[u8]) -> Result<AppProperties> {
                 }
             }
             Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
+            Err(e) => {
+                return Err(Error::Xml(e)
+                    .with_context("docProps/app.xml")
+                    .at_position(reader.error_position()));
+            }
             _ => {}
         }
         buf.clear();
