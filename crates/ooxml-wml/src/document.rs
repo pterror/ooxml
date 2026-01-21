@@ -298,6 +298,24 @@ impl<R: Read + Seek> Document<R> {
         let comments_xml = self.package.read_part(&comments_path)?;
         parse_comments(&comments_xml)
     }
+
+    /// Load the document settings.
+    ///
+    /// Returns the parsed settings from word/settings.xml.
+    ///
+    /// Returns `Error::MissingPart` if the document has no settings.xml.
+    pub fn get_settings(&mut self) -> Result<DocumentSettings> {
+        let settings_rel = self
+            .doc_rels
+            .get_by_type(
+                "http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings",
+            )
+            .ok_or_else(|| Error::MissingPart("settings relationship".into()))?;
+
+        let settings_path = resolve_path(&self.doc_path, &settings_rel.target);
+        let settings_xml = self.package.read_part(&settings_path)?;
+        parse_settings(&settings_xml)
+    }
 }
 
 /// Resolve a relative path against a base path.
@@ -2674,6 +2692,60 @@ impl CommentsPart {
     }
 }
 
+/// Document settings.
+///
+/// Corresponds to the `<w:settings>` element in word/settings.xml.
+/// Contains document-wide settings like default tab stop, zoom level,
+/// tracking changes settings, and various compatibility options.
+///
+/// ECMA-376 Part 1, Section 17.15.1 (Document Settings).
+#[derive(Debug, Clone, Default)]
+pub struct DocumentSettings {
+    /// Default tab stop width in twentieths of a point (twips).
+    /// Default is 720 twips (0.5 inch).
+    pub default_tab_stop: Option<u32>,
+    /// Document zoom percentage (e.g., 100 = 100%).
+    pub zoom_percent: Option<u32>,
+    /// Whether to display the document background shape.
+    pub display_background_shape: bool,
+    /// Whether track revisions (track changes) is enabled.
+    pub track_revisions: bool,
+    /// Whether to track moves separately in tracked changes.
+    pub do_not_track_moves: bool,
+    /// Whether to track formatting in tracked changes.
+    pub do_not_track_formatting: bool,
+    /// Spelling state - whether document has been fully checked.
+    pub spelling_state: Option<ProofState>,
+    /// Grammar state - whether document has been fully checked.
+    pub grammar_state: Option<ProofState>,
+    /// Character spacing control mode.
+    pub character_spacing_control: Option<CharacterSpacingControl>,
+    /// Compatibility mode (e.g., "15" for Word 2013+).
+    pub compat_mode: Option<u32>,
+    /// Unknown child elements preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+/// Proof state for spelling/grammar checking.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ProofState {
+    /// Document is clean (fully checked).
+    Clean,
+    /// Document is dirty (needs checking).
+    Dirty,
+}
+
+/// Character spacing control mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CharacterSpacingControl {
+    /// Do not compress punctuation.
+    DoNotCompress,
+    /// Compress punctuation.
+    CompressPunctuation,
+    /// Compress punctuation and kana.
+    CompressPunctuationAndJapaneseKana,
+}
+
 impl Run {
     /// Create an empty run.
     pub fn new() -> Self {
@@ -3486,6 +3558,19 @@ const EL_FOOTER_REFERENCE: &[u8] = b"footerReference";
 const EL_FOOTNOTE_REFERENCE: &[u8] = b"footnoteReference";
 const EL_ENDNOTE_REFERENCE: &[u8] = b"endnoteReference";
 const EL_COMMENT_REFERENCE: &[u8] = b"commentReference";
+
+// Document settings elements
+const EL_SETTINGS: &[u8] = b"settings";
+const EL_DEFAULT_TAB_STOP: &[u8] = b"defaultTabStop";
+const EL_ZOOM: &[u8] = b"zoom";
+const EL_DISPLAY_BACKGROUND_SHAPE: &[u8] = b"displayBackgroundShape";
+const EL_TRACK_REVISIONS: &[u8] = b"trackRevisions";
+const EL_DO_NOT_TRACK_MOVES: &[u8] = b"doNotTrackMoves";
+const EL_DO_NOT_TRACK_FORMATTING: &[u8] = b"doNotTrackFormatting";
+const EL_PROOF_STATE: &[u8] = b"proofState";
+const EL_CHAR_SPACE_CONTROL: &[u8] = b"characterSpacingControl";
+const EL_COMPAT: &[u8] = b"compat";
+const EL_COMPAT_SETTING: &[u8] = b"compatSetting";
 
 // Content control (SDT) elements
 const EL_SDT: &[u8] = b"sdt";
@@ -5802,6 +5887,164 @@ fn parse_comments(xml: &[u8]) -> Result<CommentsPart> {
     }
 
     Ok(CommentsPart { comments })
+}
+
+/// Parse a settings.xml file into DocumentSettings.
+///
+/// The structure is `<w:settings>` containing various setting elements.
+fn parse_settings(xml: &[u8]) -> Result<DocumentSettings> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut settings = DocumentSettings::default();
+    let mut in_settings = false;
+    let mut in_compat = false;
+    let mut child_idx: usize = 0;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == EL_SETTINGS {
+                    in_settings = true;
+                } else if in_settings && local == EL_COMPAT {
+                    in_compat = true;
+                    child_idx += 1;
+                } else if in_settings && !in_compat {
+                    // Unknown element - preserve for roundtrip
+                    let node = RawXmlElement::from_reader(&mut reader, &e)?;
+                    settings
+                        .unknown_children
+                        .push(PositionedNode::new(child_idx, RawXmlNode::Element(node)));
+                    child_idx += 1;
+                }
+            }
+            Ok(Event::Empty(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+
+                if !in_settings {
+                    continue;
+                }
+
+                if local == EL_DEFAULT_TAB_STOP {
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"val"
+                            && let Ok(s) = std::str::from_utf8(&attr.value)
+                        {
+                            settings.default_tab_stop = s.parse().ok();
+                        }
+                    }
+                    child_idx += 1;
+                } else if local == EL_ZOOM {
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"percent"
+                            && let Ok(s) = std::str::from_utf8(&attr.value)
+                        {
+                            settings.zoom_percent = s.parse().ok();
+                        }
+                    }
+                    child_idx += 1;
+                } else if local == EL_DISPLAY_BACKGROUND_SHAPE {
+                    settings.display_background_shape = parse_toggle_val(&e);
+                    child_idx += 1;
+                } else if local == EL_TRACK_REVISIONS {
+                    settings.track_revisions = parse_toggle_val(&e);
+                    child_idx += 1;
+                } else if local == EL_DO_NOT_TRACK_MOVES {
+                    settings.do_not_track_moves = parse_toggle_val(&e);
+                    child_idx += 1;
+                } else if local == EL_DO_NOT_TRACK_FORMATTING {
+                    settings.do_not_track_formatting = parse_toggle_val(&e);
+                    child_idx += 1;
+                } else if local == EL_PROOF_STATE {
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if let Ok(s) = std::str::from_utf8(&attr.value) {
+                            if key == b"spelling" {
+                                settings.spelling_state = match s {
+                                    "clean" => Some(ProofState::Clean),
+                                    "dirty" => Some(ProofState::Dirty),
+                                    _ => None,
+                                };
+                            } else if key == b"grammar" {
+                                settings.grammar_state = match s {
+                                    "clean" => Some(ProofState::Clean),
+                                    "dirty" => Some(ProofState::Dirty),
+                                    _ => None,
+                                };
+                            }
+                        }
+                    }
+                    child_idx += 1;
+                } else if local == EL_CHAR_SPACE_CONTROL {
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"val"
+                            && let Ok(s) = std::str::from_utf8(&attr.value)
+                        {
+                            settings.character_spacing_control = match s {
+                                "doNotCompress" => Some(CharacterSpacingControl::DoNotCompress),
+                                "compressPunctuation" => {
+                                    Some(CharacterSpacingControl::CompressPunctuation)
+                                }
+                                "compressPunctuationAndJapaneseKana" => Some(
+                                    CharacterSpacingControl::CompressPunctuationAndJapaneseKana,
+                                ),
+                                _ => None,
+                            };
+                        }
+                    }
+                    child_idx += 1;
+                } else if in_compat && local == EL_COMPAT_SETTING {
+                    // Look for w:name="compatibilityMode"
+                    for attr in e.attributes().flatten() {
+                        let key = local_name(attr.key.as_ref());
+                        if key == b"name" && attr.value.as_ref() == b"compatibilityMode" {
+                            // Get the w:val attribute
+                            for attr2 in e.attributes().flatten() {
+                                let key2 = local_name(attr2.key.as_ref());
+                                if key2 == b"val"
+                                    && let Ok(s) = std::str::from_utf8(&attr2.value)
+                                {
+                                    settings.compat_mode = s.parse().ok();
+                                }
+                            }
+                        }
+                    }
+                } else if !in_compat {
+                    // Unknown empty element - preserve for roundtrip
+                    let node = RawXmlElement::from_empty(&e);
+                    settings
+                        .unknown_children
+                        .push(PositionedNode::new(child_idx, RawXmlNode::Element(node)));
+                    child_idx += 1;
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == EL_SETTINGS {
+                    break;
+                } else if local == EL_COMPAT {
+                    in_compat = false;
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(settings)
 }
 
 /// Extract the local name from a potentially namespaced element name.

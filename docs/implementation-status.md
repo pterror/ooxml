@@ -144,7 +144,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `word/footnotes.xml` | ✅ | Footnotes fully loaded via `get_footnotes()` |
 | `word/endnotes.xml` | ✅ | Endnotes fully loaded via `get_endnotes()` |
 | `word/comments.xml` | ✅ | Comments fully loaded via `get_comments()` |
-| `word/settings.xml` | ❌ | Document settings |
+| `word/settings.xml` | ✅ | Document settings |
 
 ## Writing (Serialization)
 
