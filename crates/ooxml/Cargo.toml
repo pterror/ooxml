@@ -1,5 +1,5 @@
 [package]
-name = "ooxml"
+name = "ooxml-opc"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

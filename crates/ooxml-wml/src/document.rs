@@ -19,7 +19,7 @@
 use crate::error::{Error, Result};
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 use crate::styles::{Styles, merge_run_properties};
-use ooxml::{Package, Relationships, rel_type, rels_path_for};
+use ooxml_opc::{Package, Relationships, rel_type, rels_path_for};
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::fs::File;

@@ -554,15 +554,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
-name = "ooxml"
-version = "0.1.0"
-dependencies = [
- "quick-xml",
- "thiserror",
- "zip",
-]
-
-[[package]]
 name = "ooxml-codegen"
 version = "0.1.0"
 dependencies = [
@@ -575,7 +566,7 @@ name = "ooxml-corpus"
 version = "0.1.0"
 dependencies = [
  "clap",
- "ooxml",
+ "ooxml-opc",
  "ooxml-wml",
  "quick-xml",
  "rayon",
@@ -604,11 +595,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ooxml-opc"
+version = "0.1.0"
+dependencies = [
+ "quick-xml",
+ "thiserror",
+ "zip",
+]
+
+[[package]]
 name = "ooxml-pml"
 version = "0.1.0"
 dependencies = [
- "ooxml",
  "ooxml-dml",
+ "ooxml-opc",
  "quick-xml",
  "serde",
  "thiserror",
@@ -618,7 +618,7 @@ dependencies = [
 name = "ooxml-sml"
 version = "0.1.0"
 dependencies = [
- "ooxml",
+ "ooxml-opc",
  "quick-xml",
  "serde",
  "thiserror",
@@ -628,8 +628,8 @@ dependencies = [
 name = "ooxml-wml"
 version = "0.1.0"
 dependencies = [
- "ooxml",
  "ooxml-codegen",
+ "ooxml-opc",
  "quick-xml",
  "serde",
  "thiserror",

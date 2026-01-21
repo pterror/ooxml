@@ -7,7 +7,7 @@ use thiserror::Error;
 pub enum Error {
     /// Error from the OPC packaging layer.
     #[error("OPC error: {0}")]
-    Opc(#[from] ooxml::Error),
+    Opc(#[from] ooxml_opc::Error),
 
     /// XML parsing error.
     #[error("XML error: {0}")]

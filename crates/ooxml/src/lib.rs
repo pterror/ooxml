@@ -14,7 +14,7 @@
 //! # Example
 //!
 //! ```no_run
-//! use ooxml::{Package, Relationships, rel_type, rels_path_for};
+//! use ooxml_opc::{Package, Relationships, rel_type, rels_path_for};
 //! use std::fs::File;
 //!
 //! let file = File::open("document.docx")?;
@@ -29,7 +29,7 @@
 //!     let doc_xml = pkg.read_part_string(&doc_rel.target)?;
 //!     println!("Document: {}", doc_xml);
 //! }
-//! # Ok::<(), ooxml::Error>(())
+//! # Ok::<(), ooxml_opc::Error>(())
 //! ```
 
 pub mod error;

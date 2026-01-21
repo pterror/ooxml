@@ -174,9 +174,9 @@ pub fn analyze_error(error: &ooxml_wml::Error) -> AnalyzedError {
 }
 
 /// Analyze a package-level error.
-fn analyze_package_error(error: &ooxml::Error, raw_error: &str) -> AnalyzedError {
+fn analyze_package_error(error: &ooxml_opc::Error, raw_error: &str) -> AnalyzedError {
     match error {
-        ooxml::Error::Zip(zip_err) => {
+        ooxml_opc::Error::Zip(zip_err) => {
             let zip_str = zip_err.to_string();
             let category = if zip_str.contains("invalid") || zip_str.contains("corrupt") {
                 ErrorCategory::ZipCorruption
@@ -193,9 +193,9 @@ fn analyze_package_error(error: &ooxml::Error, raw_error: &str) -> AnalyzedError
                 raw_error: raw_error.to_string(),
             }
         }
-        ooxml::Error::Xml(xml_err) => analyze_xml_error(xml_err, raw_error),
-        ooxml::Error::Invalid(msg) => analyze_invalid_error(msg, raw_error),
-        ooxml::Error::MissingPart(part) => AnalyzedError {
+        ooxml_opc::Error::Xml(xml_err) => analyze_xml_error(xml_err, raw_error),
+        ooxml_opc::Error::Invalid(msg) => analyze_invalid_error(msg, raw_error),
+        ooxml_opc::Error::MissingPart(part) => AnalyzedError {
             category: ErrorCategory::MissingRequiredPart,
             subcategory: Some(part.clone()),
             message: format!("Missing required part: {}", part),
@@ -207,14 +207,14 @@ fn analyze_package_error(error: &ooxml::Error, raw_error: &str) -> AnalyzedError
             }),
             raw_error: raw_error.to_string(),
         },
-        ooxml::Error::Unsupported(msg) => AnalyzedError {
+        ooxml_opc::Error::Unsupported(msg) => AnalyzedError {
             category: ErrorCategory::UnsupportedFeature,
             subcategory: extract_feature_name(msg),
             message: msg.clone(),
             location: None,
             raw_error: raw_error.to_string(),
         },
-        ooxml::Error::Io(io_err) => AnalyzedError {
+        ooxml_opc::Error::Io(io_err) => AnalyzedError {
             category: ErrorCategory::IoError,
             subcategory: Some(io_err.kind().to_string()),
             message: io_err.to_string(),

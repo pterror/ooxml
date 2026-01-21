@@ -10,7 +10,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// Error from the core ooxml crate (packaging, relationships).
     #[error("package error: {0}")]
-    Package(#[from] ooxml::Error),
+    Package(#[from] ooxml_opc::Error),
 
     /// XML parsing error.
     #[error("XML error: {0}")]

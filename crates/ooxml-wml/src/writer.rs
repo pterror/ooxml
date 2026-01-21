@@ -14,7 +14,7 @@ use crate::document::{
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
 use crate::styles::Styles;
-use ooxml::{PackageWriter, Relationship, Relationships, content_type, rel_type};
+use ooxml_opc::{PackageWriter, Relationship, Relationships, content_type, rel_type};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};

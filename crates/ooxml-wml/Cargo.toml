@@ -7,7 +7,7 @@ repository.workspace = true
 description = "WordprocessingML (DOCX) support for the ooxml library"
 
 [dependencies]
-ooxml.workspace = true
+ooxml-opc.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true

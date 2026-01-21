@@ -19,7 +19,7 @@ repository = "https://github.com/pterror/ooxml"
 
 [workspace.dependencies]
 # Internal crates
-ooxml = { path = "crates/ooxml" }
+ooxml-opc = { path = "crates/ooxml" }
 ooxml-dml = { path = "crates/ooxml-dml" }
 ooxml-wml = { path = "crates/ooxml-wml" }
 ooxml-sml = { path = "crates/ooxml-sml" }

@@ -15,7 +15,7 @@ name = "ooxml-corpus"
 path = "src/main.rs"
 
 [dependencies]
-ooxml.workspace = true
+ooxml-opc.workspace = true
 ooxml-wml.workspace = true
 zip.workspace = true
 serde.workspace = true

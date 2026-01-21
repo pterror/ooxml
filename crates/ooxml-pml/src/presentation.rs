@@ -3,7 +3,7 @@
 //! This module provides the main entry point for working with PPTX files.
 
 use crate::error::{Error, Result};
-use ooxml::{Package, Relationships};
+use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::fs::File;
