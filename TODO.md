@@ -31,7 +31,7 @@ DocumentBuilder handles common cases but doesn't expose:
 ## Developer Experience
 
 - [x] Better error messages with context - ParseContext, Error::Parse with position, position_to_line_col()
-- [ ] More examples in docs
+- [x] More examples in docs - read_xlsx, cell_access examples for ooxml-sml
 - [x] Real-world usage examples in `examples/` directory (read_docx, create_docx, read_metadata)
 - [ ] API documentation improvements
 
