@@ -259,6 +259,9 @@ fn validate_style_references<R: Read + Seek>(
                 // Content controls can contain paragraphs, but we would need recursive
                 // handling similar to Body::paragraphs(). For now, skip validation inside SDT.
             }
+            ooxml_wml::BlockContent::CustomXml(_custom) => {
+                // Custom XML blocks can contain paragraphs. For now, skip validation inside.
+            }
         }
     }
 }

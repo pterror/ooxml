@@ -5,7 +5,7 @@
 
 use crate::document::{
     AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
-    CellWidth, ContentControl, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink,
+    CellWidth, ContentControl, CustomXml, DocGridType, Drawing, GridColumn, HeightRule, Hyperlink,
     InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphBorders,
     ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties,
     SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge,
@@ -342,6 +342,7 @@ fn serialize_block_content(block: &BlockContent, xml: &mut String) {
         BlockContent::Paragraph(para) => serialize_paragraph(para, xml),
         BlockContent::Table(table) => serialize_table(table, xml),
         BlockContent::ContentControl(sdt) => serialize_content_control(sdt, xml),
+        BlockContent::CustomXml(custom) => serialize_custom_xml(custom, xml),
     }
 }
 
@@ -375,6 +376,29 @@ fn serialize_content_control(sdt: &ContentControl, xml: &mut String) {
 
     serialize_unknown_children(&sdt.unknown_children, xml);
     xml.push_str("</w:sdt>");
+}
+
+/// Serialize a custom XML block.
+fn serialize_custom_xml(custom: &CustomXml, xml: &mut String) {
+    xml.push_str("<w:customXml");
+    if let Some(uri) = &custom.uri {
+        xml.push_str(" w:uri=\"");
+        xml.push_str(&escape_xml(uri));
+        xml.push('"');
+    }
+    if let Some(element) = &custom.element {
+        xml.push_str(" w:element=\"");
+        xml.push_str(&escape_xml(element));
+        xml.push('"');
+    }
+    xml.push('>');
+
+    for block in &custom.content {
+        serialize_block_content(block, xml);
+    }
+
+    serialize_unknown_children(&custom.unknown_children, xml);
+    xml.push_str("</w:customXml>");
 }
 
 /// Serialize section properties.

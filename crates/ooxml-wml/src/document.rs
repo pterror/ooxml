@@ -407,6 +407,9 @@ fn collect_paragraphs(blocks: &[BlockContent]) -> Vec<&Paragraph> {
             BlockContent::ContentControl(c) => {
                 paras.extend(collect_paragraphs(&c.content));
             }
+            BlockContent::CustomXml(c) => {
+                paras.extend(collect_paragraphs(&c.content));
+            }
         }
     }
     paras
@@ -422,6 +425,8 @@ pub enum BlockContent {
     Table(Table),
     /// A content control (structured document tag).
     ContentControl(ContentControl),
+    /// A custom XML block.
+    CustomXml(CustomXml),
 }
 
 /// A content control (structured document tag).
@@ -440,6 +445,48 @@ pub struct ContentControl {
     pub content: Vec<BlockContent>,
     /// Unknown properties preserved for round-trip fidelity.
     pub unknown_children: Vec<PositionedNode>,
+}
+
+/// A custom XML block.
+///
+/// Corresponds to the `<w:customXml>` element.
+/// ECMA-376 Part 1, Section 17.5.1.4 (customXml).
+#[derive(Debug, Clone, Default)]
+pub struct CustomXml {
+    /// The namespace URI of the custom XML.
+    pub uri: Option<String>,
+    /// The element name within the namespace.
+    pub element: Option<String>,
+    /// Block-level content within the custom XML.
+    pub content: Vec<BlockContent>,
+    /// Unknown properties preserved for round-trip fidelity.
+    pub unknown_children: Vec<PositionedNode>,
+}
+
+impl CustomXml {
+    /// Create a new empty custom XML block.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get the block-level content.
+    pub fn content(&self) -> &[BlockContent] {
+        &self.content
+    }
+
+    /// Get all paragraphs in the custom XML block.
+    pub fn paragraphs(&self) -> Vec<&Paragraph> {
+        collect_paragraphs(&self.content)
+    }
+
+    /// Extract all text from the custom XML block.
+    pub fn text(&self) -> String {
+        self.paragraphs()
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
 }
 
 /// Content type for a structured document tag.
@@ -527,6 +574,7 @@ impl Body {
                 BlockContent::Paragraph(p) => p.text(),
                 BlockContent::Table(t) => t.text(),
                 BlockContent::ContentControl(c) => c.text(),
+                BlockContent::CustomXml(c) => c.text(),
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -665,6 +713,7 @@ impl ContentControl {
                 BlockContent::Paragraph(p) => p.text(),
                 BlockContent::Table(t) => t.text(),
                 BlockContent::ContentControl(c) => c.text(),
+                BlockContent::CustomXml(c) => c.text(),
             })
             .collect::<Vec<_>>()
             .join("\n")
@@ -3382,6 +3431,7 @@ const EL_SDT_PR: &[u8] = b"sdtPr";
 const EL_SDT_CONTENT: &[u8] = b"sdtContent";
 const EL_TAG: &[u8] = b"tag";
 const EL_ALIAS: &[u8] = b"alias";
+const EL_CUSTOM_XML: &[u8] = b"customXml";
 
 /// Parse a document.xml file into a Body.
 fn parse_document(xml: &[u8]) -> Result<Body> {
@@ -3416,6 +3466,9 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
     let mut in_sdt_pr = false;
     let mut in_sdt_content = false;
     let mut _sdt_child_idx: usize = 0;
+
+    // Custom XML parsing state
+    let mut current_custom_xml: Option<CustomXml> = None;
 
     // Numbering parsing state
     let mut in_numpr = false;
@@ -3556,6 +3609,26 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_SDT_CONTENT && current_sdt.is_some() => {
                         in_sdt_content = true;
                         _sdt_child_idx += 1;
+                    }
+                    // Custom XML block
+                    name if name == EL_CUSTOM_XML && in_body => {
+                        let mut custom_xml = CustomXml::new();
+                        for attr in e.attributes().flatten() {
+                            let key = local_name(attr.key.as_ref());
+                            if key == b"uri" {
+                                custom_xml.uri =
+                                    std::str::from_utf8(&attr.value).ok().map(String::from);
+                            } else if key == b"element" {
+                                custom_xml.element =
+                                    std::str::from_utf8(&attr.value).ok().map(String::from);
+                            }
+                        }
+                        current_custom_xml = Some(custom_xml);
+                        if current_cell.is_some() {
+                            cell_child_idx += 1;
+                        } else {
+                            body_child_idx += 1;
+                        }
                     }
                     name if name == EL_P && in_body => {
                         current_para = Some(Paragraph::new());
@@ -5108,6 +5181,8 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 if let Some(sdt) = current_sdt.as_mut() {
                                     sdt.content.push(BlockContent::Table(table));
                                 }
+                            } else if let Some(custom_xml) = current_custom_xml.as_mut() {
+                                custom_xml.content.push(BlockContent::Table(table));
                             } else {
                                 body.content.push(BlockContent::Table(table));
                             }
@@ -5165,13 +5240,16 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_P && current_para.is_some() => {
                         if let Some(mut para) = current_para.take() {
                             para.properties = current_ppr.take();
-                            // Add to cell if inside table, SDT if inside content control, otherwise to body
+                            // Add to cell if inside table, SDT if inside content control,
+                            // custom XML if inside that, otherwise to body
                             if let Some(cell) = current_cell.as_mut() {
                                 cell.paragraphs.push(para);
                             } else if in_sdt_content {
                                 if let Some(sdt) = current_sdt.as_mut() {
                                     sdt.content.push(BlockContent::Paragraph(para));
                                 }
+                            } else if let Some(custom_xml) = current_custom_xml.as_mut() {
+                                custom_xml.content.push(BlockContent::Paragraph(para));
                             } else {
                                 body.content.push(BlockContent::Paragraph(para));
                             }
@@ -5318,6 +5396,20 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                                 }
                             } else {
                                 body.content.push(BlockContent::ContentControl(sdt));
+                            }
+                        }
+                    }
+                    name if name == EL_CUSTOM_XML => {
+                        if let Some(custom_xml) = current_custom_xml.take() {
+                            if let Some(cell) = current_cell.as_mut() {
+                                // Custom XML in table cells - flatten content
+                                for block in custom_xml.content {
+                                    if let BlockContent::Paragraph(para) = block {
+                                        cell.paragraphs.push(para);
+                                    }
+                                }
+                            } else {
+                                body.content.push(BlockContent::CustomXml(custom_xml));
                             }
                         }
                     }

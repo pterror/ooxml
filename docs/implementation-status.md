@@ -19,7 +19,7 @@ This document tracks what's implemented, partially implemented, and missing in t
 | `w:p` | ✅ | Paragraphs |
 | `w:tbl` | ✅ | Tables |
 | `w:sdt` | ✅ | Structured document tags (content controls) |
-| `w:customXml` | ❌ | Custom XML blocks |
+| `w:customXml` | ✅ | Custom XML blocks |
 
 ### Paragraph Content
 

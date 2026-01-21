@@ -317,6 +317,12 @@ fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_de
                 process_block(block, features, table_depth);
             }
         }
+        BlockContent::CustomXml(custom) => {
+            // Process custom XML's nested content
+            for block in &custom.content {
+                process_block(block, features, table_depth);
+            }
+        }
     }
 }
 
