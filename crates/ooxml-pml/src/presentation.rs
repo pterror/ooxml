@@ -14,6 +14,8 @@ use std::path::Path;
 const REL_OFFICE_DOCUMENT: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
 const REL_SLIDE: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+const REL_NOTES_SLIDE: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
 
 /// A PowerPoint presentation.
 ///
@@ -122,7 +124,19 @@ impl<R: Read + Seek> Presentation<R> {
     /// Load a slide's data.
     fn load_slide(&mut self, info: &SlideInfo) -> Result<Slide> {
         let data = self.package.read_part(&info.path)?;
-        parse_slide(&data, info.index)
+        let mut slide = parse_slide(&data, info.index)?;
+
+        // Try to load speaker notes
+        if let Ok(slide_rels) = self.package.read_part_relationships(&info.path)
+            && let Some(notes_rel) = slide_rels.get_by_type(REL_NOTES_SLIDE)
+        {
+            let notes_path = resolve_path(&info.path, &notes_rel.target);
+            if let Ok(notes_data) = self.package.read_part(&notes_path) {
+                slide.notes = parse_notes_slide(&notes_data);
+            }
+        }
+
+        Ok(slide)
     }
 }
 
@@ -131,6 +145,8 @@ impl<R: Read + Seek> Presentation<R> {
 pub struct Slide {
     index: usize,
     shapes: Vec<Shape>,
+    /// Speaker notes for this slide.
+    notes: Option<String>,
 }
 
 impl Slide {
@@ -151,6 +167,16 @@ impl Slide {
             .filter_map(|s| s.text())
             .collect::<Vec<_>>()
             .join("\n")
+    }
+
+    /// Get the speaker notes for this slide.
+    pub fn notes(&self) -> Option<&str> {
+        self.notes.as_deref()
+    }
+
+    /// Check if this slide has speaker notes.
+    pub fn has_notes(&self) -> bool {
+        self.notes.as_ref().is_some_and(|n| !n.is_empty())
     }
 }
 
@@ -313,7 +339,48 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
         buf.clear();
     }
 
-    Ok(Slide { index, shapes })
+    Ok(Slide {
+        index,
+        shapes,
+        notes: None,
+    })
+}
+
+/// Parse a notes slide XML file and extract the text content.
+fn parse_notes_slide(xml: &[u8]) -> Option<String> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut all_text = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let name = name.as_ref();
+                // Notes text is in p:txBody elements
+                if name == b"p:txBody"
+                    && let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader)
+                {
+                    for para in paras {
+                        let text = para.text();
+                        if !text.is_empty() {
+                            all_text.push(text);
+                        }
+                    }
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(_) => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    if all_text.is_empty() {
+        None
+    } else {
+        Some(all_text.join("\n"))
+    }
 }
 
 // ============================================================================

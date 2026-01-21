@@ -31,7 +31,7 @@ DocumentBuilder handles common cases but doesn't expose:
 ## Developer Experience
 
 - [x] Better error messages with context - ParseContext, Error::Parse with position, position_to_line_col()
-- [x] More examples in docs - read_xlsx, cell_access examples for ooxml-sml
+- [x] More examples in docs - read_xlsx, cell_access for ooxml-sml; read_pptx, extract_text for ooxml-pml
 - [x] Real-world usage examples in `examples/` directory (read_docx, create_docx, read_metadata)
 - [ ] API documentation improvements
 
@@ -55,9 +55,10 @@ DocumentBuilder handles common cases but doesn't expose:
 
 ### PresentationML (PowerPoint) - ooxml-pml
 
-- [ ] Presentation structure
-- [ ] Slides
-- [ ] Shapes and text
+- [x] Presentation structure - Presentation::open(), slide_count()
+- [x] Slides - slide(), slides(), Slide with index(), shapes(), text()
+- [x] Shapes and text - Shape with name(), paragraphs(), text(), has_text()
+- [x] Slide notes - Slide::notes(), has_notes()
 - [ ] Images
 - [ ] Basic transitions
 
