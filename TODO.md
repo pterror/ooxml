@@ -24,7 +24,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Math equations (integrate ooxml-omml crate) - parsing m:oMath, serialize_math_zone, MathZone re-export
 - [x] Table of contents (read) - headings() method + SimpleField + outline_level
 - [x] Bookmarks (add_bookmark_start/end methods, exported types)
-- [ ] Text boxes
+- [x] Text boxes - text extraction via VmlPicture/Drawing/EmbeddedObject.text()
 - [ ] SmartArt (limited)
 - [ ] Charts (limited)
 

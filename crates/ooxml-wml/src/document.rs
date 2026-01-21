@@ -2559,6 +2559,25 @@ pub struct VmlPicture {
     pub children: Vec<RawXmlNode>,
 }
 
+impl VmlPicture {
+    /// Extract all text from text boxes within this VML picture.
+    ///
+    /// VML shapes can contain text boxes via `<v:textbox><w:txbxContent>`.
+    /// This method recursively searches for text box content and extracts the text.
+    pub fn text(&self) -> String {
+        let mut texts = Vec::new();
+        for child in &self.children {
+            extract_textbox_text(child, &mut texts);
+        }
+        texts.join("\n")
+    }
+
+    /// Check if this VML picture contains any text boxes.
+    pub fn has_textbox(&self) -> bool {
+        self.children.iter().any(has_textbox_content)
+    }
+}
+
 /// An embedded OLE object.
 ///
 /// Corresponds to the `<w:object>` element which contains embedded objects like
@@ -2570,6 +2589,46 @@ pub struct EmbeddedObject {
     pub attributes: Vec<(String, String)>,
     /// Child content preserved as raw XML nodes.
     pub children: Vec<RawXmlNode>,
+}
+
+impl EmbeddedObject {
+    /// Extract all text from text boxes within this embedded object.
+    pub fn text(&self) -> String {
+        let mut texts = Vec::new();
+        for child in &self.children {
+            extract_textbox_text(child, &mut texts);
+        }
+        texts.join("\n")
+    }
+
+    /// Check if this embedded object contains any text boxes.
+    pub fn has_textbox(&self) -> bool {
+        self.children.iter().any(has_textbox_content)
+    }
+}
+
+/// Content from a text box (w:txbxContent).
+///
+/// Text boxes appear inside VML shapes (`<v:textbox>`) or DrawingML shapes (`<wps:txbx>`).
+/// The actual content is wrapped in `<w:txbxContent>` which contains standard WML
+/// paragraphs and tables.
+///
+/// ECMA-376 Part 1, Section 17.17.1 (txbxContent).
+#[derive(Debug, Clone, Default)]
+pub struct TextBoxContent {
+    /// Paragraphs inside the text box.
+    pub paragraphs: Vec<Paragraph>,
+}
+
+impl TextBoxContent {
+    /// Get all text from the text box.
+    pub fn text(&self) -> String {
+        self.paragraphs
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
 }
 
 /// A drawing element containing images.
@@ -3216,6 +3275,25 @@ impl Drawing {
     pub fn add_anchored_image(&mut self, rel_id: impl Into<String>) -> &mut AnchoredImage {
         self.anchored_images.push(AnchoredImage::new(rel_id));
         self.anchored_images.last_mut().unwrap()
+    }
+
+    /// Extract all text from text boxes within this drawing.
+    ///
+    /// DrawingML shapes can contain text boxes via `<wps:txbx><w:txbxContent>`.
+    /// This method searches the unknown children for text box content.
+    pub fn text(&self) -> String {
+        let mut texts = Vec::new();
+        for child in &self.unknown_children {
+            extract_textbox_text(&child.node, &mut texts);
+        }
+        texts.join("\n")
+    }
+
+    /// Check if this drawing contains any text boxes.
+    pub fn has_textbox(&self) -> bool {
+        self.unknown_children
+            .iter()
+            .any(|c| has_textbox_content(&c.node))
     }
 }
 
@@ -6624,6 +6702,86 @@ fn parse_border(e: &quick_xml::events::BytesStart) -> Border {
     border
 }
 
+/// Recursively extract text from text box content within raw XML nodes.
+///
+/// Searches for `w:txbxContent` or `txbxContent` elements and extracts text
+/// from the `w:t` elements inside them.
+fn extract_textbox_text(node: &RawXmlNode, texts: &mut Vec<String>) {
+    if let RawXmlNode::Element(elem) = node {
+        let name = local_name_str(&elem.name);
+        if name == "txbxContent" {
+            // Found text box content - extract all text from w:t elements
+            let mut para_texts = Vec::new();
+            extract_text_elements(elem, &mut para_texts);
+            if !para_texts.is_empty() {
+                texts.push(para_texts.join(""));
+            }
+        } else {
+            // Recurse into children
+            for child in &elem.children {
+                extract_textbox_text(child, texts);
+            }
+        }
+    }
+}
+
+/// Recursively extract text from w:t elements within raw XML.
+fn extract_text_elements(elem: &RawXmlElement, texts: &mut Vec<String>) {
+    let name = local_name_str(&elem.name);
+    if name == "t" {
+        // This is a text element - extract its text content
+        for child in &elem.children {
+            if let RawXmlNode::Text(text) = child {
+                texts.push(text.clone());
+            }
+        }
+    } else if name == "p" {
+        // Paragraph boundary - collect text and add separator
+        let mut para_text = Vec::new();
+        for child in &elem.children {
+            if let RawXmlNode::Element(child_elem) = child {
+                extract_text_elements(child_elem, &mut para_text);
+            }
+        }
+        if !para_text.is_empty() {
+            texts.push(para_text.join(""));
+            texts.push("\n".to_string());
+        }
+    } else {
+        // Recurse into children
+        for child in &elem.children {
+            if let RawXmlNode::Element(child_elem) = child {
+                extract_text_elements(child_elem, texts);
+            }
+        }
+    }
+}
+
+/// Check if a raw XML node contains text box content.
+fn has_textbox_content(node: &RawXmlNode) -> bool {
+    if let RawXmlNode::Element(elem) = node {
+        let name = local_name_str(&elem.name);
+        if name == "txbxContent" {
+            return true;
+        }
+        for child in &elem.children {
+            if has_textbox_content(child) {
+                return true;
+            }
+        }
+    }
+    false
+}
+
+/// Get the local name from a potentially namespaced element name (string version).
+fn local_name_str(name: &str) -> &str {
+    if let Some(pos) = name.find(':') {
+        &name[pos + 1..]
+    } else {
+        name
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -7529,5 +7687,58 @@ mod tests {
 
         // Full paragraph text includes inserted and deleted text
         assert_eq!(para.text(), "This is inserted text with deleted content.");
+    }
+
+    #[test]
+    fn test_textbox_text_extraction() {
+        use crate::raw_xml::{RawXmlElement, RawXmlNode};
+
+        // Simulate VML text box structure: v:shape > v:textbox > w:txbxContent > w:p > w:r > w:t
+        let text_node = RawXmlNode::Text("Hello from text box!".to_string());
+        let t_elem = RawXmlElement {
+            name: "w:t".to_string(),
+            attributes: vec![],
+            children: vec![text_node],
+            self_closing: false,
+        };
+        let r_elem = RawXmlElement {
+            name: "w:r".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(t_elem)],
+            self_closing: false,
+        };
+        let p_elem = RawXmlElement {
+            name: "w:p".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(r_elem)],
+            self_closing: false,
+        };
+        let txbx_content = RawXmlElement {
+            name: "w:txbxContent".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(p_elem)],
+            self_closing: false,
+        };
+        let textbox = RawXmlElement {
+            name: "v:textbox".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(txbx_content)],
+            self_closing: false,
+        };
+        let shape = RawXmlElement {
+            name: "v:shape".to_string(),
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(textbox)],
+            self_closing: false,
+        };
+
+        let vml_pict = VmlPicture {
+            attributes: vec![],
+            children: vec![RawXmlNode::Element(shape)],
+        };
+
+        assert!(vml_pict.has_textbox());
+        let text = vml_pict.text();
+        assert!(text.contains("Hello from text box!"), "Got: {}", text);
     }
 }

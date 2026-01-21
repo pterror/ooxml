@@ -41,9 +41,9 @@ pub mod types {
 pub use document::{
     Alignment, AppProperties, BlockContent, Body, BookmarkEnd, BookmarkStart, Cell,
     CommentRangeEnd, CommentRangeStart, CommentReference, CoreProperties, Deletion, Document,
-    Drawing, EndnoteReference, Fonts, FootnoteReference, HeaderFooterType, Hyperlink, ImageData,
-    InlineImage, Insertion, NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties,
-    Row, Run, RunProperties, Table,
+    Drawing, EmbeddedObject, EndnoteReference, Fonts, FootnoteReference, HeaderFooterType,
+    Hyperlink, ImageData, InlineImage, Insertion, NumberingProperties, Paragraph, ParagraphContent,
+    ParagraphProperties, Row, Run, RunProperties, Table, TextBoxContent, VmlPicture,
 };
 pub use error::{Error, Result};
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
