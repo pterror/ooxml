@@ -39,5 +39,5 @@ pub use math::{
     Accent, Bar, BorderBox, Delimiter, EquationArray, Fraction, FractionType, Function, GroupChar,
     Limit, LimitLocation, MathBox, MathElement, MathRun, MathRunProperties, MathScript, MathStyle,
     MathZone, Matrix, Nary, Phantom, PreScript, Radical, Script, SubSuperscript, VerticalPosition,
-    parse_math_zone, parse_math_zone_from_reader,
+    parse_math_zone, parse_math_zone_from_reader, serialize_math_zone,
 };

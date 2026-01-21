@@ -649,6 +649,21 @@ impl Body {
     pub fn set_section_properties(&mut self, props: SectionProperties) {
         self.section_properties = Some(props);
     }
+
+    /// Get all heading paragraphs (paragraphs with outline levels).
+    ///
+    /// This is useful for building table of contents or document outlines.
+    /// Returns paragraphs that have an outline level set (0-8, where 0 is Heading 1).
+    pub fn headings(&self) -> Vec<(&Paragraph, u8)> {
+        self.paragraphs()
+            .into_iter()
+            .filter_map(|p| {
+                p.properties()
+                    .and_then(|props| props.outline_level)
+                    .map(|level| (p, level))
+            })
+            .collect()
+    }
 }
 
 /// A table in the document.
@@ -965,6 +980,12 @@ pub enum ParagraphContent {
     CommentRangeEnd(CommentRangeEnd),
     /// A simple field (e.g., PAGE, DATE).
     SimpleField(SimpleField),
+    /// A math zone (Office Math Markup Language).
+    Math(ooxml_omml::MathZone),
+    /// Inserted content (tracked change).
+    Insertion(Insertion),
+    /// Deleted content (tracked change).
+    Deletion(Deletion),
 }
 
 /// A bookmark start marker.
@@ -1007,6 +1028,52 @@ pub struct CommentRangeStart {
 pub struct CommentRangeEnd {
     /// Unique ID for the comment (matches commentRangeStart).
     pub id: u32,
+}
+
+/// Inserted content (tracked change).
+///
+/// Corresponds to the `<w:ins>` element for revision tracking.
+/// ECMA-376 Part 1, Section 17.13.5.18 (ins).
+#[derive(Debug, Clone, Default)]
+pub struct Insertion {
+    /// Unique revision ID.
+    pub id: u32,
+    /// Author of the change.
+    pub author: Option<String>,
+    /// Date/time of the change (ISO 8601 format).
+    pub date: Option<String>,
+    /// Runs contained in the insertion.
+    pub runs: Vec<Run>,
+}
+
+impl Insertion {
+    /// Extract text from all runs in the insertion.
+    pub fn text(&self) -> String {
+        self.runs.iter().map(|r| r.text()).collect()
+    }
+}
+
+/// Deleted content (tracked change).
+///
+/// Corresponds to the `<w:del>` element for revision tracking.
+/// ECMA-376 Part 1, Section 17.13.5.14 (del).
+#[derive(Debug, Clone, Default)]
+pub struct Deletion {
+    /// Unique revision ID.
+    pub id: u32,
+    /// Author of the change.
+    pub author: Option<String>,
+    /// Date/time of the change (ISO 8601 format).
+    pub date: Option<String>,
+    /// Runs contained in the deletion.
+    pub runs: Vec<Run>,
+}
+
+impl Deletion {
+    /// Extract text from all runs in the deletion.
+    pub fn text(&self) -> String {
+        self.runs.iter().map(|r| r.text()).collect()
+    }
 }
 
 /// A simple field in the document.
@@ -1107,11 +1174,22 @@ impl Paragraph {
                         runs.push(run);
                     }
                 }
+                ParagraphContent::Insertion(ins) => {
+                    for run in &ins.runs {
+                        runs.push(run);
+                    }
+                }
+                ParagraphContent::Deletion(del) => {
+                    for run in &del.runs {
+                        runs.push(run);
+                    }
+                }
                 ParagraphContent::BookmarkStart(_)
                 | ParagraphContent::BookmarkEnd(_)
                 | ParagraphContent::CommentRangeStart(_)
-                | ParagraphContent::CommentRangeEnd(_) => {
-                    // Bookmarks and comment ranges don't contain runs
+                | ParagraphContent::CommentRangeEnd(_)
+                | ParagraphContent::Math(_) => {
+                    // Bookmarks, comment ranges, and math zones don't contain standard runs
                 }
             }
         }
@@ -1219,10 +1297,13 @@ impl Paragraph {
                 ParagraphContent::SimpleField(field) => {
                     field.runs.iter().map(|r| r.text()).collect::<String>()
                 }
+                ParagraphContent::Insertion(ins) => ins.text(),
+                ParagraphContent::Deletion(del) => del.text(),
                 ParagraphContent::BookmarkStart(_)
                 | ParagraphContent::BookmarkEnd(_)
                 | ParagraphContent::CommentRangeStart(_)
                 | ParagraphContent::CommentRangeEnd(_) => String::new(),
+                ParagraphContent::Math(math) => math.text(),
             })
             .collect()
     }
@@ -3671,10 +3752,17 @@ const EL_BOOKMARK_END: &[u8] = b"bookmarkEnd";
 const EL_COMMENT_RANGE_START: &[u8] = b"commentRangeStart";
 const EL_COMMENT_RANGE_END: &[u8] = b"commentRangeEnd";
 
+// Revision tracking elements (tracked changes)
+const EL_INS: &[u8] = b"ins";
+const EL_DEL: &[u8] = b"del";
+
 // Field elements
 const EL_FLD_SIMPLE: &[u8] = b"fldSimple";
 const EL_FLD_CHAR: &[u8] = b"fldChar";
 const EL_INSTR_TEXT: &[u8] = b"instrText";
+
+// Math elements (Office Math Markup Language)
+const EL_OMATH: &[u8] = b"oMath";
 
 // Numbering elements
 const EL_NUMPR: &[u8] = b"numPr";
@@ -3775,6 +3863,10 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
 
     // Simple field parsing state
     let mut current_fld_simple: Option<SimpleField> = None;
+
+    // Revision tracking state (tracked changes)
+    let mut current_insertion: Option<Insertion> = None;
+    let mut current_deletion: Option<Deletion> = None;
 
     // Content control (SDT) parsing state
     let mut current_sdt: Option<ContentControl> = None;
@@ -3991,6 +4083,44 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         current_fld_simple = Some(field);
                         para_child_idx += 1;
                     }
+                    // Insertion (tracked change)
+                    name if name == EL_INS && current_para.is_some() => {
+                        let mut insertion = Insertion::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:id" | b"id" => insertion.id = s.parse().unwrap_or(0),
+                                    b"w:author" | b"author" => {
+                                        insertion.author = Some(s.to_string())
+                                    }
+                                    b"w:date" | b"date" => insertion.date = Some(s.to_string()),
+                                    _ => {}
+                                }
+                            }
+                        }
+                        current_insertion = Some(insertion);
+                        para_child_idx += 1;
+                    }
+                    // Deletion (tracked change)
+                    name if name == EL_DEL && current_para.is_some() => {
+                        let mut deletion = Deletion::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            if let Ok(s) = std::str::from_utf8(&attr.value) {
+                                match key {
+                                    b"w:id" | b"id" => deletion.id = s.parse().unwrap_or(0),
+                                    b"w:author" | b"author" => {
+                                        deletion.author = Some(s.to_string())
+                                    }
+                                    b"w:date" | b"date" => deletion.date = Some(s.to_string()),
+                                    _ => {}
+                                }
+                            }
+                        }
+                        current_deletion = Some(deletion);
+                        para_child_idx += 1;
+                    }
                     name if name == EL_R && current_para.is_some() => {
                         let mut run = Run::new();
                         // Capture unknown attributes with position
@@ -4161,6 +4291,17 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                         }
                         current_cols = Some(cols);
                         in_cols = true;
+                    }
+                    // Math zone (Office Math Markup Language)
+                    name if name == EL_OMATH && current_para.is_some() => {
+                        // Parse the math zone using the OMML parser
+                        // It will consume events until the closing m:oMath tag
+                        if let Ok(math_zone) = ooxml_omml::parse_math_zone_from_reader(&mut reader)
+                            && let Some(para) = current_para.as_mut()
+                        {
+                            para.content.push(ParagraphContent::Math(math_zone));
+                            para_child_idx += 1;
+                        }
                     }
                     _ => {
                         // Only capture unknown elements when we're in a container context
@@ -5647,14 +5788,32 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     name if name == EL_R && current_run.is_some() => {
                         if let Some(mut run) = current_run.take() {
                             run.properties = current_rpr.take();
-                            // Add run to hyperlink/field if inside one, otherwise to paragraph
+                            // Add run to hyperlink/field/insertion/deletion if inside one, otherwise to paragraph
                             if let Some(hyperlink) = current_hyperlink.as_mut() {
                                 hyperlink.runs.push(run);
                             } else if let Some(field) = current_fld_simple.as_mut() {
                                 field.runs.push(run);
+                            } else if let Some(insertion) = current_insertion.as_mut() {
+                                insertion.runs.push(run);
+                            } else if let Some(deletion) = current_deletion.as_mut() {
+                                deletion.runs.push(run);
                             } else if let Some(para) = current_para.as_mut() {
                                 para.content.push(ParagraphContent::Run(run));
                             }
+                        }
+                    }
+                    name if name == EL_INS => {
+                        if let Some(insertion) = current_insertion.take()
+                            && let Some(para) = current_para.as_mut()
+                        {
+                            para.content.push(ParagraphContent::Insertion(insertion));
+                        }
+                    }
+                    name if name == EL_DEL => {
+                        if let Some(deletion) = current_deletion.take()
+                            && let Some(para) = current_para.as_mut()
+                        {
+                            para.content.push(ParagraphContent::Deletion(deletion));
                         }
                     }
                     name if name == EL_HYPERLINK => {
@@ -7249,5 +7408,126 @@ mod tests {
         assert_eq!(props.lines, Some(100));
         assert_eq!(props.template, Some("Normal.dotm".to_string()));
         assert_eq!(props.doc_security, Some(0));
+    }
+
+    #[test]
+    fn test_parse_math_content() {
+        // Document with a simple fraction: 1/2
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+            xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math">
+  <w:body>
+    <w:p>
+      <w:r><w:t>The formula is: </w:t></w:r>
+      <m:oMath>
+        <m:f>
+          <m:num><m:r><m:t>1</m:t></m:r></m:num>
+          <m:den><m:r><m:t>2</m:t></m:r></m:den>
+        </m:f>
+      </m:oMath>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Verify the paragraph was parsed
+        assert_eq!(body.paragraphs().len(), 1);
+        let para = &body.paragraphs()[0];
+
+        // Check that the paragraph has both run and math content
+        assert_eq!(para.content().len(), 2);
+
+        // First should be a run with text
+        if let ParagraphContent::Run(run) = &para.content()[0] {
+            assert_eq!(run.text(), "The formula is: ");
+        } else {
+            panic!("Expected Run as first content");
+        }
+
+        // Second should be a math zone
+        if let ParagraphContent::Math(math) = &para.content()[1] {
+            // Math text extraction gives us "(1)/(2)" for a fraction
+            assert_eq!(math.text(), "(1)/(2)");
+        } else {
+            panic!("Expected Math as second content");
+        }
+
+        // Full paragraph text includes the math
+        assert_eq!(para.text(), "The formula is: (1)/(2)");
+    }
+
+    #[test]
+    fn test_parse_tracked_changes() {
+        // Document with tracked changes (insertions and deletions)
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:r><w:t>This is </w:t></w:r>
+      <w:ins w:id="0" w:author="John Doe" w:date="2024-01-15T10:30:00Z">
+        <w:r><w:t>inserted</w:t></w:r>
+      </w:ins>
+      <w:r><w:t> text with </w:t></w:r>
+      <w:del w:id="1" w:author="Jane Smith" w:date="2024-01-16T14:00:00Z">
+        <w:r><w:t>deleted</w:t></w:r>
+      </w:del>
+      <w:r><w:t> content.</w:t></w:r>
+    </w:p>
+  </w:body>
+</w:document>"#;
+
+        let body = parse_document(xml).unwrap();
+
+        // Verify the paragraph was parsed
+        assert_eq!(body.paragraphs().len(), 1);
+        let para = &body.paragraphs()[0];
+
+        // Check that the paragraph has the expected content
+        assert_eq!(para.content().len(), 5);
+
+        // First: regular run
+        if let ParagraphContent::Run(run) = &para.content()[0] {
+            assert_eq!(run.text(), "This is ");
+        } else {
+            panic!("Expected Run as first content");
+        }
+
+        // Second: insertion
+        if let ParagraphContent::Insertion(ins) = &para.content()[1] {
+            assert_eq!(ins.id, 0);
+            assert_eq!(ins.author, Some("John Doe".to_string()));
+            assert_eq!(ins.date, Some("2024-01-15T10:30:00Z".to_string()));
+            assert_eq!(ins.text(), "inserted");
+        } else {
+            panic!("Expected Insertion as second content");
+        }
+
+        // Third: regular run
+        if let ParagraphContent::Run(run) = &para.content()[2] {
+            assert_eq!(run.text(), " text with ");
+        } else {
+            panic!("Expected Run as third content");
+        }
+
+        // Fourth: deletion
+        if let ParagraphContent::Deletion(del) = &para.content()[3] {
+            assert_eq!(del.id, 1);
+            assert_eq!(del.author, Some("Jane Smith".to_string()));
+            assert_eq!(del.date, Some("2024-01-16T14:00:00Z".to_string()));
+            assert_eq!(del.text(), "deleted");
+        } else {
+            panic!("Expected Deletion as fourth content");
+        }
+
+        // Fifth: regular run
+        if let ParagraphContent::Run(run) = &para.content()[4] {
+            assert_eq!(run.text(), " content.");
+        } else {
+            panic!("Expected Run as fifth content");
+        }
+
+        // Full paragraph text includes inserted and deleted text
+        assert_eq!(para.text(), "This is inserted text with deleted content.");
     }
 }

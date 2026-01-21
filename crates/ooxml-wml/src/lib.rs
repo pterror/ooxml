@@ -40,10 +40,10 @@ pub mod types {
 
 pub use document::{
     Alignment, AppProperties, BlockContent, Body, BookmarkEnd, BookmarkStart, Cell,
-    CommentRangeEnd, CommentRangeStart, CommentReference, CoreProperties, Document, Drawing,
-    EndnoteReference, Fonts, FootnoteReference, HeaderFooterType, Hyperlink, ImageData,
-    InlineImage, NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run,
-    RunProperties, Table,
+    CommentRangeEnd, CommentRangeStart, CommentReference, CoreProperties, Deletion, Document,
+    Drawing, EndnoteReference, Fonts, FootnoteReference, HeaderFooterType, Hyperlink, ImageData,
+    InlineImage, Insertion, NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties,
+    Row, Run, RunProperties, Table,
 };
 pub use error::{Error, Result};
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
@@ -55,6 +55,9 @@ pub use writer::{
 
 // Re-export commonly used generated types at the crate root
 pub use types::ns;
+
+// Re-export MathZone from ooxml-omml for convenience
+pub use ooxml_omml::MathZone;
 
 // ## Current Limitations (v0.1)
 //

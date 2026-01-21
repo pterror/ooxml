@@ -135,6 +135,36 @@ impl Styles {
     pub fn is_empty(&self) -> bool {
         self.styles.is_empty()
     }
+
+    /// Add a style to the collection.
+    pub fn add_style(&mut self, style: Style) {
+        self.styles.insert(style.id.clone(), style);
+    }
+
+    /// Set default paragraph properties.
+    pub fn set_default_paragraph(&mut self, props: ParagraphProperties) {
+        self.default_paragraph = props;
+    }
+
+    /// Set default run properties.
+    pub fn set_default_run(&mut self, props: RunProperties) {
+        self.default_run = props;
+    }
+
+    /// Get mutable reference to default run properties.
+    pub fn default_run_mut(&mut self) -> &mut RunProperties {
+        &mut self.default_run
+    }
+
+    /// Get mutable reference to default paragraph properties.
+    pub fn default_paragraph_mut(&mut self) -> &mut ParagraphProperties {
+        &mut self.default_paragraph
+    }
+
+    /// Serialize the styles to XML.
+    pub fn serialize(&self) -> String {
+        serialize_styles(self)
+    }
 }
 
 /// A single style definition.
@@ -489,6 +519,279 @@ fn parse_toggle_val(e: &quick_xml::events::BytesStart) -> bool {
     true
 }
 
+// ============================================================================
+// Serialization
+// ============================================================================
+
+/// Serialize styles to XML.
+fn serialize_styles(styles: &Styles) -> String {
+    let mut xml = String::new();
+    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+    xml.push('\n');
+    xml.push_str(
+        r#"<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" "#,
+    );
+    xml.push_str(
+        r#"xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">"#,
+    );
+
+    // Document defaults
+    let has_doc_defaults = !is_default_run_props(&styles.default_run)
+        || !is_default_para_props(&styles.default_paragraph);
+
+    if has_doc_defaults {
+        xml.push_str("<w:docDefaults>");
+
+        // Run properties defaults
+        if !is_default_run_props(&styles.default_run) {
+            xml.push_str("<w:rPrDefault><w:rPr>");
+            serialize_run_properties(&styles.default_run, &mut xml);
+            xml.push_str("</w:rPr></w:rPrDefault>");
+        }
+
+        // Paragraph properties defaults
+        if !is_default_para_props(&styles.default_paragraph) {
+            xml.push_str("<w:pPrDefault><w:pPr>");
+            serialize_paragraph_properties(&styles.default_paragraph, &mut xml);
+            xml.push_str("</w:pPr></w:pPrDefault>");
+        }
+
+        xml.push_str("</w:docDefaults>");
+    }
+
+    // Styles
+    for style in styles.styles.values() {
+        serialize_style(style, &mut xml);
+    }
+
+    xml.push_str("</w:styles>");
+    xml
+}
+
+/// Check if run properties are all default values.
+fn is_default_run_props(props: &RunProperties) -> bool {
+    !props.bold
+        && !props.italic
+        && props.underline.is_none()
+        && !props.strike
+        && !props.double_strike
+        && props.size.is_none()
+        && props.font.is_none()
+        && props.fonts.is_none()
+        && props.style.is_none()
+        && props.color.is_none()
+        && props.highlight.is_none()
+        && props.vertical_align.is_none()
+        && !props.all_caps
+        && !props.small_caps
+        && !props.hidden
+        && props.shading.is_none()
+}
+
+/// Check if paragraph properties are all default values.
+fn is_default_para_props(props: &ParagraphProperties) -> bool {
+    props.style.is_none()
+        && props.alignment.is_none()
+        && props.outline_level.is_none()
+        && props.numbering.is_none()
+        && props.spacing_before.is_none()
+        && props.spacing_after.is_none()
+        && props.spacing_line.is_none()
+        && props.indent_left.is_none()
+        && props.indent_right.is_none()
+        && props.indent_first_line.is_none()
+        && props.indent_hanging.is_none()
+        && !props.keep_next
+        && !props.keep_lines
+        && !props.page_break_before
+}
+
+/// Serialize a single style.
+fn serialize_style(style: &Style, xml: &mut String) {
+    xml.push_str("<w:style w:type=\"");
+    xml.push_str(match style.style_type {
+        StyleType::Paragraph => "paragraph",
+        StyleType::Character => "character",
+        StyleType::Table => "table",
+        StyleType::Numbering => "numbering",
+    });
+    xml.push_str("\" w:styleId=\"");
+    xml.push_str(&escape_xml(&style.id));
+    xml.push('"');
+
+    if style.is_default {
+        xml.push_str(" w:default=\"1\"");
+    }
+
+    xml.push('>');
+
+    // Name
+    if let Some(ref name) = style.name {
+        xml.push_str("<w:name w:val=\"");
+        xml.push_str(&escape_xml(name));
+        xml.push_str("\"/>");
+    }
+
+    // Based on
+    if let Some(ref based_on) = style.based_on {
+        xml.push_str("<w:basedOn w:val=\"");
+        xml.push_str(&escape_xml(based_on));
+        xml.push_str("\"/>");
+    }
+
+    // Paragraph properties
+    if let Some(ref ppr) = style.paragraph_properties {
+        xml.push_str("<w:pPr>");
+        serialize_paragraph_properties(ppr, xml);
+        xml.push_str("</w:pPr>");
+    }
+
+    // Run properties
+    if let Some(ref rpr) = style.run_properties {
+        xml.push_str("<w:rPr>");
+        serialize_run_properties(rpr, xml);
+        xml.push_str("</w:rPr>");
+    }
+
+    xml.push_str("</w:style>");
+}
+
+/// Serialize run properties.
+fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
+    if props.bold {
+        xml.push_str("<w:b/>");
+    }
+    if props.italic {
+        xml.push_str("<w:i/>");
+    }
+    if let Some(underline) = props.underline {
+        xml.push_str("<w:u w:val=\"");
+        xml.push_str(match underline {
+            UnderlineStyle::Single => "single",
+            UnderlineStyle::Double => "double",
+            UnderlineStyle::Thick => "thick",
+            UnderlineStyle::Dotted => "dotted",
+            UnderlineStyle::DottedHeavy => "dottedHeavy",
+            UnderlineStyle::Dash => "dash",
+            UnderlineStyle::DashedHeavy => "dashedHeavy",
+            UnderlineStyle::DashLong => "dashLong",
+            UnderlineStyle::DashLongHeavy => "dashLongHeavy",
+            UnderlineStyle::DotDash => "dotDash",
+            UnderlineStyle::DashDotHeavy => "dashDotHeavy",
+            UnderlineStyle::DotDotDash => "dotDotDash",
+            UnderlineStyle::DashDotDotHeavy => "dashDotDotHeavy",
+            UnderlineStyle::Wave => "wave",
+            UnderlineStyle::WavyHeavy => "wavyHeavy",
+            UnderlineStyle::WavyDouble => "wavyDouble",
+            UnderlineStyle::Words => "words",
+        });
+        xml.push_str("\"/>");
+    }
+    if props.strike {
+        xml.push_str("<w:strike/>");
+    }
+    if props.double_strike {
+        xml.push_str("<w:dstrike/>");
+    }
+    if let Some(size) = props.size {
+        xml.push_str(&format!("<w:sz w:val=\"{}\"/>", size));
+    }
+    if let Some(ref font) = props.font {
+        xml.push_str(&format!("<w:rFonts w:ascii=\"{}\"/>", escape_xml(font)));
+    }
+    if let Some(ref color) = props.color {
+        xml.push_str(&format!("<w:color w:val=\"{}\"/>", escape_xml(color)));
+    }
+    if props.all_caps {
+        xml.push_str("<w:caps/>");
+    }
+    if props.small_caps {
+        xml.push_str("<w:smallCaps/>");
+    }
+    if props.hidden {
+        xml.push_str("<w:vanish/>");
+    }
+    if let Some(ref style) = props.style {
+        xml.push_str(&format!("<w:rStyle w:val=\"{}\"/>", escape_xml(style)));
+    }
+}
+
+/// Serialize paragraph properties.
+fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String) {
+    if let Some(ref style) = props.style {
+        xml.push_str(&format!("<w:pStyle w:val=\"{}\"/>", escape_xml(style)));
+    }
+    if let Some(alignment) = props.alignment {
+        xml.push_str("<w:jc w:val=\"");
+        xml.push_str(match alignment {
+            crate::document::Alignment::Left => "left",
+            crate::document::Alignment::Center => "center",
+            crate::document::Alignment::Right => "right",
+            crate::document::Alignment::Both => "both",
+            crate::document::Alignment::Distribute => "distribute",
+        });
+        xml.push_str("\"/>");
+    }
+    if let Some(level) = props.outline_level {
+        xml.push_str(&format!("<w:outlineLvl w:val=\"{}\"/>", level));
+    }
+    // Spacing
+    let has_spacing = props.spacing_before.is_some()
+        || props.spacing_after.is_some()
+        || props.spacing_line.is_some();
+    if has_spacing {
+        xml.push_str("<w:spacing");
+        if let Some(before) = props.spacing_before {
+            xml.push_str(&format!(" w:before=\"{}\"", before));
+        }
+        if let Some(after) = props.spacing_after {
+            xml.push_str(&format!(" w:after=\"{}\"", after));
+        }
+        if let Some(line) = props.spacing_line {
+            xml.push_str(&format!(" w:line=\"{}\"", line));
+        }
+        xml.push_str("/>");
+    }
+    // Indentation
+    let has_indent = props.indent_left.is_some()
+        || props.indent_right.is_some()
+        || props.indent_first_line.is_some()
+        || props.indent_hanging.is_some();
+    if has_indent {
+        xml.push_str("<w:ind");
+        if let Some(left) = props.indent_left {
+            xml.push_str(&format!(" w:left=\"{}\"", left));
+        }
+        if let Some(right) = props.indent_right {
+            xml.push_str(&format!(" w:right=\"{}\"", right));
+        }
+        if let Some(first) = props.indent_first_line {
+            xml.push_str(&format!(" w:firstLine=\"{}\"", first));
+        }
+        if let Some(hanging) = props.indent_hanging {
+            xml.push_str(&format!(" w:hanging=\"{}\"", hanging));
+        }
+        xml.push_str("/>");
+    }
+    if props.keep_next {
+        xml.push_str("<w:keepNext/>");
+    }
+    if props.keep_lines {
+        xml.push_str("<w:keepLines/>");
+    }
+    if props.page_break_before {
+        xml.push_str("<w:pageBreakBefore/>");
+    }
+}
+
+/// Escape XML special characters.
+fn escape_xml(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -623,5 +926,56 @@ mod tests {
         assert_eq!(props.font.as_deref(), Some("Arial"));
         assert!(props.bold);
         assert!(props.italic);
+    }
+
+    #[test]
+    fn test_serialize_styles() {
+        use crate::document::{Alignment, ParagraphProperties, RunProperties};
+
+        let mut styles = Styles::new();
+
+        // Add a heading style
+        styles.add_style(Style {
+            id: "Heading1".to_string(),
+            name: Some("Heading 1".to_string()),
+            style_type: StyleType::Paragraph,
+            based_on: Some("Normal".to_string()),
+            is_default: false,
+            paragraph_properties: Some(ParagraphProperties {
+                alignment: Some(Alignment::Center),
+                ..Default::default()
+            }),
+            run_properties: Some(RunProperties {
+                bold: true,
+                size: Some(32),
+                ..Default::default()
+            }),
+        });
+
+        // Add a character style
+        styles.add_style(Style {
+            id: "Strong".to_string(),
+            name: Some("Strong".to_string()),
+            style_type: StyleType::Character,
+            based_on: None,
+            is_default: false,
+            paragraph_properties: None,
+            run_properties: Some(RunProperties {
+                bold: true,
+                ..Default::default()
+            }),
+        });
+
+        // Serialize and verify
+        let xml = styles.serialize();
+
+        // Basic structure checks
+        assert!(xml.contains("<w:styles"));
+        assert!(xml.contains("</w:styles>"));
+        assert!(xml.contains("Heading1"));
+        assert!(xml.contains("Strong"));
+        assert!(xml.contains("w:b/>")); // Bold
+        assert!(xml.contains("w:sz")); // Size
+        assert!(xml.contains("w:jc")); // Alignment
     }
 }

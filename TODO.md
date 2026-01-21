@@ -10,7 +10,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Footnotes/endnotes creation
 - [x] Comments creation
 - [x] Anchored/floating images (use `run.add_anchored_image()` with `set_wrap_type()`)
-- [ ] Styles creation/writing
+- [x] Styles creation/writing - add_style(), set_default_paragraph/run(), serialize()
 
 ## Reading Enhancements
 
@@ -20,9 +20,9 @@ DocumentBuilder handles common cases but doesn't expose:
 
 ## Advanced Features
 
-- [ ] Revision tracking (w:ins, w:del for tracked changes)
-- [ ] Math equations (integrate ooxml-omml crate)
-- [ ] Table of contents (read)
+- [x] Revision tracking (w:ins, w:del for tracked changes) - Insertion/Deletion types with author/date, parsing and serialization
+- [x] Math equations (integrate ooxml-omml crate) - parsing m:oMath, serialize_math_zone, MathZone re-export
+- [x] Table of contents (read) - headings() method + SimpleField + outline_level
 - [x] Bookmarks (add_bookmark_start/end methods, exported types)
 - [ ] Text boxes
 - [ ] SmartArt (limited)

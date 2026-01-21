@@ -1628,6 +1628,37 @@ fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
                 }
                 xml.push_str("</w:fldSimple>");
             }
+            ParagraphContent::Math(math_zone) => {
+                xml.push_str(&ooxml_omml::serialize_math_zone(math_zone));
+            }
+            ParagraphContent::Insertion(ins) => {
+                xml.push_str(&format!(r#"<w:ins w:id="{}""#, ins.id));
+                if let Some(ref author) = ins.author {
+                    xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
+                }
+                if let Some(ref date) = ins.date {
+                    xml.push_str(&format!(r#" w:date="{}""#, escape_xml(date)));
+                }
+                xml.push('>');
+                for run in &ins.runs {
+                    serialize_run(run, xml);
+                }
+                xml.push_str("</w:ins>");
+            }
+            ParagraphContent::Deletion(del) => {
+                xml.push_str(&format!(r#"<w:del w:id="{}""#, del.id));
+                if let Some(ref author) = del.author {
+                    xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
+                }
+                if let Some(ref date) = del.date {
+                    xml.push_str(&format!(r#" w:date="{}""#, escape_xml(date)));
+                }
+                xml.push('>');
+                for run in &del.runs {
+                    serialize_run(run, xml);
+                }
+                xml.push_str("</w:del>");
+            }
         }
     }
 

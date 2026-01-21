@@ -629,6 +629,7 @@ name = "ooxml-wml"
 version = "0.1.0"
 dependencies = [
  "ooxml-codegen",
+ "ooxml-omml",
  "ooxml-opc",
  "quick-xml",
  "serde",

@@ -1175,6 +1175,280 @@ fn parse_phantom<R: BufRead>(reader: &mut Reader<R>) -> Result<Phantom> {
     Ok(result)
 }
 
+// ============================================================================
+// Serialization
+// ============================================================================
+
+/// Serialize a math zone to XML.
+pub fn serialize_math_zone(zone: &MathZone) -> String {
+    let mut xml = String::new();
+    xml.push_str("<m:oMath>");
+    for element in &zone.elements {
+        serialize_math_element(element, &mut xml);
+    }
+    xml.push_str("</m:oMath>");
+    xml
+}
+
+/// Serialize a math element to XML.
+fn serialize_math_element(element: &MathElement, xml: &mut String) {
+    match element {
+        MathElement::Run(run) => serialize_math_run(run, xml),
+        MathElement::Fraction(f) => {
+            xml.push_str("<m:f>");
+            xml.push_str("<m:num>");
+            serialize_math_zone_content(&f.numerator, xml);
+            xml.push_str("</m:num>");
+            xml.push_str("<m:den>");
+            serialize_math_zone_content(&f.denominator, xml);
+            xml.push_str("</m:den>");
+            xml.push_str("</m:f>");
+        }
+        MathElement::Radical(r) => {
+            xml.push_str("<m:rad>");
+            xml.push_str("<m:deg>");
+            serialize_math_zone_content(&r.degree, xml);
+            xml.push_str("</m:deg>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&r.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:rad>");
+        }
+        MathElement::Nary(n) => {
+            xml.push_str("<m:nary>");
+            if let Some(ref op) = n.operator {
+                xml.push_str("<m:naryPr><m:chr m:val=\"");
+                xml.push_str(&escape_xml(op));
+                xml.push_str("\"/></m:naryPr>");
+            }
+            xml.push_str("<m:sub>");
+            serialize_math_zone_content(&n.subscript, xml);
+            xml.push_str("</m:sub>");
+            xml.push_str("<m:sup>");
+            serialize_math_zone_content(&n.superscript, xml);
+            xml.push_str("</m:sup>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&n.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:nary>");
+        }
+        MathElement::Subscript(s) => {
+            xml.push_str("<m:sSub>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&s.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("<m:sub>");
+            serialize_math_zone_content(&s.script, xml);
+            xml.push_str("</m:sub>");
+            xml.push_str("</m:sSub>");
+        }
+        MathElement::Superscript(s) => {
+            xml.push_str("<m:sSup>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&s.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("<m:sup>");
+            serialize_math_zone_content(&s.script, xml);
+            xml.push_str("</m:sup>");
+            xml.push_str("</m:sSup>");
+        }
+        MathElement::SubSuperscript(s) => {
+            xml.push_str("<m:sSubSup>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&s.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("<m:sub>");
+            serialize_math_zone_content(&s.subscript, xml);
+            xml.push_str("</m:sub>");
+            xml.push_str("<m:sup>");
+            serialize_math_zone_content(&s.superscript, xml);
+            xml.push_str("</m:sup>");
+            xml.push_str("</m:sSubSup>");
+        }
+        MathElement::PreScript(p) => {
+            xml.push_str("<m:sPre>");
+            xml.push_str("<m:sub>");
+            serialize_math_zone_content(&p.subscript, xml);
+            xml.push_str("</m:sub>");
+            xml.push_str("<m:sup>");
+            serialize_math_zone_content(&p.superscript, xml);
+            xml.push_str("</m:sup>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&p.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:sPre>");
+        }
+        MathElement::Delimiter(d) => {
+            xml.push_str("<m:d>");
+            if d.begin_char.as_deref() != Some("(") || d.end_char.as_deref() != Some(")") {
+                xml.push_str("<m:dPr>");
+                if let Some(ref beg) = d.begin_char {
+                    xml.push_str("<m:begChr m:val=\"");
+                    xml.push_str(&escape_xml(beg));
+                    xml.push_str("\"/>");
+                }
+                if let Some(ref end) = d.end_char {
+                    xml.push_str("<m:endChr m:val=\"");
+                    xml.push_str(&escape_xml(end));
+                    xml.push_str("\"/>");
+                }
+                xml.push_str("</m:dPr>");
+            }
+            for e in &d.elements {
+                xml.push_str("<m:e>");
+                serialize_math_zone_content(e, xml);
+                xml.push_str("</m:e>");
+            }
+            xml.push_str("</m:d>");
+        }
+        MathElement::Matrix(m) => {
+            xml.push_str("<m:m>");
+            for row in &m.rows {
+                xml.push_str("<m:mr>");
+                for cell in row {
+                    xml.push_str("<m:e>");
+                    serialize_math_zone_content(cell, xml);
+                    xml.push_str("</m:e>");
+                }
+                xml.push_str("</m:mr>");
+            }
+            xml.push_str("</m:m>");
+        }
+        MathElement::Function(f) => {
+            xml.push_str("<m:func>");
+            xml.push_str("<m:fName>");
+            serialize_math_zone_content(&f.name, xml);
+            xml.push_str("</m:fName>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&f.argument, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:func>");
+        }
+        MathElement::Accent(a) => {
+            xml.push_str("<m:acc>");
+            if let Some(ref chr) = a.character {
+                xml.push_str("<m:accPr><m:chr m:val=\"");
+                xml.push_str(&escape_xml(chr));
+                xml.push_str("\"/></m:accPr>");
+            }
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&a.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:acc>");
+        }
+        MathElement::Bar(b) => {
+            xml.push_str("<m:bar>");
+            if b.position != Some(VerticalPosition::Top) {
+                xml.push_str("<m:barPr><m:pos m:val=\"bot\"/></m:barPr>");
+            }
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&b.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:bar>");
+        }
+        MathElement::Box(b) => {
+            xml.push_str("<m:box>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&b.content, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:box>");
+        }
+        MathElement::BorderBox(b) => {
+            xml.push_str("<m:borderBox>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&b.content, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:borderBox>");
+        }
+        MathElement::EquationArray(ea) => {
+            xml.push_str("<m:eqArr>");
+            for eq in &ea.equations {
+                xml.push_str("<m:e>");
+                serialize_math_zone_content(eq, xml);
+                xml.push_str("</m:e>");
+            }
+            xml.push_str("</m:eqArr>");
+        }
+        MathElement::LowerLimit(l) => {
+            xml.push_str("<m:limLow>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&l.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("<m:lim>");
+            serialize_math_zone_content(&l.limit, xml);
+            xml.push_str("</m:lim>");
+            xml.push_str("</m:limLow>");
+        }
+        MathElement::UpperLimit(l) => {
+            xml.push_str("<m:limUpp>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&l.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("<m:lim>");
+            serialize_math_zone_content(&l.limit, xml);
+            xml.push_str("</m:lim>");
+            xml.push_str("</m:limUpp>");
+        }
+        MathElement::GroupChar(g) => {
+            xml.push_str("<m:groupChr>");
+            if let Some(ref chr) = g.character {
+                xml.push_str("<m:groupChrPr><m:chr m:val=\"");
+                xml.push_str(&escape_xml(chr));
+                xml.push_str("\"/></m:groupChrPr>");
+            }
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&g.base, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:groupChr>");
+        }
+        MathElement::Phantom(p) => {
+            xml.push_str("<m:phant>");
+            xml.push_str("<m:e>");
+            serialize_math_zone_content(&p.content, xml);
+            xml.push_str("</m:e>");
+            xml.push_str("</m:phant>");
+        }
+    }
+}
+
+/// Serialize math zone content (elements within a zone).
+fn serialize_math_zone_content(zone: &MathZone, xml: &mut String) {
+    for element in &zone.elements {
+        serialize_math_element(element, xml);
+    }
+}
+
+/// Serialize a math run.
+fn serialize_math_run(run: &MathRun, xml: &mut String) {
+    xml.push_str("<m:r>");
+    if let Some(ref props) = run.properties
+        && let Some(style) = props.style
+    {
+        xml.push_str("<m:rPr>");
+        xml.push_str("<m:sty m:val=\"");
+        xml.push_str(match style {
+            MathStyle::Plain => "p",
+            MathStyle::Bold => "b",
+            MathStyle::Italic => "i",
+            MathStyle::BoldItalic => "bi",
+        });
+        xml.push_str("\"/>");
+        xml.push_str("</m:rPr>");
+    }
+    xml.push_str("<m:t>");
+    xml.push_str(&escape_xml(&run.text));
+    xml.push_str("</m:t>");
+    xml.push_str("</m:r>");
+}
+
+/// Escape special XML characters.
+fn escape_xml(s: &str) -> String {
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

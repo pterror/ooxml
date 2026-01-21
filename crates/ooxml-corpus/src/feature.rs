@@ -293,6 +293,21 @@ fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_de
                     | ParagraphContent::CommentRangeEnd(_) => {
                         // Bookmarks and comment ranges don't affect feature counts currently
                     }
+                    ParagraphContent::Math(_) => {
+                        // Math equations - could add a counter in the future
+                    }
+                    ParagraphContent::Insertion(ins) => {
+                        // Process runs inside insertions (tracked changes)
+                        for run in &ins.runs {
+                            process_run(run, features);
+                        }
+                    }
+                    ParagraphContent::Deletion(del) => {
+                        // Process runs inside deletions (tracked changes)
+                        for run in &del.runs {
+                            process_run(run, features);
+                        }
+                    }
                 }
             }
         }
