@@ -51,6 +51,22 @@ fn main() -> ooxml_pml::Result<()> {
             println!("\n--- Speaker Notes ---");
             println!("{}", notes);
         }
+
+        // Show pictures
+        let pictures = slide.pictures();
+        if !pictures.is_empty() {
+            println!("\n--- Pictures ({}) ---", pictures.len());
+            for pic in pictures {
+                print!("  {}", pic.rel_id());
+                if let Some(name) = pic.name() {
+                    print!(" ({})", name);
+                }
+                if let Some(descr) = pic.description() {
+                    print!(" - {}", descr);
+                }
+                println!();
+            }
+        }
     }
 
     Ok(())

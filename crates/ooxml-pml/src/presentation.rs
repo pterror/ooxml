@@ -41,6 +41,15 @@ struct SlideInfo {
     index: usize,
 }
 
+/// Image data loaded from the presentation.
+#[derive(Debug, Clone)]
+pub struct ImageData {
+    /// The raw image data.
+    pub data: Vec<u8>,
+    /// The content type (MIME type) of the image.
+    pub content_type: String,
+}
+
 impl Presentation<BufReader<File>> {
     /// Open a presentation from a file path.
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
@@ -124,7 +133,7 @@ impl<R: Read + Seek> Presentation<R> {
     /// Load a slide's data.
     fn load_slide(&mut self, info: &SlideInfo) -> Result<Slide> {
         let data = self.package.read_part(&info.path)?;
-        let mut slide = parse_slide(&data, info.index)?;
+        let mut slide = parse_slide(&data, info.index, &info.path)?;
 
         // Try to load speaker notes
         if let Ok(slide_rels) = self.package.read_part_relationships(&info.path)
@@ -138,6 +147,33 @@ impl<R: Read + Seek> Presentation<R> {
 
         Ok(slide)
     }
+
+    /// Get image data for a picture from a specific slide.
+    ///
+    /// Loads the image data from the package using the picture's relationship ID.
+    pub fn get_image_data(&mut self, slide: &Slide, picture: &Picture) -> Result<ImageData> {
+        // Get slide relationships
+        let slide_rels = self
+            .package
+            .read_part_relationships(slide.slide_path())
+            .map_err(|_| Error::Invalid("Failed to read slide relationships".into()))?;
+
+        // Find the image relationship
+        let rel = slide_rels.get(picture.rel_id()).ok_or_else(|| {
+            Error::Invalid(format!("Image relationship {} not found", picture.rel_id()))
+        })?;
+
+        // Resolve the image path
+        let image_path = resolve_path(slide.slide_path(), &rel.target);
+
+        // Read image data
+        let data = self.package.read_part(&image_path)?;
+
+        // Determine content type from extension
+        let content_type = content_type_from_path(&image_path);
+
+        Ok(ImageData { data, content_type })
+    }
 }
 
 /// A slide in the presentation.
@@ -145,6 +181,10 @@ impl<R: Read + Seek> Presentation<R> {
 pub struct Slide {
     index: usize,
     shapes: Vec<Shape>,
+    /// Pictures on this slide.
+    pictures: Vec<Picture>,
+    /// Path to this slide (for resolving image paths).
+    slide_path: String,
     /// Speaker notes for this slide.
     notes: Option<String>,
 }
@@ -177,6 +217,16 @@ impl Slide {
     /// Check if this slide has speaker notes.
     pub fn has_notes(&self) -> bool {
         self.notes.as_ref().is_some_and(|n| !n.is_empty())
+    }
+
+    /// Get all pictures on the slide.
+    pub fn pictures(&self) -> &[Picture] {
+        &self.pictures
+    }
+
+    /// Get the path to this slide part (for resolving image relationships).
+    pub(crate) fn slide_path(&self) -> &str {
+        &self.slide_path
     }
 }
 
@@ -218,6 +268,36 @@ impl Shape {
     /// Check if the shape has text content.
     pub fn has_text(&self) -> bool {
         !self.paragraphs.is_empty()
+    }
+}
+
+/// A picture element on a slide.
+///
+/// Represents an image embedded via `p:pic` element.
+#[derive(Debug, Clone)]
+pub struct Picture {
+    /// Relationship ID referencing the image file.
+    rel_id: String,
+    /// Picture name (from cNvPr).
+    name: Option<String>,
+    /// Description/alt text.
+    description: Option<String>,
+}
+
+impl Picture {
+    /// Get the relationship ID for this picture's image.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+
+    /// Get the picture name.
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_deref()
+    }
+
+    /// Get the description/alt text.
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
     }
 }
 
@@ -265,14 +345,21 @@ fn parse_presentation_slides(xml: &[u8]) -> Result<Vec<String>> {
 }
 
 /// Parse a slide XML file.
-fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
+fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
     let mut shapes = Vec::new();
+    let mut pictures = Vec::new();
 
     let mut current_shape_name: Option<String> = None;
     let mut current_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
     let mut in_sp = false; // Inside a shape
+
+    // Picture parsing state
+    let mut in_pic = false;
+    let mut current_pic_name: Option<String> = None;
+    let mut current_pic_descr: Option<String> = None;
+    let mut current_pic_rel_id: Option<String> = None;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -285,13 +372,33 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
                         current_shape_name = None;
                         current_paragraphs.clear();
                     }
+                    b"p:pic" => {
+                        in_pic = true;
+                        current_pic_name = None;
+                        current_pic_descr = None;
+                        current_pic_rel_id = None;
+                    }
                     b"p:cNvPr" => {
-                        // Non-visual shape properties - get name
+                        // Non-visual properties - get name and description
                         if in_sp {
                             for attr in e.attributes().filter_map(|a| a.ok()) {
                                 if attr.key.as_ref() == b"name" {
                                     current_shape_name =
                                         Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        } else if in_pic {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                match attr.key.as_ref() {
+                                    b"name" => {
+                                        current_pic_name =
+                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                    }
+                                    b"descr" => {
+                                        current_pic_descr =
+                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                    }
+                                    _ => {}
                                 }
                             }
                         }
@@ -310,26 +417,70 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
             Ok(Event::Empty(e)) => {
                 let name = e.name();
                 let name = name.as_ref();
-                // Handle self-closing cNvPr
-                if in_sp && name == b"p:cNvPr" {
-                    for attr in e.attributes().filter_map(|a| a.ok()) {
-                        if attr.key.as_ref() == b"name" {
-                            current_shape_name =
-                                Some(String::from_utf8_lossy(&attr.value).into_owned());
+                match name {
+                    b"p:cNvPr" => {
+                        // Handle self-closing cNvPr
+                        if in_sp {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"name" {
+                                    current_shape_name =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        } else if in_pic {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                match attr.key.as_ref() {
+                                    b"name" => {
+                                        current_pic_name =
+                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                    }
+                                    b"descr" => {
+                                        current_pic_descr =
+                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                    }
+                                    _ => {}
+                                }
+                            }
                         }
                     }
+                    b"a:blip" => {
+                        // Image reference - get r:embed attribute
+                        if in_pic {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"r:embed" {
+                                    current_pic_rel_id =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
                 }
             }
             Ok(Event::End(e)) => {
                 let name = e.name();
                 let name = name.as_ref();
-                if name == b"p:sp" {
-                    // End of shape
-                    shapes.push(Shape {
-                        name: current_shape_name.take(),
-                        paragraphs: std::mem::take(&mut current_paragraphs),
-                    });
-                    in_sp = false;
+                match name {
+                    b"p:sp" => {
+                        // End of shape
+                        shapes.push(Shape {
+                            name: current_shape_name.take(),
+                            paragraphs: std::mem::take(&mut current_paragraphs),
+                        });
+                        in_sp = false;
+                    }
+                    b"p:pic" => {
+                        // End of picture
+                        if let Some(rel_id) = current_pic_rel_id.take() {
+                            pictures.push(Picture {
+                                rel_id,
+                                name: current_pic_name.take(),
+                                description: current_pic_descr.take(),
+                            });
+                        }
+                        in_pic = false;
+                    }
+                    _ => {}
                 }
             }
             Ok(Event::Eof) => break,
@@ -342,6 +493,8 @@ fn parse_slide(xml: &[u8], index: usize) -> Result<Slide> {
     Ok(Slide {
         index,
         shapes,
+        pictures,
+        slide_path: slide_path.to_string(),
         notes: None,
     })
 }
@@ -401,6 +554,25 @@ fn resolve_path(base: &str, target: &str) -> String {
     };
 
     format!("{}{}", base_dir, target)
+}
+
+/// Determine content type from file path extension.
+fn content_type_from_path(path: &str) -> String {
+    let ext = path.rsplit('.').next().unwrap_or("").to_ascii_lowercase();
+
+    match ext.as_str() {
+        "png" => "image/png",
+        "jpg" | "jpeg" => "image/jpeg",
+        "gif" => "image/gif",
+        "bmp" => "image/bmp",
+        "tiff" | "tif" => "image/tiff",
+        "webp" => "image/webp",
+        "svg" => "image/svg+xml",
+        "emf" => "image/x-emf",
+        "wmf" => "image/x-wmf",
+        _ => "application/octet-stream",
+    }
+    .to_string()
 }
 
 #[cfg(test)]

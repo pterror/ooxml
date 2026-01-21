@@ -59,7 +59,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Slides - slide(), slides(), Slide with index(), shapes(), text()
 - [x] Shapes and text - Shape with name(), paragraphs(), text(), has_text()
 - [x] Slide notes - Slide::notes(), has_notes()
-- [ ] Images
+- [x] Images - Slide::pictures(), Picture with rel_id/name/description, get_image_data()
 - [ ] Basic transitions
 
 ### DrawingML - ooxml-dml

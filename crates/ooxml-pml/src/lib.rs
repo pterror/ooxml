@@ -24,4 +24,4 @@ pub mod error;
 pub mod presentation;
 
 pub use error::{Error, Result};
-pub use presentation::{Presentation, Shape, Slide};
+pub use presentation::{ImageData, Picture, Presentation, Shape, Slide};
