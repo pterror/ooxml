@@ -23,7 +23,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [ ] Revision tracking (w:ins, w:del for tracked changes)
 - [ ] Math equations (integrate ooxml-omml crate)
 - [ ] Table of contents (read)
-- [ ] Bookmarks
+- [x] Bookmarks (add_bookmark_start/end methods, exported types)
 - [ ] Text boxes
 - [ ] SmartArt (limited)
 - [ ] Charts (limited)

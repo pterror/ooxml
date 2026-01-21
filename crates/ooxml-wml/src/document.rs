@@ -1169,6 +1169,28 @@ impl Paragraph {
             }));
     }
 
+    /// Add a bookmark start marker.
+    ///
+    /// This marks the beginning of a named bookmark. Bookmarks can be used
+    /// as targets for internal hyperlinks.
+    /// Use with `add_bookmark_end()` using the same ID.
+    pub fn add_bookmark_start(&mut self, id: u32, name: impl Into<String>) {
+        self.content
+            .push(ParagraphContent::BookmarkStart(BookmarkStart {
+                id,
+                name: name.into(),
+            }));
+    }
+
+    /// Add a bookmark end marker.
+    ///
+    /// This marks the end of a named bookmark.
+    /// Use with `add_bookmark_start()` using the same ID.
+    pub fn add_bookmark_end(&mut self, id: u32) {
+        self.content
+            .push(ParagraphContent::BookmarkEnd(BookmarkEnd { id }));
+    }
+
     /// Get all hyperlinks in the paragraph.
     pub fn hyperlinks(&self) -> impl Iterator<Item = &Hyperlink> {
         self.content.iter().filter_map(|c| match c {

@@ -686,3 +686,51 @@ fn test_roundtrip_fonts() {
     assert_eq!(fonts.east_asia, Some("MS Gothic".to_string()));
     assert_eq!(fonts.cs, Some("Arial".to_string()));
 }
+
+/// Test roundtrip of bookmarks.
+#[test]
+fn test_roundtrip_bookmarks() {
+    use ooxml_wml::ParagraphContent;
+
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        para.add_bookmark_start(0, "my_bookmark");
+        para.add_run().set_text("Bookmarked text");
+        para.add_bookmark_end(0);
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify the bookmark was preserved
+    let para = &doc.body().paragraphs()[0];
+    assert_eq!(para.content().len(), 3); // bookmark_start, run, bookmark_end
+
+    // Check bookmark start
+    if let ParagraphContent::BookmarkStart(bookmark) = &para.content()[0] {
+        assert_eq!(bookmark.id, 0);
+        assert_eq!(bookmark.name, "my_bookmark");
+    } else {
+        panic!("Expected BookmarkStart");
+    }
+
+    // Check run
+    if let ParagraphContent::Run(run) = &para.content()[1] {
+        assert_eq!(run.text(), "Bookmarked text");
+    } else {
+        panic!("Expected Run");
+    }
+
+    // Check bookmark end
+    if let ParagraphContent::BookmarkEnd(bookmark) = &para.content()[2] {
+        assert_eq!(bookmark.id, 0);
+    } else {
+        panic!("Expected BookmarkEnd");
+    }
+}
