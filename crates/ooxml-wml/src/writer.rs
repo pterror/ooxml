@@ -9,7 +9,7 @@ use crate::document::{
     InlineImage, NumberingProperties, PageOrientation, Paragraph, ParagraphBorders,
     ParagraphContent, ParagraphProperties, Row, RowHeight, RowProperties, Run, RunProperties,
     SectionProperties, TabStop, Table, TableBorders, TableProperties, TableWidth, VerticalMerge,
-    WrapType,
+    VmlPicture, WrapType,
 };
 use crate::error::Result;
 use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
@@ -1095,6 +1095,11 @@ fn serialize_run(run: &Run, xml: &mut String) {
         serialize_drawing(drawing, xml);
     }
 
+    // VML pictures (legacy images)
+    for vml_pict in run.vml_pictures() {
+        serialize_vml_picture(vml_pict, xml);
+    }
+
     // Symbols
     for symbol in run.symbols() {
         xml.push_str("<w:sym w:font=\"");
@@ -1175,6 +1180,26 @@ fn serialize_drawing(drawing: &Drawing, xml: &mut String) {
     }
     serialize_unknown_children(&drawing.unknown_children, xml);
     xml.push_str("</w:drawing>");
+}
+
+/// Serialize a VML picture element (legacy image format).
+fn serialize_vml_picture(vml_pict: &VmlPicture, xml: &mut String) {
+    xml.push_str("<w:pict");
+    for (key, value) in &vml_pict.attributes {
+        xml.push(' ');
+        xml.push_str(key);
+        xml.push_str("=\"");
+        xml.push_str(&escape_xml(value));
+        xml.push('"');
+    }
+    xml.push('>');
+
+    // Serialize children using the RawXmlNode serialization
+    for child in &vml_pict.children {
+        serialize_raw_xml_node(child, xml);
+    }
+
+    xml.push_str("</w:pict>");
 }
 
 /// Serialize an inline image.

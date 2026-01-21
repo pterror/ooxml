@@ -2339,6 +2339,8 @@ pub struct Run {
     properties: Option<RunProperties>,
     /// Drawings (images) in the run.
     drawings: Vec<Drawing>,
+    /// VML pictures (legacy image format) in the run.
+    vml_pictures: Vec<VmlPicture>,
     /// Symbols in the run.
     symbols: Vec<Symbol>,
     /// Field character marker (for complex fields).
@@ -2359,6 +2361,20 @@ pub struct Run {
     /// Unknown attributes preserved for round-trip fidelity.
     /// Stored with original position index for correct ordering during serialization.
     pub unknown_attrs: Vec<PositionedAttr>,
+}
+
+/// A VML picture element (legacy image format).
+///
+/// Corresponds to the `<w:pict>` element which contains VML (Vector Markup Language)
+/// content. This is a legacy format used in older Word documents. The content is
+/// preserved as a raw XML element for roundtrip fidelity since VML is complex and
+/// not fully parsed.
+#[derive(Debug, Clone, Default)]
+pub struct VmlPicture {
+    /// Attributes on the w:pict element.
+    pub attributes: Vec<(String, String)>,
+    /// Child content preserved as raw XML nodes.
+    pub children: Vec<RawXmlNode>,
 }
 
 /// A drawing element containing images.
@@ -2745,9 +2761,19 @@ impl Run {
         &mut self.drawings
     }
 
-    /// Check if this run contains any images.
+    /// Get VML pictures (legacy images) in this run.
+    pub fn vml_pictures(&self) -> &[VmlPicture] {
+        &self.vml_pictures
+    }
+
+    /// Get mutable reference to VML pictures.
+    pub fn vml_pictures_mut(&mut self) -> &mut Vec<VmlPicture> {
+        &mut self.vml_pictures
+    }
+
+    /// Check if this run contains any images (including VML pictures).
     pub fn has_images(&self) -> bool {
-        self.drawings.iter().any(|d| !d.images.is_empty())
+        self.drawings.iter().any(|d| !d.images.is_empty()) || !self.vml_pictures.is_empty()
     }
 
     /// Check if this run contains a page break.
@@ -3411,6 +3437,9 @@ const EL_POS_H: &[u8] = b"positionH";
 const EL_POS_V: &[u8] = b"positionV";
 const EL_POS_OFFSET: &[u8] = b"posOffset";
 
+// VML picture element (legacy image format)
+const EL_PICT: &[u8] = b"pict";
+
 // Section properties elements
 const EL_SECT_PR: &[u8] = b"sectPr";
 const EL_PG_SZ: &[u8] = b"pgSz";
@@ -3733,6 +3762,32 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_DRAWING && current_run.is_some() => {
                         current_drawing = Some(Drawing::new());
+                        run_child_idx += 1;
+                    }
+                    name if name == EL_PICT && current_run.is_some() => {
+                        // VML picture (legacy image format) - capture entire content
+                        let attributes = e
+                            .attributes()
+                            .filter_map(|a| a.ok())
+                            .map(|a| {
+                                (
+                                    String::from_utf8_lossy(a.key.as_ref()).to_string(),
+                                    String::from_utf8_lossy(&a.value).to_string(),
+                                )
+                            })
+                            .collect();
+
+                        // Parse children using RawXmlElement helper approach
+                        let pict_elem = RawXmlElement::from_reader(&mut reader, &e)?;
+
+                        let vml_pict = VmlPicture {
+                            attributes,
+                            children: pict_elem.children,
+                        };
+
+                        if let Some(run) = current_run.as_mut() {
+                            run.vml_pictures.push(vml_pict);
+                        }
                         run_child_idx += 1;
                     }
                     name if name == EL_INLINE && current_drawing.is_some() => {
