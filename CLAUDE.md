@@ -41,6 +41,20 @@ v0.1 goal: Basic Word document support
 5. Tables (basic)
 6. Images (embedded)
 
+## Commit Convention
+
+Use conventional commits: `type(scope): message`
+
+Types:
+- `feat` - New feature
+- `fix` - Bug fix
+- `refactor` - Code change that neither fixes a bug nor adds a feature
+- `docs` - Documentation only
+- `chore` - Maintenance (deps, CI, etc.)
+- `test` - Adding or updating tests
+
+Scope is optional but recommended (e.g., `wml`, `corpus`, `packaging`).
+
 ## Code Conventions
 
 **Error handling:**
