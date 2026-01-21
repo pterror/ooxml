@@ -52,6 +52,9 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Basic formatting - Stylesheet, Font, Fill, Border, CellFormat types, Cell.style_index()
 - [x] Shared strings - parsed and resolved automatically
 - [x] Write support - WorkbookBuilder, SheetBuilder, set_cell(), set_formula(), save()
+- [x] Merged cells - MergedCell, Sheet.merged_cells(), merge_cells() in writer
+- [x] Column/row dimensions - ColumnInfo, Row.height(), set_column_width(), set_row_height() in writer
+- [x] Cell comments/notes - Comment type, Sheet.comments(), Sheet.comment(ref)
 
 ### PresentationML (PowerPoint) - ooxml-pml
 
@@ -61,6 +64,8 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Slide notes - Slide::notes(), has_notes()
 - [x] Images - Slide::pictures(), Picture with rel_id/name/description, get_image_data()
 - [x] Basic transitions - Slide::transition(), Transition with type/speed/advance settings
+- [x] Write support - PresentationBuilder, SlideBuilder with add_title(), add_text(), save()
+- [x] Hyperlinks in shapes - Shape.hyperlinks(), Run.hyperlink_rel_id(), resolve_hyperlink()
 
 ### DrawingML - ooxml-dml
 

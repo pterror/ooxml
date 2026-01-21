@@ -93,6 +93,20 @@ impl Run {
     pub fn is_italic(&self) -> bool {
         self.properties.as_ref().is_some_and(|p| p.italic)
     }
+
+    /// Check if the run has a hyperlink.
+    pub fn has_hyperlink(&self) -> bool {
+        self.properties
+            .as_ref()
+            .is_some_and(|p| p.hyperlink_rel_id.is_some())
+    }
+
+    /// Get the hyperlink relationship ID (for resolving via relationships).
+    pub fn hyperlink_rel_id(&self) -> Option<&str> {
+        self.properties
+            .as_ref()
+            .and_then(|p| p.hyperlink_rel_id.as_deref())
+    }
 }
 
 /// Paragraph properties (`<a:pPr>`).
@@ -131,6 +145,8 @@ pub struct RunProperties {
     pub font_name: Option<String>,
     /// Text color (as hex RGB, e.g., "FF0000").
     pub color: Option<String>,
+    /// Hyperlink reference (relationship ID for click action).
+    pub hyperlink_rel_id: Option<String>,
 }
 
 // ============================================================================
@@ -152,6 +168,7 @@ pub fn parse_text_body_from_reader<R: BufRead>(reader: &mut Reader<R>) -> Result
     let mut current_para: Option<Paragraph> = None;
     let mut current_run: Option<Run> = None;
     let mut current_props: Option<RunProperties> = None;
+    let mut in_rpr = false;
     let mut in_t = false;
     let mut current_text = String::new();
 
@@ -168,6 +185,7 @@ pub fn parse_text_body_from_reader<R: BufRead>(reader: &mut Reader<R>) -> Result
                         current_run = Some(Run::default());
                     }
                     b"a:rPr" => {
+                        in_rpr = true;
                         current_props = Some(parse_run_properties(&e));
                     }
                     b"a:t" => {
@@ -202,7 +220,7 @@ pub fn parse_text_body_from_reader<R: BufRead>(reader: &mut Reader<R>) -> Result
                         }
                     }
                     b"a:rPr" => {
-                        // Props already captured
+                        in_rpr = false;
                     }
                     b"a:t" => {
                         in_t = false;
@@ -222,6 +240,18 @@ pub fn parse_text_body_from_reader<R: BufRead>(reader: &mut Reader<R>) -> Result
                 let name = name.as_ref();
                 if name == b"a:rPr" {
                     current_props = Some(parse_run_properties(&e));
+                } else if in_rpr && name == b"a:hlinkClick" {
+                    // Parse hyperlink click action
+                    if let Some(props) = current_props.as_mut() {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let key = attr.key.as_ref();
+                            // Check for r:id attribute (relationship ID)
+                            if key == b"r:id" || key == b"id" {
+                                props.hyperlink_rel_id =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
                 }
             }
             Ok(Event::Eof) => break,
@@ -304,5 +334,26 @@ mod tests {
         assert_eq!(paragraphs.len(), 1);
         assert_eq!(paragraphs[0].runs().len(), 2);
         assert_eq!(paragraphs[0].text(), "Hello World");
+    }
+
+    #[test]
+    fn test_parse_hyperlink() {
+        let xml = r#"<a:txBody>
+            <a:p>
+                <a:r>
+                    <a:rPr>
+                        <a:hlinkClick r:id="rId1"/>
+                    </a:rPr>
+                    <a:t>Click here</a:t>
+                </a:r>
+            </a:p>
+        </a:txBody>"#;
+
+        let paragraphs = parse_text_body(xml.as_bytes()).unwrap();
+        assert_eq!(paragraphs.len(), 1);
+        let run = &paragraphs[0].runs()[0];
+        assert!(run.has_hyperlink());
+        assert_eq!(run.hyperlink_rel_id(), Some("rId1"));
+        assert_eq!(run.text(), "Click here");
     }
 }

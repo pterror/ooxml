@@ -18,6 +18,8 @@ const REL_SHARED_STRINGS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
 const REL_STYLES: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
+const REL_COMMENTS: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
 
 /// An Excel workbook.
 ///
@@ -162,7 +164,147 @@ impl<R: Read + Seek> Workbook<R> {
         let path = resolve_path(&self.workbook_path, &rel.target);
         let data = self.package.read_part(&path)?;
 
-        parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)
+        let mut sheet = parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)?;
+
+        // Try to load comments for this sheet
+        if let Ok(sheet_rels) = self.package.read_part_relationships(&path)
+            && let Some(comments_rel) = sheet_rels.get_by_type(REL_COMMENTS)
+        {
+            let comments_path = resolve_path(&path, &comments_rel.target);
+            if let Ok(comments_data) = self.package.read_part(&comments_path) {
+                sheet.comments = parse_comments(&comments_data)?;
+            }
+        }
+
+        Ok(sheet)
+    }
+}
+
+/// A merged cell range.
+///
+/// ECMA-376 Part 1, Section 18.3.1.55 (mergeCell).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MergedCell {
+    /// The range reference (e.g., "A1:B2").
+    reference: String,
+    /// Top-left row (1-based).
+    start_row: u32,
+    /// Top-left column (1-based).
+    start_col: u32,
+    /// Bottom-right row (1-based).
+    end_row: u32,
+    /// Bottom-right column (1-based).
+    end_col: u32,
+}
+
+impl MergedCell {
+    /// Get the range reference (e.g., "A1:B2").
+    pub fn reference(&self) -> &str {
+        &self.reference
+    }
+
+    /// Get the top-left cell reference.
+    pub fn start_cell(&self) -> String {
+        format!(
+            "{}{}",
+            column_number_to_letter(self.start_col),
+            self.start_row
+        )
+    }
+
+    /// Get the bottom-right cell reference.
+    pub fn end_cell(&self) -> String {
+        format!("{}{}", column_number_to_letter(self.end_col), self.end_row)
+    }
+
+    /// Get the start row (1-based).
+    pub fn start_row(&self) -> u32 {
+        self.start_row
+    }
+
+    /// Get the start column (1-based).
+    pub fn start_col(&self) -> u32 {
+        self.start_col
+    }
+
+    /// Get the end row (1-based).
+    pub fn end_row(&self) -> u32 {
+        self.end_row
+    }
+
+    /// Get the end column (1-based).
+    pub fn end_col(&self) -> u32 {
+        self.end_col
+    }
+
+    /// Check if a cell at (row, col) is within this merged range.
+    pub fn contains(&self, row: u32, col: u32) -> bool {
+        row >= self.start_row && row <= self.end_row && col >= self.start_col && col <= self.end_col
+    }
+
+    /// Check if a cell reference is within this merged range.
+    pub fn contains_ref(&self, reference: &str) -> bool {
+        if let Some((col, row)) = parse_cell_reference(reference) {
+            self.contains(row, col)
+        } else {
+            false
+        }
+    }
+}
+
+/// Column information (width and style).
+///
+/// ECMA-376 Part 1, Section 18.3.1.13 (col).
+#[derive(Debug, Clone)]
+pub struct ColumnInfo {
+    /// First column in the range (1-based).
+    pub min: u32,
+    /// Last column in the range (1-based).
+    pub max: u32,
+    /// Column width in character units (Excel default is 8.43).
+    pub width: Option<f64>,
+    /// Whether the column is hidden.
+    pub hidden: bool,
+    /// Whether the width was explicitly set (not default).
+    pub custom_width: bool,
+    /// Style index for the column.
+    pub style_index: Option<u32>,
+}
+
+impl ColumnInfo {
+    /// Check if this column info applies to a specific column number.
+    pub fn applies_to(&self, col: u32) -> bool {
+        col >= self.min && col <= self.max
+    }
+}
+
+/// A cell comment (note).
+///
+/// ECMA-376 Part 1, Section 18.7 (Comments).
+#[derive(Debug, Clone)]
+pub struct Comment {
+    /// Cell reference (e.g., "A1").
+    reference: String,
+    /// Author of the comment.
+    author: Option<String>,
+    /// Comment text content.
+    text: String,
+}
+
+impl Comment {
+    /// Get the cell reference (e.g., "A1").
+    pub fn reference(&self) -> &str {
+        &self.reference
+    }
+
+    /// Get the author of the comment.
+    pub fn author(&self) -> Option<&str> {
+        self.author.as_deref()
+    }
+
+    /// Get the comment text.
+    pub fn text(&self) -> &str {
+        &self.text
     }
 }
 
@@ -171,6 +313,9 @@ impl<R: Read + Seek> Workbook<R> {
 pub struct Sheet {
     name: String,
     rows: Vec<Row>,
+    merged_cells: Vec<MergedCell>,
+    columns: Vec<ColumnInfo>,
+    comments: Vec<Comment>,
 }
 
 impl Sheet {
@@ -218,6 +363,57 @@ impl Sheet {
 
         Some((min_row, min_col, max_row, max_col))
     }
+
+    /// Get all merged cell ranges in this sheet.
+    pub fn merged_cells(&self) -> &[MergedCell] {
+        &self.merged_cells
+    }
+
+    /// Check if a cell is part of a merged range.
+    ///
+    /// Returns the merged cell range if the cell is within one.
+    pub fn merged_cell_at(&self, reference: &str) -> Option<&MergedCell> {
+        self.merged_cells
+            .iter()
+            .find(|mc| mc.contains_ref(reference))
+    }
+
+    /// Check if a cell at (row, col) is part of a merged range.
+    pub fn merged_cell_at_pos(&self, row: u32, col: u32) -> Option<&MergedCell> {
+        self.merged_cells.iter().find(|mc| mc.contains(row, col))
+    }
+
+    /// Get all column definitions.
+    pub fn columns(&self) -> &[ColumnInfo] {
+        &self.columns
+    }
+
+    /// Get column info for a specific column (1-based).
+    pub fn column_info(&self, col: u32) -> Option<&ColumnInfo> {
+        self.columns.iter().find(|c| c.applies_to(col))
+    }
+
+    /// Get the width of a specific column (1-based).
+    ///
+    /// Returns None if no custom width is set.
+    pub fn column_width(&self, col: u32) -> Option<f64> {
+        self.column_info(col).and_then(|c| c.width)
+    }
+
+    /// Get all comments in this sheet.
+    pub fn comments(&self) -> &[Comment] {
+        &self.comments
+    }
+
+    /// Get the comment for a specific cell (e.g., "A1").
+    pub fn comment(&self, reference: &str) -> Option<&Comment> {
+        self.comments.iter().find(|c| c.reference == reference)
+    }
+
+    /// Check if a cell has a comment.
+    pub fn has_comment(&self, reference: &str) -> bool {
+        self.comment(reference).is_some()
+    }
 }
 
 /// A row in a worksheet.
@@ -225,6 +421,10 @@ impl Sheet {
 pub struct Row {
     row_num: u32,
     cells: Vec<Cell>,
+    /// Row height in points (Excel default is ~15).
+    height: Option<f64>,
+    /// Whether the row is hidden.
+    hidden: bool,
 }
 
 impl Row {
@@ -247,6 +447,18 @@ impl Row {
     pub fn cell(&self, col_letter: &str) -> Option<&Cell> {
         let col = column_letter_to_number(col_letter)?;
         self.cell_at_column(col)
+    }
+
+    /// Get the row height in points.
+    ///
+    /// Returns None if using default height.
+    pub fn height(&self) -> Option<f64> {
+        self.height
+    }
+
+    /// Check if the row is hidden.
+    pub fn is_hidden(&self) -> bool {
+        self.hidden
     }
 }
 
@@ -808,9 +1020,13 @@ fn parse_sheet(
 ) -> Result<Sheet> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
-    let mut rows: HashMap<u32, Vec<Cell>> = HashMap::new();
+    let mut rows: HashMap<u32, (Vec<Cell>, Option<f64>, bool)> = HashMap::new(); // (cells, height, hidden)
+    let mut merged_cells: Vec<MergedCell> = Vec::new();
+    let mut columns: Vec<ColumnInfo> = Vec::new();
 
     let mut current_row: u32 = 0;
+    let mut current_row_height: Option<f64> = None;
+    let mut current_row_hidden = false;
     let mut current_cell_ref = String::new();
     let mut current_cell_type = String::new();
     let mut current_cell_style: Option<u32> = None;
@@ -819,6 +1035,8 @@ fn parse_sheet(
     let mut in_cell = false;
     let mut in_value = false;
     let mut in_formula = false;
+    let mut in_merge_cells = false;
+    let mut in_cols = false;
 
     loop {
         match reader.read_event_into(&mut buf) {
@@ -826,11 +1044,27 @@ fn parse_sheet(
                 let tag = e.name();
                 let tag = tag.as_ref();
                 match tag {
+                    b"cols" => {
+                        in_cols = true;
+                    }
                     b"row" => {
+                        current_row_height = None;
+                        current_row_hidden = false;
                         for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"r" {
-                                current_row =
-                                    String::from_utf8_lossy(&attr.value).parse().unwrap_or(0);
+                            match attr.key.as_ref() {
+                                b"r" => {
+                                    current_row =
+                                        String::from_utf8_lossy(&attr.value).parse().unwrap_or(0);
+                                }
+                                b"ht" => {
+                                    current_row_height =
+                                        String::from_utf8_lossy(&attr.value).parse().ok();
+                                }
+                                b"hidden" => {
+                                    let val = String::from_utf8_lossy(&attr.value);
+                                    current_row_hidden = val == "1" || val == "true";
+                                }
+                                _ => {}
                             }
                         }
                     }
@@ -867,13 +1101,18 @@ fn parse_sheet(
                         in_formula = true;
                         current_formula = Some(String::new());
                     }
+                    b"mergeCells" => {
+                        in_merge_cells = true;
+                    }
                     _ => {}
                 }
             }
             Ok(Event::Empty(e)) => {
-                // Handle empty cells <c r="A1"/>
                 let tag = e.name();
-                if tag.as_ref() == b"c" {
+                let tag_ref = tag.as_ref();
+
+                // Handle empty cells <c r="A1"/>
+                if tag_ref == b"c" {
                     let mut cell_ref = String::new();
                     let mut cell_style: Option<u32> = None;
                     for attr in e.attributes().filter_map(|a| a.ok()) {
@@ -896,7 +1135,45 @@ fn parse_sheet(
                             formula: None,
                             style_index: cell_style,
                         };
-                        rows.entry(current_row).or_default().push(cell);
+                        rows.entry(current_row)
+                            .or_insert_with(|| (Vec::new(), current_row_height, current_row_hidden))
+                            .0
+                            .push(cell);
+                    }
+                }
+                // Handle column <col min="1" max="1" width="15"/>
+                else if in_cols && tag_ref == b"col" {
+                    let mut col_info = ColumnInfo {
+                        min: 1,
+                        max: 1,
+                        width: None,
+                        hidden: false,
+                        custom_width: false,
+                        style_index: None,
+                    };
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"min" => col_info.min = val.parse().unwrap_or(1),
+                            b"max" => col_info.max = val.parse().unwrap_or(1),
+                            b"width" => col_info.width = val.parse().ok(),
+                            b"hidden" => col_info.hidden = val == "1" || val == "true",
+                            b"customWidth" => col_info.custom_width = val == "1" || val == "true",
+                            b"style" => col_info.style_index = val.parse().ok(),
+                            _ => {}
+                        }
+                    }
+                    columns.push(col_info);
+                }
+                // Handle merged cell <mergeCell ref="A1:B2"/>
+                else if in_merge_cells && tag_ref == b"mergeCell" {
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        if attr.key.as_ref() == b"ref" {
+                            let range_ref = String::from_utf8_lossy(&attr.value).into_owned();
+                            if let Some(mc) = parse_merge_cell_range(&range_ref) {
+                                merged_cells.push(mc);
+                            }
+                        }
                     }
                 }
             }
@@ -957,11 +1234,16 @@ fn parse_sheet(
                             style_index: current_cell_style.take(),
                         };
 
-                        rows.entry(current_row).or_default().push(cell);
+                        rows.entry(current_row)
+                            .or_insert_with(|| (Vec::new(), current_row_height, current_row_hidden))
+                            .0
+                            .push(cell);
                         in_cell = false;
                     }
                     b"v" => in_value = false,
                     b"f" => in_formula = false,
+                    b"cols" => in_cols = false,
+                    b"mergeCells" => in_merge_cells = false,
                     _ => {}
                 }
             }
@@ -975,7 +1257,12 @@ fn parse_sheet(
     // Convert HashMap to sorted Vec<Row>
     let mut row_list: Vec<Row> = rows
         .into_iter()
-        .map(|(row_num, cells)| Row { row_num, cells })
+        .map(|(row_num, (cells, height, hidden))| Row {
+            row_num,
+            cells,
+            height,
+            hidden,
+        })
         .collect();
     row_list.sort_by_key(|r| r.row_num);
 
@@ -987,12 +1274,153 @@ fn parse_sheet(
     Ok(Sheet {
         name: name.to_string(),
         rows: row_list,
+        merged_cells,
+        columns,
+        comments: Vec::new(),
     })
+}
+
+/// Parse comments from a comments XML file.
+///
+/// ECMA-376 Part 1, Section 18.7 (Comments).
+fn parse_comments(xml: &[u8]) -> Result<Vec<Comment>> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut comments = Vec::new();
+    let mut authors: Vec<String> = Vec::new();
+
+    // Parsing state
+    let mut in_authors = false;
+    let mut in_author = false;
+    let mut in_comment_list = false;
+    let mut in_comment = false;
+    let mut in_text = false;
+    let mut in_t = false;
+
+    let mut current_ref = String::new();
+    let mut current_author_id: Option<usize> = None;
+    let mut current_text = String::new();
+    let mut author_text = String::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let name = name.as_ref();
+                match name {
+                    b"authors" => in_authors = true,
+                    b"author" => {
+                        in_author = true;
+                        author_text.clear();
+                    }
+                    b"commentList" => in_comment_list = true,
+                    b"comment" if in_comment_list => {
+                        in_comment = true;
+                        current_ref.clear();
+                        current_author_id = None;
+                        current_text.clear();
+
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            match attr.key.as_ref() {
+                                b"ref" => {
+                                    current_ref = String::from_utf8_lossy(&attr.value).into_owned();
+                                }
+                                b"authorId" => {
+                                    current_author_id =
+                                        String::from_utf8_lossy(&attr.value).parse().ok();
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    b"text" if in_comment => in_text = true,
+                    b"t" if in_text => in_t = true,
+                    b"r" if in_text => {
+                        // Text run inside comment text
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Text(e)) => {
+                let text = e.decode().unwrap_or_default();
+                if in_author {
+                    author_text.push_str(&text);
+                } else if in_t {
+                    current_text.push_str(&text);
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let name = name.as_ref();
+                match name {
+                    b"authors" => in_authors = false,
+                    b"author" => {
+                        in_author = false;
+                        if in_authors {
+                            authors.push(std::mem::take(&mut author_text));
+                        }
+                    }
+                    b"commentList" => in_comment_list = false,
+                    b"comment" if in_comment => {
+                        in_comment = false;
+                        if !current_ref.is_empty() {
+                            let author = current_author_id.and_then(|id| authors.get(id).cloned());
+                            comments.push(Comment {
+                                reference: std::mem::take(&mut current_ref),
+                                author,
+                                text: std::mem::take(&mut current_text),
+                            });
+                        }
+                    }
+                    b"text" if in_text => in_text = false,
+                    b"t" if in_t => in_t = false,
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(comments)
 }
 
 // ============================================================================
 // Utilities
 // ============================================================================
+
+/// Convert a 1-based column number to letters.
+/// E.g., 1 -> "A", 2 -> "B", 26 -> "Z", 27 -> "AA"
+fn column_number_to_letter(mut col: u32) -> String {
+    let mut result = String::new();
+    while col > 0 {
+        col -= 1;
+        result.insert(0, (b'A' + (col % 26) as u8) as char);
+        col /= 26;
+    }
+    result
+}
+
+/// Parse a merge cell range like "A1:B2" into a MergedCell.
+fn parse_merge_cell_range(range: &str) -> Option<MergedCell> {
+    let parts: Vec<&str> = range.split(':').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+
+    let (start_col, start_row) = parse_cell_reference(parts[0])?;
+    let (end_col, end_row) = parse_cell_reference(parts[1])?;
+
+    Some(MergedCell {
+        reference: range.to_string(),
+        start_row,
+        start_col,
+        end_row,
+        end_col,
+    })
+}
 
 /// Convert a column letter to a 1-based column number.
 /// E.g., "A" -> 1, "B" -> 2, "Z" -> 26, "AA" -> 27
@@ -1173,5 +1601,40 @@ mod tests {
         assert_eq!(styles.cell_formats[1].number_format_id, 164);
         assert_eq!(styles.cell_formats[1].font_id, 1);
         assert_eq!(styles.cell_formats[1].fill_id, 1);
+    }
+
+    #[test]
+    fn test_parse_comments() {
+        let xml = r#"<?xml version="1.0"?>
+        <comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <authors>
+                <author>John Doe</author>
+                <author>Jane Smith</author>
+            </authors>
+            <commentList>
+                <comment ref="A1" authorId="0">
+                    <text><t>This is a comment on A1</t></text>
+                </comment>
+                <comment ref="B2" authorId="1">
+                    <text>
+                        <r><t>Multi-line</t></r>
+                        <r><t> comment</t></r>
+                    </text>
+                </comment>
+            </commentList>
+        </comments>"#;
+
+        let comments = parse_comments(xml.as_bytes()).unwrap();
+        assert_eq!(comments.len(), 2);
+
+        // First comment
+        assert_eq!(comments[0].reference(), "A1");
+        assert_eq!(comments[0].author(), Some("John Doe"));
+        assert_eq!(comments[0].text(), "This is a comment on A1");
+
+        // Second comment (with multiple text runs)
+        assert_eq!(comments[1].reference(), "B2");
+        assert_eq!(comments[1].author(), Some("Jane Smith"));
+        assert_eq!(comments[1].text(), "Multi-line comment");
     }
 }

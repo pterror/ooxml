@@ -40,7 +40,7 @@ pub mod writer;
 
 pub use error::{Error, Result};
 pub use workbook::{
-    Border, BorderSide, Cell, CellFormat, CellValue, Fill, Font, NumberFormat, Row, Sheet,
-    Stylesheet, Workbook,
+    Border, BorderSide, Cell, CellFormat, CellValue, ColumnInfo, Comment, Fill, Font, MergedCell,
+    NumberFormat, Row, Sheet, Stylesheet, Workbook,
 };
 pub use writer::{SheetBuilder, WorkbookBuilder, WriteCellValue};

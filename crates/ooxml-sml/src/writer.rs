@@ -103,11 +103,29 @@ struct BuilderCell {
     value: WriteCellValue,
 }
 
+/// Column width definition for writing.
+#[derive(Debug, Clone)]
+struct ColumnWidth {
+    min: u32,
+    max: u32,
+    width: f64,
+}
+
+/// Row height definition for writing.
+#[derive(Debug, Clone)]
+struct RowHeight {
+    row: u32,
+    height: f64,
+}
+
 /// A sheet being built.
 #[derive(Debug)]
 pub struct SheetBuilder {
     name: String,
     cells: HashMap<(u32, u32), BuilderCell>,
+    merged_cells: Vec<String>,
+    column_widths: Vec<ColumnWidth>,
+    row_heights: Vec<RowHeight>,
 }
 
 impl SheetBuilder {
@@ -115,6 +133,9 @@ impl SheetBuilder {
         Self {
             name: name.into(),
             cells: HashMap::new(),
+            merged_cells: Vec::new(),
+            column_widths: Vec::new(),
+            row_heights: Vec::new(),
         }
     }
 
@@ -150,6 +171,43 @@ impl SheetBuilder {
                 },
             );
         }
+    }
+
+    /// Merge cells in a range (e.g., "A1:B2").
+    ///
+    /// Note: The value of the merged cell should be set in the top-left cell.
+    pub fn merge_cells(&mut self, range: &str) {
+        self.merged_cells.push(range.to_string());
+    }
+
+    /// Set the width of a column (in character units, Excel default is ~8.43).
+    ///
+    /// Column is specified by letter (e.g., "A", "B", "AA").
+    pub fn set_column_width(&mut self, col: &str, width: f64) {
+        if let Some(col_num) = column_letter_to_number(col) {
+            self.column_widths.push(ColumnWidth {
+                min: col_num,
+                max: col_num,
+                width,
+            });
+        }
+    }
+
+    /// Set the width of a range of columns.
+    ///
+    /// Columns are specified by letter (e.g., "A:C" for columns A through C).
+    pub fn set_column_width_range(&mut self, start_col: &str, end_col: &str, width: f64) {
+        if let (Some(min), Some(max)) = (
+            column_letter_to_number(start_col),
+            column_letter_to_number(end_col),
+        ) {
+            self.column_widths.push(ColumnWidth { min, max, width });
+        }
+    }
+
+    /// Set the height of a row (in points, Excel default is ~15).
+    pub fn set_row_height(&mut self, row: u32, height: f64) {
+        self.row_heights.push(RowHeight { row, height });
     }
 
     /// Get the sheet name.
@@ -330,6 +388,20 @@ impl WorkbookBuilder {
         xml.push('\n');
         xml.push_str(&format!(r#"<worksheet xmlns="{}">"#, NS_SPREADSHEET));
         xml.push('\n');
+
+        // Write column widths if any
+        if !sheet.column_widths.is_empty() {
+            xml.push_str("  <cols>\n");
+            for col in &sheet.column_widths {
+                xml.push_str(&format!(
+                    r#"    <col min="{}" max="{}" width="{}" customWidth="1"/>"#,
+                    col.min, col.max, col.width
+                ));
+                xml.push('\n');
+            }
+            xml.push_str("  </cols>\n");
+        }
+
         xml.push_str("  <sheetData>\n");
 
         // Group cells by row
@@ -337,6 +409,13 @@ impl WorkbookBuilder {
         for ((row, col), cell) in &sheet.cells {
             rows.entry(*row).or_default().push((*col, cell));
         }
+
+        // Build row height lookup
+        let row_height_map: HashMap<u32, f64> = sheet
+            .row_heights
+            .iter()
+            .map(|rh| (rh.row, rh.height))
+            .collect();
 
         // Sort rows and serialize
         let mut row_nums: Vec<_> = rows.keys().copied().collect();
@@ -347,7 +426,15 @@ impl WorkbookBuilder {
             let mut sorted_cells: Vec<_> = cells.clone();
             sorted_cells.sort_by_key(|(col, _)| *col);
 
-            xml.push_str(&format!(r#"    <row r="{}">"#, row_num));
+            // Include row height if set
+            if let Some(height) = row_height_map.get(&row_num) {
+                xml.push_str(&format!(
+                    r#"    <row r="{}" ht="{}" customHeight="1">"#,
+                    row_num, height
+                ));
+            } else {
+                xml.push_str(&format!(r#"    <row r="{}">"#, row_num));
+            }
             xml.push('\n');
 
             for (col, cell) in sorted_cells {
@@ -359,6 +446,20 @@ impl WorkbookBuilder {
         }
 
         xml.push_str("  </sheetData>\n");
+
+        // Write merged cells if any
+        if !sheet.merged_cells.is_empty() {
+            xml.push_str(&format!(
+                "  <mergeCells count=\"{}\">\n",
+                sheet.merged_cells.len()
+            ));
+            for range in &sheet.merged_cells {
+                xml.push_str(&format!(r#"    <mergeCell ref="{}"/>"#, escape_xml(range)));
+                xml.push('\n');
+            }
+            xml.push_str("  </mergeCells>\n");
+        }
+
         xml.push_str("</worksheet>");
         xml
     }
@@ -530,5 +631,111 @@ mod tests {
 
         let cell_b1 = read_sheet.cell("B1").unwrap();
         assert_eq!(cell_b1.value_as_number(), Some(123.45));
+    }
+
+    #[test]
+    fn test_roundtrip_merged_cells() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Merged Header");
+        sheet.merge_cells("A1:C1");
+        sheet.set_cell("A2", "Data 1");
+        sheet.set_cell("B2", "Data 2");
+        sheet.merge_cells("A3:B4");
+        sheet.set_cell("A3", "Block");
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.sheet(0).unwrap();
+
+        // Check merged cells were preserved
+        let merged = read_sheet.merged_cells();
+        assert_eq!(merged.len(), 2);
+        assert_eq!(merged[0].reference(), "A1:C1");
+        assert_eq!(merged[1].reference(), "A3:B4");
+
+        // Check helper methods
+        assert!(merged[0].contains(1, 1)); // A1
+        assert!(merged[0].contains(1, 2)); // B1
+        assert!(merged[0].contains(1, 3)); // C1
+        assert!(!merged[0].contains(1, 4)); // D1 - outside
+
+        // Check start/end cells
+        assert_eq!(merged[0].start_cell(), "A1");
+        assert_eq!(merged[0].end_cell(), "C1");
+        assert_eq!(merged[1].start_cell(), "A3");
+        assert_eq!(merged[1].end_cell(), "B4");
+
+        // Check merged_cell_at helper
+        assert!(read_sheet.merged_cell_at("A1").is_some());
+        assert!(read_sheet.merged_cell_at("B1").is_some());
+        assert!(read_sheet.merged_cell_at("D1").is_none());
+
+        // Cell values should still be accessible
+        let cell_a1 = read_sheet.cell("A1").unwrap();
+        assert_eq!(cell_a1.value_as_string(), "Merged Header");
+    }
+
+    #[test]
+    fn test_roundtrip_dimensions() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Header 1");
+        sheet.set_cell("B1", "Header 2");
+        sheet.set_cell("C1", "Header 3");
+        sheet.set_cell("A2", "Data");
+
+        // Set column widths
+        sheet.set_column_width("A", 20.0);
+        sheet.set_column_width_range("B", "C", 15.5);
+
+        // Set row heights
+        sheet.set_row_height(1, 25.0);
+        sheet.set_row_height(2, 18.0);
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.sheet(0).unwrap();
+
+        // Check column widths were preserved
+        let columns = read_sheet.columns();
+        assert_eq!(columns.len(), 2);
+
+        // Column A (col 1)
+        assert_eq!(columns[0].min, 1);
+        assert_eq!(columns[0].max, 1);
+        assert_eq!(columns[0].width, Some(20.0));
+
+        // Columns B-C (cols 2-3)
+        assert_eq!(columns[1].min, 2);
+        assert_eq!(columns[1].max, 3);
+        assert_eq!(columns[1].width, Some(15.5));
+
+        // Test helper methods
+        assert_eq!(read_sheet.column_width(1), Some(20.0));
+        assert_eq!(read_sheet.column_width(2), Some(15.5));
+        assert_eq!(read_sheet.column_width(3), Some(15.5));
+        assert_eq!(read_sheet.column_width(4), None);
+
+        // Check row heights were preserved
+        let row1 = read_sheet.row(1).unwrap();
+        assert_eq!(row1.height(), Some(25.0));
+
+        let row2 = read_sheet.row(2).unwrap();
+        assert_eq!(row2.height(), Some(18.0));
     }
 }

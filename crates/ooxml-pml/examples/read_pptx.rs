@@ -80,6 +80,16 @@ fn main() -> ooxml_pml::Result<()> {
                 println!("  Auto-advance: {}ms", ms);
             }
         }
+
+        // Show hyperlinks if present
+        if slide.has_hyperlinks() {
+            println!("\n--- Hyperlinks ---");
+            if let Ok(links) = pres.get_hyperlinks_with_urls(&slide) {
+                for (text, url) in links {
+                    println!("  \"{}\" -> {}", text, url);
+                }
+            }
+        }
     }
 
     Ok(())

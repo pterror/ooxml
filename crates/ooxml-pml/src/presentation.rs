@@ -174,6 +174,45 @@ impl<R: Read + Seek> Presentation<R> {
 
         Ok(ImageData { data, content_type })
     }
+
+    /// Resolve a hyperlink relationship ID to its target URL.
+    ///
+    /// # Arguments
+    /// * `slide` - The slide containing the hyperlink
+    /// * `rel_id` - The relationship ID from the hyperlink
+    ///
+    /// # Returns
+    /// The target URL/path of the hyperlink, or an error if not found.
+    pub fn resolve_hyperlink(&mut self, slide: &Slide, rel_id: &str) -> Result<String> {
+        // Get slide relationships
+        let slide_rels = self
+            .package
+            .read_part_relationships(slide.slide_path())
+            .map_err(|_| Error::Invalid("Failed to read slide relationships".into()))?;
+
+        // Find the hyperlink relationship
+        let rel = slide_rels.get(rel_id).ok_or_else(|| {
+            Error::Invalid(format!("Hyperlink relationship {} not found", rel_id))
+        })?;
+
+        Ok(rel.target.clone())
+    }
+
+    /// Get all hyperlinks from a slide with their resolved URLs.
+    ///
+    /// Returns a list of (text, url) pairs for all hyperlinks on the slide.
+    pub fn get_hyperlinks_with_urls(&mut self, slide: &Slide) -> Result<Vec<(String, String)>> {
+        let hyperlinks = slide.hyperlinks();
+        let mut results = Vec::new();
+
+        for link in hyperlinks {
+            if let Ok(url) = self.resolve_hyperlink(slide, &link.rel_id) {
+                results.push((link.text, url));
+            }
+        }
+
+        Ok(results)
+    }
 }
 
 /// A slide in the presentation.
@@ -310,6 +349,18 @@ impl Slide {
     pub fn has_transition(&self) -> bool {
         self.transition.is_some()
     }
+
+    /// Get all hyperlinks from all shapes on this slide.
+    ///
+    /// Returns hyperlinks with their text and relationship ID.
+    pub fn hyperlinks(&self) -> Vec<Hyperlink> {
+        self.shapes.iter().flat_map(|s| s.hyperlinks()).collect()
+    }
+
+    /// Check if this slide contains any hyperlinks.
+    pub fn has_hyperlinks(&self) -> bool {
+        self.shapes.iter().any(|s| s.has_hyperlinks())
+    }
 }
 
 /// A shape on a slide.
@@ -351,6 +402,32 @@ impl Shape {
     pub fn has_text(&self) -> bool {
         !self.paragraphs.is_empty()
     }
+
+    /// Get all hyperlinks in this shape.
+    ///
+    /// Returns hyperlinks with their text and relationship ID.
+    /// Use the slide relationships to resolve the rel_id to a URL.
+    pub fn hyperlinks(&self) -> Vec<Hyperlink> {
+        let mut links = Vec::new();
+        for para in &self.paragraphs {
+            for run in para.runs() {
+                if let Some(rel_id) = run.hyperlink_rel_id() {
+                    links.push(Hyperlink {
+                        text: run.text().to_string(),
+                        rel_id: rel_id.to_string(),
+                    });
+                }
+            }
+        }
+        links
+    }
+
+    /// Check if the shape contains any hyperlinks.
+    pub fn has_hyperlinks(&self) -> bool {
+        self.paragraphs
+            .iter()
+            .any(|p| p.runs().iter().any(|r| r.has_hyperlink()))
+    }
 }
 
 /// A picture element on a slide.
@@ -381,6 +458,15 @@ impl Picture {
     pub fn description(&self) -> Option<&str> {
         self.description.as_deref()
     }
+}
+
+/// A hyperlink extracted from a text run.
+#[derive(Debug, Clone)]
+pub struct Hyperlink {
+    /// The text that is hyperlinked.
+    pub text: String,
+    /// The relationship ID (use with slide relationships to get the URL).
+    pub rel_id: String,
 }
 
 // ============================================================================
