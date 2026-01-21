@@ -2150,6 +2150,7 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         || props.double_strike
         || props.size.is_some()
         || props.font.is_some()
+        || props.fonts.is_some()
         || props.style.is_some()
         || props.color.is_some()
         || props.highlight.is_some()
@@ -2170,7 +2171,26 @@ fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
         xml.push_str(&format!(r#"<w:rStyle w:val="{}"/>"#, escape_xml(style)));
     }
 
-    if let Some(ref font) = props.font {
+    // Serialize fonts: prefer the new Fonts struct, fall back to legacy font field
+    if let Some(ref fonts) = props.fonts {
+        let mut attrs = String::new();
+        if let Some(ref ascii) = fonts.ascii {
+            attrs.push_str(&format!(r#" w:ascii="{}""#, escape_xml(ascii)));
+        }
+        if let Some(ref h_ansi) = fonts.h_ansi {
+            attrs.push_str(&format!(r#" w:hAnsi="{}""#, escape_xml(h_ansi)));
+        }
+        if let Some(ref east_asia) = fonts.east_asia {
+            attrs.push_str(&format!(r#" w:eastAsia="{}""#, escape_xml(east_asia)));
+        }
+        if let Some(ref cs) = fonts.cs {
+            attrs.push_str(&format!(r#" w:cs="{}""#, escape_xml(cs)));
+        }
+        if !attrs.is_empty() {
+            xml.push_str(&format!("<w:rFonts{}/>", attrs));
+        }
+    } else if let Some(ref font) = props.font {
+        // Legacy single font field (backward compatibility)
         xml.push_str(&format!(r#"<w:rFonts w:ascii="{}"/>"#, escape_xml(font)));
     }
 
@@ -2443,6 +2463,31 @@ mod tests {
 
         assert!(xml.contains("<w:b/>"));
         assert!(xml.contains("<w:i/>"));
+    }
+
+    #[test]
+    fn test_serialize_fonts() {
+        use crate::document::Fonts;
+
+        let mut body = Body::new();
+        let run = body.add_paragraph().add_run();
+        run.set_text("Text with fonts");
+        run.set_properties(RunProperties {
+            fonts: Some(Fonts {
+                ascii: Some("Arial".to_string()),
+                h_ansi: Some("Arial".to_string()),
+                east_asia: Some("MS Gothic".to_string()),
+                cs: Some("Arial".to_string()),
+            }),
+            ..Default::default()
+        });
+
+        let xml = serialize_document(&body);
+
+        assert!(xml.contains(r#"w:ascii="Arial""#));
+        assert!(xml.contains(r#"w:hAnsi="Arial""#));
+        assert!(xml.contains(r#"w:eastAsia="MS Gothic""#));
+        assert!(xml.contains(r#"w:cs="Arial""#));
     }
 
     #[test]

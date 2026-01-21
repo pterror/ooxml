@@ -645,3 +645,44 @@ fn test_roundtrip_unknown_elements() {
         panic!("Expected Element node");
     }
 }
+
+/// Test roundtrip of extended font attributes (w:rFonts).
+#[test]
+fn test_roundtrip_fonts() {
+    use ooxml_wml::{Fonts, RunProperties};
+
+    let mut builder = DocumentBuilder::new();
+    {
+        let para = builder.body_mut().add_paragraph();
+        let run = para.add_run();
+        run.set_text("Text with fonts");
+        run.set_properties(RunProperties {
+            fonts: Some(Fonts {
+                ascii: Some("Arial".to_string()),
+                h_ansi: Some("Arial".to_string()),
+                east_asia: Some("MS Gothic".to_string()),
+                cs: Some("Arial".to_string()),
+            }),
+            ..Default::default()
+        });
+    }
+
+    // Write to memory
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read it back
+    buffer.set_position(0);
+    let doc = Document::from_reader(buffer).unwrap();
+
+    // Verify the fonts were preserved
+    let para = &doc.body().paragraphs()[0];
+    let run = &para.runs()[0];
+    let rpr = run.properties().unwrap();
+    let fonts = rpr.fonts.as_ref().expect("fonts should be present");
+
+    assert_eq!(fonts.ascii, Some("Arial".to_string()));
+    assert_eq!(fonts.h_ansi, Some("Arial".to_string()));
+    assert_eq!(fonts.east_asia, Some("MS Gothic".to_string()));
+    assert_eq!(fonts.cs, Some("Arial".to_string()));
+}

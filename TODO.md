@@ -6,17 +6,17 @@ Backlog for ooxml development. Items roughly ordered by priority within each sec
 
 DocumentBuilder handles common cases but doesn't expose:
 
-- [ ] Headers/footers creation
-- [ ] Footnotes/endnotes creation
-- [ ] Comments creation
-- [ ] Anchored/floating images (only inline supported)
+- [x] Headers/footers creation
+- [x] Footnotes/endnotes creation
+- [x] Comments creation
+- [x] Anchored/floating images (use `run.add_anchored_image()` with `set_wrap_type()`)
 - [ ] Styles creation/writing
 
 ## Reading Enhancements
 
-- [ ] More w:rFonts attributes (hAnsi, eastAsia, cs) - currently only parses ascii
-- [ ] Core properties (docProps/core.xml) - title, author, etc.
-- [ ] App properties (docProps/app.xml) - word count, etc.
+- [x] More w:rFonts attributes (hAnsi, eastAsia, cs) - now parses all four font attributes
+- [x] Core properties (docProps/core.xml) - title, author, etc.
+- [x] App properties (docProps/app.xml) - word count, pages, etc.
 
 ## Advanced Features
 
@@ -32,7 +32,7 @@ DocumentBuilder handles common cases but doesn't expose:
 
 - [ ] Better error messages with context (line numbers, element paths)
 - [ ] More examples in docs
-- [ ] Real-world usage examples in `examples/` directory
+- [x] Real-world usage examples in `examples/` directory (read_docx, create_docx, read_metadata)
 - [ ] API documentation improvements
 
 ## Robustness

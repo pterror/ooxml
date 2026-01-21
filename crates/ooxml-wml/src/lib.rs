@@ -39,10 +39,10 @@ pub mod types {
 }
 
 pub use document::{
-    Alignment, BlockContent, Body, Cell, CommentRangeEnd, CommentRangeStart, CommentReference,
-    Document, Drawing, EndnoteReference, FootnoteReference, HeaderFooterType, Hyperlink, ImageData,
-    InlineImage, NumberingProperties, Paragraph, ParagraphContent, ParagraphProperties, Row, Run,
-    RunProperties, Table,
+    Alignment, AppProperties, BlockContent, Body, Cell, CommentRangeEnd, CommentRangeStart,
+    CommentReference, CoreProperties, Document, Drawing, EndnoteReference, Fonts,
+    FootnoteReference, HeaderFooterType, Hyperlink, ImageData, InlineImage, NumberingProperties,
+    Paragraph, ParagraphContent, ParagraphProperties, Row, Run, RunProperties, Table,
 };
 pub use error::{Error, Result};
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};

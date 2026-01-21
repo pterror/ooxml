@@ -37,6 +37,10 @@ pub struct Document<R> {
     doc_rels: Relationships,
     /// Path to the document part (e.g., "word/document.xml")
     doc_path: String,
+    /// Core document properties (title, author, etc.)
+    core_properties: Option<CoreProperties>,
+    /// Extended application properties (word count, etc.)
+    app_properties: Option<AppProperties>,
 }
 
 impl Document<BufReader<File>> {
@@ -82,12 +86,31 @@ impl<R: Read + Seek> Document<R> {
             Styles::new()
         };
 
+        // Load core properties if available
+        let core_properties = if let Some(core_rel) = rels.get_by_type(rel_type::CORE_PROPERTIES) {
+            let core_xml = package.read_part(&core_rel.target)?;
+            Some(parse_core_properties(&core_xml)?)
+        } else {
+            None
+        };
+
+        // Load app properties if available
+        let app_properties = if let Some(app_rel) = rels.get_by_type(rel_type::EXTENDED_PROPERTIES)
+        {
+            let app_xml = package.read_part(&app_rel.target)?;
+            Some(parse_app_properties(&app_xml)?)
+        } else {
+            None
+        };
+
         Ok(Self {
             package,
             body,
             styles,
             doc_rels,
             doc_path,
+            core_properties,
+            app_properties,
         })
     }
 
@@ -114,6 +137,20 @@ impl<R: Read + Seek> Document<R> {
     /// Get the document styles.
     pub fn styles(&self) -> &Styles {
         &self.styles
+    }
+
+    /// Get the core document properties (title, author, etc.).
+    ///
+    /// Returns `None` if the document doesn't have a core properties part.
+    pub fn core_properties(&self) -> Option<&CoreProperties> {
+        self.core_properties.as_ref()
+    }
+
+    /// Get the extended application properties (word count, page count, etc.).
+    ///
+    /// Returns `None` if the document doesn't have an app properties part.
+    pub fn app_properties(&self) -> Option<&AppProperties> {
+        self.app_properties.as_ref()
     }
 
     /// Resolve effective run properties for a run, combining direct and style formatting.
@@ -2768,6 +2805,74 @@ pub enum CharacterSpacingControl {
     CompressPunctuationAndJapaneseKana,
 }
 
+/// Core document properties (Dublin Core metadata).
+///
+/// Corresponds to `docProps/core.xml` in the OPC package.
+/// Contains standard metadata like title, author, creation date, etc.
+///
+/// ECMA-376 Part 2, Section 11 (Core Properties).
+#[derive(Debug, Clone, Default)]
+pub struct CoreProperties {
+    /// Document title (dc:title).
+    pub title: Option<String>,
+    /// Document creator/author (dc:creator).
+    pub creator: Option<String>,
+    /// Document subject (dc:subject).
+    pub subject: Option<String>,
+    /// Document description (dc:description).
+    pub description: Option<String>,
+    /// Keywords (cp:keywords).
+    pub keywords: Option<String>,
+    /// Category (cp:category).
+    pub category: Option<String>,
+    /// Last person to modify the document (cp:lastModifiedBy).
+    pub last_modified_by: Option<String>,
+    /// Revision number (cp:revision).
+    pub revision: Option<String>,
+    /// Creation date as ISO 8601 string (dcterms:created).
+    pub created: Option<String>,
+    /// Last modified date as ISO 8601 string (dcterms:modified).
+    pub modified: Option<String>,
+    /// Content status (cp:contentStatus).
+    pub content_status: Option<String>,
+}
+
+/// Extended application properties.
+///
+/// Corresponds to `docProps/app.xml` in the OPC package.
+/// Contains application-specific metadata like word count, page count, etc.
+///
+/// ECMA-376 Part 2, Section 11.1 (Extended Properties).
+#[derive(Debug, Clone, Default)]
+pub struct AppProperties {
+    /// Application name that created the document.
+    pub application: Option<String>,
+    /// Application version.
+    pub app_version: Option<String>,
+    /// Company name.
+    pub company: Option<String>,
+    /// Document manager.
+    pub manager: Option<String>,
+    /// Total editing time in minutes.
+    pub total_time: Option<u32>,
+    /// Number of pages.
+    pub pages: Option<u32>,
+    /// Number of words.
+    pub words: Option<u32>,
+    /// Number of characters (excluding spaces).
+    pub characters: Option<u32>,
+    /// Number of characters (including spaces).
+    pub characters_with_spaces: Option<u32>,
+    /// Number of paragraphs.
+    pub paragraphs: Option<u32>,
+    /// Number of lines.
+    pub lines: Option<u32>,
+    /// Document template.
+    pub template: Option<String>,
+    /// Document security level (0 = none, 1 = password protected, etc.).
+    pub doc_security: Option<u32>,
+}
+
 impl Run {
     /// Create an empty run.
     pub fn new() -> Self {
@@ -3405,6 +3510,22 @@ impl VerticalAlign {
     }
 }
 
+/// Font family names for different character sets.
+///
+/// Corresponds to the `<w:rFonts>` element attributes.
+/// ECMA-376 Part 1, Section 17.3.2.26 (rFonts).
+#[derive(Debug, Clone, Default)]
+pub struct Fonts {
+    /// Font for ASCII characters (0x00-0x7F).
+    pub ascii: Option<String>,
+    /// Font for high ANSI characters (0x80-0xFF).
+    pub h_ansi: Option<String>,
+    /// Font for East Asian characters.
+    pub east_asia: Option<String>,
+    /// Font for complex script characters (RTL languages).
+    pub cs: Option<String>,
+}
+
 /// Properties of a text run.
 ///
 /// Corresponds to the `<w:rPr>` element.
@@ -3422,8 +3543,11 @@ pub struct RunProperties {
     pub double_strike: bool,
     /// Font size in half-points.
     pub size: Option<u32>,
-    /// Font name.
+    /// Font name (ASCII characters). Deprecated - use `fonts.ascii` instead.
     pub font: Option<String>,
+    /// Font names for different character sets (w:rFonts).
+    /// ECMA-376 Part 1, Section 17.3.2.26.
+    pub fonts: Option<Fonts>,
     /// Style ID reference.
     pub style: Option<String>,
     /// Text color as hex RGB (e.g., "FF0000" for red, without # prefix).
@@ -4652,13 +4776,35 @@ fn parse_document(xml: &[u8]) -> Result<Body> {
                     }
                     name if name == EL_RFONTS && in_rpr => {
                         if let Some(rpr) = current_rpr.as_mut() {
+                            let mut fonts = Fonts::default();
                             for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"w:ascii" || attr.key.as_ref() == b"ascii"
-                                {
-                                    rpr.font =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                    break;
+                                let key = attr.key.as_ref();
+                                let val = String::from_utf8_lossy(&attr.value).into_owned();
+                                match key {
+                                    b"w:ascii" | b"ascii" => {
+                                        fonts.ascii = Some(val.clone());
+                                        // Also set font for backward compatibility
+                                        rpr.font = Some(val);
+                                    }
+                                    b"w:hAnsi" | b"hAnsi" => {
+                                        fonts.h_ansi = Some(val);
+                                    }
+                                    b"w:eastAsia" | b"eastAsia" => {
+                                        fonts.east_asia = Some(val);
+                                    }
+                                    b"w:cs" | b"cs" => {
+                                        fonts.cs = Some(val);
+                                    }
+                                    _ => {}
                                 }
+                            }
+                            // Only set fonts if at least one was found
+                            if fonts.ascii.is_some()
+                                || fonts.h_ansi.is_some()
+                                || fonts.east_asia.is_some()
+                                || fonts.cs.is_some()
+                            {
+                                rpr.fonts = Some(fonts);
                             }
                         }
                     }
@@ -6069,6 +6215,173 @@ fn parse_settings(xml: &[u8]) -> Result<DocumentSettings> {
     Ok(settings)
 }
 
+/// Parse a core.xml file into CoreProperties.
+///
+/// The structure is `<cp:coreProperties>` containing Dublin Core metadata.
+/// Uses namespaces: dc (Dublin Core elements), dcterms (Dublin Core terms), cp (core properties).
+fn parse_core_properties(xml: &[u8]) -> Result<CoreProperties> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut props = CoreProperties::default();
+    let mut in_core = false;
+    let mut current_element: Option<&'static str> = None;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == b"coreProperties" {
+                    in_core = true;
+                } else if in_core {
+                    // Map element names to field
+                    current_element = match local {
+                        b"title" => Some("title"),
+                        b"creator" => Some("creator"),
+                        b"subject" => Some("subject"),
+                        b"description" => Some("description"),
+                        b"keywords" => Some("keywords"),
+                        b"category" => Some("category"),
+                        b"lastModifiedBy" => Some("lastModifiedBy"),
+                        b"revision" => Some("revision"),
+                        b"created" => Some("created"),
+                        b"modified" => Some("modified"),
+                        b"contentStatus" => Some("contentStatus"),
+                        _ => None,
+                    };
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == b"coreProperties" {
+                    in_core = false;
+                } else if in_core {
+                    current_element = None;
+                }
+            }
+            Ok(Event::Text(e)) if current_element.is_some() => {
+                let text = e.decode().ok().map(|s| s.into_owned());
+                match current_element {
+                    Some("title") => props.title = text,
+                    Some("creator") => props.creator = text,
+                    Some("subject") => props.subject = text,
+                    Some("description") => props.description = text,
+                    Some("keywords") => props.keywords = text,
+                    Some("category") => props.category = text,
+                    Some("lastModifiedBy") => props.last_modified_by = text,
+                    Some("revision") => props.revision = text,
+                    Some("created") => props.created = text,
+                    Some("modified") => props.modified = text,
+                    Some("contentStatus") => props.content_status = text,
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(props)
+}
+
+/// Parse an app.xml file into AppProperties.
+///
+/// The structure is `<Properties>` containing extended property elements.
+fn parse_app_properties(xml: &[u8]) -> Result<AppProperties> {
+    use quick_xml::Reader;
+    use quick_xml::events::Event;
+
+    let mut reader = Reader::from_reader(xml);
+    reader.config_mut().trim_text(false);
+
+    let mut buf = Vec::new();
+    let mut props = AppProperties::default();
+    let mut in_props = false;
+    let mut current_element: Option<&'static str> = None;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == b"Properties" {
+                    in_props = true;
+                } else if in_props {
+                    // Map element names to field
+                    current_element = match local {
+                        b"Application" => Some("Application"),
+                        b"AppVersion" => Some("AppVersion"),
+                        b"Company" => Some("Company"),
+                        b"Manager" => Some("Manager"),
+                        b"TotalTime" => Some("TotalTime"),
+                        b"Pages" => Some("Pages"),
+                        b"Words" => Some("Words"),
+                        b"Characters" => Some("Characters"),
+                        b"CharactersWithSpaces" => Some("CharactersWithSpaces"),
+                        b"Paragraphs" => Some("Paragraphs"),
+                        b"Lines" => Some("Lines"),
+                        b"Template" => Some("Template"),
+                        b"DocSecurity" => Some("DocSecurity"),
+                        _ => None,
+                    };
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.name();
+                let local = local_name(name.as_ref());
+                if local == b"Properties" {
+                    in_props = false;
+                } else if in_props {
+                    current_element = None;
+                }
+            }
+            Ok(Event::Text(e)) if current_element.is_some() => {
+                let text = e.decode().ok().map(|s| s.into_owned());
+                match current_element {
+                    Some("Application") => props.application = text,
+                    Some("AppVersion") => props.app_version = text,
+                    Some("Company") => props.company = text,
+                    Some("Manager") => props.manager = text,
+                    Some("TotalTime") => {
+                        props.total_time = text.as_deref().and_then(|s| s.parse().ok())
+                    }
+                    Some("Pages") => props.pages = text.as_deref().and_then(|s| s.parse().ok()),
+                    Some("Words") => props.words = text.as_deref().and_then(|s| s.parse().ok()),
+                    Some("Characters") => {
+                        props.characters = text.as_deref().and_then(|s| s.parse().ok())
+                    }
+                    Some("CharactersWithSpaces") => {
+                        props.characters_with_spaces = text.as_deref().and_then(|s| s.parse().ok())
+                    }
+                    Some("Paragraphs") => {
+                        props.paragraphs = text.as_deref().and_then(|s| s.parse().ok())
+                    }
+                    Some("Lines") => props.lines = text.as_deref().and_then(|s| s.parse().ok()),
+                    Some("Template") => props.template = text,
+                    Some("DocSecurity") => {
+                        props.doc_security = text.as_deref().and_then(|s| s.parse().ok())
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(props)
+}
+
 /// Extract the local name from a potentially namespaced element name.
 fn local_name(name: &[u8]) -> &[u8] {
     // Handle both "w:p" and "p" formats
@@ -6839,5 +7152,80 @@ mod tests {
         assert_eq!(c1.date, None);
         assert_eq!(c1.paragraphs().len(), 2);
         assert_eq!(c1.text(), "I agree with John.\nLet's discuss tomorrow.");
+    }
+
+    #[test]
+    fn test_parse_core_properties() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <dc:title>Test Document Title</dc:title>
+  <dc:creator>John Doe</dc:creator>
+  <dc:subject>Testing</dc:subject>
+  <dc:description>A test document for unit testing.</dc:description>
+  <cp:keywords>test, unit, document</cp:keywords>
+  <cp:category>Testing</cp:category>
+  <cp:lastModifiedBy>Jane Doe</cp:lastModifiedBy>
+  <cp:revision>5</cp:revision>
+  <dcterms:created xsi:type="dcterms:W3CDTF">2024-01-15T10:30:00Z</dcterms:created>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">2024-01-16T14:45:00Z</dcterms:modified>
+  <cp:contentStatus>Draft</cp:contentStatus>
+</cp:coreProperties>"#;
+
+        let props = parse_core_properties(xml).unwrap();
+
+        assert_eq!(props.title, Some("Test Document Title".to_string()));
+        assert_eq!(props.creator, Some("John Doe".to_string()));
+        assert_eq!(props.subject, Some("Testing".to_string()));
+        assert_eq!(
+            props.description,
+            Some("A test document for unit testing.".to_string())
+        );
+        assert_eq!(props.keywords, Some("test, unit, document".to_string()));
+        assert_eq!(props.category, Some("Testing".to_string()));
+        assert_eq!(props.last_modified_by, Some("Jane Doe".to_string()));
+        assert_eq!(props.revision, Some("5".to_string()));
+        assert_eq!(props.created, Some("2024-01-15T10:30:00Z".to_string()));
+        assert_eq!(props.modified, Some("2024-01-16T14:45:00Z".to_string()));
+        assert_eq!(props.content_status, Some("Draft".to_string()));
+    }
+
+    #[test]
+    fn test_parse_app_properties() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+    xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+  <Application>Microsoft Office Word</Application>
+  <AppVersion>16.0000</AppVersion>
+  <Company>Test Corp</Company>
+  <Manager>Project Lead</Manager>
+  <TotalTime>120</TotalTime>
+  <Pages>5</Pages>
+  <Words>1234</Words>
+  <Characters>6789</Characters>
+  <CharactersWithSpaces>8000</CharactersWithSpaces>
+  <Paragraphs>45</Paragraphs>
+  <Lines>100</Lines>
+  <Template>Normal.dotm</Template>
+  <DocSecurity>0</DocSecurity>
+</Properties>"#;
+
+        let props = parse_app_properties(xml).unwrap();
+
+        assert_eq!(props.application, Some("Microsoft Office Word".to_string()));
+        assert_eq!(props.app_version, Some("16.0000".to_string()));
+        assert_eq!(props.company, Some("Test Corp".to_string()));
+        assert_eq!(props.manager, Some("Project Lead".to_string()));
+        assert_eq!(props.total_time, Some(120));
+        assert_eq!(props.pages, Some(5));
+        assert_eq!(props.words, Some(1234));
+        assert_eq!(props.characters, Some(6789));
+        assert_eq!(props.characters_with_spaces, Some(8000));
+        assert_eq!(props.paragraphs, Some(45));
+        assert_eq!(props.lines, Some(100));
+        assert_eq!(props.template, Some("Normal.dotm".to_string()));
+        assert_eq!(props.doc_security, Some(0));
     }
 }
