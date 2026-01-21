@@ -24,4 +24,7 @@ pub mod error;
 pub mod workbook;
 
 pub use error::{Error, Result};
-pub use workbook::{Cell, CellValue, Row, Sheet, Workbook};
+pub use workbook::{
+    Border, BorderSide, Cell, CellFormat, CellValue, Fill, Font, NumberFormat, Row, Sheet,
+    Stylesheet, Workbook,
+};

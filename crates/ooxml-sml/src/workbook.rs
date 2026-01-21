@@ -16,6 +16,8 @@ const REL_OFFICE_DOCUMENT: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
 const REL_SHARED_STRINGS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
+const REL_STYLES: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
 
 /// An Excel workbook.
 ///
@@ -30,6 +32,8 @@ pub struct Workbook<R: Read + Seek> {
     sheet_info: Vec<SheetInfo>,
     /// Shared string table.
     shared_strings: Vec<String>,
+    /// Stylesheet (number formats, fonts, fills, borders, cell formats).
+    styles: Stylesheet,
 }
 
 /// Metadata about a sheet.
@@ -82,12 +86,25 @@ impl<R: Read + Seek> Workbook<R> {
             Vec::new()
         };
 
+        // Load styles if present
+        let styles = if let Some(rel) = workbook_rels.get_by_type(REL_STYLES) {
+            let path = resolve_path(&workbook_path, &rel.target);
+            if let Ok(data) = package.read_part(&path) {
+                parse_styles(&data)?
+            } else {
+                Stylesheet::default()
+            }
+        } else {
+            Stylesheet::default()
+        };
+
         Ok(Self {
             package,
             workbook_path,
             workbook_rels,
             sheet_info,
             shared_strings,
+            styles,
         })
     }
 
@@ -130,6 +147,11 @@ impl<R: Read + Seek> Workbook<R> {
         infos.iter().map(|info| self.load_sheet(info)).collect()
     }
 
+    /// Get the workbook stylesheet.
+    pub fn styles(&self) -> &Stylesheet {
+        &self.styles
+    }
+
     /// Load a sheet's data.
     fn load_sheet(&mut self, info: &SheetInfo) -> Result<Sheet> {
         // Find the sheet path from relationships
@@ -140,7 +162,7 @@ impl<R: Read + Seek> Workbook<R> {
         let path = resolve_path(&self.workbook_path, &rel.target);
         let data = self.package.read_part(&path)?;
 
-        parse_sheet(&data, &info.name, &self.shared_strings)
+        parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)
     }
 }
 
@@ -239,6 +261,8 @@ pub struct Cell {
     value: CellValue,
     /// Formula (if any).
     formula: Option<String>,
+    /// Style index (into workbook.styles().cell_formats).
+    style_index: Option<u32>,
 }
 
 impl Cell {
@@ -260,6 +284,14 @@ impl Cell {
     /// Get the formula (if any).
     pub fn formula(&self) -> Option<&str> {
         self.formula.as_deref()
+    }
+
+    /// Get the style index for this cell.
+    ///
+    /// Use this with `workbook.styles().cell_formats` to get formatting details.
+    /// Returns `None` if no style is applied.
+    pub fn style_index(&self) -> Option<u32> {
+        self.style_index
     }
 
     /// Get the value as a string (for display).
@@ -310,6 +342,113 @@ pub enum CellValue {
     Boolean(bool),
     /// Error value (e.g., "#DIV/0!").
     Error(String),
+}
+
+/// Stylesheet containing number formats, fonts, fills, and cell styles.
+///
+/// ECMA-376 Part 1, Section 18.8 (Styles).
+#[derive(Debug, Clone, Default)]
+pub struct Stylesheet {
+    /// Number formats (custom format codes).
+    pub number_formats: Vec<NumberFormat>,
+    /// Font definitions.
+    pub fonts: Vec<Font>,
+    /// Fill definitions.
+    pub fills: Vec<Fill>,
+    /// Border definitions.
+    pub borders: Vec<Border>,
+    /// Cell format records (combines font, fill, border, number format).
+    pub cell_formats: Vec<CellFormat>,
+}
+
+/// A number format definition.
+///
+/// ECMA-376 Part 1, Section 18.8.30 (numFmt).
+#[derive(Debug, Clone)]
+pub struct NumberFormat {
+    /// Format ID (built-in formats use IDs 0-163).
+    pub id: u32,
+    /// Format code (e.g., "0.00", "#,##0", "yyyy-mm-dd").
+    pub code: String,
+}
+
+/// A font definition.
+///
+/// ECMA-376 Part 1, Section 18.8.22 (font).
+#[derive(Debug, Clone, Default)]
+pub struct Font {
+    /// Font name (e.g., "Calibri", "Arial").
+    pub name: Option<String>,
+    /// Font size in points.
+    pub size: Option<f64>,
+    /// Bold.
+    pub bold: bool,
+    /// Italic.
+    pub italic: bool,
+    /// Underline.
+    pub underline: bool,
+    /// Strikethrough.
+    pub strike: bool,
+    /// Font color (RGB hex without #, or theme reference).
+    pub color: Option<String>,
+}
+
+/// A fill definition.
+///
+/// ECMA-376 Part 1, Section 18.8.20 (fill).
+#[derive(Debug, Clone, Default)]
+pub struct Fill {
+    /// Pattern type (e.g., "solid", "none", "gray125").
+    pub pattern_type: Option<String>,
+    /// Foreground color (RGB hex).
+    pub fg_color: Option<String>,
+    /// Background color (RGB hex).
+    pub bg_color: Option<String>,
+}
+
+/// A border definition.
+///
+/// ECMA-376 Part 1, Section 18.8.4 (border).
+#[derive(Debug, Clone, Default)]
+pub struct Border {
+    /// Left border style.
+    pub left: Option<BorderSide>,
+    /// Right border style.
+    pub right: Option<BorderSide>,
+    /// Top border style.
+    pub top: Option<BorderSide>,
+    /// Bottom border style.
+    pub bottom: Option<BorderSide>,
+}
+
+/// A single border side.
+#[derive(Debug, Clone, Default)]
+pub struct BorderSide {
+    /// Border style (e.g., "thin", "medium", "thick", "dashed").
+    pub style: Option<String>,
+    /// Border color (RGB hex).
+    pub color: Option<String>,
+}
+
+/// A cell format record combining style elements.
+///
+/// ECMA-376 Part 1, Section 18.8.45 (xf).
+#[derive(Debug, Clone, Default)]
+pub struct CellFormat {
+    /// Index into number_formats (or built-in format ID).
+    pub number_format_id: u32,
+    /// Index into fonts.
+    pub font_id: u32,
+    /// Index into fills.
+    pub fill_id: u32,
+    /// Index into borders.
+    pub border_id: u32,
+    /// Horizontal alignment.
+    pub horizontal_align: Option<String>,
+    /// Vertical alignment.
+    pub vertical_align: Option<String>,
+    /// Text wrap.
+    pub wrap_text: bool,
 }
 
 // ============================================================================
@@ -429,8 +568,244 @@ fn parse_shared_strings(xml: &[u8]) -> Result<Vec<String>> {
     Ok(strings)
 }
 
+/// Parse the styles.xml file.
+///
+/// ECMA-376 Part 1, Section 18.8 (Styles).
+fn parse_styles(xml: &[u8]) -> Result<Stylesheet> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut styles = Stylesheet::default();
+
+    // Parsing state
+    let mut in_num_fmts = false;
+    let mut in_fonts = false;
+    let mut in_fills = false;
+    let mut in_borders = false;
+    let mut in_cell_xfs = false;
+    let mut in_font = false;
+    let mut in_fill = false;
+    let mut in_border = false;
+    let mut in_xf = false;
+
+    let mut current_font = Font::default();
+    let mut current_fill = Fill::default();
+    let mut current_border = Border::default();
+    let mut current_xf = CellFormat::default();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                match tag {
+                    b"numFmts" => in_num_fmts = true,
+                    b"fonts" => in_fonts = true,
+                    b"fills" => in_fills = true,
+                    b"borders" => in_borders = true,
+                    b"cellXfs" => in_cell_xfs = true,
+                    b"font" if in_fonts => {
+                        in_font = true;
+                        current_font = Font::default();
+                    }
+                    b"fill" if in_fills => {
+                        in_fill = true;
+                        current_fill = Fill::default();
+                    }
+                    b"patternFill" if in_fill => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"patternType" {
+                                current_fill.pattern_type =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"border" if in_borders => {
+                        in_border = true;
+                        current_border = Border::default();
+                    }
+                    b"left" | b"right" | b"top" | b"bottom" if in_border => {
+                        // Border sides with content are handled in End event
+                    }
+                    b"xf" if in_cell_xfs => {
+                        in_xf = true;
+                        current_xf = CellFormat::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"numFmtId" => {
+                                    current_xf.number_format_id = val.parse().unwrap_or(0)
+                                }
+                                b"fontId" => current_xf.font_id = val.parse().unwrap_or(0),
+                                b"fillId" => current_xf.fill_id = val.parse().unwrap_or(0),
+                                b"borderId" => current_xf.border_id = val.parse().unwrap_or(0),
+                                _ => {}
+                            }
+                        }
+                    }
+                    b"alignment" if in_xf => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"horizontal" => {
+                                    current_xf.horizontal_align = Some(val.into_owned())
+                                }
+                                b"vertical" => current_xf.vertical_align = Some(val.into_owned()),
+                                b"wrapText" => current_xf.wrap_text = val == "1" || val == "true",
+                                _ => {}
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Empty(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                match tag {
+                    b"numFmt" if in_num_fmts => {
+                        let mut id = 0u32;
+                        let mut code = String::new();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"numFmtId" => id = val.parse().unwrap_or(0),
+                                b"formatCode" => code = val.into_owned(),
+                                _ => {}
+                            }
+                        }
+                        styles.number_formats.push(NumberFormat { id, code });
+                    }
+                    b"name" if in_font => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"val" {
+                                current_font.name =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"sz" if in_font => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"val" {
+                                current_font.size =
+                                    String::from_utf8_lossy(&attr.value).parse().ok();
+                            }
+                        }
+                    }
+                    b"b" if in_font => current_font.bold = true,
+                    b"i" if in_font => current_font.italic = true,
+                    b"u" if in_font => current_font.underline = true,
+                    b"strike" if in_font => current_font.strike = true,
+                    b"color" if in_font => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"rgb" {
+                                current_font.color =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"patternFill" if in_fill => {
+                        // Handle self-closing patternFill
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"patternType" {
+                                current_fill.pattern_type =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"fgColor" if in_fill => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"rgb" {
+                                current_fill.fg_color =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"bgColor" if in_fill => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"rgb" {
+                                current_fill.bg_color =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"left" | b"right" | b"top" | b"bottom" if in_border => {
+                        let mut side = BorderSide::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"style" {
+                                side.style =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                        match tag {
+                            b"left" => current_border.left = Some(side),
+                            b"right" => current_border.right = Some(side),
+                            b"top" => current_border.top = Some(side),
+                            b"bottom" => current_border.bottom = Some(side),
+                            _ => {}
+                        }
+                    }
+                    b"xf" if in_cell_xfs => {
+                        let mut xf = CellFormat::default();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"numFmtId" => xf.number_format_id = val.parse().unwrap_or(0),
+                                b"fontId" => xf.font_id = val.parse().unwrap_or(0),
+                                b"fillId" => xf.fill_id = val.parse().unwrap_or(0),
+                                b"borderId" => xf.border_id = val.parse().unwrap_or(0),
+                                _ => {}
+                            }
+                        }
+                        styles.cell_formats.push(xf);
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::End(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                match tag {
+                    b"numFmts" => in_num_fmts = false,
+                    b"fonts" => in_fonts = false,
+                    b"fills" => in_fills = false,
+                    b"borders" => in_borders = false,
+                    b"cellXfs" => in_cell_xfs = false,
+                    b"font" if in_fonts => {
+                        styles.fonts.push(std::mem::take(&mut current_font));
+                        in_font = false;
+                    }
+                    b"fill" if in_fills => {
+                        styles.fills.push(std::mem::take(&mut current_fill));
+                        in_fill = false;
+                    }
+                    b"border" if in_borders => {
+                        styles.borders.push(std::mem::take(&mut current_border));
+                        in_border = false;
+                    }
+                    b"xf" if in_cell_xfs => {
+                        styles.cell_formats.push(std::mem::take(&mut current_xf));
+                        in_xf = false;
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(styles)
+}
+
 /// Parse a worksheet.
-fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Sheet> {
+fn parse_sheet(
+    xml: &[u8],
+    name: &str,
+    shared_strings: &[String],
+    _styles: &Stylesheet,
+) -> Result<Sheet> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
     let mut rows: HashMap<u32, Vec<Cell>> = HashMap::new();
@@ -438,6 +813,7 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
     let mut current_row: u32 = 0;
     let mut current_cell_ref = String::new();
     let mut current_cell_type = String::new();
+    let mut current_cell_style: Option<u32> = None;
     let mut current_cell_value = String::new();
     let mut current_formula = Option::<String>::None;
     let mut in_cell = false;
@@ -462,6 +838,7 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
                         in_cell = true;
                         current_cell_ref.clear();
                         current_cell_type.clear();
+                        current_cell_style = None;
                         current_cell_value.clear();
                         current_formula = None;
 
@@ -474,6 +851,10 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
                                 b"t" => {
                                     current_cell_type =
                                         String::from_utf8_lossy(&attr.value).into_owned();
+                                }
+                                b"s" => {
+                                    current_cell_style =
+                                        String::from_utf8_lossy(&attr.value).parse().ok();
                                 }
                                 _ => {}
                             }
@@ -494,9 +875,16 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
                 let tag = e.name();
                 if tag.as_ref() == b"c" {
                     let mut cell_ref = String::new();
+                    let mut cell_style: Option<u32> = None;
                     for attr in e.attributes().filter_map(|a| a.ok()) {
-                        if attr.key.as_ref() == b"r" {
-                            cell_ref = String::from_utf8_lossy(&attr.value).into_owned();
+                        match attr.key.as_ref() {
+                            b"r" => {
+                                cell_ref = String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                            b"s" => {
+                                cell_style = String::from_utf8_lossy(&attr.value).parse().ok();
+                            }
+                            _ => {}
                         }
                     }
                     if !cell_ref.is_empty() {
@@ -506,6 +894,7 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
                             column,
                             value: CellValue::Empty,
                             formula: None,
+                            style_index: cell_style,
                         };
                         rows.entry(current_row).or_default().push(cell);
                     }
@@ -565,6 +954,7 @@ fn parse_sheet(xml: &[u8], name: &str, shared_strings: &[String]) -> Result<Shee
                             column,
                             value,
                             formula: current_formula.take(),
+                            style_index: current_cell_style.take(),
                         };
 
                         rows.entry(current_row).or_default().push(cell);
@@ -702,5 +1092,86 @@ mod tests {
 
         let strings = parse_shared_strings(xml.as_bytes()).unwrap();
         assert_eq!(strings, vec!["Hello", "World", ""]);
+    }
+
+    #[test]
+    fn test_parse_styles() {
+        let xml = r#"<?xml version="1.0"?>
+        <styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <numFmts count="1">
+                <numFmt numFmtId="164" formatCode="0.00%"/>
+            </numFmts>
+            <fonts count="2">
+                <font>
+                    <name val="Calibri"/>
+                    <sz val="11"/>
+                </font>
+                <font>
+                    <b/>
+                    <name val="Arial"/>
+                    <sz val="14"/>
+                    <color rgb="FF0000FF"/>
+                </font>
+            </fonts>
+            <fills count="2">
+                <fill>
+                    <patternFill patternType="none"/>
+                </fill>
+                <fill>
+                    <patternFill patternType="solid">
+                        <fgColor rgb="FFFFFF00"/>
+                    </patternFill>
+                </fill>
+            </fills>
+            <borders count="1">
+                <border>
+                    <left style="thin"/>
+                    <right/>
+                    <top/>
+                    <bottom/>
+                </border>
+            </borders>
+            <cellXfs count="2">
+                <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+                <xf numFmtId="164" fontId="1" fillId="1" borderId="0"/>
+            </cellXfs>
+        </styleSheet>"#;
+
+        let styles = parse_styles(xml.as_bytes()).unwrap();
+
+        // Check number formats
+        assert_eq!(styles.number_formats.len(), 1);
+        assert_eq!(styles.number_formats[0].id, 164);
+        assert_eq!(styles.number_formats[0].code, "0.00%");
+
+        // Check fonts
+        assert_eq!(styles.fonts.len(), 2);
+        assert_eq!(styles.fonts[0].name, Some("Calibri".to_string()));
+        assert_eq!(styles.fonts[0].size, Some(11.0));
+        assert!(!styles.fonts[0].bold);
+        assert_eq!(styles.fonts[1].name, Some("Arial".to_string()));
+        assert!(styles.fonts[1].bold);
+        assert_eq!(styles.fonts[1].color, Some("FF0000FF".to_string()));
+
+        // Check fills
+        assert_eq!(styles.fills.len(), 2);
+        assert_eq!(styles.fills[0].pattern_type, Some("none".to_string()));
+        assert_eq!(styles.fills[1].pattern_type, Some("solid".to_string()));
+        assert_eq!(styles.fills[1].fg_color, Some("FFFFFF00".to_string()));
+
+        // Check borders
+        assert_eq!(styles.borders.len(), 1);
+        assert!(styles.borders[0].left.is_some());
+        assert_eq!(
+            styles.borders[0].left.as_ref().unwrap().style,
+            Some("thin".to_string())
+        );
+
+        // Check cell formats
+        assert_eq!(styles.cell_formats.len(), 2);
+        assert_eq!(styles.cell_formats[0].font_id, 0);
+        assert_eq!(styles.cell_formats[1].number_format_id, 164);
+        assert_eq!(styles.cell_formats[1].font_id, 1);
+        assert_eq!(styles.cell_formats[1].fill_id, 1);
     }
 }

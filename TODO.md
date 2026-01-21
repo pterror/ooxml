@@ -49,7 +49,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Worksheets - Sheet with rows(), cell(), dimensions()
 - [x] Cells and values - Cell, CellValue (String, Number, Boolean, Error, Empty)
 - [x] Formulas (as strings, not evaluated) - Cell::formula()
-- [ ] Basic formatting (styles, number formats)
+- [x] Basic formatting - Stylesheet, Font, Fill, Border, CellFormat types, Cell.style_index()
 - [x] Shared strings - parsed and resolved automatically
 - [ ] Write support (creating XLSX files)
 
