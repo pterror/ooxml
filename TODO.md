@@ -51,7 +51,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Formulas (as strings, not evaluated) - Cell::formula()
 - [x] Basic formatting - Stylesheet, Font, Fill, Border, CellFormat types, Cell.style_index()
 - [x] Shared strings - parsed and resolved automatically
-- [ ] Write support (creating XLSX files)
+- [x] Write support - WorkbookBuilder, SheetBuilder, set_cell(), set_formula(), save()
 
 ### PresentationML (PowerPoint) - ooxml-pml
 
