@@ -481,6 +481,33 @@ pub enum TransitionType {
     Other(String),
 }
 
+impl TransitionType {
+    /// Convert to XML element name.
+    pub fn to_xml_value(&self) -> &str {
+        match self {
+            TransitionType::Fade => "fade",
+            TransitionType::Push => "push",
+            TransitionType::Wipe => "wipe",
+            TransitionType::Split => "split",
+            TransitionType::Blinds => "blinds",
+            TransitionType::Checker => "checker",
+            TransitionType::Circle => "circle",
+            TransitionType::Dissolve => "dissolve",
+            TransitionType::Comb => "comb",
+            TransitionType::Cover => "cover",
+            TransitionType::Cut => "cut",
+            TransitionType::Diamond => "diamond",
+            TransitionType::Plus => "plus",
+            TransitionType::Random => "random",
+            TransitionType::Strips => "strips",
+            TransitionType::Wedge => "wedge",
+            TransitionType::Wheel => "wheel",
+            TransitionType::Zoom => "zoom",
+            TransitionType::Other(name) => name.as_str(),
+        }
+    }
+}
+
 /// Speed of the slide transition.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum TransitionSpeed {
@@ -491,6 +518,17 @@ pub enum TransitionSpeed {
     Medium,
     /// Fast transition.
     Fast,
+}
+
+impl TransitionSpeed {
+    /// Convert to XML attribute value.
+    pub fn to_xml_value(self) -> &'static str {
+        match self {
+            TransitionSpeed::Slow => "slow",
+            TransitionSpeed::Medium => "med",
+            TransitionSpeed::Fast => "fast",
+        }
+    }
 }
 
 impl Slide {

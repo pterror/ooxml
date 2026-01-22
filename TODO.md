@@ -34,6 +34,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] More examples in docs - read_xlsx, cell_access for ooxml-sml; read_pptx, extract_text for ooxml-pml
 - [x] Real-world usage examples in `examples/` directory (read_docx, create_docx, read_metadata)
 - [ ] API documentation improvements
+- [ ] Consider using Default + field assignment instead of with_ builder methods for simpler configuration structs
 
 ## Robustness
 

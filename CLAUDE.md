@@ -73,6 +73,11 @@ Scope is optional but recommended (e.g., `wml`, `corpus`, `packaging`).
 - Preserve unknown elements/attributes in a catch-all field for roundtrip fidelity
 - Namespaces: define constants for common OOXML namespaces (see ECMA-376 Part 1, §8)
 
+**Serialization patterns:**
+- Enums that map to XML values should have a `to_xml_value()` method
+- Avoid inline match expressions when converting enums to XML strings
+- Keep serialization logic close to the type definition, not scattered in writer code
+
 **Dependencies:**
 - Workspace dependencies in root `Cargo.toml`
 - Internal crates use `{ workspace = true }`

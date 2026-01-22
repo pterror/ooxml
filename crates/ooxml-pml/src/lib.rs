@@ -42,4 +42,6 @@ pub use presentation::{
     Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,
     SlideMaster, Table, TableCell, TableRow, Transition, TransitionSpeed, TransitionType,
 };
-pub use writer::{ImageFormat, PresentationBuilder, SlideBuilder, TableBuilder, TextRun};
+pub use writer::{
+    ImageFormat, PresentationBuilder, SlideBuilder, SlideTransition, TableBuilder, TextRun,
+};

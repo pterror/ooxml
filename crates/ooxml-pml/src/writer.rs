@@ -276,6 +276,51 @@ pub struct SlideBuilder {
     tables: Vec<TableElement>,
     /// Speaker notes for this slide.
     notes: Option<String>,
+    /// Slide transition.
+    transition: Option<SlideTransition>,
+}
+
+/// Slide transition settings for the writer.
+#[derive(Debug, Clone)]
+pub struct SlideTransition {
+    /// Transition type.
+    pub transition_type: crate::TransitionType,
+    /// Transition speed.
+    pub speed: crate::TransitionSpeed,
+    /// Advance on mouse click.
+    pub advance_on_click: bool,
+    /// Auto-advance time in milliseconds.
+    pub advance_after_ms: Option<u32>,
+}
+
+impl SlideTransition {
+    /// Create a new transition with the given type.
+    pub fn new(transition_type: crate::TransitionType) -> Self {
+        Self {
+            transition_type,
+            speed: crate::TransitionSpeed::Medium,
+            advance_on_click: true,
+            advance_after_ms: None,
+        }
+    }
+
+    /// Set the transition speed.
+    pub fn with_speed(mut self, speed: crate::TransitionSpeed) -> Self {
+        self.speed = speed;
+        self
+    }
+
+    /// Set whether to advance on click.
+    pub fn with_advance_on_click(mut self, advance: bool) -> Self {
+        self.advance_on_click = advance;
+        self
+    }
+
+    /// Set auto-advance time in milliseconds.
+    pub fn with_advance_after(mut self, ms: u32) -> Self {
+        self.advance_after_ms = Some(ms);
+        self
+    }
 }
 
 impl SlideBuilder {
@@ -285,6 +330,7 @@ impl SlideBuilder {
             images: Vec::new(),
             tables: Vec::new(),
             notes: None,
+            transition: None,
         }
     }
 
@@ -565,6 +611,23 @@ impl SlideBuilder {
     /// Check if this slide has tables.
     pub fn has_tables(&self) -> bool {
         !self.tables.is_empty()
+    }
+
+    /// Set a slide transition.
+    pub fn set_transition(&mut self, transition: SlideTransition) -> &mut Self {
+        self.transition = Some(transition);
+        self
+    }
+
+    /// Set a simple fade transition.
+    pub fn set_fade_transition(&mut self) -> &mut Self {
+        self.transition = Some(SlideTransition::new(crate::TransitionType::Fade));
+        self
+    }
+
+    /// Check if this slide has a transition.
+    pub fn has_transition(&self) -> bool {
+        self.transition.is_some()
     }
 }
 
@@ -893,7 +956,40 @@ impl PresentationBuilder {
         xml.push_str("  <p:clrMapOvr>\n");
         xml.push_str("    <a:masterClrMapping/>\n");
         xml.push_str("  </p:clrMapOvr>\n");
+
+        // Add transition if set
+        if let Some(ref transition) = slide.transition {
+            xml.push_str(&self.serialize_transition(transition));
+        }
+
         xml.push_str("</p:sld>");
+        xml
+    }
+
+    /// Serialize a slide transition.
+    fn serialize_transition(&self, transition: &SlideTransition) -> String {
+        let mut xml = String::new();
+
+        // Build transition attributes
+        let mut attrs = format!(r#"spd="{}""#, transition.speed.to_xml_value());
+
+        if transition.advance_on_click {
+            attrs.push_str(r#" advClick="1""#);
+        } else {
+            attrs.push_str(r#" advClick="0""#);
+        }
+
+        if let Some(ms) = transition.advance_after_ms {
+            attrs.push_str(&format!(r#" advTm="{}""#, ms));
+        }
+
+        xml.push_str(&format!("  <p:transition {}>\n", attrs));
+        xml.push_str(&format!(
+            "    <p:{}/>\n",
+            transition.transition_type.to_xml_value()
+        ));
+        xml.push_str("  </p:transition>\n");
+
         xml
     }
 
@@ -1417,5 +1513,36 @@ mod tests {
         let links = read_slide.hyperlinks();
         assert_eq!(links.len(), 1);
         assert_eq!(links[0].text, "documentation");
+    }
+
+    #[test]
+    fn test_roundtrip_with_transition() {
+        use std::io::Cursor;
+
+        let mut pres = PresentationBuilder::new();
+        let slide = pres.add_slide();
+        slide.add_title("Transition Test");
+        slide.set_transition(
+            SlideTransition::new(crate::TransitionType::Fade)
+                .with_speed(crate::TransitionSpeed::Slow)
+                .with_advance_after(3000),
+        );
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        pres.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut presentation = crate::Presentation::from_reader(buffer).unwrap();
+        let read_slide = presentation.slide(0).unwrap();
+
+        // Verify transition was read back
+        let transition = read_slide.transition();
+        assert!(transition.is_some());
+        let t = transition.unwrap();
+        assert_eq!(t.transition_type, Some(crate::TransitionType::Fade));
+        assert_eq!(t.speed, crate::TransitionSpeed::Slow);
+        assert_eq!(t.advance_time_ms, Some(3000));
     }
 }
