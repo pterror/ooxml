@@ -110,3 +110,4 @@ Do not:
 - Panic on malformed input - return `Error::Invalid` instead
 - Add format-specific code to `ooxml` core - that belongs in `ooxml-wml`, etc.
 - Commit without running `cargo clippy` and `cargo test`
+- Use path dependencies in Cargo.toml - causes clippy to stash changes across repos

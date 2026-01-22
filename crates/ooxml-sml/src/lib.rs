@@ -50,7 +50,8 @@ pub use workbook::{
     format_excel_datetime,
 };
 pub use writer::{
-    BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, FillPattern, FillStyle, FontStyle,
-    HorizontalAlignment, SheetBuilder, UnderlineStyle, VerticalAlignment, WorkbookBuilder,
-    WriteCellValue,
+    BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, CommentBuilder, ConditionalFormat,
+    ConditionalFormatRule, DataValidationBuilder, DefinedNameBuilder, FillPattern, FillStyle,
+    FontStyle, HorizontalAlignment, SheetBuilder, UnderlineStyle, VerticalAlignment,
+    WorkbookBuilder, WriteCellValue,
 };

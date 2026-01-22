@@ -31,6 +31,8 @@ const CT_WORKSHEET: &str =
 const CT_SHARED_STRINGS: &str =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
 const CT_STYLES: &str = "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml";
+const CT_COMMENTS: &str =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
 const CT_RELATIONSHIPS: &str = "application/vnd.openxmlformats-package.relationships+xml";
 const CT_XML: &str = "application/xml";
 
@@ -43,6 +45,8 @@ const REL_SHARED_STRINGS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
 const REL_STYLES: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
+const REL_COMMENTS: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
 
 // Namespaces
 const NS_SPREADSHEET: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -543,6 +547,416 @@ struct RowHeight {
     height: f64,
 }
 
+/// A conditional formatting rule for writing.
+#[derive(Debug, Clone)]
+pub struct ConditionalFormat {
+    /// Cell range the rule applies to (e.g., "A1:C10").
+    pub range: String,
+    /// The rules in this conditional format.
+    pub rules: Vec<ConditionalFormatRule>,
+}
+
+/// A single conditional formatting rule.
+#[derive(Debug, Clone)]
+pub struct ConditionalFormatRule {
+    /// Rule type.
+    pub rule_type: crate::ConditionalRuleType,
+    /// Priority (lower = higher priority).
+    pub priority: u32,
+    /// Differential formatting ID.
+    pub dxf_id: Option<u32>,
+    /// Operator for cellIs rules.
+    pub operator: Option<String>,
+    /// Formula(s) for the rule.
+    pub formulas: Vec<String>,
+    /// Text for containsText/beginsWith/endsWith rules.
+    pub text: Option<String>,
+}
+
+impl ConditionalFormat {
+    /// Create a new conditional format for a range.
+    pub fn new(range: impl Into<String>) -> Self {
+        Self {
+            range: range.into(),
+            rules: Vec::new(),
+        }
+    }
+
+    /// Add a cell value comparison rule.
+    pub fn add_cell_is_rule(
+        mut self,
+        operator: &str,
+        formula: impl Into<String>,
+        priority: u32,
+        dxf_id: Option<u32>,
+    ) -> Self {
+        self.rules.push(ConditionalFormatRule {
+            rule_type: crate::ConditionalRuleType::CellIs,
+            priority,
+            dxf_id,
+            operator: Some(operator.to_string()),
+            formulas: vec![formula.into()],
+            text: None,
+        });
+        self
+    }
+
+    /// Add a formula expression rule.
+    pub fn add_expression_rule(
+        mut self,
+        formula: impl Into<String>,
+        priority: u32,
+        dxf_id: Option<u32>,
+    ) -> Self {
+        self.rules.push(ConditionalFormatRule {
+            rule_type: crate::ConditionalRuleType::Expression,
+            priority,
+            dxf_id,
+            operator: None,
+            formulas: vec![formula.into()],
+            text: None,
+        });
+        self
+    }
+
+    /// Add a duplicate values rule.
+    pub fn add_duplicate_values_rule(mut self, priority: u32, dxf_id: Option<u32>) -> Self {
+        self.rules.push(ConditionalFormatRule {
+            rule_type: crate::ConditionalRuleType::DuplicateValues,
+            priority,
+            dxf_id,
+            operator: None,
+            formulas: Vec::new(),
+            text: None,
+        });
+        self
+    }
+
+    /// Add a contains text rule.
+    pub fn add_contains_text_rule(
+        mut self,
+        text: impl Into<String>,
+        priority: u32,
+        dxf_id: Option<u32>,
+    ) -> Self {
+        let text = text.into();
+        self.rules.push(ConditionalFormatRule {
+            rule_type: crate::ConditionalRuleType::ContainsText,
+            priority,
+            dxf_id,
+            operator: Some("containsText".to_string()),
+            formulas: Vec::new(),
+            text: Some(text),
+        });
+        self
+    }
+}
+
+/// A data validation rule for writing.
+#[derive(Debug, Clone)]
+pub struct DataValidationBuilder {
+    /// Cell range the validation applies to (e.g., "A1:C10").
+    pub range: String,
+    /// Validation type.
+    pub validation_type: crate::DataValidationType,
+    /// Comparison operator.
+    pub operator: crate::DataValidationOperator,
+    /// First formula/value.
+    pub formula1: Option<String>,
+    /// Second formula/value (for between/notBetween operators).
+    pub formula2: Option<String>,
+    /// Allow blank cells.
+    pub allow_blank: bool,
+    /// Show input message when cell is selected.
+    pub show_input_message: bool,
+    /// Show error message on invalid input.
+    pub show_error_message: bool,
+    /// Error alert style.
+    pub error_style: crate::DataValidationErrorStyle,
+    /// Error title.
+    pub error_title: Option<String>,
+    /// Error message.
+    pub error_message: Option<String>,
+    /// Input prompt title.
+    pub prompt_title: Option<String>,
+    /// Input prompt message.
+    pub prompt_message: Option<String>,
+}
+
+impl DataValidationBuilder {
+    /// Create a new data validation for a range.
+    pub fn new(range: impl Into<String>) -> Self {
+        Self {
+            range: range.into(),
+            validation_type: crate::DataValidationType::None,
+            operator: crate::DataValidationOperator::Between,
+            formula1: None,
+            formula2: None,
+            allow_blank: true,
+            show_input_message: true,
+            show_error_message: true,
+            error_style: crate::DataValidationErrorStyle::Stop,
+            error_title: None,
+            error_message: None,
+            prompt_title: None,
+            prompt_message: None,
+        }
+    }
+
+    /// Create a list validation (dropdown) from a range or comma-separated values.
+    pub fn list(range: impl Into<String>, source: impl Into<String>) -> Self {
+        Self {
+            range: range.into(),
+            validation_type: crate::DataValidationType::List,
+            operator: crate::DataValidationOperator::Between,
+            formula1: Some(source.into()),
+            formula2: None,
+            allow_blank: true,
+            show_input_message: true,
+            show_error_message: true,
+            error_style: crate::DataValidationErrorStyle::Stop,
+            error_title: None,
+            error_message: None,
+            prompt_title: None,
+            prompt_message: None,
+        }
+    }
+
+    /// Create a whole number validation.
+    pub fn whole_number(
+        range: impl Into<String>,
+        operator: crate::DataValidationOperator,
+        value1: impl Into<String>,
+    ) -> Self {
+        Self {
+            range: range.into(),
+            validation_type: crate::DataValidationType::Whole,
+            operator,
+            formula1: Some(value1.into()),
+            formula2: None,
+            allow_blank: true,
+            show_input_message: true,
+            show_error_message: true,
+            error_style: crate::DataValidationErrorStyle::Stop,
+            error_title: None,
+            error_message: None,
+            prompt_title: None,
+            prompt_message: None,
+        }
+    }
+
+    /// Create a decimal number validation.
+    pub fn decimal(
+        range: impl Into<String>,
+        operator: crate::DataValidationOperator,
+        value1: impl Into<String>,
+    ) -> Self {
+        Self {
+            range: range.into(),
+            validation_type: crate::DataValidationType::Decimal,
+            operator,
+            formula1: Some(value1.into()),
+            formula2: None,
+            allow_blank: true,
+            show_input_message: true,
+            show_error_message: true,
+            error_style: crate::DataValidationErrorStyle::Stop,
+            error_title: None,
+            error_message: None,
+            prompt_title: None,
+            prompt_message: None,
+        }
+    }
+
+    /// Set the second value/formula for between/notBetween operators.
+    pub fn with_formula2(mut self, formula2: impl Into<String>) -> Self {
+        self.formula2 = Some(formula2.into());
+        self
+    }
+
+    /// Set whether blank cells are allowed.
+    pub fn with_allow_blank(mut self, allow: bool) -> Self {
+        self.allow_blank = allow;
+        self
+    }
+
+    /// Set the error style.
+    pub fn with_error_style(mut self, style: crate::DataValidationErrorStyle) -> Self {
+        self.error_style = style;
+        self
+    }
+
+    /// Set the error message.
+    pub fn with_error(mut self, title: impl Into<String>, message: impl Into<String>) -> Self {
+        self.error_title = Some(title.into());
+        self.error_message = Some(message.into());
+        self
+    }
+
+    /// Set the input prompt message.
+    pub fn with_prompt(mut self, title: impl Into<String>, message: impl Into<String>) -> Self {
+        self.prompt_title = Some(title.into());
+        self.prompt_message = Some(message.into());
+        self.show_input_message = true;
+        self
+    }
+}
+
+/// A defined name (named range) for writing.
+///
+/// Defined names can reference ranges, formulas, or constants.
+/// They can be global (workbook scope) or local (sheet scope).
+///
+/// # Example
+///
+/// ```ignore
+/// let mut wb = WorkbookBuilder::new();
+/// // Global defined name
+/// wb.add_defined_name("MyRange", "Sheet1!$A$1:$B$10");
+/// // Sheet-scoped defined name
+/// wb.add_defined_name_with_scope("LocalName", "Sheet1!$C$1", 0);
+/// ```
+#[derive(Debug, Clone)]
+pub struct DefinedNameBuilder {
+    /// The name (e.g., "MyRange", "_xlnm.Print_Area").
+    pub name: String,
+    /// The formula or reference (e.g., "Sheet1!$A$1:$B$10").
+    pub reference: String,
+    /// Optional sheet index if this name is scoped to a specific sheet.
+    pub local_sheet_id: Option<u32>,
+    /// Optional comment/description.
+    pub comment: Option<String>,
+    /// Whether this is a hidden name.
+    pub hidden: bool,
+}
+
+impl DefinedNameBuilder {
+    /// Create a new defined name with global scope.
+    pub fn new(name: impl Into<String>, reference: impl Into<String>) -> Self {
+        Self {
+            name: name.into(),
+            reference: reference.into(),
+            local_sheet_id: None,
+            comment: None,
+            hidden: false,
+        }
+    }
+
+    /// Create a new defined name with sheet scope.
+    pub fn with_sheet_scope(
+        name: impl Into<String>,
+        reference: impl Into<String>,
+        sheet_index: u32,
+    ) -> Self {
+        Self {
+            name: name.into(),
+            reference: reference.into(),
+            local_sheet_id: Some(sheet_index),
+            comment: None,
+            hidden: false,
+        }
+    }
+
+    /// Add a comment to the defined name.
+    pub fn with_comment(mut self, comment: impl Into<String>) -> Self {
+        self.comment = Some(comment.into());
+        self
+    }
+
+    /// Mark the defined name as hidden.
+    pub fn hidden(mut self) -> Self {
+        self.hidden = true;
+        self
+    }
+
+    /// Create a print area defined name for a sheet.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let print_area = DefinedNameBuilder::print_area(0, "Sheet1!$A$1:$G$20");
+    /// wb.add_defined_name_builder(print_area);
+    /// ```
+    pub fn print_area(sheet_index: u32, reference: impl Into<String>) -> Self {
+        Self {
+            name: "_xlnm.Print_Area".to_string(),
+            reference: reference.into(),
+            local_sheet_id: Some(sheet_index),
+            comment: None,
+            hidden: false,
+        }
+    }
+
+    /// Create a print titles defined name for a sheet (repeating rows/columns).
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// // Repeat rows 1-2 on each printed page
+    /// let print_titles = DefinedNameBuilder::print_titles(0, "Sheet1!$1:$2");
+    /// wb.add_defined_name_builder(print_titles);
+    /// ```
+    pub fn print_titles(sheet_index: u32, reference: impl Into<String>) -> Self {
+        Self {
+            name: "_xlnm.Print_Titles".to_string(),
+            reference: reference.into(),
+            local_sheet_id: Some(sheet_index),
+            comment: None,
+            hidden: false,
+        }
+    }
+}
+
+/// A cell comment (note) for writing.
+///
+/// # Example
+///
+/// ```ignore
+/// let mut wb = WorkbookBuilder::new();
+/// let sheet = wb.add_sheet("Sheet1");
+/// sheet.add_comment("A1", "This is a comment");
+/// sheet.add_comment_with_author("B1", "Another comment", "John Doe");
+/// ```
+#[derive(Debug, Clone)]
+pub struct CommentBuilder {
+    /// Cell reference (e.g., "A1").
+    pub reference: String,
+    /// Comment text content.
+    pub text: String,
+    /// Author of the comment (optional).
+    pub author: Option<String>,
+}
+
+impl CommentBuilder {
+    /// Create a new comment.
+    pub fn new(reference: impl Into<String>, text: impl Into<String>) -> Self {
+        Self {
+            reference: reference.into(),
+            text: text.into(),
+            author: None,
+        }
+    }
+
+    /// Create a new comment with an author.
+    pub fn with_author(
+        reference: impl Into<String>,
+        text: impl Into<String>,
+        author: impl Into<String>,
+    ) -> Self {
+        Self {
+            reference: reference.into(),
+            text: text.into(),
+            author: Some(author.into()),
+        }
+    }
+
+    /// Set the author of the comment.
+    pub fn author(mut self, author: impl Into<String>) -> Self {
+        self.author = Some(author.into());
+        self
+    }
+}
+
 /// A sheet being built.
 #[derive(Debug)]
 pub struct SheetBuilder {
@@ -551,6 +965,9 @@ pub struct SheetBuilder {
     merged_cells: Vec<String>,
     column_widths: Vec<ColumnWidth>,
     row_heights: Vec<RowHeight>,
+    conditional_formats: Vec<ConditionalFormat>,
+    data_validations: Vec<DataValidationBuilder>,
+    comments: Vec<CommentBuilder>,
 }
 
 impl SheetBuilder {
@@ -561,6 +978,9 @@ impl SheetBuilder {
             merged_cells: Vec::new(),
             column_widths: Vec::new(),
             row_heights: Vec::new(),
+            conditional_formats: Vec::new(),
+            data_validations: Vec::new(),
+            comments: Vec::new(),
         }
     }
 
@@ -700,6 +1120,49 @@ impl SheetBuilder {
         self.row_heights.push(RowHeight { row, height });
     }
 
+    /// Add conditional formatting to the sheet.
+    pub fn add_conditional_format(&mut self, cf: ConditionalFormat) {
+        self.conditional_formats.push(cf);
+    }
+
+    /// Add data validation to the sheet.
+    pub fn add_data_validation(&mut self, dv: DataValidationBuilder) {
+        self.data_validations.push(dv);
+    }
+
+    /// Add a comment (note) to a cell.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.add_comment("A1", "This is a comment");
+    /// ```
+    pub fn add_comment(&mut self, reference: impl Into<String>, text: impl Into<String>) {
+        self.comments.push(CommentBuilder::new(reference, text));
+    }
+
+    /// Add a comment (note) with an author to a cell.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// sheet.add_comment_with_author("A1", "Review needed", "John Doe");
+    /// ```
+    pub fn add_comment_with_author(
+        &mut self,
+        reference: impl Into<String>,
+        text: impl Into<String>,
+        author: impl Into<String>,
+    ) {
+        self.comments
+            .push(CommentBuilder::with_author(reference, text, author));
+    }
+
+    /// Add a comment using a builder for full control.
+    pub fn add_comment_builder(&mut self, comment: CommentBuilder) {
+        self.comments.push(comment);
+    }
+
     /// Get the sheet name.
     pub fn name(&self) -> &str {
         &self.name
@@ -712,6 +1175,7 @@ pub struct WorkbookBuilder {
     sheets: Vec<SheetBuilder>,
     shared_strings: Vec<String>,
     string_index: HashMap<String, usize>,
+    defined_names: Vec<DefinedNameBuilder>,
     // Style collections (populated during write)
     fonts: Vec<FontStyle>,
     font_index: HashMap<FontStyleKey, usize>,
@@ -834,6 +1298,7 @@ impl WorkbookBuilder {
             sheets: Vec::new(),
             shared_strings: Vec::new(),
             string_index: HashMap::new(),
+            defined_names: Vec::new(),
             fonts: Vec::new(),
             font_index: HashMap::new(),
             fills: Vec::new(),
@@ -861,6 +1326,92 @@ impl WorkbookBuilder {
     /// Get the number of sheets.
     pub fn sheet_count(&self) -> usize {
         self.sheets.len()
+    }
+
+    /// Add a defined name (named range) with global (workbook) scope.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut wb = WorkbookBuilder::new();
+    /// wb.add_sheet("Sheet1");
+    /// wb.add_defined_name("MyRange", "Sheet1!$A$1:$B$10");
+    /// ```
+    pub fn add_defined_name(&mut self, name: impl Into<String>, reference: impl Into<String>) {
+        self.defined_names
+            .push(DefinedNameBuilder::new(name, reference));
+    }
+
+    /// Add a defined name (named range) with sheet scope.
+    ///
+    /// Sheet-scoped names are only visible within the specified sheet.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut wb = WorkbookBuilder::new();
+    /// wb.add_sheet("Sheet1");
+    /// // This name is only visible in Sheet1 (index 0)
+    /// wb.add_defined_name_with_scope("LocalRange", "Sheet1!$A$1:$B$10", 0);
+    /// ```
+    pub fn add_defined_name_with_scope(
+        &mut self,
+        name: impl Into<String>,
+        reference: impl Into<String>,
+        sheet_index: u32,
+    ) {
+        self.defined_names
+            .push(DefinedNameBuilder::with_sheet_scope(
+                name,
+                reference,
+                sheet_index,
+            ));
+    }
+
+    /// Add a defined name using a builder for full control.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut wb = WorkbookBuilder::new();
+    /// wb.add_sheet("Sheet1");
+    ///
+    /// let name = DefinedNameBuilder::new("MyRange", "Sheet1!$A$1:$B$10")
+    ///     .with_comment("Sales data range")
+    ///     .hidden();
+    /// wb.add_defined_name_builder(name);
+    /// ```
+    pub fn add_defined_name_builder(&mut self, builder: DefinedNameBuilder) {
+        self.defined_names.push(builder);
+    }
+
+    /// Add a print area for a sheet.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut wb = WorkbookBuilder::new();
+    /// wb.add_sheet("Sheet1");
+    /// wb.set_print_area(0, "Sheet1!$A$1:$G$20");
+    /// ```
+    pub fn set_print_area(&mut self, sheet_index: u32, reference: impl Into<String>) {
+        self.defined_names
+            .push(DefinedNameBuilder::print_area(sheet_index, reference));
+    }
+
+    /// Add print titles (repeating rows/columns) for a sheet.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// let mut wb = WorkbookBuilder::new();
+    /// wb.add_sheet("Sheet1");
+    /// // Repeat rows 1-2 on each printed page
+    /// wb.set_print_titles(0, "Sheet1!$1:$2");
+    /// ```
+    pub fn set_print_titles(&mut self, sheet_index: u32, reference: impl Into<String>) {
+        self.defined_names
+            .push(DefinedNameBuilder::print_titles(sheet_index, reference));
     }
 
     /// Save the workbook to a file.
@@ -959,6 +1510,32 @@ impl WorkbookBuilder {
         }
 
         workbook_xml.push_str("  </sheets>\n");
+
+        // Add defined names if any
+        if !self.defined_names.is_empty() {
+            workbook_xml.push_str("  <definedNames>\n");
+            for dn in &self.defined_names {
+                workbook_xml.push_str("    <definedName name=\"");
+                workbook_xml.push_str(&escape_xml(&dn.name));
+                workbook_xml.push('"');
+                if let Some(sheet_id) = dn.local_sheet_id {
+                    workbook_xml.push_str(&format!(" localSheetId=\"{}\"", sheet_id));
+                }
+                if let Some(ref comment) = dn.comment {
+                    workbook_xml.push_str(" comment=\"");
+                    workbook_xml.push_str(&escape_xml(comment));
+                    workbook_xml.push('"');
+                }
+                if dn.hidden {
+                    workbook_xml.push_str(" hidden=\"1\"");
+                }
+                workbook_xml.push('>');
+                workbook_xml.push_str(&escape_xml(&dn.reference));
+                workbook_xml.push_str("</definedName>\n");
+            }
+            workbook_xml.push_str("  </definedNames>\n");
+        }
+
         workbook_xml.push_str("</workbook>");
 
         // Write parts to package
@@ -976,12 +1553,30 @@ impl WorkbookBuilder {
             pkg.add_part("xl/styles.xml", CT_STYLES, styles_xml.as_bytes())?;
         }
 
-        // Write each sheet
+        // Write each sheet and its related parts (comments, etc.)
         for (i, sheet) in self.sheets.iter().enumerate() {
             let sheet_num = i + 1;
             let sheet_xml = self.serialize_sheet(sheet);
             let part_name = format!("xl/worksheets/sheet{}.xml", sheet_num);
             pkg.add_part(&part_name, CT_WORKSHEET, sheet_xml.as_bytes())?;
+
+            // Write comments if the sheet has any
+            if !sheet.comments.is_empty() {
+                let comments_xml = self.serialize_comments(sheet);
+                let comments_part = format!("xl/comments{}.xml", sheet_num);
+                pkg.add_part(&comments_part, CT_COMMENTS, comments_xml.as_bytes())?;
+
+                // Write sheet relationships (for comments)
+                let sheet_rels = format!(
+                    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../comments{}.xml"/>
+</Relationships>"#,
+                    REL_COMMENTS, sheet_num
+                );
+                let rels_part = format!("xl/worksheets/_rels/sheet{}.xml.rels", sheet_num);
+                pkg.add_part(&rels_part, CT_RELATIONSHIPS, sheet_rels.as_bytes())?;
+            }
         }
 
         // Write shared strings if any
@@ -1169,6 +1764,64 @@ impl WorkbookBuilder {
         })
     }
 
+    /// Serialize comments to XML.
+    ///
+    /// ECMA-376 Part 1, Section 18.7 (Comments).
+    fn serialize_comments(&self, sheet: &SheetBuilder) -> String {
+        let mut xml = String::new();
+        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+        xml.push('\n');
+        xml.push_str(&format!(r#"<comments xmlns="{}">"#, NS_SPREADSHEET));
+        xml.push('\n');
+
+        // Collect unique authors
+        let mut authors: Vec<String> = Vec::new();
+        let mut author_index: HashMap<String, usize> = HashMap::new();
+
+        for comment in &sheet.comments {
+            let author = comment.author.clone().unwrap_or_default();
+            if !author_index.contains_key(&author) {
+                author_index.insert(author.clone(), authors.len());
+                authors.push(author);
+            }
+        }
+
+        // Write authors
+        xml.push_str("  <authors>\n");
+        for author in &authors {
+            xml.push_str("    <author>");
+            xml.push_str(&escape_xml(author));
+            xml.push_str("</author>\n");
+        }
+        xml.push_str("  </authors>\n");
+
+        // Write comment list
+        xml.push_str("  <commentList>\n");
+        for comment in &sheet.comments {
+            let author = comment.author.clone().unwrap_or_default();
+            let author_id = author_index.get(&author).unwrap_or(&0);
+
+            xml.push_str(&format!(
+                r#"    <comment ref="{}" authorId="{}">"#,
+                escape_xml(&comment.reference),
+                author_id
+            ));
+            xml.push('\n');
+            xml.push_str("      <text>\n");
+            xml.push_str("        <r>\n");
+            xml.push_str("          <t>");
+            xml.push_str(&escape_xml(&comment.text));
+            xml.push_str("</t>\n");
+            xml.push_str("        </r>\n");
+            xml.push_str("      </text>\n");
+            xml.push_str("    </comment>\n");
+        }
+        xml.push_str("  </commentList>\n");
+        xml.push_str("</comments>");
+
+        xml
+    }
+
     /// Serialize styles to XML.
     fn serialize_styles(&self) -> String {
         let mut xml = String::new();
@@ -1341,6 +1994,103 @@ impl WorkbookBuilder {
         xml
     }
 
+    /// Serialize a data validation rule.
+    fn serialize_data_validation(&self, xml: &mut String, dv: &DataValidationBuilder) {
+        let mut attrs = format!(r#"sqref="{}""#, escape_xml(&dv.range));
+
+        // Add type if not None
+        if dv.validation_type != crate::DataValidationType::None {
+            attrs.push_str(&format!(r#" type="{}""#, dv.validation_type.to_xml_value()));
+        }
+
+        // Add operator if not Between (the default)
+        if dv.operator != crate::DataValidationOperator::Between {
+            attrs.push_str(&format!(r#" operator="{}""#, dv.operator.to_xml_value()));
+        }
+
+        // Add boolean attributes
+        if dv.allow_blank {
+            attrs.push_str(r#" allowBlank="1""#);
+        }
+        if dv.show_input_message {
+            attrs.push_str(r#" showInputMessage="1""#);
+        }
+        if dv.show_error_message {
+            attrs.push_str(r#" showErrorMessage="1""#);
+        }
+
+        // Add error style if not Stop (the default)
+        if dv.error_style != crate::DataValidationErrorStyle::Stop {
+            attrs.push_str(&format!(
+                r#" errorStyle="{}""#,
+                dv.error_style.to_xml_value()
+            ));
+        }
+
+        // Add error/prompt strings
+        if let Some(ref title) = dv.error_title {
+            attrs.push_str(&format!(r#" errorTitle="{}""#, escape_xml(title)));
+        }
+        if let Some(ref msg) = dv.error_message {
+            attrs.push_str(&format!(r#" error="{}""#, escape_xml(msg)));
+        }
+        if let Some(ref title) = dv.prompt_title {
+            attrs.push_str(&format!(r#" promptTitle="{}""#, escape_xml(title)));
+        }
+        if let Some(ref msg) = dv.prompt_message {
+            attrs.push_str(&format!(r#" prompt="{}""#, escape_xml(msg)));
+        }
+
+        // Add formulas
+        let has_formulas = dv.formula1.is_some() || dv.formula2.is_some();
+        if !has_formulas {
+            xml.push_str(&format!("    <dataValidation {}/>\n", attrs));
+        } else {
+            xml.push_str(&format!("    <dataValidation {}>\n", attrs));
+            if let Some(ref f1) = dv.formula1 {
+                xml.push_str(&format!("      <formula1>{}</formula1>\n", escape_xml(f1)));
+            }
+            if let Some(ref f2) = dv.formula2 {
+                xml.push_str(&format!("      <formula2>{}</formula2>\n", escape_xml(f2)));
+            }
+            xml.push_str("    </dataValidation>\n");
+        }
+    }
+
+    /// Serialize a conditional formatting rule.
+    fn serialize_conditional_rule(&self, xml: &mut String, rule: &ConditionalFormatRule) {
+        let mut attrs = format!(
+            r#"type="{}" priority="{}""#,
+            rule.rule_type.to_xml_value(),
+            rule.priority
+        );
+
+        if let Some(dxf_id) = rule.dxf_id {
+            attrs.push_str(&format!(r#" dxfId="{}""#, dxf_id));
+        }
+
+        if let Some(op) = &rule.operator {
+            attrs.push_str(&format!(r#" operator="{}""#, op));
+        }
+
+        if let Some(text) = &rule.text {
+            attrs.push_str(&format!(r#" text="{}""#, escape_xml(text)));
+        }
+
+        if rule.formulas.is_empty() {
+            xml.push_str(&format!("    <cfRule {}/>\n", attrs));
+        } else {
+            xml.push_str(&format!("    <cfRule {}>\n", attrs));
+            for formula in &rule.formulas {
+                xml.push_str(&format!(
+                    "      <formula>{}</formula>\n",
+                    escape_xml(formula)
+                ));
+            }
+            xml.push_str("    </cfRule>\n");
+        }
+    }
+
     /// Serialize a border side element.
     fn serialize_border_side(&self, xml: &mut String, name: &str, side: &Option<BorderSideStyle>) {
         if let Some(s) = side {
@@ -1441,6 +2191,32 @@ impl WorkbookBuilder {
                 xml.push('\n');
             }
             xml.push_str("  </mergeCells>\n");
+        }
+
+        // Write conditional formatting if any
+        for cf in &sheet.conditional_formats {
+            xml.push_str(&format!(
+                r#"  <conditionalFormatting sqref="{}">"#,
+                escape_xml(&cf.range)
+            ));
+            xml.push('\n');
+            for rule in &cf.rules {
+                self.serialize_conditional_rule(&mut xml, rule);
+            }
+            xml.push_str("  </conditionalFormatting>\n");
+        }
+
+        // Write data validations if any
+        if !sheet.data_validations.is_empty() {
+            xml.push_str(&format!(
+                r#"  <dataValidations count="{}">"#,
+                sheet.data_validations.len()
+            ));
+            xml.push('\n');
+            for dv in &sheet.data_validations {
+                self.serialize_data_validation(&mut xml, dv);
+            }
+            xml.push_str("  </dataValidations>\n");
         }
 
         xml.push_str("</worksheet>");
@@ -1746,5 +2522,235 @@ mod tests {
 
         let row2 = read_sheet.row(2).unwrap();
         assert_eq!(row2.height(), Some(18.0));
+    }
+
+    #[test]
+    fn test_roundtrip_conditional_formatting() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", 10.0);
+        sheet.set_cell("A2", 20.0);
+        sheet.set_cell("A3", 30.0);
+
+        // Add conditional formatting: highlight cells > 15
+        let cf = ConditionalFormat::new("A1:A3")
+            .add_cell_is_rule("greaterThan", "15", 1, None)
+            .add_expression_rule("$A1>$A2", 2, None);
+        sheet.add_conditional_format(cf);
+
+        // Add another rule for duplicates
+        let cf2 = ConditionalFormat::new("B1:B10").add_duplicate_values_rule(1, None);
+        sheet.add_conditional_format(cf2);
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.sheet(0).unwrap();
+
+        // Check conditional formatting was preserved
+        let cfs = read_sheet.conditional_formats();
+        assert_eq!(cfs.len(), 2);
+
+        // First conditional format
+        assert_eq!(cfs[0].ranges, "A1:A3");
+        assert_eq!(cfs[0].rules.len(), 2);
+
+        // First rule: cellIs greaterThan
+        assert_eq!(
+            cfs[0].rules[0].rule_type,
+            crate::ConditionalRuleType::CellIs
+        );
+        assert_eq!(cfs[0].rules[0].operator.as_deref(), Some("greaterThan"));
+        assert_eq!(cfs[0].rules[0].formulas, vec!["15"]);
+
+        // Second rule: expression
+        assert_eq!(
+            cfs[0].rules[1].rule_type,
+            crate::ConditionalRuleType::Expression
+        );
+        assert_eq!(cfs[0].rules[1].formulas, vec!["$A1>$A2"]);
+
+        // Second conditional format
+        assert_eq!(cfs[1].ranges, "B1:B10");
+        assert_eq!(cfs[1].rules.len(), 1);
+        assert_eq!(
+            cfs[1].rules[0].rule_type,
+            crate::ConditionalRuleType::DuplicateValues
+        );
+    }
+
+    #[test]
+    fn test_roundtrip_data_validation() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", 10.0);
+
+        // Add a list validation
+        let dv = DataValidationBuilder::list("A1:A10", "\"Yes,No,Maybe\"")
+            .with_error("Invalid Input", "Please select from the list")
+            .with_prompt("Select", "Choose a value");
+        sheet.add_data_validation(dv);
+
+        // Add a whole number validation
+        let dv2 = DataValidationBuilder::whole_number(
+            "B1:B10",
+            crate::DataValidationOperator::GreaterThan,
+            "0",
+        )
+        .with_error("Invalid Number", "Please enter a positive number");
+        sheet.add_data_validation(dv2);
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.sheet(0).unwrap();
+
+        // Check data validations were preserved
+        let dvs = read_sheet.data_validations();
+        assert_eq!(dvs.len(), 2);
+
+        // First validation: list
+        assert_eq!(dvs[0].ranges, "A1:A10");
+        assert_eq!(dvs[0].validation_type, crate::DataValidationType::List);
+        assert_eq!(dvs[0].formula1.as_deref(), Some("\"Yes,No,Maybe\""));
+        assert_eq!(dvs[0].error_title.as_deref(), Some("Invalid Input"));
+        assert_eq!(
+            dvs[0].error_message.as_deref(),
+            Some("Please select from the list")
+        );
+        assert_eq!(dvs[0].prompt_title.as_deref(), Some("Select"));
+        assert_eq!(dvs[0].prompt_message.as_deref(), Some("Choose a value"));
+
+        // Second validation: whole number > 0
+        assert_eq!(dvs[1].ranges, "B1:B10");
+        assert_eq!(dvs[1].validation_type, crate::DataValidationType::Whole);
+        assert_eq!(dvs[1].operator, crate::DataValidationOperator::GreaterThan);
+        assert_eq!(dvs[1].formula1.as_deref(), Some("0"));
+    }
+
+    #[test]
+    fn test_roundtrip_defined_names() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        wb.add_sheet("Sheet1");
+        wb.add_sheet("Sheet2");
+
+        // Add a global defined name
+        wb.add_defined_name("GlobalRange", "Sheet1!$A$1:$B$10");
+
+        // Add a sheet-scoped defined name
+        wb.add_defined_name_with_scope("LocalRange", "Sheet1!$C$1:$D$5", 0);
+
+        // Add a defined name with comment using builder
+        let dn = DefinedNameBuilder::new("DataRange", "Sheet2!$A$1:$Z$100")
+            .with_comment("Main data table");
+        wb.add_defined_name_builder(dn);
+
+        // Add print area
+        wb.set_print_area(0, "Sheet1!$A$1:$G$20");
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let workbook = crate::Workbook::from_reader(buffer).unwrap();
+
+        // Check defined names were preserved
+        let names = workbook.defined_names();
+        assert_eq!(names.len(), 4);
+
+        // Check global range
+        let global = workbook.defined_name("GlobalRange").unwrap();
+        assert_eq!(global.name, "GlobalRange");
+        assert_eq!(global.reference, "Sheet1!$A$1:$B$10");
+        assert!(global.local_sheet_id.is_none());
+
+        // Check sheet-scoped range
+        let local = workbook.defined_name_in_sheet("LocalRange", 0).unwrap();
+        assert_eq!(local.name, "LocalRange");
+        assert_eq!(local.reference, "Sheet1!$C$1:$D$5");
+        assert_eq!(local.local_sheet_id, Some(0));
+
+        // Check data range with comment
+        let data = workbook.defined_name("DataRange").unwrap();
+        assert_eq!(data.name, "DataRange");
+        assert_eq!(data.reference, "Sheet2!$A$1:$Z$100");
+        assert_eq!(data.comment.as_deref(), Some("Main data table"));
+
+        // Check print area (built-in name)
+        let print_area = workbook
+            .defined_name_in_sheet("_xlnm.Print_Area", 0)
+            .unwrap();
+        assert_eq!(print_area.reference, "Sheet1!$A$1:$G$20");
+        assert!(print_area.is_builtin());
+    }
+
+    #[test]
+    fn test_roundtrip_comments() {
+        use std::io::Cursor;
+
+        let mut wb = WorkbookBuilder::new();
+        let sheet = wb.add_sheet("Sheet1");
+        sheet.set_cell("A1", "Hello");
+        sheet.set_cell("B1", 42.0);
+
+        // Add comments
+        sheet.add_comment("A1", "This is a simple comment");
+        sheet.add_comment_with_author("B1", "Review this value", "John Doe");
+
+        // Add a comment using the builder
+        let comment = CommentBuilder::new("C1", "Builder comment").author("Jane Smith");
+        sheet.add_comment_builder(comment);
+
+        // Write to memory
+        let mut buffer = Cursor::new(Vec::new());
+        wb.write(&mut buffer).unwrap();
+
+        // Read back
+        buffer.set_position(0);
+        let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
+        let read_sheet = workbook.sheet(0).unwrap();
+
+        // Check comments were preserved
+        let comments = read_sheet.comments();
+        assert_eq!(comments.len(), 3);
+
+        // First comment
+        let c1 = read_sheet.comment("A1").unwrap();
+        assert_eq!(c1.reference(), "A1");
+        assert_eq!(c1.text(), "This is a simple comment");
+        assert!(c1.author().map_or(true, |a| a.is_empty())); // Empty author
+
+        // Second comment
+        let c2 = read_sheet.comment("B1").unwrap();
+        assert_eq!(c2.reference(), "B1");
+        assert_eq!(c2.text(), "Review this value");
+        assert_eq!(c2.author(), Some("John Doe"));
+
+        // Third comment
+        let c3 = read_sheet.comment("C1").unwrap();
+        assert_eq!(c3.reference(), "C1");
+        assert_eq!(c3.text(), "Builder comment");
+        assert_eq!(c3.author(), Some("Jane Smith"));
+
+        // Check helper method
+        assert!(read_sheet.has_comment("A1"));
+        assert!(read_sheet.has_comment("B1"));
+        assert!(!read_sheet.has_comment("D1"));
     }
 }
