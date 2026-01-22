@@ -28,7 +28,11 @@
 //! let value = cell.value_as_string(&ctx);
 //! ```
 
-use crate::types::{Cell, CellType, Row};
+use crate::parsers::{FromXml, ParseError};
+use crate::types::{Cell, CellType, Row, SheetData, Worksheet};
+use quick_xml::Reader;
+use quick_xml::events::Event;
+use std::io::Cursor;
 
 /// Resolved cell value (typed).
 #[derive(Debug, Clone, PartialEq)]
@@ -324,6 +328,160 @@ impl RowExt for Row {
 }
 
 // =============================================================================
+// Worksheet Parsing
+// =============================================================================
+
+/// Parse a worksheet from XML bytes using the generated FromXml parser.
+///
+/// This is the recommended way to parse worksheet XML, as it uses the
+/// spec-compliant generated types and is faster than serde.
+pub fn parse_worksheet(xml: &[u8]) -> Result<Worksheet, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return Worksheet::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return Worksheet::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no worksheet element found".to_string(),
+    ))
+}
+
+// =============================================================================
+// Worksheet Extension Traits
+// =============================================================================
+
+/// Pure extension methods for `Worksheet` (no context needed).
+pub trait WorksheetExt {
+    /// Get the sheet data (rows and cells).
+    fn sheet_data(&self) -> &SheetData;
+
+    /// Get the number of rows.
+    fn row_count(&self) -> usize;
+
+    /// Check if the worksheet is empty.
+    fn is_empty(&self) -> bool;
+
+    /// Get a row by 1-based row number.
+    fn row(&self, row_num: u32) -> Option<&Row>;
+
+    /// Get a cell by reference (e.g., "A1", "B5").
+    fn cell(&self, reference: &str) -> Option<&Cell>;
+
+    /// Iterate over all rows.
+    fn rows(&self) -> impl Iterator<Item = &Row>;
+
+    /// Check if the worksheet has an auto-filter.
+    fn has_auto_filter(&self) -> bool;
+
+    /// Check if the worksheet has merged cells.
+    fn has_merged_cells(&self) -> bool;
+
+    /// Check if the worksheet has conditional formatting.
+    fn has_conditional_formatting(&self) -> bool;
+
+    /// Check if the worksheet has data validations.
+    fn has_data_validations(&self) -> bool;
+
+    /// Check if the worksheet has freeze panes.
+    fn has_freeze_panes(&self) -> bool;
+}
+
+impl WorksheetExt for Worksheet {
+    fn sheet_data(&self) -> &SheetData {
+        &self.sheet_data
+    }
+
+    fn row_count(&self) -> usize {
+        self.sheet_data.row.len()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.sheet_data.row.is_empty()
+    }
+
+    fn row(&self, row_num: u32) -> Option<&Row> {
+        self.sheet_data
+            .row
+            .iter()
+            .find(|r| r.reference == Some(row_num))
+            .map(|r| r.as_ref())
+    }
+
+    fn cell(&self, reference: &str) -> Option<&Cell> {
+        let col = parse_column(reference)?;
+        let row_num = parse_row(reference)?;
+        let row = self.row(row_num)?;
+        row.cells
+            .iter()
+            .find(|c| {
+                c.reference
+                    .as_ref()
+                    .and_then(|r| parse_column(r))
+                    .map(|c_col| c_col == col)
+                    .unwrap_or(false)
+            })
+            .map(|c| c.as_ref())
+    }
+
+    fn rows(&self) -> impl Iterator<Item = &Row> {
+        self.sheet_data.row.iter().map(|r| r.as_ref())
+    }
+
+    fn has_auto_filter(&self) -> bool {
+        self.auto_filter.is_some()
+    }
+
+    fn has_merged_cells(&self) -> bool {
+        self.merged_cells.is_some()
+    }
+
+    fn has_conditional_formatting(&self) -> bool {
+        !self.conditional_formatting.is_empty()
+    }
+
+    fn has_data_validations(&self) -> bool {
+        self.data_validations.is_some()
+    }
+
+    fn has_freeze_panes(&self) -> bool {
+        // Check if any sheet view has a pane with frozen state
+        self.sheet_views
+            .as_ref()
+            .is_some_and(|views| views.sheet_view.iter().any(|sv| sv.pane.is_some()))
+    }
+}
+
+/// Extension methods for `SheetData`.
+pub trait SheetDataExt {
+    /// Get a row by 1-based row number.
+    fn row(&self, row_num: u32) -> Option<&Row>;
+
+    /// Iterate over rows.
+    fn rows(&self) -> impl Iterator<Item = &Row>;
+}
+
+impl SheetDataExt for SheetData {
+    fn row(&self, row_num: u32) -> Option<&Row> {
+        self.row
+            .iter()
+            .find(|r| r.reference == Some(row_num))
+            .map(|r| r.as_ref())
+    }
+
+    fn rows(&self) -> impl Iterator<Item = &Row> {
+        self.row.iter().map(|r| r.as_ref())
+    }
+}
+
+// =============================================================================
 // Helpers
 // =============================================================================
 
@@ -454,5 +612,68 @@ mod tests {
         assert_eq!(cell.resolved_value(&ctx), CellValue::Boolean(true));
         assert_eq!(cell.value_as_string(&ctx), "TRUE");
         assert_eq!(cell.value_as_bool(&ctx), Some(true));
+    }
+
+    #[test]
+    fn test_parse_worksheet() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <sheetData>
+                <row r="1" spans="1:3">
+                    <c r="A1" t="s"><v>0</v></c>
+                    <c r="B1"><v>42.5</v></c>
+                    <c r="C1" t="b"><v>1</v></c>
+                </row>
+                <row r="2">
+                    <c r="A2"><v>100</v></c>
+                </row>
+            </sheetData>
+        </worksheet>"#;
+
+        let worksheet = parse_worksheet(xml).expect("parse failed");
+
+        assert_eq!(worksheet.row_count(), 2);
+        assert!(!worksheet.is_empty());
+
+        // Test row access
+        let row1 = worksheet.row(1).expect("row 1 should exist");
+        assert_eq!(row1.cells.len(), 3);
+
+        let row2 = worksheet.row(2).expect("row 2 should exist");
+        assert_eq!(row2.cells.len(), 1);
+
+        // Test cell access by reference
+        let cell_a1 = worksheet.cell("A1").expect("A1 should exist");
+        assert_eq!(cell_a1.value.as_deref(), Some("0"));
+        assert!(cell_a1.is_shared_string());
+
+        let cell_b1 = worksheet.cell("B1").expect("B1 should exist");
+        assert_eq!(cell_b1.value.as_deref(), Some("42.5"));
+        assert!(cell_b1.is_number());
+
+        // Test non-existent cell
+        assert!(worksheet.cell("Z99").is_none());
+    }
+
+    #[test]
+    fn test_worksheet_ext_with_resolve() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <sheetData>
+                <row r="1">
+                    <c r="A1" t="s"><v>0</v></c>
+                    <c r="B1" t="s"><v>1</v></c>
+                </row>
+            </sheetData>
+        </worksheet>"#;
+
+        let worksheet = parse_worksheet(xml).expect("parse failed");
+        let ctx = ResolveContext::new(vec!["Hello".to_string(), "World".to_string()]);
+
+        let cell_a1 = worksheet.cell("A1").expect("A1 should exist");
+        assert_eq!(cell_a1.value_as_string(&ctx), "Hello");
+
+        let cell_b1 = worksheet.cell("B1").expect("B1 should exist");
+        assert_eq!(cell_b1.value_as_string(&ctx), "World");
     }
 }

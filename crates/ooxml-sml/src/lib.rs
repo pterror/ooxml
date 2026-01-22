@@ -52,7 +52,10 @@ pub use generated_parsers as parsers;
 
 // Extension traits for generated types (see ADR-003)
 pub mod ext;
-pub use ext::{CellExt, CellResolveExt, CellValue, ResolveContext, RowExt};
+pub use ext::{
+    CellExt, CellResolveExt, CellValue, ResolveContext, RowExt, SheetDataExt, WorksheetExt,
+    parse_worksheet,
+};
 
 pub use error::{Error, Result};
 // Note: workbook::CellValue is aliased to avoid conflict with ext::CellValue
