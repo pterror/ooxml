@@ -1,4 +1,4 @@
-use ooxml_codegen::{CodegenConfig, Schema, generate, parse_rnc};
+use ooxml_codegen::{CodegenConfig, NameMappings, Schema, generate, generate_parsers, parse_rnc};
 use std::fs;
 use std::path::Path;
 
@@ -7,6 +7,7 @@ fn main() {
         env!("CARGO_MANIFEST_DIR"),
         "/../../spec/OfficeOpenXML-RELAXNG-Transitional"
     );
+    let names_path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../spec/ooxml-names.yaml");
 
     // Paths to schemas
     let sml_path = format!("{}/sml.rnc", spec_dir);
@@ -15,6 +16,7 @@ fn main() {
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", sml_path);
     println!("cargo::rerun-if-changed={}", shared_path);
+    println!("cargo::rerun-if-changed={}", names_path);
     println!("cargo::rerun-if-changed=build.rs");
 
     // The generated file is committed at src/generated.rs
@@ -65,10 +67,29 @@ fn main() {
     }
     combined_schema.definitions.extend(sml_schema.definitions);
 
+    // Load name mappings if available
+    let name_mappings = if Path::new(names_path).exists() {
+        match NameMappings::from_yaml_file(Path::new(names_path)) {
+            Ok(mappings) => {
+                eprintln!("Loaded name mappings from {}", names_path);
+                Some(mappings)
+            }
+            Err(e) => {
+                eprintln!("Warning: Failed to load name mappings: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
+
     // Generate Rust code
+    // SML schema uses "sml_" prefix for SpreadsheetML types
     let config = CodegenConfig {
-        strip_prefix: Some("x_".to_string()),
+        strip_prefix: Some("sml_".to_string()),
         module_name: "sml".to_string(),
+        name_mappings,
+        ..Default::default()
     };
     let code = generate(&combined_schema, &config);
 
@@ -78,4 +99,16 @@ fn main() {
         "Generated {} bytes to src/generated.rs",
         dest_path.metadata().map(|m| m.len()).unwrap_or(0)
     );
+
+    // Generate event-based parsers (optional, still experimental)
+    // Enable with OOXML_GENERATE_PARSERS=1
+    if std::env::var("OOXML_GENERATE_PARSERS").is_ok() {
+        let parser_dest = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/generated_parsers.rs");
+        let parser_code = generate_parsers(&combined_schema, &config);
+        fs::write(&parser_dest, parser_code).expect("failed to write generated parsers");
+        eprintln!(
+            "Generated {} bytes to src/generated_parsers.rs",
+            parser_dest.metadata().map(|m| m.len()).unwrap_or(0)
+        );
+    }
 }

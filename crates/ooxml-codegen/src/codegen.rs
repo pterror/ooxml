@@ -1,25 +1,106 @@
 //! Rust code generator from parsed RNC schemas.
 
 use crate::ast::{Definition, Pattern, QName, Schema};
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::fmt::Write;
 
+/// Name mappings for a single module (sml, wml, pml, dml).
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct ModuleMappings {
+    /// Type name mappings: `CT_AutoFilter` → `AutoFilter`
+    #[serde(default)]
+    pub types: HashMap<String, String>,
+    /// Field name mappings: `r` → `reference`
+    #[serde(default)]
+    pub fields: HashMap<String, String>,
+    /// Enum variant mappings: `customXml` → `CustomXmlContent`
+    #[serde(default)]
+    pub variants: HashMap<String, String>,
+}
+
+/// Complete name mappings file structure.
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct NameMappings {
+    /// Shared mappings applied to all modules.
+    #[serde(default)]
+    pub shared: ModuleMappings,
+    /// SpreadsheetML mappings.
+    #[serde(default)]
+    pub sml: ModuleMappings,
+    /// WordprocessingML mappings.
+    #[serde(default)]
+    pub wml: ModuleMappings,
+    /// PresentationML mappings.
+    #[serde(default)]
+    pub pml: ModuleMappings,
+    /// DrawingML mappings.
+    #[serde(default)]
+    pub dml: ModuleMappings,
+}
+
+impl NameMappings {
+    /// Load mappings from a YAML string.
+    pub fn from_yaml(yaml: &str) -> Result<Self, serde_yaml::Error> {
+        serde_yaml::from_str(yaml)
+    }
+
+    /// Load mappings from a YAML file.
+    pub fn from_yaml_file(path: &std::path::Path) -> Result<Self, Box<dyn std::error::Error>> {
+        let contents = std::fs::read_to_string(path)?;
+        Ok(Self::from_yaml(&contents)?)
+    }
+
+    /// Get the module mappings for a given module name.
+    pub fn for_module(&self, module: &str) -> &ModuleMappings {
+        match module {
+            "sml" => &self.sml,
+            "wml" => &self.wml,
+            "pml" => &self.pml,
+            "dml" => &self.dml,
+            _ => &self.shared,
+        }
+    }
+
+    /// Resolve a type name, checking module-specific then shared mappings.
+    pub fn resolve_type(&self, module: &str, spec_name: &str) -> Option<&str> {
+        self.for_module(module)
+            .types
+            .get(spec_name)
+            .or_else(|| self.shared.types.get(spec_name))
+            .map(|s| s.as_str())
+    }
+
+    /// Resolve a field name, checking module-specific then shared mappings.
+    pub fn resolve_field(&self, module: &str, spec_name: &str) -> Option<&str> {
+        self.for_module(module)
+            .fields
+            .get(spec_name)
+            .or_else(|| self.shared.fields.get(spec_name))
+            .map(|s| s.as_str())
+    }
+
+    /// Resolve a variant name, checking module-specific then shared mappings.
+    pub fn resolve_variant(&self, module: &str, spec_name: &str) -> Option<&str> {
+        self.for_module(module)
+            .variants
+            .get(spec_name)
+            .or_else(|| self.shared.variants.get(spec_name))
+            .map(|s| s.as_str())
+    }
+}
+
 /// Code generation configuration.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct CodegenConfig {
     /// Namespace prefix to strip from type names (e.g., "w_" for WordprocessingML).
     pub strip_prefix: Option<String>,
-    /// Module name for the generated code.
+    /// Module name for the generated code (e.g., "sml", "wml").
     pub module_name: String,
-}
-
-impl Default for CodegenConfig {
-    fn default() -> Self {
-        Self {
-            strip_prefix: None,
-            module_name: "types".to_string(),
-        }
-    }
+    /// Optional name mappings for nicer Rust names.
+    pub name_mappings: Option<NameMappings>,
+    /// Warn about types/fields without mappings (useful for finding unmapped items).
+    pub warn_unmapped: bool,
 }
 
 /// Generate Rust code from a parsed schema.
@@ -502,14 +583,23 @@ impl<'a> Generator<'a> {
     }
 
     fn to_rust_type_name(&self, name: &str) -> String {
-        let name = if let Some(prefix) = &self.config.strip_prefix {
-            name.strip_prefix(prefix).unwrap_or(name)
-        } else {
-            name
-        };
+        // Strip namespace prefix to get spec name (e.g., "sml_CT_AutoFilter" → "CT_AutoFilter")
+        let spec_name = strip_namespace_prefix(name);
 
-        // Convert to PascalCase, keeping CT/ST/EG prefix
-        to_pascal_case(name)
+        // Check name mappings first
+        if let Some(mappings) = &self.config.name_mappings
+            && let Some(mapped) = mappings.resolve_type(&self.config.module_name, spec_name)
+        {
+            return mapped.to_string();
+        }
+
+        // Warn about unmapped types if enabled
+        if self.config.warn_unmapped && self.config.name_mappings.is_some() {
+            eprintln!("warning: unmapped type '{}' (spec: {})", spec_name, name);
+        }
+
+        // Fall back to PascalCase conversion
+        to_pascal_case(spec_name)
     }
 
     fn to_rust_variant_name(&self, name: &str) -> String {
@@ -517,6 +607,15 @@ impl<'a> Generator<'a> {
         if name.is_empty() {
             return "Empty".to_string();
         }
+
+        // Check name mappings first
+        if let Some(mappings) = &self.config.name_mappings
+            && let Some(mapped) = mappings.resolve_variant(&self.config.module_name, name)
+        {
+            return mapped.to_string();
+        }
+
+        // Fall back to PascalCase conversion
         let name = to_pascal_case(name);
         // Prefix with underscore if starts with digit
         if name.chars().next().is_some_and(|c| c.is_ascii_digit()) {
@@ -527,6 +626,19 @@ impl<'a> Generator<'a> {
     }
 
     fn qname_to_field_name(&self, qname: &QName) -> String {
+        // Check name mappings first
+        if let Some(mappings) = &self.config.name_mappings
+            && let Some(mapped) = mappings.resolve_field(&self.config.module_name, &qname.local)
+        {
+            return mapped.to_string();
+        }
+
+        // Warn about unmapped fields if enabled
+        if self.config.warn_unmapped && self.config.name_mappings.is_some() {
+            eprintln!("warning: unmapped field '{}'", qname.local);
+        }
+
+        // Fall back to snake_case conversion
         to_snake_case(&qname.local)
     }
 
@@ -608,6 +720,26 @@ struct Field {
     is_optional: bool,
     is_attribute: bool,
     is_vec: bool,
+}
+
+/// Strip namespace prefix from a definition name.
+/// Examples:
+/// - `sml_CT_AutoFilter` → `CT_AutoFilter`
+/// - `s_ST_Lang` → `ST_Lang`
+/// - `w_EG_ContentRunContent` → `EG_ContentRunContent`
+/// - `CT_Foo` → `CT_Foo` (no prefix)
+fn strip_namespace_prefix(name: &str) -> &str {
+    // Find the type kind prefix (CT_, ST_, EG_)
+    for kind in ["CT_", "ST_", "EG_"] {
+        if let Some(pos) = name.find(kind)
+            && pos > 0
+        {
+            // There's a namespace prefix before the kind
+            return &name[pos..];
+        }
+    }
+    // No known type kind found, return as-is
+    name
 }
 
 fn to_pascal_case(s: &str) -> String {

@@ -12,5 +12,12 @@ quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true
 
+[dev-dependencies]
+criterion.workspace = true
+
 [build-dependencies]
 ooxml-codegen.workspace = true
+
+[[bench]]
+name = "parse_benchmark"
+harness = false

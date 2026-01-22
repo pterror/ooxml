@@ -56,6 +56,7 @@ fn test_generate_wml() {
     let config = CodegenConfig {
         strip_prefix: Some("w_".to_string()),
         module_name: "wml".to_string(),
+        ..Default::default()
     };
 
     let code = generate(&schema, &config);

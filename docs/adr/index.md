@@ -7,6 +7,7 @@ This directory contains Architecture Decision Records (ADRs) documenting signifi
 | ADR | Title | Status |
 |-----|-------|--------|
 | [001](./001-custom-rnc-parser.md) | Custom RNC Parser for Code Generation | Accepted |
+| [002](./002-event-based-parsing.md) | Event-Based XML Parsing for Generated Types | Accepted |
 
 ## Template
 

@@ -1,4 +1,4 @@
-use ooxml_codegen::{CodegenConfig, Schema, generate, parse_rnc};
+use ooxml_codegen::{CodegenConfig, NameMappings, Schema, generate, parse_rnc};
 use std::fs;
 use std::path::Path;
 
@@ -7,6 +7,7 @@ fn main() {
         env!("CARGO_MANIFEST_DIR"),
         "/../../spec/OfficeOpenXML-RELAXNG-Transitional"
     );
+    let names_path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../spec/ooxml-names.yaml");
 
     // Paths to schemas
     let dml_path = format!("{}/dml-main.rnc", spec_dir);
@@ -15,6 +16,7 @@ fn main() {
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", dml_path);
     println!("cargo::rerun-if-changed={}", shared_path);
+    println!("cargo::rerun-if-changed={}", names_path);
     println!("cargo::rerun-if-changed=build.rs");
 
     // The generated file is committed at src/generated.rs
@@ -65,10 +67,28 @@ fn main() {
     }
     combined_schema.definitions.extend(dml_schema.definitions);
 
+    // Load name mappings if available
+    let name_mappings = if Path::new(names_path).exists() {
+        match NameMappings::from_yaml_file(Path::new(names_path)) {
+            Ok(mappings) => {
+                eprintln!("Loaded name mappings from {}", names_path);
+                Some(mappings)
+            }
+            Err(e) => {
+                eprintln!("Warning: Failed to load name mappings: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
+
     // Generate Rust code
     let config = CodegenConfig {
         strip_prefix: Some("a_".to_string()),
         module_name: "dml".to_string(),
+        name_mappings,
+        ..Default::default()
     };
     let code = generate(&combined_schema, &config);
 

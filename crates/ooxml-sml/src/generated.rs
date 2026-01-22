@@ -23,14 +23,14 @@ pub mod ns {
     pub const XDR: &str = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing";
 }
 
-pub type SSTLang = String;
+pub type Language = String;
 
-pub type SSTHexColorRGB = Vec<u8>;
+pub type HexColorRgb = Vec<u8>;
 
-pub type SSTPanose = Vec<u8>;
+pub type Panose = Vec<u8>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTCalendarType {
+pub enum CalendarType {
     #[serde(rename = "gregorian")]
     Gregorian,
     #[serde(rename = "gregorianUs")]
@@ -61,7 +61,7 @@ pub enum SSTCalendarType {
     None,
 }
 
-impl std::fmt::Display for SSTCalendarType {
+impl std::fmt::Display for CalendarType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Gregorian => write!(f, "gregorian"),
@@ -82,7 +82,7 @@ impl std::fmt::Display for SSTCalendarType {
     }
 }
 
-impl std::str::FromStr for SSTCalendarType {
+impl std::str::FromStr for CalendarType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -101,20 +101,20 @@ impl std::str::FromStr for SSTCalendarType {
             "gregorianXlitEnglish" => Ok(Self::GregorianXlitEnglish),
             "gregorianXlitFrench" => Ok(Self::GregorianXlitFrench),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SSTCalendarType value: {}", s)),
+            _ => Err(format!("unknown CalendarType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTAlgClass {
+pub enum STAlgClass {
     #[serde(rename = "hash")]
     Hash,
     #[serde(rename = "custom")]
     Custom,
 }
 
-impl std::fmt::Display for SSTAlgClass {
+impl std::fmt::Display for STAlgClass {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Hash => write!(f, "hash"),
@@ -123,20 +123,20 @@ impl std::fmt::Display for SSTAlgClass {
     }
 }
 
-impl std::str::FromStr for SSTAlgClass {
+impl std::str::FromStr for STAlgClass {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "hash" => Ok(Self::Hash),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTAlgClass value: {}", s)),
+            _ => Err(format!("unknown STAlgClass value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTCryptProv {
+pub enum STCryptProv {
     #[serde(rename = "rsaAES")]
     RsaAES,
     #[serde(rename = "rsaFull")]
@@ -145,7 +145,7 @@ pub enum SSTCryptProv {
     Custom,
 }
 
-impl std::fmt::Display for SSTCryptProv {
+impl std::fmt::Display for STCryptProv {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::RsaAES => write!(f, "rsaAES"),
@@ -155,7 +155,7 @@ impl std::fmt::Display for SSTCryptProv {
     }
 }
 
-impl std::str::FromStr for SSTCryptProv {
+impl std::str::FromStr for STCryptProv {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -163,20 +163,20 @@ impl std::str::FromStr for SSTCryptProv {
             "rsaAES" => Ok(Self::RsaAES),
             "rsaFull" => Ok(Self::RsaFull),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTCryptProv value: {}", s)),
+            _ => Err(format!("unknown STCryptProv value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTAlgType {
+pub enum STAlgType {
     #[serde(rename = "typeAny")]
     TypeAny,
     #[serde(rename = "custom")]
     Custom,
 }
 
-impl std::fmt::Display for SSTAlgType {
+impl std::fmt::Display for STAlgType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::TypeAny => write!(f, "typeAny"),
@@ -185,33 +185,33 @@ impl std::fmt::Display for SSTAlgType {
     }
 }
 
-impl std::str::FromStr for SSTAlgType {
+impl std::str::FromStr for STAlgType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "typeAny" => Ok(Self::TypeAny),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTAlgType value: {}", s)),
+            _ => Err(format!("unknown STAlgType value: {}", s)),
         }
     }
 }
 
-pub type SSTColorType = String;
+pub type STColorType = String;
 
-pub type SSTGuid = String;
+pub type Guid = String;
 
-pub type SSTOnOff = String;
+pub type OnOff = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTOnOff1 {
+pub enum STOnOff1 {
     #[serde(rename = "on")]
     On,
     #[serde(rename = "off")]
     Off,
 }
 
-impl std::fmt::Display for SSTOnOff1 {
+impl std::fmt::Display for STOnOff1 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::On => write!(f, "on"),
@@ -220,24 +220,24 @@ impl std::fmt::Display for SSTOnOff1 {
     }
 }
 
-impl std::str::FromStr for SSTOnOff1 {
+impl std::str::FromStr for STOnOff1 {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "on" => Ok(Self::On),
             "off" => Ok(Self::Off),
-            _ => Err(format!("unknown SSTOnOff1 value: {}", s)),
+            _ => Err(format!("unknown STOnOff1 value: {}", s)),
         }
     }
 }
 
-pub type SSTString = String;
+pub type STString = String;
 
-pub type SSTXmlName = String;
+pub type STXmlName = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTTrueFalse {
+pub enum TrueFalse {
     #[serde(rename = "t")]
     T,
     #[serde(rename = "f")]
@@ -248,7 +248,7 @@ pub enum SSTTrueFalse {
     False,
 }
 
-impl std::fmt::Display for SSTTrueFalse {
+impl std::fmt::Display for TrueFalse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::T => write!(f, "t"),
@@ -259,7 +259,7 @@ impl std::fmt::Display for SSTTrueFalse {
     }
 }
 
-impl std::str::FromStr for SSTTrueFalse {
+impl std::str::FromStr for TrueFalse {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -268,13 +268,13 @@ impl std::str::FromStr for SSTTrueFalse {
             "f" => Ok(Self::F),
             "true" => Ok(Self::True),
             "false" => Ok(Self::False),
-            _ => Err(format!("unknown SSTTrueFalse value: {}", s)),
+            _ => Err(format!("unknown TrueFalse value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTTrueFalseBlank {
+pub enum STTrueFalseBlank {
     #[serde(rename = "t")]
     T,
     #[serde(rename = "f")]
@@ -287,7 +287,7 @@ pub enum SSTTrueFalseBlank {
     Empty,
 }
 
-impl std::fmt::Display for SSTTrueFalseBlank {
+impl std::fmt::Display for STTrueFalseBlank {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::T => write!(f, "t"),
@@ -299,7 +299,7 @@ impl std::fmt::Display for SSTTrueFalseBlank {
     }
 }
 
-impl std::str::FromStr for SSTTrueFalseBlank {
+impl std::str::FromStr for STTrueFalseBlank {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -311,17 +311,17 @@ impl std::str::FromStr for SSTTrueFalseBlank {
             "" => Ok(Self::Empty),
             "True" => Ok(Self::True),
             "False" => Ok(Self::False),
-            _ => Err(format!("unknown SSTTrueFalseBlank value: {}", s)),
+            _ => Err(format!("unknown STTrueFalseBlank value: {}", s)),
         }
     }
 }
 
-pub type SSTUnsignedDecimalNumber = u64;
+pub type STUnsignedDecimalNumber = u64;
 
-pub type SSTTwipsMeasure = String;
+pub type STTwipsMeasure = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTVerticalAlignRun {
+pub enum VerticalAlignRun {
     #[serde(rename = "baseline")]
     Baseline,
     #[serde(rename = "superscript")]
@@ -330,7 +330,7 @@ pub enum SSTVerticalAlignRun {
     Subscript,
 }
 
-impl std::fmt::Display for SSTVerticalAlignRun {
+impl std::fmt::Display for VerticalAlignRun {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Baseline => write!(f, "baseline"),
@@ -340,7 +340,7 @@ impl std::fmt::Display for SSTVerticalAlignRun {
     }
 }
 
-impl std::str::FromStr for SSTVerticalAlignRun {
+impl std::str::FromStr for VerticalAlignRun {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -348,15 +348,15 @@ impl std::str::FromStr for SSTVerticalAlignRun {
             "baseline" => Ok(Self::Baseline),
             "superscript" => Ok(Self::Superscript),
             "subscript" => Ok(Self::Subscript),
-            _ => Err(format!("unknown SSTVerticalAlignRun value: {}", s)),
+            _ => Err(format!("unknown VerticalAlignRun value: {}", s)),
         }
     }
 }
 
-pub type SSTXstring = String;
+pub type XmlString = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTXAlign {
+pub enum STXAlign {
     #[serde(rename = "left")]
     Left,
     #[serde(rename = "center")]
@@ -369,7 +369,7 @@ pub enum SSTXAlign {
     Outside,
 }
 
-impl std::fmt::Display for SSTXAlign {
+impl std::fmt::Display for STXAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Left => write!(f, "left"),
@@ -381,7 +381,7 @@ impl std::fmt::Display for SSTXAlign {
     }
 }
 
-impl std::str::FromStr for SSTXAlign {
+impl std::str::FromStr for STXAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -391,13 +391,13 @@ impl std::str::FromStr for SSTXAlign {
             "right" => Ok(Self::Right),
             "inside" => Ok(Self::Inside),
             "outside" => Ok(Self::Outside),
-            _ => Err(format!("unknown SSTXAlign value: {}", s)),
+            _ => Err(format!("unknown STXAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTYAlign {
+pub enum STYAlign {
     #[serde(rename = "inline")]
     Inline,
     #[serde(rename = "top")]
@@ -412,7 +412,7 @@ pub enum SSTYAlign {
     Outside,
 }
 
-impl std::fmt::Display for SSTYAlign {
+impl std::fmt::Display for STYAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Inline => write!(f, "inline"),
@@ -425,7 +425,7 @@ impl std::fmt::Display for SSTYAlign {
     }
 }
 
-impl std::str::FromStr for SSTYAlign {
+impl std::str::FromStr for STYAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -436,20 +436,20 @@ impl std::str::FromStr for SSTYAlign {
             "bottom" => Ok(Self::Bottom),
             "inside" => Ok(Self::Inside),
             "outside" => Ok(Self::Outside),
-            _ => Err(format!("unknown SSTYAlign value: {}", s)),
+            _ => Err(format!("unknown STYAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTConformanceClass {
+pub enum STConformanceClass {
     #[serde(rename = "strict")]
     Strict,
     #[serde(rename = "transitional")]
     Transitional,
 }
 
-impl std::fmt::Display for SSTConformanceClass {
+impl std::fmt::Display for STConformanceClass {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Strict => write!(f, "strict"),
@@ -458,32 +458,32 @@ impl std::fmt::Display for SSTConformanceClass {
     }
 }
 
-impl std::str::FromStr for SSTConformanceClass {
+impl std::str::FromStr for STConformanceClass {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "strict" => Ok(Self::Strict),
             "transitional" => Ok(Self::Transitional),
-            _ => Err(format!("unknown SSTConformanceClass value: {}", s)),
+            _ => Err(format!("unknown STConformanceClass value: {}", s)),
         }
     }
 }
 
-pub type SSTUniversalMeasure = String;
+pub type STUniversalMeasure = String;
 
-pub type SSTPositiveUniversalMeasure = String;
+pub type STPositiveUniversalMeasure = String;
 
-pub type SSTPercentage = String;
+pub type STPercentage = String;
 
-pub type SSTFixedPercentage = String;
+pub type STFixedPercentage = String;
 
-pub type SSTPositivePercentage = String;
+pub type STPositivePercentage = String;
 
-pub type SSTPositiveFixedPercentage = String;
+pub type STPositiveFixedPercentage = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFilterOperator {
+pub enum FilterOperator {
     #[serde(rename = "equal")]
     Equal,
     #[serde(rename = "lessThan")]
@@ -498,7 +498,7 @@ pub enum SmlSTFilterOperator {
     GreaterThan,
 }
 
-impl std::fmt::Display for SmlSTFilterOperator {
+impl std::fmt::Display for FilterOperator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Equal => write!(f, "equal"),
@@ -511,7 +511,7 @@ impl std::fmt::Display for SmlSTFilterOperator {
     }
 }
 
-impl std::str::FromStr for SmlSTFilterOperator {
+impl std::str::FromStr for FilterOperator {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -522,13 +522,13 @@ impl std::str::FromStr for SmlSTFilterOperator {
             "notEqual" => Ok(Self::NotEqual),
             "greaterThanOrEqual" => Ok(Self::GreaterThanOrEqual),
             "greaterThan" => Ok(Self::GreaterThan),
-            _ => Err(format!("unknown SmlSTFilterOperator value: {}", s)),
+            _ => Err(format!("unknown FilterOperator value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDynamicFilterType {
+pub enum DynamicFilterType {
     #[serde(rename = "null")]
     Null,
     #[serde(rename = "aboveAverage")]
@@ -601,7 +601,7 @@ pub enum SmlSTDynamicFilterType {
     M12,
 }
 
-impl std::fmt::Display for SmlSTDynamicFilterType {
+impl std::fmt::Display for DynamicFilterType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Null => write!(f, "null"),
@@ -643,7 +643,7 @@ impl std::fmt::Display for SmlSTDynamicFilterType {
     }
 }
 
-impl std::str::FromStr for SmlSTDynamicFilterType {
+impl std::str::FromStr for DynamicFilterType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -683,13 +683,13 @@ impl std::str::FromStr for SmlSTDynamicFilterType {
             "M10" => Ok(Self::M10),
             "M11" => Ok(Self::M11),
             "M12" => Ok(Self::M12),
-            _ => Err(format!("unknown SmlSTDynamicFilterType value: {}", s)),
+            _ => Err(format!("unknown DynamicFilterType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTIconSetType {
+pub enum IconSetType {
     #[serde(rename = "3Arrows")]
     _3Arrows,
     #[serde(rename = "3ArrowsGray")]
@@ -726,7 +726,7 @@ pub enum SmlSTIconSetType {
     _5Quarters,
 }
 
-impl std::fmt::Display for SmlSTIconSetType {
+impl std::fmt::Display for IconSetType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::_3Arrows => write!(f, "3Arrows"),
@@ -750,7 +750,7 @@ impl std::fmt::Display for SmlSTIconSetType {
     }
 }
 
-impl std::str::FromStr for SmlSTIconSetType {
+impl std::str::FromStr for IconSetType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -772,13 +772,13 @@ impl std::str::FromStr for SmlSTIconSetType {
             "5ArrowsGray" => Ok(Self::_5ArrowsGray),
             "5Rating" => Ok(Self::_5Rating),
             "5Quarters" => Ok(Self::_5Quarters),
-            _ => Err(format!("unknown SmlSTIconSetType value: {}", s)),
+            _ => Err(format!("unknown IconSetType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSortBy {
+pub enum SortBy {
     #[serde(rename = "value")]
     Value,
     #[serde(rename = "cellColor")]
@@ -789,7 +789,7 @@ pub enum SmlSTSortBy {
     Icon,
 }
 
-impl std::fmt::Display for SmlSTSortBy {
+impl std::fmt::Display for SortBy {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Value => write!(f, "value"),
@@ -800,7 +800,7 @@ impl std::fmt::Display for SmlSTSortBy {
     }
 }
 
-impl std::str::FromStr for SmlSTSortBy {
+impl std::str::FromStr for SortBy {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -809,13 +809,13 @@ impl std::str::FromStr for SmlSTSortBy {
             "cellColor" => Ok(Self::CellColor),
             "fontColor" => Ok(Self::FontColor),
             "icon" => Ok(Self::Icon),
-            _ => Err(format!("unknown SmlSTSortBy value: {}", s)),
+            _ => Err(format!("unknown SortBy value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSortMethod {
+pub enum SortMethod {
     #[serde(rename = "stroke")]
     Stroke,
     #[serde(rename = "pinYin")]
@@ -824,7 +824,7 @@ pub enum SmlSTSortMethod {
     None,
 }
 
-impl std::fmt::Display for SmlSTSortMethod {
+impl std::fmt::Display for SortMethod {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Stroke => write!(f, "stroke"),
@@ -834,7 +834,7 @@ impl std::fmt::Display for SmlSTSortMethod {
     }
 }
 
-impl std::str::FromStr for SmlSTSortMethod {
+impl std::str::FromStr for SortMethod {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -842,13 +842,13 @@ impl std::str::FromStr for SmlSTSortMethod {
             "stroke" => Ok(Self::Stroke),
             "pinYin" => Ok(Self::PinYin),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SmlSTSortMethod value: {}", s)),
+            _ => Err(format!("unknown SortMethod value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDateTimeGrouping {
+pub enum STDateTimeGrouping {
     #[serde(rename = "year")]
     Year,
     #[serde(rename = "month")]
@@ -863,7 +863,7 @@ pub enum SmlSTDateTimeGrouping {
     Second,
 }
 
-impl std::fmt::Display for SmlSTDateTimeGrouping {
+impl std::fmt::Display for STDateTimeGrouping {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Year => write!(f, "year"),
@@ -876,7 +876,7 @@ impl std::fmt::Display for SmlSTDateTimeGrouping {
     }
 }
 
-impl std::str::FromStr for SmlSTDateTimeGrouping {
+impl std::str::FromStr for STDateTimeGrouping {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -887,27 +887,27 @@ impl std::str::FromStr for SmlSTDateTimeGrouping {
             "hour" => Ok(Self::Hour),
             "minute" => Ok(Self::Minute),
             "second" => Ok(Self::Second),
-            _ => Err(format!("unknown SmlSTDateTimeGrouping value: {}", s)),
+            _ => Err(format!("unknown STDateTimeGrouping value: {}", s)),
         }
     }
 }
 
-pub type SmlSTCellRef = String;
+pub type CellRef = String;
 
-pub type SmlSTRef = String;
+pub type Reference = String;
 
-pub type SmlSTRefA = String;
+pub type STRefA = String;
 
-pub type SmlSTSqref = String;
+pub type SquareRef = String;
 
-pub type SmlSTFormula = SSTXstring;
+pub type STFormula = XmlString;
 
-pub type SmlSTUnsignedIntHex = Vec<u8>;
+pub type STUnsignedIntHex = Vec<u8>;
 
-pub type SmlSTUnsignedShortHex = Vec<u8>;
+pub type STUnsignedShortHex = Vec<u8>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTextHAlign {
+pub enum STTextHAlign {
     #[serde(rename = "left")]
     Left,
     #[serde(rename = "center")]
@@ -920,7 +920,7 @@ pub enum SmlSTTextHAlign {
     Distributed,
 }
 
-impl std::fmt::Display for SmlSTTextHAlign {
+impl std::fmt::Display for STTextHAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Left => write!(f, "left"),
@@ -932,7 +932,7 @@ impl std::fmt::Display for SmlSTTextHAlign {
     }
 }
 
-impl std::str::FromStr for SmlSTTextHAlign {
+impl std::str::FromStr for STTextHAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -942,13 +942,13 @@ impl std::str::FromStr for SmlSTTextHAlign {
             "right" => Ok(Self::Right),
             "justify" => Ok(Self::Justify),
             "distributed" => Ok(Self::Distributed),
-            _ => Err(format!("unknown SmlSTTextHAlign value: {}", s)),
+            _ => Err(format!("unknown STTextHAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTextVAlign {
+pub enum STTextVAlign {
     #[serde(rename = "top")]
     Top,
     #[serde(rename = "center")]
@@ -961,7 +961,7 @@ pub enum SmlSTTextVAlign {
     Distributed,
 }
 
-impl std::fmt::Display for SmlSTTextVAlign {
+impl std::fmt::Display for STTextVAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Top => write!(f, "top"),
@@ -973,7 +973,7 @@ impl std::fmt::Display for SmlSTTextVAlign {
     }
 }
 
-impl std::str::FromStr for SmlSTTextVAlign {
+impl std::str::FromStr for STTextVAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -983,13 +983,13 @@ impl std::str::FromStr for SmlSTTextVAlign {
             "bottom" => Ok(Self::Bottom),
             "justify" => Ok(Self::Justify),
             "distributed" => Ok(Self::Distributed),
-            _ => Err(format!("unknown SmlSTTextVAlign value: {}", s)),
+            _ => Err(format!("unknown STTextVAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCredMethod {
+pub enum STCredMethod {
     #[serde(rename = "integrated")]
     Integrated,
     #[serde(rename = "none")]
@@ -1000,7 +1000,7 @@ pub enum SmlSTCredMethod {
     Prompt,
 }
 
-impl std::fmt::Display for SmlSTCredMethod {
+impl std::fmt::Display for STCredMethod {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Integrated => write!(f, "integrated"),
@@ -1011,7 +1011,7 @@ impl std::fmt::Display for SmlSTCredMethod {
     }
 }
 
-impl std::str::FromStr for SmlSTCredMethod {
+impl std::str::FromStr for STCredMethod {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1020,13 +1020,13 @@ impl std::str::FromStr for SmlSTCredMethod {
             "none" => Ok(Self::None),
             "stored" => Ok(Self::Stored),
             "prompt" => Ok(Self::Prompt),
-            _ => Err(format!("unknown SmlSTCredMethod value: {}", s)),
+            _ => Err(format!("unknown STCredMethod value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTHtmlFmt {
+pub enum STHtmlFmt {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "rtf")]
@@ -1035,7 +1035,7 @@ pub enum SmlSTHtmlFmt {
     All,
 }
 
-impl std::fmt::Display for SmlSTHtmlFmt {
+impl std::fmt::Display for STHtmlFmt {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -1045,7 +1045,7 @@ impl std::fmt::Display for SmlSTHtmlFmt {
     }
 }
 
-impl std::str::FromStr for SmlSTHtmlFmt {
+impl std::str::FromStr for STHtmlFmt {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1053,13 +1053,13 @@ impl std::str::FromStr for SmlSTHtmlFmt {
             "none" => Ok(Self::None),
             "rtf" => Ok(Self::Rtf),
             "all" => Ok(Self::All),
-            _ => Err(format!("unknown SmlSTHtmlFmt value: {}", s)),
+            _ => Err(format!("unknown STHtmlFmt value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTParameterType {
+pub enum STParameterType {
     #[serde(rename = "prompt")]
     Prompt,
     #[serde(rename = "value")]
@@ -1068,7 +1068,7 @@ pub enum SmlSTParameterType {
     Cell,
 }
 
-impl std::fmt::Display for SmlSTParameterType {
+impl std::fmt::Display for STParameterType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Prompt => write!(f, "prompt"),
@@ -1078,7 +1078,7 @@ impl std::fmt::Display for SmlSTParameterType {
     }
 }
 
-impl std::str::FromStr for SmlSTParameterType {
+impl std::str::FromStr for STParameterType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1086,13 +1086,13 @@ impl std::str::FromStr for SmlSTParameterType {
             "prompt" => Ok(Self::Prompt),
             "value" => Ok(Self::Value),
             "cell" => Ok(Self::Cell),
-            _ => Err(format!("unknown SmlSTParameterType value: {}", s)),
+            _ => Err(format!("unknown STParameterType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFileType {
+pub enum STFileType {
     #[serde(rename = "mac")]
     Mac,
     #[serde(rename = "win")]
@@ -1105,7 +1105,7 @@ pub enum SmlSTFileType {
     Other,
 }
 
-impl std::fmt::Display for SmlSTFileType {
+impl std::fmt::Display for STFileType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Mac => write!(f, "mac"),
@@ -1117,7 +1117,7 @@ impl std::fmt::Display for SmlSTFileType {
     }
 }
 
-impl std::str::FromStr for SmlSTFileType {
+impl std::str::FromStr for STFileType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1127,13 +1127,13 @@ impl std::str::FromStr for SmlSTFileType {
             "dos" => Ok(Self::Dos),
             "lin" => Ok(Self::Lin),
             "other" => Ok(Self::Other),
-            _ => Err(format!("unknown SmlSTFileType value: {}", s)),
+            _ => Err(format!("unknown STFileType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTQualifier {
+pub enum STQualifier {
     #[serde(rename = "doubleQuote")]
     DoubleQuote,
     #[serde(rename = "singleQuote")]
@@ -1142,7 +1142,7 @@ pub enum SmlSTQualifier {
     None,
 }
 
-impl std::fmt::Display for SmlSTQualifier {
+impl std::fmt::Display for STQualifier {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::DoubleQuote => write!(f, "doubleQuote"),
@@ -1152,7 +1152,7 @@ impl std::fmt::Display for SmlSTQualifier {
     }
 }
 
-impl std::str::FromStr for SmlSTQualifier {
+impl std::str::FromStr for STQualifier {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1160,13 +1160,13 @@ impl std::str::FromStr for SmlSTQualifier {
             "doubleQuote" => Ok(Self::DoubleQuote),
             "singleQuote" => Ok(Self::SingleQuote),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SmlSTQualifier value: {}", s)),
+            _ => Err(format!("unknown STQualifier value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTExternalConnectionType {
+pub enum STExternalConnectionType {
     #[serde(rename = "general")]
     General,
     #[serde(rename = "text")]
@@ -1189,7 +1189,7 @@ pub enum SmlSTExternalConnectionType {
     EMD,
 }
 
-impl std::fmt::Display for SmlSTExternalConnectionType {
+impl std::fmt::Display for STExternalConnectionType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::General => write!(f, "general"),
@@ -1206,7 +1206,7 @@ impl std::fmt::Display for SmlSTExternalConnectionType {
     }
 }
 
-impl std::str::FromStr for SmlSTExternalConnectionType {
+impl std::str::FromStr for STExternalConnectionType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1221,13 +1221,13 @@ impl std::str::FromStr for SmlSTExternalConnectionType {
             "YDM" => Ok(Self::YDM),
             "skip" => Ok(Self::Skip),
             "EMD" => Ok(Self::EMD),
-            _ => Err(format!("unknown SmlSTExternalConnectionType value: {}", s)),
+            _ => Err(format!("unknown STExternalConnectionType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSourceType {
+pub enum STSourceType {
     #[serde(rename = "worksheet")]
     Worksheet,
     #[serde(rename = "external")]
@@ -1238,7 +1238,7 @@ pub enum SmlSTSourceType {
     Scenario,
 }
 
-impl std::fmt::Display for SmlSTSourceType {
+impl std::fmt::Display for STSourceType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Worksheet => write!(f, "worksheet"),
@@ -1249,7 +1249,7 @@ impl std::fmt::Display for SmlSTSourceType {
     }
 }
 
-impl std::str::FromStr for SmlSTSourceType {
+impl std::str::FromStr for STSourceType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1258,13 +1258,13 @@ impl std::str::FromStr for SmlSTSourceType {
             "external" => Ok(Self::External),
             "consolidation" => Ok(Self::Consolidation),
             "scenario" => Ok(Self::Scenario),
-            _ => Err(format!("unknown SmlSTSourceType value: {}", s)),
+            _ => Err(format!("unknown STSourceType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTGroupBy {
+pub enum STGroupBy {
     #[serde(rename = "range")]
     Range,
     #[serde(rename = "seconds")]
@@ -1283,7 +1283,7 @@ pub enum SmlSTGroupBy {
     Years,
 }
 
-impl std::fmt::Display for SmlSTGroupBy {
+impl std::fmt::Display for STGroupBy {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Range => write!(f, "range"),
@@ -1298,7 +1298,7 @@ impl std::fmt::Display for SmlSTGroupBy {
     }
 }
 
-impl std::str::FromStr for SmlSTGroupBy {
+impl std::str::FromStr for STGroupBy {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1311,13 +1311,13 @@ impl std::str::FromStr for SmlSTGroupBy {
             "months" => Ok(Self::Months),
             "quarters" => Ok(Self::Quarters),
             "years" => Ok(Self::Years),
-            _ => Err(format!("unknown SmlSTGroupBy value: {}", s)),
+            _ => Err(format!("unknown STGroupBy value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSortType {
+pub enum STSortType {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "ascending")]
@@ -1334,7 +1334,7 @@ pub enum SmlSTSortType {
     DescendingNatural,
 }
 
-impl std::fmt::Display for SmlSTSortType {
+impl std::fmt::Display for STSortType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -1348,7 +1348,7 @@ impl std::fmt::Display for SmlSTSortType {
     }
 }
 
-impl std::str::FromStr for SmlSTSortType {
+impl std::str::FromStr for STSortType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1360,13 +1360,13 @@ impl std::str::FromStr for SmlSTSortType {
             "descendingAlpha" => Ok(Self::DescendingAlpha),
             "ascendingNatural" => Ok(Self::AscendingNatural),
             "descendingNatural" => Ok(Self::DescendingNatural),
-            _ => Err(format!("unknown SmlSTSortType value: {}", s)),
+            _ => Err(format!("unknown STSortType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTScope {
+pub enum STScope {
     #[serde(rename = "selection")]
     Selection,
     #[serde(rename = "data")]
@@ -1375,7 +1375,7 @@ pub enum SmlSTScope {
     Field,
 }
 
-impl std::fmt::Display for SmlSTScope {
+impl std::fmt::Display for STScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Selection => write!(f, "selection"),
@@ -1385,7 +1385,7 @@ impl std::fmt::Display for SmlSTScope {
     }
 }
 
-impl std::str::FromStr for SmlSTScope {
+impl std::str::FromStr for STScope {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1393,13 +1393,13 @@ impl std::str::FromStr for SmlSTScope {
             "selection" => Ok(Self::Selection),
             "data" => Ok(Self::Data),
             "field" => Ok(Self::Field),
-            _ => Err(format!("unknown SmlSTScope value: {}", s)),
+            _ => Err(format!("unknown STScope value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTType {
+pub enum STType {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "all")]
@@ -1410,7 +1410,7 @@ pub enum SmlSTType {
     Column,
 }
 
-impl std::fmt::Display for SmlSTType {
+impl std::fmt::Display for STType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -1421,7 +1421,7 @@ impl std::fmt::Display for SmlSTType {
     }
 }
 
-impl std::str::FromStr for SmlSTType {
+impl std::str::FromStr for STType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1430,13 +1430,13 @@ impl std::str::FromStr for SmlSTType {
             "all" => Ok(Self::All),
             "row" => Ok(Self::Row),
             "column" => Ok(Self::Column),
-            _ => Err(format!("unknown SmlSTType value: {}", s)),
+            _ => Err(format!("unknown STType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTShowDataAs {
+pub enum STShowDataAs {
     #[serde(rename = "normal")]
     Normal,
     #[serde(rename = "difference")]
@@ -1457,7 +1457,7 @@ pub enum SmlSTShowDataAs {
     Index,
 }
 
-impl std::fmt::Display for SmlSTShowDataAs {
+impl std::fmt::Display for STShowDataAs {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Normal => write!(f, "normal"),
@@ -1473,7 +1473,7 @@ impl std::fmt::Display for SmlSTShowDataAs {
     }
 }
 
-impl std::str::FromStr for SmlSTShowDataAs {
+impl std::str::FromStr for STShowDataAs {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1487,13 +1487,13 @@ impl std::str::FromStr for SmlSTShowDataAs {
             "percentOfCol" => Ok(Self::PercentOfCol),
             "percentOfTotal" => Ok(Self::PercentOfTotal),
             "index" => Ok(Self::Index),
-            _ => Err(format!("unknown SmlSTShowDataAs value: {}", s)),
+            _ => Err(format!("unknown STShowDataAs value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTItemType {
+pub enum STItemType {
     #[serde(rename = "data")]
     Data,
     #[serde(rename = "default")]
@@ -1526,7 +1526,7 @@ pub enum SmlSTItemType {
     Blank,
 }
 
-impl std::fmt::Display for SmlSTItemType {
+impl std::fmt::Display for STItemType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Data => write!(f, "data"),
@@ -1548,7 +1548,7 @@ impl std::fmt::Display for SmlSTItemType {
     }
 }
 
-impl std::str::FromStr for SmlSTItemType {
+impl std::str::FromStr for STItemType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1568,13 +1568,13 @@ impl std::str::FromStr for SmlSTItemType {
             "varP" => Ok(Self::VarP),
             "grand" => Ok(Self::Grand),
             "blank" => Ok(Self::Blank),
-            _ => Err(format!("unknown SmlSTItemType value: {}", s)),
+            _ => Err(format!("unknown STItemType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFormatAction {
+pub enum STFormatAction {
     #[serde(rename = "blank")]
     Blank,
     #[serde(rename = "formatting")]
@@ -1585,7 +1585,7 @@ pub enum SmlSTFormatAction {
     Formula,
 }
 
-impl std::fmt::Display for SmlSTFormatAction {
+impl std::fmt::Display for STFormatAction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Blank => write!(f, "blank"),
@@ -1596,7 +1596,7 @@ impl std::fmt::Display for SmlSTFormatAction {
     }
 }
 
-impl std::str::FromStr for SmlSTFormatAction {
+impl std::str::FromStr for STFormatAction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1605,13 +1605,13 @@ impl std::str::FromStr for SmlSTFormatAction {
             "formatting" => Ok(Self::Formatting),
             "drill" => Ok(Self::Drill),
             "formula" => Ok(Self::Formula),
-            _ => Err(format!("unknown SmlSTFormatAction value: {}", s)),
+            _ => Err(format!("unknown STFormatAction value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFieldSortType {
+pub enum STFieldSortType {
     #[serde(rename = "manual")]
     Manual,
     #[serde(rename = "ascending")]
@@ -1620,7 +1620,7 @@ pub enum SmlSTFieldSortType {
     Descending,
 }
 
-impl std::fmt::Display for SmlSTFieldSortType {
+impl std::fmt::Display for STFieldSortType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Manual => write!(f, "manual"),
@@ -1630,7 +1630,7 @@ impl std::fmt::Display for SmlSTFieldSortType {
     }
 }
 
-impl std::str::FromStr for SmlSTFieldSortType {
+impl std::str::FromStr for STFieldSortType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1638,13 +1638,13 @@ impl std::str::FromStr for SmlSTFieldSortType {
             "manual" => Ok(Self::Manual),
             "ascending" => Ok(Self::Ascending),
             "descending" => Ok(Self::Descending),
-            _ => Err(format!("unknown SmlSTFieldSortType value: {}", s)),
+            _ => Err(format!("unknown STFieldSortType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPivotFilterType {
+pub enum STPivotFilterType {
     #[serde(rename = "unknown")]
     Unknown,
     #[serde(rename = "count")]
@@ -1779,7 +1779,7 @@ pub enum SmlSTPivotFilterType {
     M12,
 }
 
-impl std::fmt::Display for SmlSTPivotFilterType {
+impl std::fmt::Display for STPivotFilterType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Unknown => write!(f, "unknown"),
@@ -1852,7 +1852,7 @@ impl std::fmt::Display for SmlSTPivotFilterType {
     }
 }
 
-impl std::str::FromStr for SmlSTPivotFilterType {
+impl std::str::FromStr for STPivotFilterType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1923,13 +1923,13 @@ impl std::str::FromStr for SmlSTPivotFilterType {
             "M10" => Ok(Self::M10),
             "M11" => Ok(Self::M11),
             "M12" => Ok(Self::M12),
-            _ => Err(format!("unknown SmlSTPivotFilterType value: {}", s)),
+            _ => Err(format!("unknown STPivotFilterType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPivotAreaType {
+pub enum STPivotAreaType {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "normal")]
@@ -1948,7 +1948,7 @@ pub enum SmlSTPivotAreaType {
     TopRight,
 }
 
-impl std::fmt::Display for SmlSTPivotAreaType {
+impl std::fmt::Display for STPivotAreaType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -1963,7 +1963,7 @@ impl std::fmt::Display for SmlSTPivotAreaType {
     }
 }
 
-impl std::str::FromStr for SmlSTPivotAreaType {
+impl std::str::FromStr for STPivotAreaType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -1976,13 +1976,13 @@ impl std::str::FromStr for SmlSTPivotAreaType {
             "button" => Ok(Self::Button),
             "topEnd" => Ok(Self::TopEnd),
             "topRight" => Ok(Self::TopRight),
-            _ => Err(format!("unknown SmlSTPivotAreaType value: {}", s)),
+            _ => Err(format!("unknown STPivotAreaType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTAxis {
+pub enum STAxis {
     #[serde(rename = "axisRow")]
     AxisRow,
     #[serde(rename = "axisCol")]
@@ -1993,7 +1993,7 @@ pub enum SmlSTAxis {
     AxisValues,
 }
 
-impl std::fmt::Display for SmlSTAxis {
+impl std::fmt::Display for STAxis {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::AxisRow => write!(f, "axisRow"),
@@ -2004,7 +2004,7 @@ impl std::fmt::Display for SmlSTAxis {
     }
 }
 
-impl std::str::FromStr for SmlSTAxis {
+impl std::str::FromStr for STAxis {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2013,13 +2013,13 @@ impl std::str::FromStr for SmlSTAxis {
             "axisCol" => Ok(Self::AxisCol),
             "axisPage" => Ok(Self::AxisPage),
             "axisValues" => Ok(Self::AxisValues),
-            _ => Err(format!("unknown SmlSTAxis value: {}", s)),
+            _ => Err(format!("unknown STAxis value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTGrowShrinkType {
+pub enum STGrowShrinkType {
     #[serde(rename = "insertDelete")]
     InsertDelete,
     #[serde(rename = "insertClear")]
@@ -2028,7 +2028,7 @@ pub enum SmlSTGrowShrinkType {
     OverwriteClear,
 }
 
-impl std::fmt::Display for SmlSTGrowShrinkType {
+impl std::fmt::Display for STGrowShrinkType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::InsertDelete => write!(f, "insertDelete"),
@@ -2038,7 +2038,7 @@ impl std::fmt::Display for SmlSTGrowShrinkType {
     }
 }
 
-impl std::str::FromStr for SmlSTGrowShrinkType {
+impl std::str::FromStr for STGrowShrinkType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2046,13 +2046,13 @@ impl std::str::FromStr for SmlSTGrowShrinkType {
             "insertDelete" => Ok(Self::InsertDelete),
             "insertClear" => Ok(Self::InsertClear),
             "overwriteClear" => Ok(Self::OverwriteClear),
-            _ => Err(format!("unknown SmlSTGrowShrinkType value: {}", s)),
+            _ => Err(format!("unknown STGrowShrinkType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPhoneticType {
+pub enum STPhoneticType {
     #[serde(rename = "halfwidthKatakana")]
     HalfwidthKatakana,
     #[serde(rename = "fullwidthKatakana")]
@@ -2063,7 +2063,7 @@ pub enum SmlSTPhoneticType {
     NoConversion,
 }
 
-impl std::fmt::Display for SmlSTPhoneticType {
+impl std::fmt::Display for STPhoneticType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::HalfwidthKatakana => write!(f, "halfwidthKatakana"),
@@ -2074,7 +2074,7 @@ impl std::fmt::Display for SmlSTPhoneticType {
     }
 }
 
-impl std::str::FromStr for SmlSTPhoneticType {
+impl std::str::FromStr for STPhoneticType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2083,13 +2083,13 @@ impl std::str::FromStr for SmlSTPhoneticType {
             "fullwidthKatakana" => Ok(Self::FullwidthKatakana),
             "Hiragana" => Ok(Self::Hiragana),
             "noConversion" => Ok(Self::NoConversion),
-            _ => Err(format!("unknown SmlSTPhoneticType value: {}", s)),
+            _ => Err(format!("unknown STPhoneticType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPhoneticAlignment {
+pub enum STPhoneticAlignment {
     #[serde(rename = "noControl")]
     NoControl,
     #[serde(rename = "left")]
@@ -2100,7 +2100,7 @@ pub enum SmlSTPhoneticAlignment {
     Distributed,
 }
 
-impl std::fmt::Display for SmlSTPhoneticAlignment {
+impl std::fmt::Display for STPhoneticAlignment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::NoControl => write!(f, "noControl"),
@@ -2111,7 +2111,7 @@ impl std::fmt::Display for SmlSTPhoneticAlignment {
     }
 }
 
-impl std::str::FromStr for SmlSTPhoneticAlignment {
+impl std::str::FromStr for STPhoneticAlignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2120,13 +2120,13 @@ impl std::str::FromStr for SmlSTPhoneticAlignment {
             "left" => Ok(Self::Left),
             "center" => Ok(Self::Center),
             "distributed" => Ok(Self::Distributed),
-            _ => Err(format!("unknown SmlSTPhoneticAlignment value: {}", s)),
+            _ => Err(format!("unknown STPhoneticAlignment value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTRwColActionType {
+pub enum STRwColActionType {
     #[serde(rename = "insertRow")]
     InsertRow,
     #[serde(rename = "deleteRow")]
@@ -2137,7 +2137,7 @@ pub enum SmlSTRwColActionType {
     DeleteCol,
 }
 
-impl std::fmt::Display for SmlSTRwColActionType {
+impl std::fmt::Display for STRwColActionType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::InsertRow => write!(f, "insertRow"),
@@ -2148,7 +2148,7 @@ impl std::fmt::Display for SmlSTRwColActionType {
     }
 }
 
-impl std::str::FromStr for SmlSTRwColActionType {
+impl std::str::FromStr for STRwColActionType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2157,20 +2157,20 @@ impl std::str::FromStr for SmlSTRwColActionType {
             "deleteRow" => Ok(Self::DeleteRow),
             "insertCol" => Ok(Self::InsertCol),
             "deleteCol" => Ok(Self::DeleteCol),
-            _ => Err(format!("unknown SmlSTRwColActionType value: {}", s)),
+            _ => Err(format!("unknown STRwColActionType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTRevisionAction {
+pub enum STRevisionAction {
     #[serde(rename = "add")]
     Add,
     #[serde(rename = "delete")]
     Delete,
 }
 
-impl std::fmt::Display for SmlSTRevisionAction {
+impl std::fmt::Display for STRevisionAction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Add => write!(f, "add"),
@@ -2179,20 +2179,20 @@ impl std::fmt::Display for SmlSTRevisionAction {
     }
 }
 
-impl std::str::FromStr for SmlSTRevisionAction {
+impl std::str::FromStr for STRevisionAction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "add" => Ok(Self::Add),
             "delete" => Ok(Self::Delete),
-            _ => Err(format!("unknown SmlSTRevisionAction value: {}", s)),
+            _ => Err(format!("unknown STRevisionAction value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFormulaExpression {
+pub enum STFormulaExpression {
     #[serde(rename = "ref")]
     Ref,
     #[serde(rename = "refError")]
@@ -2205,7 +2205,7 @@ pub enum SmlSTFormulaExpression {
     ComputedArea,
 }
 
-impl std::fmt::Display for SmlSTFormulaExpression {
+impl std::fmt::Display for STFormulaExpression {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Ref => write!(f, "ref"),
@@ -2217,7 +2217,7 @@ impl std::fmt::Display for SmlSTFormulaExpression {
     }
 }
 
-impl std::str::FromStr for SmlSTFormulaExpression {
+impl std::str::FromStr for STFormulaExpression {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2227,17 +2227,17 @@ impl std::str::FromStr for SmlSTFormulaExpression {
             "area" => Ok(Self::Area),
             "areaError" => Ok(Self::AreaError),
             "computedArea" => Ok(Self::ComputedArea),
-            _ => Err(format!("unknown SmlSTFormulaExpression value: {}", s)),
+            _ => Err(format!("unknown STFormulaExpression value: {}", s)),
         }
     }
 }
 
-pub type SmlSTCellSpan = String;
+pub type STCellSpan = String;
 
-pub type SmlSTCellSpans = String;
+pub type CellSpans = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCellType {
+pub enum CellType {
     #[serde(rename = "b")]
     B,
     #[serde(rename = "n")]
@@ -2252,7 +2252,7 @@ pub enum SmlSTCellType {
     InlineStr,
 }
 
-impl std::fmt::Display for SmlSTCellType {
+impl std::fmt::Display for CellType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::B => write!(f, "b"),
@@ -2265,7 +2265,7 @@ impl std::fmt::Display for SmlSTCellType {
     }
 }
 
-impl std::str::FromStr for SmlSTCellType {
+impl std::str::FromStr for CellType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2276,13 +2276,13 @@ impl std::str::FromStr for SmlSTCellType {
             "s" => Ok(Self::S),
             "str" => Ok(Self::Str),
             "inlineStr" => Ok(Self::InlineStr),
-            _ => Err(format!("unknown SmlSTCellType value: {}", s)),
+            _ => Err(format!("unknown CellType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCellFormulaType {
+pub enum FormulaType {
     #[serde(rename = "normal")]
     Normal,
     #[serde(rename = "array")]
@@ -2293,7 +2293,7 @@ pub enum SmlSTCellFormulaType {
     Shared,
 }
 
-impl std::fmt::Display for SmlSTCellFormulaType {
+impl std::fmt::Display for FormulaType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Normal => write!(f, "normal"),
@@ -2304,7 +2304,7 @@ impl std::fmt::Display for SmlSTCellFormulaType {
     }
 }
 
-impl std::str::FromStr for SmlSTCellFormulaType {
+impl std::str::FromStr for FormulaType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2313,13 +2313,13 @@ impl std::str::FromStr for SmlSTCellFormulaType {
             "array" => Ok(Self::Array),
             "dataTable" => Ok(Self::DataTable),
             "shared" => Ok(Self::Shared),
-            _ => Err(format!("unknown SmlSTCellFormulaType value: {}", s)),
+            _ => Err(format!("unknown FormulaType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPane {
+pub enum PaneType {
     #[serde(rename = "bottomRight")]
     BottomRight,
     #[serde(rename = "topRight")]
@@ -2330,7 +2330,7 @@ pub enum SmlSTPane {
     TopLeft,
 }
 
-impl std::fmt::Display for SmlSTPane {
+impl std::fmt::Display for PaneType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::BottomRight => write!(f, "bottomRight"),
@@ -2341,7 +2341,7 @@ impl std::fmt::Display for SmlSTPane {
     }
 }
 
-impl std::str::FromStr for SmlSTPane {
+impl std::str::FromStr for PaneType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2350,13 +2350,13 @@ impl std::str::FromStr for SmlSTPane {
             "topRight" => Ok(Self::TopRight),
             "bottomLeft" => Ok(Self::BottomLeft),
             "topLeft" => Ok(Self::TopLeft),
-            _ => Err(format!("unknown SmlSTPane value: {}", s)),
+            _ => Err(format!("unknown PaneType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSheetViewType {
+pub enum SheetViewType {
     #[serde(rename = "normal")]
     Normal,
     #[serde(rename = "pageBreakPreview")]
@@ -2365,7 +2365,7 @@ pub enum SmlSTSheetViewType {
     PageLayout,
 }
 
-impl std::fmt::Display for SmlSTSheetViewType {
+impl std::fmt::Display for SheetViewType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Normal => write!(f, "normal"),
@@ -2375,7 +2375,7 @@ impl std::fmt::Display for SmlSTSheetViewType {
     }
 }
 
-impl std::str::FromStr for SmlSTSheetViewType {
+impl std::str::FromStr for SheetViewType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2383,13 +2383,13 @@ impl std::str::FromStr for SmlSTSheetViewType {
             "normal" => Ok(Self::Normal),
             "pageBreakPreview" => Ok(Self::PageBreakPreview),
             "pageLayout" => Ok(Self::PageLayout),
-            _ => Err(format!("unknown SmlSTSheetViewType value: {}", s)),
+            _ => Err(format!("unknown SheetViewType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDataConsolidateFunction {
+pub enum STDataConsolidateFunction {
     #[serde(rename = "average")]
     Average,
     #[serde(rename = "count")]
@@ -2414,7 +2414,7 @@ pub enum SmlSTDataConsolidateFunction {
     Varp,
 }
 
-impl std::fmt::Display for SmlSTDataConsolidateFunction {
+impl std::fmt::Display for STDataConsolidateFunction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Average => write!(f, "average"),
@@ -2432,7 +2432,7 @@ impl std::fmt::Display for SmlSTDataConsolidateFunction {
     }
 }
 
-impl std::str::FromStr for SmlSTDataConsolidateFunction {
+impl std::str::FromStr for STDataConsolidateFunction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2448,13 +2448,13 @@ impl std::str::FromStr for SmlSTDataConsolidateFunction {
             "sum" => Ok(Self::Sum),
             "var" => Ok(Self::Var),
             "varp" => Ok(Self::Varp),
-            _ => Err(format!("unknown SmlSTDataConsolidateFunction value: {}", s)),
+            _ => Err(format!("unknown STDataConsolidateFunction value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDataValidationType {
+pub enum ValidationType {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "whole")]
@@ -2473,7 +2473,7 @@ pub enum SmlSTDataValidationType {
     Custom,
 }
 
-impl std::fmt::Display for SmlSTDataValidationType {
+impl std::fmt::Display for ValidationType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -2488,7 +2488,7 @@ impl std::fmt::Display for SmlSTDataValidationType {
     }
 }
 
-impl std::str::FromStr for SmlSTDataValidationType {
+impl std::str::FromStr for ValidationType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2501,13 +2501,13 @@ impl std::str::FromStr for SmlSTDataValidationType {
             "time" => Ok(Self::Time),
             "textLength" => Ok(Self::TextLength),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SmlSTDataValidationType value: {}", s)),
+            _ => Err(format!("unknown ValidationType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDataValidationOperator {
+pub enum ValidationOperator {
     #[serde(rename = "between")]
     Between,
     #[serde(rename = "notBetween")]
@@ -2526,7 +2526,7 @@ pub enum SmlSTDataValidationOperator {
     GreaterThanOrEqual,
 }
 
-impl std::fmt::Display for SmlSTDataValidationOperator {
+impl std::fmt::Display for ValidationOperator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Between => write!(f, "between"),
@@ -2541,7 +2541,7 @@ impl std::fmt::Display for SmlSTDataValidationOperator {
     }
 }
 
-impl std::str::FromStr for SmlSTDataValidationOperator {
+impl std::str::FromStr for ValidationOperator {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2554,13 +2554,13 @@ impl std::str::FromStr for SmlSTDataValidationOperator {
             "lessThanOrEqual" => Ok(Self::LessThanOrEqual),
             "greaterThan" => Ok(Self::GreaterThan),
             "greaterThanOrEqual" => Ok(Self::GreaterThanOrEqual),
-            _ => Err(format!("unknown SmlSTDataValidationOperator value: {}", s)),
+            _ => Err(format!("unknown ValidationOperator value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDataValidationErrorStyle {
+pub enum ValidationErrorStyle {
     #[serde(rename = "stop")]
     Stop,
     #[serde(rename = "warning")]
@@ -2569,7 +2569,7 @@ pub enum SmlSTDataValidationErrorStyle {
     Information,
 }
 
-impl std::fmt::Display for SmlSTDataValidationErrorStyle {
+impl std::fmt::Display for ValidationErrorStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Stop => write!(f, "stop"),
@@ -2579,7 +2579,7 @@ impl std::fmt::Display for SmlSTDataValidationErrorStyle {
     }
 }
 
-impl std::str::FromStr for SmlSTDataValidationErrorStyle {
+impl std::str::FromStr for ValidationErrorStyle {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2587,16 +2587,13 @@ impl std::str::FromStr for SmlSTDataValidationErrorStyle {
             "stop" => Ok(Self::Stop),
             "warning" => Ok(Self::Warning),
             "information" => Ok(Self::Information),
-            _ => Err(format!(
-                "unknown SmlSTDataValidationErrorStyle value: {}",
-                s
-            )),
+            _ => Err(format!("unknown ValidationErrorStyle value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDataValidationImeMode {
+pub enum STDataValidationImeMode {
     #[serde(rename = "noControl")]
     NoControl,
     #[serde(rename = "off")]
@@ -2621,7 +2618,7 @@ pub enum SmlSTDataValidationImeMode {
     HalfHangul,
 }
 
-impl std::fmt::Display for SmlSTDataValidationImeMode {
+impl std::fmt::Display for STDataValidationImeMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::NoControl => write!(f, "noControl"),
@@ -2639,7 +2636,7 @@ impl std::fmt::Display for SmlSTDataValidationImeMode {
     }
 }
 
-impl std::str::FromStr for SmlSTDataValidationImeMode {
+impl std::str::FromStr for STDataValidationImeMode {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2655,13 +2652,13 @@ impl std::str::FromStr for SmlSTDataValidationImeMode {
             "halfAlpha" => Ok(Self::HalfAlpha),
             "fullHangul" => Ok(Self::FullHangul),
             "halfHangul" => Ok(Self::HalfHangul),
-            _ => Err(format!("unknown SmlSTDataValidationImeMode value: {}", s)),
+            _ => Err(format!("unknown STDataValidationImeMode value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCfType {
+pub enum ConditionalType {
     #[serde(rename = "expression")]
     Expression,
     #[serde(rename = "cellIs")]
@@ -2700,7 +2697,7 @@ pub enum SmlSTCfType {
     AboveAverage,
 }
 
-impl std::fmt::Display for SmlSTCfType {
+impl std::fmt::Display for ConditionalType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Expression => write!(f, "expression"),
@@ -2725,7 +2722,7 @@ impl std::fmt::Display for SmlSTCfType {
     }
 }
 
-impl std::str::FromStr for SmlSTCfType {
+impl std::str::FromStr for ConditionalType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2748,13 +2745,13 @@ impl std::str::FromStr for SmlSTCfType {
             "notContainsErrors" => Ok(Self::NotContainsErrors),
             "timePeriod" => Ok(Self::TimePeriod),
             "aboveAverage" => Ok(Self::AboveAverage),
-            _ => Err(format!("unknown SmlSTCfType value: {}", s)),
+            _ => Err(format!("unknown ConditionalType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTimePeriod {
+pub enum STTimePeriod {
     #[serde(rename = "today")]
     Today,
     #[serde(rename = "yesterday")]
@@ -2777,7 +2774,7 @@ pub enum SmlSTTimePeriod {
     NextWeek,
 }
 
-impl std::fmt::Display for SmlSTTimePeriod {
+impl std::fmt::Display for STTimePeriod {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Today => write!(f, "today"),
@@ -2794,7 +2791,7 @@ impl std::fmt::Display for SmlSTTimePeriod {
     }
 }
 
-impl std::str::FromStr for SmlSTTimePeriod {
+impl std::str::FromStr for STTimePeriod {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2809,13 +2806,13 @@ impl std::str::FromStr for SmlSTTimePeriod {
             "thisWeek" => Ok(Self::ThisWeek),
             "lastWeek" => Ok(Self::LastWeek),
             "nextWeek" => Ok(Self::NextWeek),
-            _ => Err(format!("unknown SmlSTTimePeriod value: {}", s)),
+            _ => Err(format!("unknown STTimePeriod value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTConditionalFormattingOperator {
+pub enum ConditionalOperator {
     #[serde(rename = "lessThan")]
     LessThan,
     #[serde(rename = "lessThanOrEqual")]
@@ -2842,7 +2839,7 @@ pub enum SmlSTConditionalFormattingOperator {
     EndsWith,
 }
 
-impl std::fmt::Display for SmlSTConditionalFormattingOperator {
+impl std::fmt::Display for ConditionalOperator {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::LessThan => write!(f, "lessThan"),
@@ -2861,7 +2858,7 @@ impl std::fmt::Display for SmlSTConditionalFormattingOperator {
     }
 }
 
-impl std::str::FromStr for SmlSTConditionalFormattingOperator {
+impl std::str::FromStr for ConditionalOperator {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2878,16 +2875,13 @@ impl std::str::FromStr for SmlSTConditionalFormattingOperator {
             "notContains" => Ok(Self::NotContains),
             "beginsWith" => Ok(Self::BeginsWith),
             "endsWith" => Ok(Self::EndsWith),
-            _ => Err(format!(
-                "unknown SmlSTConditionalFormattingOperator value: {}",
-                s
-            )),
+            _ => Err(format!("unknown ConditionalOperator value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCfvoType {
+pub enum ConditionalValueType {
     #[serde(rename = "num")]
     Num,
     #[serde(rename = "percent")]
@@ -2902,7 +2896,7 @@ pub enum SmlSTCfvoType {
     Percentile,
 }
 
-impl std::fmt::Display for SmlSTCfvoType {
+impl std::fmt::Display for ConditionalValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Num => write!(f, "num"),
@@ -2915,7 +2909,7 @@ impl std::fmt::Display for SmlSTCfvoType {
     }
 }
 
-impl std::str::FromStr for SmlSTCfvoType {
+impl std::str::FromStr for ConditionalValueType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2926,20 +2920,20 @@ impl std::str::FromStr for SmlSTCfvoType {
             "min" => Ok(Self::Min),
             "formula" => Ok(Self::Formula),
             "percentile" => Ok(Self::Percentile),
-            _ => Err(format!("unknown SmlSTCfvoType value: {}", s)),
+            _ => Err(format!("unknown ConditionalValueType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPageOrder {
+pub enum STPageOrder {
     #[serde(rename = "downThenOver")]
     DownThenOver,
     #[serde(rename = "overThenDown")]
     OverThenDown,
 }
 
-impl std::fmt::Display for SmlSTPageOrder {
+impl std::fmt::Display for STPageOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::DownThenOver => write!(f, "downThenOver"),
@@ -2948,20 +2942,20 @@ impl std::fmt::Display for SmlSTPageOrder {
     }
 }
 
-impl std::str::FromStr for SmlSTPageOrder {
+impl std::str::FromStr for STPageOrder {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "downThenOver" => Ok(Self::DownThenOver),
             "overThenDown" => Ok(Self::OverThenDown),
-            _ => Err(format!("unknown SmlSTPageOrder value: {}", s)),
+            _ => Err(format!("unknown STPageOrder value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTOrientation {
+pub enum STOrientation {
     #[serde(rename = "default")]
     Default,
     #[serde(rename = "portrait")]
@@ -2970,7 +2964,7 @@ pub enum SmlSTOrientation {
     Landscape,
 }
 
-impl std::fmt::Display for SmlSTOrientation {
+impl std::fmt::Display for STOrientation {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Default => write!(f, "default"),
@@ -2980,7 +2974,7 @@ impl std::fmt::Display for SmlSTOrientation {
     }
 }
 
-impl std::str::FromStr for SmlSTOrientation {
+impl std::str::FromStr for STOrientation {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -2988,13 +2982,13 @@ impl std::str::FromStr for SmlSTOrientation {
             "default" => Ok(Self::Default),
             "portrait" => Ok(Self::Portrait),
             "landscape" => Ok(Self::Landscape),
-            _ => Err(format!("unknown SmlSTOrientation value: {}", s)),
+            _ => Err(format!("unknown STOrientation value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCellComments {
+pub enum STCellComments {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "asDisplayed")]
@@ -3003,7 +2997,7 @@ pub enum SmlSTCellComments {
     AtEnd,
 }
 
-impl std::fmt::Display for SmlSTCellComments {
+impl std::fmt::Display for STCellComments {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -3013,7 +3007,7 @@ impl std::fmt::Display for SmlSTCellComments {
     }
 }
 
-impl std::str::FromStr for SmlSTCellComments {
+impl std::str::FromStr for STCellComments {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3021,13 +3015,13 @@ impl std::str::FromStr for SmlSTCellComments {
             "none" => Ok(Self::None),
             "asDisplayed" => Ok(Self::AsDisplayed),
             "atEnd" => Ok(Self::AtEnd),
-            _ => Err(format!("unknown SmlSTCellComments value: {}", s)),
+            _ => Err(format!("unknown STCellComments value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPrintError {
+pub enum STPrintError {
     #[serde(rename = "displayed")]
     Displayed,
     #[serde(rename = "blank")]
@@ -3038,7 +3032,7 @@ pub enum SmlSTPrintError {
     NA,
 }
 
-impl std::fmt::Display for SmlSTPrintError {
+impl std::fmt::Display for STPrintError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Displayed => write!(f, "displayed"),
@@ -3049,7 +3043,7 @@ impl std::fmt::Display for SmlSTPrintError {
     }
 }
 
-impl std::str::FromStr for SmlSTPrintError {
+impl std::str::FromStr for STPrintError {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3058,20 +3052,20 @@ impl std::str::FromStr for SmlSTPrintError {
             "blank" => Ok(Self::Blank),
             "dash" => Ok(Self::Dash),
             "NA" => Ok(Self::NA),
-            _ => Err(format!("unknown SmlSTPrintError value: {}", s)),
+            _ => Err(format!("unknown STPrintError value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDvAspect {
+pub enum STDvAspect {
     #[serde(rename = "DVASPECT_CONTENT")]
     DVASPECTCONTENT,
     #[serde(rename = "DVASPECT_ICON")]
     DVASPECTICON,
 }
 
-impl std::fmt::Display for SmlSTDvAspect {
+impl std::fmt::Display for STDvAspect {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::DVASPECTCONTENT => write!(f, "DVASPECT_CONTENT"),
@@ -3080,27 +3074,27 @@ impl std::fmt::Display for SmlSTDvAspect {
     }
 }
 
-impl std::str::FromStr for SmlSTDvAspect {
+impl std::str::FromStr for STDvAspect {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "DVASPECT_CONTENT" => Ok(Self::DVASPECTCONTENT),
             "DVASPECT_ICON" => Ok(Self::DVASPECTICON),
-            _ => Err(format!("unknown SmlSTDvAspect value: {}", s)),
+            _ => Err(format!("unknown STDvAspect value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTOleUpdate {
+pub enum STOleUpdate {
     #[serde(rename = "OLEUPDATE_ALWAYS")]
     OLEUPDATEALWAYS,
     #[serde(rename = "OLEUPDATE_ONCALL")]
     OLEUPDATEONCALL,
 }
 
-impl std::fmt::Display for SmlSTOleUpdate {
+impl std::fmt::Display for STOleUpdate {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::OLEUPDATEALWAYS => write!(f, "OLEUPDATE_ALWAYS"),
@@ -3109,20 +3103,20 @@ impl std::fmt::Display for SmlSTOleUpdate {
     }
 }
 
-impl std::str::FromStr for SmlSTOleUpdate {
+impl std::str::FromStr for STOleUpdate {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "OLEUPDATE_ALWAYS" => Ok(Self::OLEUPDATEALWAYS),
             "OLEUPDATE_ONCALL" => Ok(Self::OLEUPDATEONCALL),
-            _ => Err(format!("unknown SmlSTOleUpdate value: {}", s)),
+            _ => Err(format!("unknown STOleUpdate value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTWebSourceType {
+pub enum STWebSourceType {
     #[serde(rename = "sheet")]
     Sheet,
     #[serde(rename = "printArea")]
@@ -3141,7 +3135,7 @@ pub enum SmlSTWebSourceType {
     Label,
 }
 
-impl std::fmt::Display for SmlSTWebSourceType {
+impl std::fmt::Display for STWebSourceType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Sheet => write!(f, "sheet"),
@@ -3156,7 +3150,7 @@ impl std::fmt::Display for SmlSTWebSourceType {
     }
 }
 
-impl std::str::FromStr for SmlSTWebSourceType {
+impl std::str::FromStr for STWebSourceType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3169,13 +3163,13 @@ impl std::str::FromStr for SmlSTWebSourceType {
             "pivotTable" => Ok(Self::PivotTable),
             "query" => Ok(Self::Query),
             "label" => Ok(Self::Label),
-            _ => Err(format!("unknown SmlSTWebSourceType value: {}", s)),
+            _ => Err(format!("unknown STWebSourceType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPaneState {
+pub enum PaneState {
     #[serde(rename = "split")]
     Split,
     #[serde(rename = "frozen")]
@@ -3184,7 +3178,7 @@ pub enum SmlSTPaneState {
     FrozenSplit,
 }
 
-impl std::fmt::Display for SmlSTPaneState {
+impl std::fmt::Display for PaneState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Split => write!(f, "split"),
@@ -3194,7 +3188,7 @@ impl std::fmt::Display for SmlSTPaneState {
     }
 }
 
-impl std::str::FromStr for SmlSTPaneState {
+impl std::str::FromStr for PaneState {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3202,13 +3196,13 @@ impl std::str::FromStr for SmlSTPaneState {
             "split" => Ok(Self::Split),
             "frozen" => Ok(Self::Frozen),
             "frozenSplit" => Ok(Self::FrozenSplit),
-            _ => Err(format!("unknown SmlSTPaneState value: {}", s)),
+            _ => Err(format!("unknown PaneState value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTMdxFunctionType {
+pub enum STMdxFunctionType {
     #[serde(rename = "m")]
     M,
     #[serde(rename = "v")]
@@ -3225,7 +3219,7 @@ pub enum SmlSTMdxFunctionType {
     K,
 }
 
-impl std::fmt::Display for SmlSTMdxFunctionType {
+impl std::fmt::Display for STMdxFunctionType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::M => write!(f, "m"),
@@ -3239,7 +3233,7 @@ impl std::fmt::Display for SmlSTMdxFunctionType {
     }
 }
 
-impl std::str::FromStr for SmlSTMdxFunctionType {
+impl std::str::FromStr for STMdxFunctionType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3251,13 +3245,13 @@ impl std::str::FromStr for SmlSTMdxFunctionType {
             "r" => Ok(Self::R),
             "p" => Ok(Self::P),
             "k" => Ok(Self::K),
-            _ => Err(format!("unknown SmlSTMdxFunctionType value: {}", s)),
+            _ => Err(format!("unknown STMdxFunctionType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTMdxSetOrder {
+pub enum STMdxSetOrder {
     #[serde(rename = "u")]
     U,
     #[serde(rename = "a")]
@@ -3274,7 +3268,7 @@ pub enum SmlSTMdxSetOrder {
     Nd,
 }
 
-impl std::fmt::Display for SmlSTMdxSetOrder {
+impl std::fmt::Display for STMdxSetOrder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::U => write!(f, "u"),
@@ -3288,7 +3282,7 @@ impl std::fmt::Display for SmlSTMdxSetOrder {
     }
 }
 
-impl std::str::FromStr for SmlSTMdxSetOrder {
+impl std::str::FromStr for STMdxSetOrder {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3300,13 +3294,13 @@ impl std::str::FromStr for SmlSTMdxSetOrder {
             "ad" => Ok(Self::Ad),
             "na" => Ok(Self::Na),
             "nd" => Ok(Self::Nd),
-            _ => Err(format!("unknown SmlSTMdxSetOrder value: {}", s)),
+            _ => Err(format!("unknown STMdxSetOrder value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTMdxKPIProperty {
+pub enum STMdxKPIProperty {
     #[serde(rename = "v")]
     V,
     #[serde(rename = "g")]
@@ -3321,7 +3315,7 @@ pub enum SmlSTMdxKPIProperty {
     M,
 }
 
-impl std::fmt::Display for SmlSTMdxKPIProperty {
+impl std::fmt::Display for STMdxKPIProperty {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::V => write!(f, "v"),
@@ -3334,7 +3328,7 @@ impl std::fmt::Display for SmlSTMdxKPIProperty {
     }
 }
 
-impl std::str::FromStr for SmlSTMdxKPIProperty {
+impl std::str::FromStr for STMdxKPIProperty {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3345,15 +3339,15 @@ impl std::str::FromStr for SmlSTMdxKPIProperty {
             "t" => Ok(Self::T),
             "w" => Ok(Self::W),
             "m" => Ok(Self::M),
-            _ => Err(format!("unknown SmlSTMdxKPIProperty value: {}", s)),
+            _ => Err(format!("unknown STMdxKPIProperty value: {}", s)),
         }
     }
 }
 
-pub type SmlSTTextRotation = String;
+pub type STTextRotation = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTBorderStyle {
+pub enum BorderStyle {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "thin")]
@@ -3384,7 +3378,7 @@ pub enum SmlSTBorderStyle {
     SlantDashDot,
 }
 
-impl std::fmt::Display for SmlSTBorderStyle {
+impl std::fmt::Display for BorderStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -3405,7 +3399,7 @@ impl std::fmt::Display for SmlSTBorderStyle {
     }
 }
 
-impl std::str::FromStr for SmlSTBorderStyle {
+impl std::str::FromStr for BorderStyle {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3424,13 +3418,13 @@ impl std::str::FromStr for SmlSTBorderStyle {
             "dashDotDot" => Ok(Self::DashDotDot),
             "mediumDashDotDot" => Ok(Self::MediumDashDotDot),
             "slantDashDot" => Ok(Self::SlantDashDot),
-            _ => Err(format!("unknown SmlSTBorderStyle value: {}", s)),
+            _ => Err(format!("unknown BorderStyle value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTPatternType {
+pub enum PatternType {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "solid")]
@@ -3471,7 +3465,7 @@ pub enum SmlSTPatternType {
     Gray0625,
 }
 
-impl std::fmt::Display for SmlSTPatternType {
+impl std::fmt::Display for PatternType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -3497,7 +3491,7 @@ impl std::fmt::Display for SmlSTPatternType {
     }
 }
 
-impl std::str::FromStr for SmlSTPatternType {
+impl std::str::FromStr for PatternType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3521,20 +3515,20 @@ impl std::str::FromStr for SmlSTPatternType {
             "lightTrellis" => Ok(Self::LightTrellis),
             "gray125" => Ok(Self::Gray125),
             "gray0625" => Ok(Self::Gray0625),
-            _ => Err(format!("unknown SmlSTPatternType value: {}", s)),
+            _ => Err(format!("unknown PatternType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTGradientType {
+pub enum GradientType {
     #[serde(rename = "linear")]
     Linear,
     #[serde(rename = "path")]
     Path,
 }
 
-impl std::fmt::Display for SmlSTGradientType {
+impl std::fmt::Display for GradientType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Linear => write!(f, "linear"),
@@ -3543,20 +3537,20 @@ impl std::fmt::Display for SmlSTGradientType {
     }
 }
 
-impl std::str::FromStr for SmlSTGradientType {
+impl std::str::FromStr for GradientType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "linear" => Ok(Self::Linear),
             "path" => Ok(Self::Path),
-            _ => Err(format!("unknown SmlSTGradientType value: {}", s)),
+            _ => Err(format!("unknown GradientType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTHorizontalAlignment {
+pub enum HorizontalAlignment {
     #[serde(rename = "general")]
     General,
     #[serde(rename = "left")]
@@ -3575,7 +3569,7 @@ pub enum SmlSTHorizontalAlignment {
     Distributed,
 }
 
-impl std::fmt::Display for SmlSTHorizontalAlignment {
+impl std::fmt::Display for HorizontalAlignment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::General => write!(f, "general"),
@@ -3590,7 +3584,7 @@ impl std::fmt::Display for SmlSTHorizontalAlignment {
     }
 }
 
-impl std::str::FromStr for SmlSTHorizontalAlignment {
+impl std::str::FromStr for HorizontalAlignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3603,13 +3597,13 @@ impl std::str::FromStr for SmlSTHorizontalAlignment {
             "justify" => Ok(Self::Justify),
             "centerContinuous" => Ok(Self::CenterContinuous),
             "distributed" => Ok(Self::Distributed),
-            _ => Err(format!("unknown SmlSTHorizontalAlignment value: {}", s)),
+            _ => Err(format!("unknown HorizontalAlignment value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTVerticalAlignment {
+pub enum VerticalAlignment {
     #[serde(rename = "top")]
     Top,
     #[serde(rename = "center")]
@@ -3622,7 +3616,7 @@ pub enum SmlSTVerticalAlignment {
     Distributed,
 }
 
-impl std::fmt::Display for SmlSTVerticalAlignment {
+impl std::fmt::Display for VerticalAlignment {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Top => write!(f, "top"),
@@ -3634,7 +3628,7 @@ impl std::fmt::Display for SmlSTVerticalAlignment {
     }
 }
 
-impl std::str::FromStr for SmlSTVerticalAlignment {
+impl std::str::FromStr for VerticalAlignment {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3644,25 +3638,25 @@ impl std::str::FromStr for SmlSTVerticalAlignment {
             "bottom" => Ok(Self::Bottom),
             "justify" => Ok(Self::Justify),
             "distributed" => Ok(Self::Distributed),
-            _ => Err(format!("unknown SmlSTVerticalAlignment value: {}", s)),
+            _ => Err(format!("unknown VerticalAlignment value: {}", s)),
         }
     }
 }
 
-pub type SmlSTNumFmtId = u32;
+pub type STNumFmtId = u32;
 
-pub type SmlSTFontId = u32;
+pub type STFontId = u32;
 
-pub type SmlSTFillId = u32;
+pub type STFillId = u32;
 
-pub type SmlSTBorderId = u32;
+pub type STBorderId = u32;
 
-pub type SmlSTCellStyleXfId = u32;
+pub type STCellStyleXfId = u32;
 
-pub type SmlSTDxfId = u32;
+pub type STDxfId = u32;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTableStyleType {
+pub enum STTableStyleType {
     #[serde(rename = "wholeTable")]
     WholeTable,
     #[serde(rename = "headerRow")]
@@ -3721,7 +3715,7 @@ pub enum SmlSTTableStyleType {
     PageFieldValues,
 }
 
-impl std::fmt::Display for SmlSTTableStyleType {
+impl std::fmt::Display for STTableStyleType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::WholeTable => write!(f, "wholeTable"),
@@ -3756,7 +3750,7 @@ impl std::fmt::Display for SmlSTTableStyleType {
     }
 }
 
-impl std::str::FromStr for SmlSTTableStyleType {
+impl std::str::FromStr for STTableStyleType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3789,13 +3783,13 @@ impl std::str::FromStr for SmlSTTableStyleType {
             "thirdRowSubheading" => Ok(Self::ThirdRowSubheading),
             "pageFieldLabels" => Ok(Self::PageFieldLabels),
             "pageFieldValues" => Ok(Self::PageFieldValues),
-            _ => Err(format!("unknown SmlSTTableStyleType value: {}", s)),
+            _ => Err(format!("unknown STTableStyleType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTFontScheme {
+pub enum FontScheme {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "major")]
@@ -3804,7 +3798,7 @@ pub enum SmlSTFontScheme {
     Minor,
 }
 
-impl std::fmt::Display for SmlSTFontScheme {
+impl std::fmt::Display for FontScheme {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -3814,7 +3808,7 @@ impl std::fmt::Display for SmlSTFontScheme {
     }
 }
 
-impl std::str::FromStr for SmlSTFontScheme {
+impl std::str::FromStr for FontScheme {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3822,13 +3816,13 @@ impl std::str::FromStr for SmlSTFontScheme {
             "none" => Ok(Self::None),
             "major" => Ok(Self::Major),
             "minor" => Ok(Self::Minor),
-            _ => Err(format!("unknown SmlSTFontScheme value: {}", s)),
+            _ => Err(format!("unknown FontScheme value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTUnderlineValues {
+pub enum UnderlineStyle {
     #[serde(rename = "single")]
     Single,
     #[serde(rename = "double")]
@@ -3841,7 +3835,7 @@ pub enum SmlSTUnderlineValues {
     None,
 }
 
-impl std::fmt::Display for SmlSTUnderlineValues {
+impl std::fmt::Display for UnderlineStyle {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Single => write!(f, "single"),
@@ -3853,7 +3847,7 @@ impl std::fmt::Display for SmlSTUnderlineValues {
     }
 }
 
-impl std::str::FromStr for SmlSTUnderlineValues {
+impl std::str::FromStr for UnderlineStyle {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3863,15 +3857,15 @@ impl std::str::FromStr for SmlSTUnderlineValues {
             "singleAccounting" => Ok(Self::SingleAccounting),
             "doubleAccounting" => Ok(Self::DoubleAccounting),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SmlSTUnderlineValues value: {}", s)),
+            _ => Err(format!("unknown UnderlineStyle value: {}", s)),
         }
     }
 }
 
-pub type SmlSTFontFamily = i64;
+pub type STFontFamily = i64;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTDdeValueType {
+pub enum STDdeValueType {
     #[serde(rename = "nil")]
     Nil,
     #[serde(rename = "b")]
@@ -3884,7 +3878,7 @@ pub enum SmlSTDdeValueType {
     Str,
 }
 
-impl std::fmt::Display for SmlSTDdeValueType {
+impl std::fmt::Display for STDdeValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Nil => write!(f, "nil"),
@@ -3896,7 +3890,7 @@ impl std::fmt::Display for SmlSTDdeValueType {
     }
 }
 
-impl std::str::FromStr for SmlSTDdeValueType {
+impl std::str::FromStr for STDdeValueType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3906,13 +3900,13 @@ impl std::str::FromStr for SmlSTDdeValueType {
             "n" => Ok(Self::N),
             "e" => Ok(Self::E),
             "str" => Ok(Self::Str),
-            _ => Err(format!("unknown SmlSTDdeValueType value: {}", s)),
+            _ => Err(format!("unknown STDdeValueType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTableType {
+pub enum STTableType {
     #[serde(rename = "worksheet")]
     Worksheet,
     #[serde(rename = "xml")]
@@ -3921,7 +3915,7 @@ pub enum SmlSTTableType {
     QueryTable,
 }
 
-impl std::fmt::Display for SmlSTTableType {
+impl std::fmt::Display for STTableType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Worksheet => write!(f, "worksheet"),
@@ -3931,7 +3925,7 @@ impl std::fmt::Display for SmlSTTableType {
     }
 }
 
-impl std::str::FromStr for SmlSTTableType {
+impl std::str::FromStr for STTableType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -3939,13 +3933,13 @@ impl std::str::FromStr for SmlSTTableType {
             "worksheet" => Ok(Self::Worksheet),
             "xml" => Ok(Self::Xml),
             "queryTable" => Ok(Self::QueryTable),
-            _ => Err(format!("unknown SmlSTTableType value: {}", s)),
+            _ => Err(format!("unknown STTableType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTotalsRowFunction {
+pub enum STTotalsRowFunction {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "sum")]
@@ -3968,7 +3962,7 @@ pub enum SmlSTTotalsRowFunction {
     Custom,
 }
 
-impl std::fmt::Display for SmlSTTotalsRowFunction {
+impl std::fmt::Display for STTotalsRowFunction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::None => write!(f, "none"),
@@ -3985,7 +3979,7 @@ impl std::fmt::Display for SmlSTTotalsRowFunction {
     }
 }
 
-impl std::str::FromStr for SmlSTTotalsRowFunction {
+impl std::str::FromStr for STTotalsRowFunction {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4000,22 +3994,22 @@ impl std::str::FromStr for SmlSTTotalsRowFunction {
             "stdDev" => Ok(Self::StdDev),
             "var" => Ok(Self::Var),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SmlSTTotalsRowFunction value: {}", s)),
+            _ => Err(format!("unknown STTotalsRowFunction value: {}", s)),
         }
     }
 }
 
-pub type SmlSTXmlDataType = String;
+pub type STXmlDataType = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTVolDepType {
+pub enum STVolDepType {
     #[serde(rename = "realTimeData")]
     RealTimeData,
     #[serde(rename = "olapFunctions")]
     OlapFunctions,
 }
 
-impl std::fmt::Display for SmlSTVolDepType {
+impl std::fmt::Display for STVolDepType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::RealTimeData => write!(f, "realTimeData"),
@@ -4024,20 +4018,20 @@ impl std::fmt::Display for SmlSTVolDepType {
     }
 }
 
-impl std::str::FromStr for SmlSTVolDepType {
+impl std::str::FromStr for STVolDepType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "realTimeData" => Ok(Self::RealTimeData),
             "olapFunctions" => Ok(Self::OlapFunctions),
-            _ => Err(format!("unknown SmlSTVolDepType value: {}", s)),
+            _ => Err(format!("unknown STVolDepType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTVolValueType {
+pub enum STVolValueType {
     #[serde(rename = "b")]
     B,
     #[serde(rename = "n")]
@@ -4048,7 +4042,7 @@ pub enum SmlSTVolValueType {
     S,
 }
 
-impl std::fmt::Display for SmlSTVolValueType {
+impl std::fmt::Display for STVolValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::B => write!(f, "b"),
@@ -4059,7 +4053,7 @@ impl std::fmt::Display for SmlSTVolValueType {
     }
 }
 
-impl std::str::FromStr for SmlSTVolValueType {
+impl std::str::FromStr for STVolValueType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4068,13 +4062,13 @@ impl std::str::FromStr for SmlSTVolValueType {
             "n" => Ok(Self::N),
             "e" => Ok(Self::E),
             "s" => Ok(Self::S),
-            _ => Err(format!("unknown SmlSTVolValueType value: {}", s)),
+            _ => Err(format!("unknown STVolValueType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTVisibility {
+pub enum Visibility {
     #[serde(rename = "visible")]
     Visible,
     #[serde(rename = "hidden")]
@@ -4083,7 +4077,7 @@ pub enum SmlSTVisibility {
     VeryHidden,
 }
 
-impl std::fmt::Display for SmlSTVisibility {
+impl std::fmt::Display for Visibility {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Visible => write!(f, "visible"),
@@ -4093,7 +4087,7 @@ impl std::fmt::Display for SmlSTVisibility {
     }
 }
 
-impl std::str::FromStr for SmlSTVisibility {
+impl std::str::FromStr for Visibility {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4101,13 +4095,13 @@ impl std::str::FromStr for SmlSTVisibility {
             "visible" => Ok(Self::Visible),
             "hidden" => Ok(Self::Hidden),
             "veryHidden" => Ok(Self::VeryHidden),
-            _ => Err(format!("unknown SmlSTVisibility value: {}", s)),
+            _ => Err(format!("unknown Visibility value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTComments {
+pub enum CommentVisibility {
     #[serde(rename = "commNone")]
     CommNone,
     #[serde(rename = "commIndicator")]
@@ -4116,7 +4110,7 @@ pub enum SmlSTComments {
     CommIndAndComment,
 }
 
-impl std::fmt::Display for SmlSTComments {
+impl std::fmt::Display for CommentVisibility {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::CommNone => write!(f, "commNone"),
@@ -4126,7 +4120,7 @@ impl std::fmt::Display for SmlSTComments {
     }
 }
 
-impl std::str::FromStr for SmlSTComments {
+impl std::str::FromStr for CommentVisibility {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4134,13 +4128,13 @@ impl std::str::FromStr for SmlSTComments {
             "commNone" => Ok(Self::CommNone),
             "commIndicator" => Ok(Self::CommIndicator),
             "commIndAndComment" => Ok(Self::CommIndAndComment),
-            _ => Err(format!("unknown SmlSTComments value: {}", s)),
+            _ => Err(format!("unknown CommentVisibility value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTObjects {
+pub enum ObjectVisibility {
     #[serde(rename = "all")]
     All,
     #[serde(rename = "placeholders")]
@@ -4149,7 +4143,7 @@ pub enum SmlSTObjects {
     None,
 }
 
-impl std::fmt::Display for SmlSTObjects {
+impl std::fmt::Display for ObjectVisibility {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::All => write!(f, "all"),
@@ -4159,7 +4153,7 @@ impl std::fmt::Display for SmlSTObjects {
     }
 }
 
-impl std::str::FromStr for SmlSTObjects {
+impl std::str::FromStr for ObjectVisibility {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4167,13 +4161,13 @@ impl std::str::FromStr for SmlSTObjects {
             "all" => Ok(Self::All),
             "placeholders" => Ok(Self::Placeholders),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SmlSTObjects value: {}", s)),
+            _ => Err(format!("unknown ObjectVisibility value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSheetState {
+pub enum SheetState {
     #[serde(rename = "visible")]
     Visible,
     #[serde(rename = "hidden")]
@@ -4182,7 +4176,7 @@ pub enum SmlSTSheetState {
     VeryHidden,
 }
 
-impl std::fmt::Display for SmlSTSheetState {
+impl std::fmt::Display for SheetState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Visible => write!(f, "visible"),
@@ -4192,7 +4186,7 @@ impl std::fmt::Display for SmlSTSheetState {
     }
 }
 
-impl std::str::FromStr for SmlSTSheetState {
+impl std::str::FromStr for SheetState {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4200,13 +4194,13 @@ impl std::str::FromStr for SmlSTSheetState {
             "visible" => Ok(Self::Visible),
             "hidden" => Ok(Self::Hidden),
             "veryHidden" => Ok(Self::VeryHidden),
-            _ => Err(format!("unknown SmlSTSheetState value: {}", s)),
+            _ => Err(format!("unknown SheetState value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTUpdateLinks {
+pub enum UpdateLinks {
     #[serde(rename = "userSet")]
     UserSet,
     #[serde(rename = "never")]
@@ -4215,7 +4209,7 @@ pub enum SmlSTUpdateLinks {
     Always,
 }
 
-impl std::fmt::Display for SmlSTUpdateLinks {
+impl std::fmt::Display for UpdateLinks {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::UserSet => write!(f, "userSet"),
@@ -4225,7 +4219,7 @@ impl std::fmt::Display for SmlSTUpdateLinks {
     }
 }
 
-impl std::str::FromStr for SmlSTUpdateLinks {
+impl std::str::FromStr for UpdateLinks {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4233,13 +4227,13 @@ impl std::str::FromStr for SmlSTUpdateLinks {
             "userSet" => Ok(Self::UserSet),
             "never" => Ok(Self::Never),
             "always" => Ok(Self::Always),
-            _ => Err(format!("unknown SmlSTUpdateLinks value: {}", s)),
+            _ => Err(format!("unknown UpdateLinks value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTSmartTagShow {
+pub enum STSmartTagShow {
     #[serde(rename = "all")]
     All,
     #[serde(rename = "none")]
@@ -4248,7 +4242,7 @@ pub enum SmlSTSmartTagShow {
     NoIndicator,
 }
 
-impl std::fmt::Display for SmlSTSmartTagShow {
+impl std::fmt::Display for STSmartTagShow {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::All => write!(f, "all"),
@@ -4258,7 +4252,7 @@ impl std::fmt::Display for SmlSTSmartTagShow {
     }
 }
 
-impl std::str::FromStr for SmlSTSmartTagShow {
+impl std::str::FromStr for STSmartTagShow {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4266,13 +4260,13 @@ impl std::str::FromStr for SmlSTSmartTagShow {
             "all" => Ok(Self::All),
             "none" => Ok(Self::None),
             "noIndicator" => Ok(Self::NoIndicator),
-            _ => Err(format!("unknown SmlSTSmartTagShow value: {}", s)),
+            _ => Err(format!("unknown STSmartTagShow value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTCalcMode {
+pub enum CalculationMode {
     #[serde(rename = "manual")]
     Manual,
     #[serde(rename = "auto")]
@@ -4281,7 +4275,7 @@ pub enum SmlSTCalcMode {
     AutoNoTable,
 }
 
-impl std::fmt::Display for SmlSTCalcMode {
+impl std::fmt::Display for CalculationMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Manual => write!(f, "manual"),
@@ -4291,7 +4285,7 @@ impl std::fmt::Display for SmlSTCalcMode {
     }
 }
 
-impl std::str::FromStr for SmlSTCalcMode {
+impl std::str::FromStr for CalculationMode {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4299,20 +4293,20 @@ impl std::str::FromStr for SmlSTCalcMode {
             "manual" => Ok(Self::Manual),
             "auto" => Ok(Self::Auto),
             "autoNoTable" => Ok(Self::AutoNoTable),
-            _ => Err(format!("unknown SmlSTCalcMode value: {}", s)),
+            _ => Err(format!("unknown CalculationMode value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTRefMode {
+pub enum ReferenceMode {
     #[serde(rename = "A1")]
     A1,
     #[serde(rename = "R1C1")]
     R1C1,
 }
 
-impl std::fmt::Display for SmlSTRefMode {
+impl std::fmt::Display for ReferenceMode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::A1 => write!(f, "A1"),
@@ -4321,20 +4315,20 @@ impl std::fmt::Display for SmlSTRefMode {
     }
 }
 
-impl std::str::FromStr for SmlSTRefMode {
+impl std::str::FromStr for ReferenceMode {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "A1" => Ok(Self::A1),
             "R1C1" => Ok(Self::R1C1),
-            _ => Err(format!("unknown SmlSTRefMode value: {}", s)),
+            _ => Err(format!("unknown ReferenceMode value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SmlSTTargetScreenSize {
+pub enum STTargetScreenSize {
     #[serde(rename = "544x376")]
     _544x376,
     #[serde(rename = "640x480")]
@@ -4359,7 +4353,7 @@ pub enum SmlSTTargetScreenSize {
     _1920x1200,
 }
 
-impl std::fmt::Display for SmlSTTargetScreenSize {
+impl std::fmt::Display for STTargetScreenSize {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::_544x376 => write!(f, "544x376"),
@@ -4377,7 +4371,7 @@ impl std::fmt::Display for SmlSTTargetScreenSize {
     }
 }
 
-impl std::str::FromStr for SmlSTTargetScreenSize {
+impl std::str::FromStr for STTargetScreenSize {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -4393,31 +4387,31 @@ impl std::str::FromStr for SmlSTTargetScreenSize {
             "1600x1200" => Ok(Self::_1600x1200),
             "1800x1440" => Ok(Self::_1800x1440),
             "1920x1200" => Ok(Self::_1920x1200),
-            _ => Err(format!("unknown SmlSTTargetScreenSize value: {}", s)),
+            _ => Err(format!("unknown STTargetScreenSize value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTAutoFilter {
+pub struct AutoFilter {
     #[serde(rename = "@ref")]
     #[serde(default)]
-    pub r#ref: Option<SmlSTRef>,
+    pub reference: Option<Reference>,
     #[serde(rename = "filterColumn")]
     #[serde(default)]
-    pub filter_column: Vec<Box<SmlCTFilterColumn>>,
+    pub filter_column: Vec<Box<FilterColumn>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
-    pub sort_state: Option<Box<SmlCTSortState>>,
+    pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFilterColumn {
+pub struct FilterColumn {
     #[serde(rename = "@colId")]
-    pub col_id: u32,
+    pub column_id: u32,
     #[serde(rename = "@hiddenButton")]
     #[serde(default)]
     pub hidden_button: Option<bool>,
@@ -4427,50 +4421,50 @@ pub struct SmlCTFilterColumn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFilters {
+pub struct Filters {
     #[serde(rename = "@blank")]
     #[serde(default)]
     pub blank: Option<bool>,
     #[serde(rename = "@calendarType")]
     #[serde(default)]
-    pub calendar_type: Option<SSTCalendarType>,
+    pub calendar_type: Option<CalendarType>,
     #[serde(rename = "filter")]
     #[serde(default)]
-    pub filter: Vec<Box<SmlCTFilter>>,
+    pub filter: Vec<Box<Filter>>,
     #[serde(rename = "dateGroupItem")]
     #[serde(default)]
-    pub date_group_item: Vec<Box<SmlCTDateGroupItem>>,
+    pub date_group_item: Vec<Box<CTDateGroupItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFilter {
+pub struct Filter {
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<SSTXstring>,
+    pub value: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomFilters {
+pub struct CTCustomFilters {
     #[serde(rename = "@and")]
     #[serde(default)]
     pub and: Option<bool>,
     #[serde(rename = "customFilter")]
     #[serde(default)]
-    pub custom_filter: Vec<Box<SmlCTCustomFilter>>,
+    pub custom_filter: Vec<Box<CTCustomFilter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomFilter {
+pub struct CTCustomFilter {
     #[serde(rename = "@operator")]
     #[serde(default)]
-    pub operator: Option<SmlSTFilterOperator>,
+    pub operator: Option<FilterOperator>,
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<SSTXstring>,
+    pub value: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTop10 {
+pub struct CTTop10 {
     #[serde(rename = "@top")]
     #[serde(default)]
     pub top: Option<bool>,
@@ -4478,38 +4472,38 @@ pub struct SmlCTTop10 {
     #[serde(default)]
     pub percent: Option<bool>,
     #[serde(rename = "@val")]
-    pub val: f64,
+    pub value: f64,
     #[serde(rename = "@filterVal")]
     #[serde(default)]
     pub filter_val: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColorFilter {
+pub struct CTColorFilter {
     #[serde(rename = "@dxfId")]
     #[serde(default)]
-    pub dxf_id: Option<SmlSTDxfId>,
+    pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@cellColor")]
     #[serde(default)]
     pub cell_color: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIconFilter {
+pub struct CTIconFilter {
     #[serde(rename = "@iconSet")]
-    pub icon_set: SmlSTIconSetType,
+    pub icon_set: IconSetType,
     #[serde(rename = "@iconId")]
     #[serde(default)]
     pub icon_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDynamicFilter {
+pub struct CTDynamicFilter {
     #[serde(rename = "@type")]
-    pub r#type: SmlSTDynamicFilterType,
+    pub r#type: DynamicFilterType,
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<f64>,
+    pub value: Option<f64>,
     #[serde(rename = "@valIso")]
     #[serde(default)]
     pub val_iso: Option<String>,
@@ -4522,7 +4516,7 @@ pub struct SmlCTDynamicFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSortState {
+pub struct SortState {
     #[serde(rename = "@columnSort")]
     #[serde(default)]
     pub column_sort: Option<bool>,
@@ -4531,43 +4525,43 @@ pub struct SmlCTSortState {
     pub case_sensitive: Option<bool>,
     #[serde(rename = "@sortMethod")]
     #[serde(default)]
-    pub sort_method: Option<SmlSTSortMethod>,
+    pub sort_method: Option<SortMethod>,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "sortCondition")]
     #[serde(default)]
-    pub sort_condition: Vec<Box<SmlCTSortCondition>>,
+    pub sort_condition: Vec<Box<SortCondition>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSortCondition {
+pub struct SortCondition {
     #[serde(rename = "@descending")]
     #[serde(default)]
     pub descending: Option<bool>,
     #[serde(rename = "@sortBy")]
     #[serde(default)]
-    pub sort_by: Option<SmlSTSortBy>,
+    pub sort_by: Option<SortBy>,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@customList")]
     #[serde(default)]
-    pub custom_list: Option<SSTXstring>,
+    pub custom_list: Option<XmlString>,
     #[serde(rename = "@dxfId")]
     #[serde(default)]
-    pub dxf_id: Option<SmlSTDxfId>,
+    pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@iconSet")]
     #[serde(default)]
-    pub icon_set: Option<SmlSTIconSetType>,
+    pub icon_set: Option<IconSetType>,
     #[serde(rename = "@iconId")]
     #[serde(default)]
     pub icon_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDateGroupItem {
+pub struct CTDateGroupItem {
     #[serde(rename = "@year")]
     pub year: u16,
     #[serde(rename = "@month")]
@@ -4586,26 +4580,26 @@ pub struct SmlCTDateGroupItem {
     #[serde(default)]
     pub second: Option<u16>,
     #[serde(rename = "@dateTimeGrouping")]
-    pub date_time_grouping: SmlSTDateTimeGrouping,
+    pub date_time_grouping: STDateTimeGrouping,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTXStringElement {
+pub struct CTXStringElement {
     #[serde(rename = "@v")]
-    pub v: SSTXstring,
+    pub value: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExtension {
+pub struct CTExtension {
     #[serde(rename = "@uri")]
     #[serde(default)]
     pub uri: Option<String>,
 }
 
-pub type SmlCTExtensionAny = String;
+pub type CTExtensionAny = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTObjectAnchor {
+pub struct CTObjectAnchor {
     #[serde(rename = "@moveWithCells")]
     #[serde(default)]
     pub move_with_cells: Option<bool>,
@@ -4615,96 +4609,96 @@ pub struct SmlCTObjectAnchor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlEGExtensionList {
+pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default)]
-    pub ext: Vec<Box<SmlCTExtension>>,
+    pub ext: Vec<Box<CTExtension>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTExtensionList;
+pub struct CTExtensionList;
 
-pub type SmlCalcChain = Box<SmlCTCalcChain>;
+pub type SmlCalcChain = Box<CTCalcChain>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalcChain {
+pub struct CTCalcChain {
     #[serde(rename = "c")]
     #[serde(default)]
-    pub c: Vec<Box<SmlCTCalcCell>>,
+    pub cells: Vec<Box<CTCalcCell>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalcCell {
+pub struct CTCalcCell {
     #[serde(rename = "@_any")]
-    pub _any: SmlSTCellRef,
+    pub _any: CellRef,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<i32>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<bool>,
+    pub style_index: Option<bool>,
     #[serde(rename = "@l")]
     #[serde(default)]
     pub l: Option<bool>,
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<bool>,
+    pub cell_type: Option<bool>,
     #[serde(rename = "@a")]
     #[serde(default)]
     pub a: Option<bool>,
 }
 
-pub type SmlComments = Box<SmlCTComments>;
+pub type SmlComments = Box<Comments>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTComments {
+pub struct Comments {
     #[serde(rename = "authors")]
-    pub authors: Box<SmlCTAuthors>,
+    pub authors: Box<Authors>,
     #[serde(rename = "commentList")]
-    pub comment_list: Box<SmlCTCommentList>,
+    pub comment_list: Box<CommentList>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTAuthors {
+pub struct Authors {
     #[serde(rename = "author")]
     #[serde(default)]
-    pub author: Vec<SSTXstring>,
+    pub author: Vec<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCommentList {
+pub struct CommentList {
     #[serde(rename = "comment")]
     #[serde(default)]
-    pub comment: Vec<Box<SmlCTComment>>,
+    pub comment: Vec<Box<Comment>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTComment {
+pub struct Comment {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@authorId")]
     pub author_id: u32,
     #[serde(rename = "@guid")]
     #[serde(default)]
-    pub guid: Option<SSTGuid>,
+    pub guid: Option<Guid>,
     #[serde(rename = "@shapeId")]
     #[serde(default)]
     pub shape_id: Option<u32>,
     #[serde(rename = "text")]
-    pub text: Box<SmlCTRst>,
+    pub text: Box<RichString>,
     #[serde(rename = "commentPr")]
     #[serde(default)]
-    pub comment_pr: Option<Box<SmlCTCommentPr>>,
+    pub comment_pr: Option<Box<CTCommentPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCommentPr {
+pub struct CTCommentPr {
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -4725,13 +4719,13 @@ pub struct SmlCTCommentPr {
     pub auto_line: Option<bool>,
     #[serde(rename = "@altText")]
     #[serde(default)]
-    pub alt_text: Option<SSTXstring>,
+    pub alt_text: Option<XmlString>,
     #[serde(rename = "@textHAlign")]
     #[serde(default)]
-    pub text_h_align: Option<SmlSTTextHAlign>,
+    pub text_h_align: Option<STTextHAlign>,
     #[serde(rename = "@textVAlign")]
     #[serde(default)]
-    pub text_v_align: Option<SmlSTTextVAlign>,
+    pub text_v_align: Option<STTextVAlign>,
     #[serde(rename = "@lockText")]
     #[serde(default)]
     pub lock_text: Option<bool>,
@@ -4742,30 +4736,30 @@ pub struct SmlCTCommentPr {
     #[serde(default)]
     pub auto_scale: Option<bool>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<SmlCTObjectAnchor>,
+    pub anchor: Box<CTObjectAnchor>,
 }
 
-pub type SmlMapInfo = Box<SmlCTMapInfo>;
+pub type SmlMapInfo = Box<CTMapInfo>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMapInfo {
+pub struct CTMapInfo {
     #[serde(rename = "@SelectionNamespaces")]
     pub selection_namespaces: String,
     #[serde(rename = "Schema")]
     #[serde(default)]
-    pub schema: Vec<Box<SmlCTSchema>>,
+    pub schema: Vec<Box<CTSchema>>,
     #[serde(rename = "Map")]
     #[serde(default)]
-    pub map: Vec<Box<SmlCTMap>>,
+    pub map: Vec<Box<CTMap>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTSchema;
+pub struct CTSchema;
 
-pub type SmlCTSchemaAny = String;
+pub type CTSchemaAny = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMap {
+pub struct CTMap {
     #[serde(rename = "@ID")]
     pub i_d: u32,
     #[serde(rename = "@Name")]
@@ -4786,11 +4780,11 @@ pub struct SmlCTMap {
     pub preserve_format: bool,
     #[serde(rename = "DataBinding")]
     #[serde(default)]
-    pub data_binding: Option<Box<SmlCTDataBinding>>,
+    pub data_binding: Option<Box<CTDataBinding>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataBinding {
+pub struct CTDataBinding {
     #[serde(rename = "@DataBindingName")]
     #[serde(default)]
     pub data_binding_name: Option<String>,
@@ -4807,27 +4801,27 @@ pub struct SmlCTDataBinding {
     pub data_binding_load_mode: u32,
 }
 
-pub type SmlCTDataBindingAny = String;
+pub type CTDataBindingAny = String;
 
-pub type SmlConnections = Box<SmlCTConnections>;
+pub type SmlConnections = Box<CTConnections>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConnections {
+pub struct CTConnections {
     #[serde(rename = "connection")]
     #[serde(default)]
-    pub connection: Vec<Box<SmlCTConnection>>,
+    pub connection: Vec<Box<CTConnection>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConnection {
+pub struct CTConnection {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@sourceFile")]
     #[serde(default)]
-    pub source_file: Option<SSTXstring>,
+    pub source_file: Option<XmlString>,
     #[serde(rename = "@odcFile")]
     #[serde(default)]
-    pub odc_file: Option<SSTXstring>,
+    pub odc_file: Option<XmlString>,
     #[serde(rename = "@keepAlive")]
     #[serde(default)]
     pub keep_alive: Option<bool>,
@@ -4836,10 +4830,10 @@ pub struct SmlCTConnection {
     pub interval: Option<u32>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@description")]
     #[serde(default)]
-    pub description: Option<SSTXstring>,
+    pub description: Option<XmlString>,
     #[serde(rename = "@type")]
     #[serde(default)]
     pub r#type: Option<u32>,
@@ -4874,53 +4868,53 @@ pub struct SmlCTConnection {
     pub save_data: Option<bool>,
     #[serde(rename = "@credentials")]
     #[serde(default)]
-    pub credentials: Option<SmlSTCredMethod>,
+    pub credentials: Option<STCredMethod>,
     #[serde(rename = "@singleSignOnId")]
     #[serde(default)]
-    pub single_sign_on_id: Option<SSTXstring>,
+    pub single_sign_on_id: Option<XmlString>,
     #[serde(rename = "dbPr")]
     #[serde(default)]
-    pub db_pr: Option<Box<SmlCTDbPr>>,
+    pub db_pr: Option<Box<CTDbPr>>,
     #[serde(rename = "olapPr")]
     #[serde(default)]
-    pub olap_pr: Option<Box<SmlCTOlapPr>>,
+    pub olap_pr: Option<Box<CTOlapPr>>,
     #[serde(rename = "webPr")]
     #[serde(default)]
-    pub web_pr: Option<Box<SmlCTWebPr>>,
+    pub web_pr: Option<Box<CTWebPr>>,
     #[serde(rename = "textPr")]
     #[serde(default)]
-    pub text_pr: Option<Box<SmlCTTextPr>>,
+    pub text_pr: Option<Box<CTTextPr>>,
     #[serde(rename = "parameters")]
     #[serde(default)]
-    pub parameters: Option<Box<SmlCTParameters>>,
+    pub parameters: Option<Box<CTParameters>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDbPr {
+pub struct CTDbPr {
     #[serde(rename = "@connection")]
-    pub connection: SSTXstring,
+    pub connection: XmlString,
     #[serde(rename = "@command")]
     #[serde(default)]
-    pub command: Option<SSTXstring>,
+    pub command: Option<XmlString>,
     #[serde(rename = "@serverCommand")]
     #[serde(default)]
-    pub server_command: Option<SSTXstring>,
+    pub server_command: Option<XmlString>,
     #[serde(rename = "@commandType")]
     #[serde(default)]
     pub command_type: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOlapPr {
+pub struct CTOlapPr {
     #[serde(rename = "@local")]
     #[serde(default)]
     pub local: Option<bool>,
     #[serde(rename = "@localConnection")]
     #[serde(default)]
-    pub local_connection: Option<SSTXstring>,
+    pub local_connection: Option<XmlString>,
     #[serde(rename = "@localRefresh")]
     #[serde(default)]
     pub local_refresh: Option<bool>,
@@ -4945,7 +4939,7 @@ pub struct SmlCTOlapPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPr {
+pub struct CTWebPr {
     #[serde(rename = "@xml")]
     #[serde(default)]
     pub xml: Option<bool>,
@@ -4972,51 +4966,51 @@ pub struct SmlCTWebPr {
     pub xl2000: Option<bool>,
     #[serde(rename = "@url")]
     #[serde(default)]
-    pub url: Option<SSTXstring>,
+    pub url: Option<XmlString>,
     #[serde(rename = "@post")]
     #[serde(default)]
-    pub post: Option<SSTXstring>,
+    pub post: Option<XmlString>,
     #[serde(rename = "@htmlTables")]
     #[serde(default)]
     pub html_tables: Option<bool>,
     #[serde(rename = "@htmlFormat")]
     #[serde(default)]
-    pub html_format: Option<SmlSTHtmlFmt>,
+    pub html_format: Option<STHtmlFmt>,
     #[serde(rename = "@editPage")]
     #[serde(default)]
-    pub edit_page: Option<SSTXstring>,
+    pub edit_page: Option<XmlString>,
     #[serde(rename = "tables")]
     #[serde(default)]
-    pub tables: Option<Box<SmlCTTables>>,
+    pub tables: Option<Box<CTTables>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTParameters {
+pub struct CTParameters {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "parameter")]
     #[serde(default)]
-    pub parameter: Vec<Box<SmlCTParameter>>,
+    pub parameter: Vec<Box<CTParameter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTParameter {
+pub struct CTParameter {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@sqlType")]
     #[serde(default)]
     pub sql_type: Option<i32>,
     #[serde(rename = "@parameterType")]
     #[serde(default)]
-    pub parameter_type: Option<SmlSTParameterType>,
+    pub parameter_type: Option<STParameterType>,
     #[serde(rename = "@refreshOnChange")]
     #[serde(default)]
     pub refresh_on_change: Option<bool>,
     #[serde(rename = "@prompt")]
     #[serde(default)]
-    pub prompt: Option<SSTXstring>,
+    pub prompt: Option<XmlString>,
     #[serde(rename = "@boolean")]
     #[serde(default)]
     pub boolean: Option<bool>,
@@ -5028,30 +5022,30 @@ pub struct SmlCTParameter {
     pub integer: Option<i32>,
     #[serde(rename = "@string")]
     #[serde(default)]
-    pub string: Option<SSTXstring>,
+    pub string: Option<XmlString>,
     #[serde(rename = "@cell")]
     #[serde(default)]
-    pub cell: Option<SSTXstring>,
+    pub cell: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTables {
+pub struct CTTables {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTTableMissing;
+pub struct CTTableMissing;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTextPr {
+pub struct CTTextPr {
     #[serde(rename = "@prompt")]
     #[serde(default)]
     pub prompt: Option<bool>,
     #[serde(rename = "@fileType")]
     #[serde(default)]
-    pub file_type: Option<SmlSTFileType>,
+    pub file_type: Option<STFileType>,
     #[serde(rename = "@codePage")]
     #[serde(default)]
     pub code_page: Option<u32>,
@@ -5063,16 +5057,16 @@ pub struct SmlCTTextPr {
     pub first_row: Option<u32>,
     #[serde(rename = "@sourceFile")]
     #[serde(default)]
-    pub source_file: Option<SSTXstring>,
+    pub source_file: Option<XmlString>,
     #[serde(rename = "@delimited")]
     #[serde(default)]
     pub delimited: Option<bool>,
     #[serde(rename = "@decimal")]
     #[serde(default)]
-    pub decimal: Option<SSTXstring>,
+    pub decimal: Option<XmlString>,
     #[serde(rename = "@thousands")]
     #[serde(default)]
-    pub thousands: Option<SSTXstring>,
+    pub thousands: Option<XmlString>,
     #[serde(rename = "@tab")]
     #[serde(default)]
     pub tab: Option<bool>,
@@ -5090,43 +5084,43 @@ pub struct SmlCTTextPr {
     pub consecutive: Option<bool>,
     #[serde(rename = "@qualifier")]
     #[serde(default)]
-    pub qualifier: Option<SmlSTQualifier>,
+    pub qualifier: Option<STQualifier>,
     #[serde(rename = "@delimiter")]
     #[serde(default)]
-    pub delimiter: Option<SSTXstring>,
+    pub delimiter: Option<XmlString>,
     #[serde(rename = "textFields")]
     #[serde(default)]
-    pub text_fields: Option<Box<SmlCTTextFields>>,
+    pub text_fields: Option<Box<CTTextFields>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTextFields {
+pub struct CTTextFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "textField")]
     #[serde(default)]
-    pub text_field: Vec<Box<SmlCTTextField>>,
+    pub text_field: Vec<Box<CTTextField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTextField {
+pub struct CTTextField {
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTExternalConnectionType>,
+    pub r#type: Option<STExternalConnectionType>,
     #[serde(rename = "@position")]
     #[serde(default)]
     pub position: Option<u32>,
 }
 
-pub type SmlPivotCacheDefinition = Box<SmlCTPivotCacheDefinition>;
+pub type SmlPivotCacheDefinition = Box<CTPivotCacheDefinition>;
 
-pub type SmlPivotCacheRecords = Box<SmlCTPivotCacheRecords>;
+pub type SmlPivotCacheRecords = Box<CTPivotCacheRecords>;
 
-pub type SmlPivotTableDefinition = Box<SmlCTPivotTableDefinition>;
+pub type SmlPivotTableDefinition = Box<CTPivotTableDefinition>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotCacheDefinition {
+pub struct CTPivotCacheDefinition {
     #[serde(rename = "@invalid")]
     #[serde(default)]
     pub invalid: Option<bool>,
@@ -5144,7 +5138,7 @@ pub struct SmlCTPivotCacheDefinition {
     pub enable_refresh: Option<bool>,
     #[serde(rename = "@refreshedBy")]
     #[serde(default)]
-    pub refreshed_by: Option<SSTXstring>,
+    pub refreshed_by: Option<XmlString>,
     #[serde(rename = "@refreshedDate")]
     #[serde(default)]
     pub refreshed_date: Option<f64>,
@@ -5182,55 +5176,55 @@ pub struct SmlCTPivotCacheDefinition {
     #[serde(default)]
     pub support_advanced_drill: Option<bool>,
     #[serde(rename = "cacheSource")]
-    pub cache_source: Box<SmlCTCacheSource>,
+    pub cache_source: Box<CTCacheSource>,
     #[serde(rename = "cacheFields")]
-    pub cache_fields: Box<SmlCTCacheFields>,
+    pub cache_fields: Box<CTCacheFields>,
     #[serde(rename = "cacheHierarchies")]
     #[serde(default)]
-    pub cache_hierarchies: Option<Box<SmlCTCacheHierarchies>>,
+    pub cache_hierarchies: Option<Box<CTCacheHierarchies>>,
     #[serde(rename = "kpis")]
     #[serde(default)]
-    pub kpis: Option<Box<SmlCTPCDKPIs>>,
+    pub kpis: Option<Box<CTPCDKPIs>>,
     #[serde(rename = "calculatedItems")]
     #[serde(default)]
-    pub calculated_items: Option<Box<SmlCTCalculatedItems>>,
+    pub calculated_items: Option<Box<CTCalculatedItems>>,
     #[serde(rename = "calculatedMembers")]
     #[serde(default)]
-    pub calculated_members: Option<Box<SmlCTCalculatedMembers>>,
+    pub calculated_members: Option<Box<CTCalculatedMembers>>,
     #[serde(rename = "dimensions")]
     #[serde(default)]
-    pub dimensions: Option<Box<SmlCTDimensions>>,
+    pub dimensions: Option<Box<CTDimensions>>,
     #[serde(rename = "measureGroups")]
     #[serde(default)]
-    pub measure_groups: Option<Box<SmlCTMeasureGroups>>,
+    pub measure_groups: Option<Box<CTMeasureGroups>>,
     #[serde(rename = "maps")]
     #[serde(default)]
-    pub maps: Option<Box<SmlCTMeasureDimensionMaps>>,
+    pub maps: Option<Box<CTMeasureDimensionMaps>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCacheFields {
+pub struct CTCacheFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "cacheField")]
     #[serde(default)]
-    pub cache_field: Vec<Box<SmlCTCacheField>>,
+    pub cache_field: Vec<Box<CTCacheField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCacheField {
+pub struct CTCacheField {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@caption")]
     #[serde(default)]
-    pub caption: Option<SSTXstring>,
+    pub caption: Option<XmlString>,
     #[serde(rename = "@propertyName")]
     #[serde(default)]
-    pub property_name: Option<SSTXstring>,
+    pub property_name: Option<XmlString>,
     #[serde(rename = "@serverField")]
     #[serde(default)]
     pub server_field: Option<bool>,
@@ -5239,10 +5233,10 @@ pub struct SmlCTCacheField {
     pub unique_list: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@formula")]
     #[serde(default)]
-    pub formula: Option<SSTXstring>,
+    pub formula: Option<XmlString>,
     #[serde(rename = "@sqlType")]
     #[serde(default)]
     pub sql_type: Option<i32>,
@@ -5263,90 +5257,90 @@ pub struct SmlCTCacheField {
     pub member_property_field: Option<bool>,
     #[serde(rename = "sharedItems")]
     #[serde(default)]
-    pub shared_items: Option<Box<SmlCTSharedItems>>,
+    pub shared_items: Option<Box<CTSharedItems>>,
     #[serde(rename = "fieldGroup")]
     #[serde(default)]
-    pub field_group: Option<Box<SmlCTFieldGroup>>,
+    pub field_group: Option<Box<CTFieldGroup>>,
     #[serde(rename = "mpMap")]
     #[serde(default)]
-    pub mp_map: Vec<Box<SmlCTX>>,
+    pub mp_map: Vec<Box<CTX>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCacheSource {
+pub struct CTCacheSource {
     #[serde(rename = "@type")]
-    pub r#type: SmlSTSourceType,
+    pub r#type: STSourceType,
     #[serde(rename = "@connectionId")]
     #[serde(default)]
     pub connection_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWorksheetSource {
+pub struct CTWorksheetSource {
     #[serde(rename = "@ref")]
     #[serde(default)]
-    pub r#ref: Option<SmlSTRef>,
+    pub reference: Option<Reference>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
     #[serde(default)]
-    pub sheet: Option<SSTXstring>,
+    pub sheet: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConsolidation {
+pub struct CTConsolidation {
     #[serde(rename = "@autoPage")]
     #[serde(default)]
     pub auto_page: Option<bool>,
     #[serde(rename = "pages")]
     #[serde(default)]
-    pub pages: Option<Box<SmlCTPages>>,
+    pub pages: Option<Box<CTPages>>,
     #[serde(rename = "rangeSets")]
-    pub range_sets: Box<SmlCTRangeSets>,
+    pub range_sets: Box<CTRangeSets>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPages {
+pub struct CTPages {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "page")]
     #[serde(default)]
-    pub page: Vec<Box<SmlCTPCDSCPage>>,
+    pub page: Vec<Box<CTPCDSCPage>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPCDSCPage {
+pub struct CTPCDSCPage {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pageItem")]
     #[serde(default)]
-    pub page_item: Vec<Box<SmlCTPageItem>>,
+    pub page_item: Vec<Box<CTPageItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageItem {
+pub struct CTPageItem {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRangeSets {
+pub struct CTRangeSets {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "rangeSet")]
     #[serde(default)]
-    pub range_set: Vec<Box<SmlCTRangeSet>>,
+    pub range_set: Vec<Box<CTRangeSet>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRangeSet {
+pub struct CTRangeSet {
     #[serde(rename = "@i1")]
     #[serde(default)]
     pub i1: Option<u32>,
@@ -5361,17 +5355,17 @@ pub struct SmlCTRangeSet {
     pub i4: Option<u32>,
     #[serde(rename = "@ref")]
     #[serde(default)]
-    pub r#ref: Option<SmlSTRef>,
+    pub reference: Option<Reference>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
     #[serde(default)]
-    pub sheet: Option<SSTXstring>,
+    pub sheet: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSharedItems {
+pub struct CTSharedItems {
     #[serde(rename = "@containsSemiMixedTypes")]
     #[serde(default)]
     pub contains_semi_mixed_types: Option<bool>,
@@ -5417,16 +5411,16 @@ pub struct SmlCTSharedItems {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMissing {
+pub struct CTMissing {
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
@@ -5435,10 +5429,10 @@ pub struct SmlCTMissing {
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
     #[serde(default)]
-    pub bc: Option<SmlSTUnsignedIntHex>,
+    pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
     #[serde(default)]
-    pub fc: Option<SmlSTUnsignedIntHex>,
+    pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<bool>,
@@ -5453,25 +5447,25 @@ pub struct SmlCTMissing {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Vec<Box<SmlCTTuples>>,
+    pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTNumber {
+pub struct CTNumber {
     #[serde(rename = "@v")]
-    pub v: f64,
+    pub value: f64,
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
@@ -5480,10 +5474,10 @@ pub struct SmlCTNumber {
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
     #[serde(default)]
-    pub bc: Option<SmlSTUnsignedIntHex>,
+    pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
     #[serde(default)]
-    pub fc: Option<SmlSTUnsignedIntHex>,
+    pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<bool>,
@@ -5498,46 +5492,46 @@ pub struct SmlCTNumber {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Vec<Box<SmlCTTuples>>,
+    pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBoolean {
+pub struct CTBoolean {
     #[serde(rename = "@v")]
-    pub v: bool,
+    pub value: bool,
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTError {
+pub struct CTError {
     #[serde(rename = "@v")]
-    pub v: SSTXstring,
+    pub value: XmlString,
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
@@ -5546,10 +5540,10 @@ pub struct SmlCTError {
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
     #[serde(default)]
-    pub bc: Option<SmlSTUnsignedIntHex>,
+    pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
     #[serde(default)]
-    pub fc: Option<SmlSTUnsignedIntHex>,
+    pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<bool>,
@@ -5564,25 +5558,25 @@ pub struct SmlCTError {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Option<Box<SmlCTTuples>>,
+    pub tpls: Option<Box<CTTuples>>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTString {
+pub struct CTString {
     #[serde(rename = "@v")]
-    pub v: SSTXstring,
+    pub value: XmlString,
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
@@ -5591,10 +5585,10 @@ pub struct SmlCTString {
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
     #[serde(default)]
-    pub bc: Option<SmlSTUnsignedIntHex>,
+    pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
     #[serde(default)]
-    pub fc: Option<SmlSTUnsignedIntHex>,
+    pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<bool>,
@@ -5609,35 +5603,35 @@ pub struct SmlCTString {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Vec<Box<SmlCTTuples>>,
+    pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDateTime {
+pub struct CTDateTime {
     #[serde(rename = "@v")]
-    pub v: String,
+    pub value: String,
     #[serde(rename = "@u")]
     #[serde(default)]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<SSTXstring>,
+    pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
     #[serde(default)]
     pub cp: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFieldGroup {
+pub struct CTFieldGroup {
     #[serde(rename = "@par")]
     #[serde(default)]
     pub par: Option<u32>,
@@ -5646,17 +5640,17 @@ pub struct SmlCTFieldGroup {
     pub base: Option<u32>,
     #[serde(rename = "rangePr")]
     #[serde(default)]
-    pub range_pr: Option<Box<SmlCTRangePr>>,
+    pub range_pr: Option<Box<CTRangePr>>,
     #[serde(rename = "discretePr")]
     #[serde(default)]
-    pub discrete_pr: Option<Box<SmlCTDiscretePr>>,
+    pub discrete_pr: Option<Box<CTDiscretePr>>,
     #[serde(rename = "groupItems")]
     #[serde(default)]
-    pub group_items: Option<Box<SmlCTGroupItems>>,
+    pub group_items: Option<Box<CTGroupItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRangePr {
+pub struct CTRangePr {
     #[serde(rename = "@autoStart")]
     #[serde(default)]
     pub auto_start: Option<bool>,
@@ -5665,7 +5659,7 @@ pub struct SmlCTRangePr {
     pub auto_end: Option<bool>,
     #[serde(rename = "@groupBy")]
     #[serde(default)]
-    pub group_by: Option<SmlSTGroupBy>,
+    pub group_by: Option<STGroupBy>,
     #[serde(rename = "@startNum")]
     #[serde(default)]
     pub start_num: Option<f64>,
@@ -5684,100 +5678,100 @@ pub struct SmlCTRangePr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDiscretePr {
+pub struct CTDiscretePr {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTIndex>>,
+    pub x: Vec<Box<CTIndex>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroupItems {
+pub struct CTGroupItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotCacheRecords {
+pub struct CTPivotCacheRecords {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "r")]
     #[serde(default)]
-    pub r: Vec<Box<SmlCTRecord>>,
+    pub reference: Vec<Box<CTRecord>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTRecord;
+pub struct CTRecord;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPCDKPIs {
+pub struct CTPCDKPIs {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "kpi")]
     #[serde(default)]
-    pub kpi: Vec<Box<SmlCTPCDKPI>>,
+    pub kpi: Vec<Box<CTPCDKPI>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPCDKPI {
+pub struct CTPCDKPI {
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@caption")]
     #[serde(default)]
-    pub caption: Option<SSTXstring>,
+    pub caption: Option<XmlString>,
     #[serde(rename = "@displayFolder")]
     #[serde(default)]
-    pub display_folder: Option<SSTXstring>,
+    pub display_folder: Option<XmlString>,
     #[serde(rename = "@measureGroup")]
     #[serde(default)]
-    pub measure_group: Option<SSTXstring>,
+    pub measure_group: Option<XmlString>,
     #[serde(rename = "@parent")]
     #[serde(default)]
-    pub parent: Option<SSTXstring>,
+    pub parent: Option<XmlString>,
     #[serde(rename = "@value")]
-    pub value: SSTXstring,
+    pub value: XmlString,
     #[serde(rename = "@goal")]
     #[serde(default)]
-    pub goal: Option<SSTXstring>,
+    pub goal: Option<XmlString>,
     #[serde(rename = "@status")]
     #[serde(default)]
-    pub status: Option<SSTXstring>,
+    pub status: Option<XmlString>,
     #[serde(rename = "@trend")]
     #[serde(default)]
-    pub trend: Option<SSTXstring>,
+    pub trend: Option<XmlString>,
     #[serde(rename = "@weight")]
     #[serde(default)]
-    pub weight: Option<SSTXstring>,
+    pub weight: Option<XmlString>,
     #[serde(rename = "@time")]
     #[serde(default)]
-    pub time: Option<SSTXstring>,
+    pub time: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCacheHierarchies {
+pub struct CTCacheHierarchies {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "cacheHierarchy")]
     #[serde(default)]
-    pub cache_hierarchy: Vec<Box<SmlCTCacheHierarchy>>,
+    pub cache_hierarchy: Vec<Box<CTCacheHierarchy>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCacheHierarchy {
+pub struct CTCacheHierarchy {
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@caption")]
     #[serde(default)]
-    pub caption: Option<SSTXstring>,
+    pub caption: Option<XmlString>,
     #[serde(rename = "@measure")]
     #[serde(default)]
     pub measure: Option<bool>,
@@ -5801,22 +5795,22 @@ pub struct SmlCTCacheHierarchy {
     pub key_attribute: Option<bool>,
     #[serde(rename = "@defaultMemberUniqueName")]
     #[serde(default)]
-    pub default_member_unique_name: Option<SSTXstring>,
+    pub default_member_unique_name: Option<XmlString>,
     #[serde(rename = "@allUniqueName")]
     #[serde(default)]
-    pub all_unique_name: Option<SSTXstring>,
+    pub all_unique_name: Option<XmlString>,
     #[serde(rename = "@allCaption")]
     #[serde(default)]
-    pub all_caption: Option<SSTXstring>,
+    pub all_caption: Option<XmlString>,
     #[serde(rename = "@dimensionUniqueName")]
     #[serde(default)]
-    pub dimension_unique_name: Option<SSTXstring>,
+    pub dimension_unique_name: Option<XmlString>,
     #[serde(rename = "@displayFolder")]
     #[serde(default)]
-    pub display_folder: Option<SSTXstring>,
+    pub display_folder: Option<XmlString>,
     #[serde(rename = "@measureGroup")]
     #[serde(default)]
-    pub measure_group: Option<SSTXstring>,
+    pub measure_group: Option<XmlString>,
     #[serde(rename = "@measures")]
     #[serde(default)]
     pub measures: Option<bool>,
@@ -5839,47 +5833,47 @@ pub struct SmlCTCacheHierarchy {
     pub hidden: Option<bool>,
     #[serde(rename = "fieldsUsage")]
     #[serde(default)]
-    pub fields_usage: Option<Box<SmlCTFieldsUsage>>,
+    pub fields_usage: Option<Box<CTFieldsUsage>>,
     #[serde(rename = "groupLevels")]
     #[serde(default)]
-    pub group_levels: Option<Box<SmlCTGroupLevels>>,
+    pub group_levels: Option<Box<CTGroupLevels>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFieldsUsage {
+pub struct CTFieldsUsage {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "fieldUsage")]
     #[serde(default)]
-    pub field_usage: Vec<Box<SmlCTFieldUsage>>,
+    pub field_usage: Vec<Box<CTFieldUsage>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFieldUsage {
+pub struct CTFieldUsage {
     #[serde(rename = "@x")]
     pub x: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroupLevels {
+pub struct CTGroupLevels {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "groupLevel")]
     #[serde(default)]
-    pub group_level: Vec<Box<SmlCTGroupLevel>>,
+    pub group_level: Vec<Box<CTGroupLevel>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroupLevel {
+pub struct CTGroupLevel {
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@caption")]
-    pub caption: SSTXstring,
+    pub caption: XmlString,
     #[serde(rename = "@user")]
     #[serde(default)]
     pub user: Option<bool>,
@@ -5888,117 +5882,117 @@ pub struct SmlCTGroupLevel {
     pub custom_roll_up: Option<bool>,
     #[serde(rename = "groups")]
     #[serde(default)]
-    pub groups: Option<Box<SmlCTGroups>>,
+    pub groups: Option<Box<CTGroups>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroups {
+pub struct CTGroups {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "group")]
     #[serde(default)]
-    pub group: Vec<Box<SmlCTLevelGroup>>,
+    pub group: Vec<Box<CTLevelGroup>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTLevelGroup {
+pub struct CTLevelGroup {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@caption")]
-    pub caption: SSTXstring,
+    pub caption: XmlString,
     #[serde(rename = "@uniqueParent")]
     #[serde(default)]
-    pub unique_parent: Option<SSTXstring>,
+    pub unique_parent: Option<XmlString>,
     #[serde(rename = "@id")]
     #[serde(default)]
     pub id: Option<i32>,
     #[serde(rename = "groupMembers")]
-    pub group_members: Box<SmlCTGroupMembers>,
+    pub group_members: Box<CTGroupMembers>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroupMembers {
+pub struct CTGroupMembers {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "groupMember")]
     #[serde(default)]
-    pub group_member: Vec<Box<SmlCTGroupMember>>,
+    pub group_member: Vec<Box<CTGroupMember>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGroupMember {
+pub struct CTGroupMember {
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@group")]
     #[serde(default)]
     pub group: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTupleCache {
+pub struct CTTupleCache {
     #[serde(rename = "entries")]
     #[serde(default)]
-    pub entries: Option<Box<SmlCTPCDSDTCEntries>>,
+    pub entries: Option<Box<CTPCDSDTCEntries>>,
     #[serde(rename = "sets")]
     #[serde(default)]
-    pub sets: Option<Box<SmlCTSets>>,
+    pub sets: Option<Box<CTSets>>,
     #[serde(rename = "queryCache")]
     #[serde(default)]
-    pub query_cache: Option<Box<SmlCTQueryCache>>,
+    pub query_cache: Option<Box<CTQueryCache>>,
     #[serde(rename = "serverFormats")]
     #[serde(default)]
-    pub server_formats: Option<Box<SmlCTServerFormats>>,
+    pub server_formats: Option<Box<CTServerFormats>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTServerFormat {
+pub struct CTServerFormat {
     #[serde(rename = "@culture")]
     #[serde(default)]
-    pub culture: Option<SSTXstring>,
+    pub culture: Option<XmlString>,
     #[serde(rename = "@format")]
     #[serde(default)]
-    pub format: Option<SSTXstring>,
+    pub format: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTServerFormats {
+pub struct CTServerFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "serverFormat")]
     #[serde(default)]
-    pub server_format: Vec<Box<SmlCTServerFormat>>,
+    pub server_format: Vec<Box<CTServerFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPCDSDTCEntries {
+pub struct CTPCDSDTCEntries {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTuples {
+pub struct CTTuples {
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<u32>,
+    pub cells: Option<u32>,
     #[serde(rename = "tpl")]
     #[serde(default)]
-    pub tpl: Vec<Box<SmlCTTuple>>,
+    pub tpl: Vec<Box<CTTuple>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTuple {
+pub struct CTTuple {
     #[serde(rename = "@fld")]
     #[serde(default)]
     pub fld: Option<u32>,
@@ -6010,107 +6004,107 @@ pub struct SmlCTTuple {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSets {
+pub struct CTSets {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "set")]
     #[serde(default)]
-    pub set: Vec<Box<SmlCTSet>>,
+    pub set: Vec<Box<CTSet>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSet {
+pub struct CTSet {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "@maxRank")]
     pub max_rank: i32,
     #[serde(rename = "@setDefinition")]
-    pub set_definition: SSTXstring,
+    pub set_definition: XmlString,
     #[serde(rename = "@sortType")]
     #[serde(default)]
-    pub sort_type: Option<SmlSTSortType>,
+    pub sort_type: Option<STSortType>,
     #[serde(rename = "@queryFailed")]
     #[serde(default)]
     pub query_failed: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Vec<Box<SmlCTTuples>>,
+    pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "sortByTuple")]
     #[serde(default)]
-    pub sort_by_tuple: Option<Box<SmlCTTuples>>,
+    pub sort_by_tuple: Option<Box<CTTuples>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryCache {
+pub struct CTQueryCache {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "query")]
     #[serde(default)]
-    pub query: Vec<Box<SmlCTQuery>>,
+    pub query: Vec<Box<CTQuery>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQuery {
+pub struct CTQuery {
     #[serde(rename = "@mdx")]
-    pub mdx: SSTXstring,
+    pub mdx: XmlString,
     #[serde(rename = "tpls")]
     #[serde(default)]
-    pub tpls: Option<Box<SmlCTTuples>>,
+    pub tpls: Option<Box<CTTuples>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalculatedItems {
+pub struct CTCalculatedItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "calculatedItem")]
     #[serde(default)]
-    pub calculated_item: Vec<Box<SmlCTCalculatedItem>>,
+    pub calculated_item: Vec<Box<CTCalculatedItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalculatedItem {
+pub struct CTCalculatedItem {
     #[serde(rename = "@field")]
     #[serde(default)]
     pub field: Option<u32>,
     #[serde(rename = "@formula")]
     #[serde(default)]
-    pub formula: Option<SSTXstring>,
+    pub formula: Option<XmlString>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<SmlCTPivotArea>,
+    pub pivot_area: Box<CTPivotArea>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalculatedMembers {
+pub struct CTCalculatedMembers {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "calculatedMember")]
     #[serde(default)]
-    pub calculated_member: Vec<Box<SmlCTCalculatedMember>>,
+    pub calculated_member: Vec<Box<CTCalculatedMember>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalculatedMember {
+pub struct CTCalculatedMember {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@mdx")]
-    pub mdx: SSTXstring,
+    pub mdx: XmlString,
     #[serde(rename = "@memberName")]
     #[serde(default)]
-    pub member_name: Option<SSTXstring>,
+    pub member_name: Option<XmlString>,
     #[serde(rename = "@hierarchy")]
     #[serde(default)]
-    pub hierarchy: Option<SSTXstring>,
+    pub hierarchy: Option<XmlString>,
     #[serde(rename = "@parent")]
     #[serde(default)]
-    pub parent: Option<SSTXstring>,
+    pub parent: Option<XmlString>,
     #[serde(rename = "@solveOrder")]
     #[serde(default)]
     pub solve_order: Option<i32>,
@@ -6119,13 +6113,13 @@ pub struct SmlCTCalculatedMember {
     pub set: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotTableDefinition {
+pub struct CTPivotTableDefinition {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
     #[serde(rename = "@dataOnRows")]
@@ -6135,34 +6129,34 @@ pub struct SmlCTPivotTableDefinition {
     #[serde(default)]
     pub data_position: Option<u32>,
     #[serde(rename = "@dataCaption")]
-    pub data_caption: SSTXstring,
+    pub data_caption: XmlString,
     #[serde(rename = "@grandTotalCaption")]
     #[serde(default)]
-    pub grand_total_caption: Option<SSTXstring>,
+    pub grand_total_caption: Option<XmlString>,
     #[serde(rename = "@errorCaption")]
     #[serde(default)]
-    pub error_caption: Option<SSTXstring>,
+    pub error_caption: Option<XmlString>,
     #[serde(rename = "@showError")]
     #[serde(default)]
     pub show_error: Option<bool>,
     #[serde(rename = "@missingCaption")]
     #[serde(default)]
-    pub missing_caption: Option<SSTXstring>,
+    pub missing_caption: Option<XmlString>,
     #[serde(rename = "@showMissing")]
     #[serde(default)]
     pub show_missing: Option<bool>,
     #[serde(rename = "@pageStyle")]
     #[serde(default)]
-    pub page_style: Option<SSTXstring>,
+    pub page_style: Option<XmlString>,
     #[serde(rename = "@pivotTableStyle")]
     #[serde(default)]
-    pub pivot_table_style: Option<SSTXstring>,
+    pub pivot_table_style: Option<XmlString>,
     #[serde(rename = "@vacatedStyle")]
     #[serde(default)]
-    pub vacated_style: Option<SSTXstring>,
+    pub vacated_style: Option<XmlString>,
     #[serde(rename = "@tag")]
     #[serde(default)]
-    pub tag: Option<SSTXstring>,
+    pub tag: Option<XmlString>,
     #[serde(rename = "@updatedVersion")]
     #[serde(default)]
     pub updated_version: Option<u8>,
@@ -6291,10 +6285,10 @@ pub struct SmlCTPivotTableDefinition {
     pub chart_format: Option<u32>,
     #[serde(rename = "@rowHeaderCaption")]
     #[serde(default)]
-    pub row_header_caption: Option<SSTXstring>,
+    pub row_header_caption: Option<XmlString>,
     #[serde(rename = "@colHeaderCaption")]
     #[serde(default)]
-    pub col_header_caption: Option<SSTXstring>,
+    pub col_header_caption: Option<XmlString>,
     #[serde(rename = "@fieldListSortAscending")]
     #[serde(default)]
     pub field_list_sort_ascending: Option<bool>,
@@ -6305,61 +6299,61 @@ pub struct SmlCTPivotTableDefinition {
     #[serde(default)]
     pub custom_list_sort: Option<bool>,
     #[serde(rename = "location")]
-    pub location: Box<SmlCTLocation>,
+    pub location: Box<CTLocation>,
     #[serde(rename = "pivotFields")]
     #[serde(default)]
-    pub pivot_fields: Option<Box<SmlCTPivotFields>>,
+    pub pivot_fields: Option<Box<CTPivotFields>>,
     #[serde(rename = "rowFields")]
     #[serde(default)]
-    pub row_fields: Option<Box<SmlCTRowFields>>,
+    pub row_fields: Option<Box<CTRowFields>>,
     #[serde(rename = "rowItems")]
     #[serde(default)]
-    pub row_items: Option<Box<SmlCTRowItems>>,
+    pub row_items: Option<Box<CTRowItems>>,
     #[serde(rename = "colFields")]
     #[serde(default)]
-    pub col_fields: Option<Box<SmlCTColFields>>,
+    pub col_fields: Option<Box<CTColFields>>,
     #[serde(rename = "colItems")]
     #[serde(default)]
-    pub col_items: Option<Box<SmlCTColItems>>,
+    pub col_items: Option<Box<CTColItems>>,
     #[serde(rename = "pageFields")]
     #[serde(default)]
-    pub page_fields: Option<Box<SmlCTPageFields>>,
+    pub page_fields: Option<Box<CTPageFields>>,
     #[serde(rename = "dataFields")]
     #[serde(default)]
-    pub data_fields: Option<Box<SmlCTDataFields>>,
+    pub data_fields: Option<Box<CTDataFields>>,
     #[serde(rename = "formats")]
     #[serde(default)]
-    pub formats: Option<Box<SmlCTFormats>>,
+    pub formats: Option<Box<CTFormats>>,
     #[serde(rename = "conditionalFormats")]
     #[serde(default)]
-    pub conditional_formats: Option<Box<SmlCTConditionalFormats>>,
+    pub conditional_formats: Option<Box<CTConditionalFormats>>,
     #[serde(rename = "chartFormats")]
     #[serde(default)]
-    pub chart_formats: Option<Box<SmlCTChartFormats>>,
+    pub chart_formats: Option<Box<CTChartFormats>>,
     #[serde(rename = "pivotHierarchies")]
     #[serde(default)]
-    pub pivot_hierarchies: Option<Box<SmlCTPivotHierarchies>>,
+    pub pivot_hierarchies: Option<Box<CTPivotHierarchies>>,
     #[serde(rename = "pivotTableStyleInfo")]
     #[serde(default)]
-    pub pivot_table_style_info: Option<Box<SmlCTPivotTableStyle>>,
+    pub pivot_table_style_info: Option<Box<CTPivotTableStyle>>,
     #[serde(rename = "filters")]
     #[serde(default)]
-    pub filters: Option<Box<SmlCTPivotFilters>>,
+    pub filters: Option<Box<CTPivotFilters>>,
     #[serde(rename = "rowHierarchiesUsage")]
     #[serde(default)]
-    pub row_hierarchies_usage: Option<Box<SmlCTRowHierarchiesUsage>>,
+    pub row_hierarchies_usage: Option<Box<CTRowHierarchiesUsage>>,
     #[serde(rename = "colHierarchiesUsage")]
     #[serde(default)]
-    pub col_hierarchies_usage: Option<Box<SmlCTColHierarchiesUsage>>,
+    pub col_hierarchies_usage: Option<Box<CTColHierarchiesUsage>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTLocation {
+pub struct CTLocation {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@firstHeaderRow")]
     pub first_header_row: u32,
     #[serde(rename = "@firstDataRow")]
@@ -6375,29 +6369,29 @@ pub struct SmlCTLocation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotFields {
+pub struct CTPivotFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pivotField")]
     #[serde(default)]
-    pub pivot_field: Vec<Box<SmlCTPivotField>>,
+    pub pivot_field: Vec<Box<CTPivotField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotField {
+pub struct CTPivotField {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@axis")]
     #[serde(default)]
-    pub axis: Option<SmlSTAxis>,
+    pub axis: Option<STAxis>,
     #[serde(rename = "@dataField")]
     #[serde(default)]
     pub data_field: Option<bool>,
     #[serde(rename = "@subtotalCaption")]
     #[serde(default)]
-    pub subtotal_caption: Option<SSTXstring>,
+    pub subtotal_caption: Option<XmlString>,
     #[serde(rename = "@showDropDowns")]
     #[serde(default)]
     pub show_drop_downs: Option<bool>,
@@ -6406,7 +6400,7 @@ pub struct SmlCTPivotField {
     pub hidden_level: Option<bool>,
     #[serde(rename = "@uniqueMemberProperty")]
     #[serde(default)]
-    pub unique_member_property: Option<SSTXstring>,
+    pub unique_member_property: Option<XmlString>,
     #[serde(rename = "@compact")]
     #[serde(default)]
     pub compact: Option<bool>,
@@ -6415,7 +6409,7 @@ pub struct SmlCTPivotField {
     pub all_drilled: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@outline")]
     #[serde(default)]
     pub outline: Option<bool>,
@@ -6472,7 +6466,7 @@ pub struct SmlCTPivotField {
     pub item_page_count: Option<u32>,
     #[serde(rename = "@sortType")]
     #[serde(default)]
-    pub sort_type: Option<SmlSTFieldSortType>,
+    pub sort_type: Option<STFieldSortType>,
     #[serde(rename = "@dataSourceSort")]
     #[serde(default)]
     pub data_source_sort: Option<bool>,
@@ -6532,53 +6526,53 @@ pub struct SmlCTPivotField {
     pub default_attribute_drill_state: Option<bool>,
     #[serde(rename = "items")]
     #[serde(default)]
-    pub items: Option<Box<SmlCTItems>>,
+    pub items: Option<Box<CTItems>>,
     #[serde(rename = "autoSortScope")]
     #[serde(default)]
-    pub auto_sort_scope: Option<Box<SmlCTAutoSortScope>>,
+    pub auto_sort_scope: Option<Box<CTAutoSortScope>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
-pub type SmlCTAutoSortScope = Box<SmlCTPivotArea>;
+pub type CTAutoSortScope = Box<CTPivotArea>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTItems {
+pub struct CTItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "item")]
     #[serde(default)]
-    pub item: Vec<Box<SmlCTItem>>,
+    pub item: Vec<Box<CTItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTItem {
+pub struct CTItem {
     #[serde(rename = "@n")]
     #[serde(default)]
-    pub n: Option<SSTXstring>,
+    pub n: Option<XmlString>,
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTItemType>,
+    pub cell_type: Option<STItemType>,
     #[serde(rename = "@h")]
     #[serde(default)]
-    pub h: Option<bool>,
+    pub height: Option<bool>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<bool>,
+    pub style_index: Option<bool>,
     #[serde(rename = "@sd")]
     #[serde(default)]
     pub sd: Option<bool>,
     #[serde(rename = "@f")]
     #[serde(default)]
-    pub f: Option<bool>,
+    pub formula: Option<bool>,
     #[serde(rename = "@m")]
     #[serde(default)]
     pub m: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<bool>,
+    pub cells: Option<bool>,
     #[serde(rename = "@x")]
     #[serde(default)]
     pub x: Option<u32>,
@@ -6591,17 +6585,17 @@ pub struct SmlCTItem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageFields {
+pub struct CTPageFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pageField")]
     #[serde(default)]
-    pub page_field: Vec<Box<SmlCTPageField>>,
+    pub page_field: Vec<Box<CTPageField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageField {
+pub struct CTPageField {
     #[serde(rename = "@fld")]
     pub fld: i32,
     #[serde(rename = "@item")]
@@ -6612,38 +6606,38 @@ pub struct SmlCTPageField {
     pub hier: Option<i32>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@cap")]
     #[serde(default)]
-    pub cap: Option<SSTXstring>,
+    pub cap: Option<XmlString>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataFields {
+pub struct CTDataFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "dataField")]
     #[serde(default)]
-    pub data_field: Vec<Box<SmlCTDataField>>,
+    pub data_field: Vec<Box<CTDataField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataField {
+pub struct CTDataField {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@fld")]
     pub fld: u32,
     #[serde(rename = "@subtotal")]
     #[serde(default)]
-    pub subtotal: Option<SmlSTDataConsolidateFunction>,
+    pub subtotal: Option<STDataConsolidateFunction>,
     #[serde(rename = "@showDataAs")]
     #[serde(default)]
-    pub show_data_as: Option<SmlSTShowDataAs>,
+    pub show_data_as: Option<STShowDataAs>,
     #[serde(rename = "@baseField")]
     #[serde(default)]
     pub base_field: Option<i32>,
@@ -6652,155 +6646,155 @@ pub struct SmlCTDataField {
     pub base_item: Option<u32>,
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRowItems {
+pub struct CTRowItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "i")]
     #[serde(default)]
-    pub i: Vec<Box<SmlCTI>>,
+    pub i: Vec<Box<CTI>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColItems {
+pub struct CTColItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "i")]
     #[serde(default)]
-    pub i: Vec<Box<SmlCTI>>,
+    pub i: Vec<Box<CTI>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTI {
+pub struct CTI {
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTItemType>,
+    pub cell_type: Option<STItemType>,
     #[serde(rename = "@r")]
     #[serde(default)]
-    pub r: Option<u32>,
+    pub reference: Option<u32>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTX>>,
+    pub x: Vec<Box<CTX>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTX {
+pub struct CTX {
     #[serde(rename = "@v")]
     #[serde(default)]
-    pub v: Option<i32>,
+    pub value: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRowFields {
+pub struct CTRowFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "field")]
     #[serde(default)]
-    pub field: Vec<Box<SmlCTField>>,
+    pub field: Vec<Box<CTField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColFields {
+pub struct CTColFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "field")]
     #[serde(default)]
-    pub field: Vec<Box<SmlCTField>>,
+    pub field: Vec<Box<CTField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTField {
+pub struct CTField {
     #[serde(rename = "@x")]
     pub x: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFormats {
+pub struct CTFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "format")]
     #[serde(default)]
-    pub format: Vec<Box<SmlCTFormat>>,
+    pub format: Vec<Box<CTFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFormat {
+pub struct CTFormat {
     #[serde(rename = "@action")]
     #[serde(default)]
-    pub action: Option<SmlSTFormatAction>,
+    pub action: Option<STFormatAction>,
     #[serde(rename = "@dxfId")]
     #[serde(default)]
-    pub dxf_id: Option<SmlSTDxfId>,
+    pub dxf_id: Option<STDxfId>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<SmlCTPivotArea>,
+    pub pivot_area: Box<CTPivotArea>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConditionalFormats {
+pub struct CTConditionalFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "conditionalFormat")]
     #[serde(default)]
-    pub conditional_format: Vec<Box<SmlCTConditionalFormat>>,
+    pub conditional_format: Vec<Box<CTConditionalFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConditionalFormat {
+pub struct CTConditionalFormat {
     #[serde(rename = "@scope")]
     #[serde(default)]
-    pub scope: Option<SmlSTScope>,
+    pub scope: Option<STScope>,
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTType>,
+    pub r#type: Option<STType>,
     #[serde(rename = "@priority")]
     pub priority: u32,
     #[serde(rename = "pivotAreas")]
-    pub pivot_areas: Box<SmlCTPivotAreas>,
+    pub pivot_areas: Box<CTPivotAreas>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotAreas {
+pub struct CTPivotAreas {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pivotArea")]
     #[serde(default)]
-    pub pivot_area: Vec<Box<SmlCTPivotArea>>,
+    pub pivot_area: Vec<Box<CTPivotArea>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartFormats {
+pub struct CTChartFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "chartFormat")]
     #[serde(default)]
-    pub chart_format: Vec<Box<SmlCTChartFormat>>,
+    pub chart_format: Vec<Box<CTChartFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartFormat {
+pub struct CTChartFormat {
     #[serde(rename = "@chart")]
     pub chart: u32,
     #[serde(rename = "@format")]
@@ -6809,21 +6803,21 @@ pub struct SmlCTChartFormat {
     #[serde(default)]
     pub series: Option<bool>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<SmlCTPivotArea>,
+    pub pivot_area: Box<CTPivotArea>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotHierarchies {
+pub struct CTPivotHierarchies {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pivotHierarchy")]
     #[serde(default)]
-    pub pivot_hierarchy: Vec<Box<SmlCTPivotHierarchy>>,
+    pub pivot_hierarchy: Vec<Box<CTPivotHierarchy>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotHierarchy {
+pub struct CTPivotHierarchy {
     #[serde(rename = "@outline")]
     #[serde(default)]
     pub outline: Option<bool>,
@@ -6856,59 +6850,59 @@ pub struct SmlCTPivotHierarchy {
     pub include_new_items_in_filter: Option<bool>,
     #[serde(rename = "@caption")]
     #[serde(default)]
-    pub caption: Option<SSTXstring>,
+    pub caption: Option<XmlString>,
     #[serde(rename = "mps")]
     #[serde(default)]
-    pub mps: Option<Box<SmlCTMemberProperties>>,
+    pub mps: Option<Box<CTMemberProperties>>,
     #[serde(rename = "members")]
     #[serde(default)]
-    pub members: Vec<Box<SmlCTMembers>>,
+    pub members: Vec<Box<CTMembers>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRowHierarchiesUsage {
+pub struct CTRowHierarchiesUsage {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "rowHierarchyUsage")]
     #[serde(default)]
-    pub row_hierarchy_usage: Vec<Box<SmlCTHierarchyUsage>>,
+    pub row_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColHierarchiesUsage {
+pub struct CTColHierarchiesUsage {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "colHierarchyUsage")]
     #[serde(default)]
-    pub col_hierarchy_usage: Vec<Box<SmlCTHierarchyUsage>>,
+    pub col_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTHierarchyUsage {
+pub struct CTHierarchyUsage {
     #[serde(rename = "@hierarchyUsage")]
     pub hierarchy_usage: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMemberProperties {
+pub struct CTMemberProperties {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "mp")]
     #[serde(default)]
-    pub mp: Vec<Box<SmlCTMemberProperty>>,
+    pub mp: Vec<Box<CTMemberProperty>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMemberProperty {
+pub struct CTMemberProperty {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@showCell")]
     #[serde(default)]
     pub show_cell: Option<bool>,
@@ -6935,7 +6929,7 @@ pub struct SmlCTMemberProperty {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMembers {
+pub struct CTMembers {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -6944,68 +6938,68 @@ pub struct SmlCTMembers {
     pub level: Option<u32>,
     #[serde(rename = "member")]
     #[serde(default)]
-    pub member: Vec<Box<SmlCTMember>>,
+    pub member: Vec<Box<CTMember>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMember {
+pub struct CTMember {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDimensions {
+pub struct CTDimensions {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "dimension")]
     #[serde(default)]
-    pub dimension: Vec<Box<SmlCTPivotDimension>>,
+    pub dimension: Vec<Box<CTPivotDimension>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotDimension {
+pub struct CTPivotDimension {
     #[serde(rename = "@measure")]
     #[serde(default)]
     pub measure: Option<bool>,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@uniqueName")]
-    pub unique_name: SSTXstring,
+    pub unique_name: XmlString,
     #[serde(rename = "@caption")]
-    pub caption: SSTXstring,
+    pub caption: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMeasureGroups {
+pub struct CTMeasureGroups {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "measureGroup")]
     #[serde(default)]
-    pub measure_group: Vec<Box<SmlCTMeasureGroup>>,
+    pub measure_group: Vec<Box<CTMeasureGroup>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMeasureDimensionMaps {
+pub struct CTMeasureDimensionMaps {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "map")]
     #[serde(default)]
-    pub map: Vec<Box<SmlCTMeasureDimensionMap>>,
+    pub map: Vec<Box<CTMeasureDimensionMap>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMeasureGroup {
+pub struct CTMeasureGroup {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@caption")]
-    pub caption: SSTXstring,
+    pub caption: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMeasureDimensionMap {
+pub struct CTMeasureDimensionMap {
     #[serde(rename = "@measureGroup")]
     #[serde(default)]
     pub measure_group: Option<u32>,
@@ -7015,7 +7009,7 @@ pub struct SmlCTMeasureDimensionMap {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotTableStyle {
+pub struct CTPivotTableStyle {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<String>,
@@ -7037,24 +7031,24 @@ pub struct SmlCTPivotTableStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotFilters {
+pub struct CTPivotFilters {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "filter")]
     #[serde(default)]
-    pub filter: Vec<Box<SmlCTPivotFilter>>,
+    pub filter: Vec<Box<CTPivotFilter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotFilter {
+pub struct CTPivotFilter {
     #[serde(rename = "@fld")]
     pub fld: u32,
     #[serde(rename = "@mpFld")]
     #[serde(default)]
     pub mp_fld: Option<u32>,
     #[serde(rename = "@type")]
-    pub r#type: SmlSTPivotFilterType,
+    pub r#type: STPivotFilterType,
     #[serde(rename = "@evalOrder")]
     #[serde(default)]
     pub eval_order: Option<i32>,
@@ -7068,31 +7062,31 @@ pub struct SmlCTPivotFilter {
     pub i_measure_fld: Option<u32>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@description")]
     #[serde(default)]
-    pub description: Option<SSTXstring>,
+    pub description: Option<XmlString>,
     #[serde(rename = "@stringValue1")]
     #[serde(default)]
-    pub string_value1: Option<SSTXstring>,
+    pub string_value1: Option<XmlString>,
     #[serde(rename = "@stringValue2")]
     #[serde(default)]
-    pub string_value2: Option<SSTXstring>,
+    pub string_value2: Option<XmlString>,
     #[serde(rename = "autoFilter")]
-    pub auto_filter: Box<SmlCTAutoFilter>,
+    pub auto_filter: Box<AutoFilter>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotArea {
+pub struct CTPivotArea {
     #[serde(rename = "@field")]
     #[serde(default)]
     pub field: Option<i32>,
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTPivotAreaType>,
+    pub r#type: Option<STPivotAreaType>,
     #[serde(rename = "@dataOnly")]
     #[serde(default)]
     pub data_only: Option<bool>,
@@ -7113,36 +7107,36 @@ pub struct SmlCTPivotArea {
     pub outline: Option<bool>,
     #[serde(rename = "@offset")]
     #[serde(default)]
-    pub offset: Option<SmlSTRef>,
+    pub offset: Option<Reference>,
     #[serde(rename = "@collapsedLevelsAreSubtotals")]
     #[serde(default)]
     pub collapsed_levels_are_subtotals: Option<bool>,
     #[serde(rename = "@axis")]
     #[serde(default)]
-    pub axis: Option<SmlSTAxis>,
+    pub axis: Option<STAxis>,
     #[serde(rename = "@fieldPosition")]
     #[serde(default)]
     pub field_position: Option<u32>,
     #[serde(rename = "references")]
     #[serde(default)]
-    pub references: Option<Box<SmlCTPivotAreaReferences>>,
+    pub references: Option<Box<CTPivotAreaReferences>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotAreaReferences {
+pub struct CTPivotAreaReferences {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "reference")]
     #[serde(default)]
-    pub reference: Vec<Box<SmlCTPivotAreaReference>>,
+    pub reference: Vec<Box<CTPivotAreaReference>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotAreaReference {
+pub struct CTPivotAreaReference {
     #[serde(rename = "@field")]
     #[serde(default)]
     pub field: Option<u32>,
@@ -7196,24 +7190,24 @@ pub struct SmlCTPivotAreaReference {
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "x")]
     #[serde(default)]
-    pub x: Vec<Box<SmlCTIndex>>,
+    pub x: Vec<Box<CTIndex>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIndex {
+pub struct CTIndex {
     #[serde(rename = "@v")]
-    pub v: u32,
+    pub value: u32,
 }
 
-pub type SmlQueryTable = Box<SmlCTQueryTable>;
+pub type SmlQueryTable = Box<CTQueryTable>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryTable {
+pub struct CTQueryTable {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@headers")]
     #[serde(default)]
     pub headers: Option<bool>,
@@ -7234,7 +7228,7 @@ pub struct SmlCTQueryTable {
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@growShrinkType")]
     #[serde(default)]
-    pub grow_shrink_type: Option<SmlSTGrowShrinkType>,
+    pub grow_shrink_type: Option<STGrowShrinkType>,
     #[serde(rename = "@fillFormulas")]
     #[serde(default)]
     pub fill_formulas: Option<bool>,
@@ -7257,14 +7251,14 @@ pub struct SmlCTQueryTable {
     pub connection_id: u32,
     #[serde(rename = "queryTableRefresh")]
     #[serde(default)]
-    pub query_table_refresh: Option<Box<SmlCTQueryTableRefresh>>,
+    pub query_table_refresh: Option<Box<CTQueryTableRefresh>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryTableRefresh {
+pub struct CTQueryTableRefresh {
     #[serde(rename = "@preserveSortFilterLayout")]
     #[serde(default)]
     pub preserve_sort_filter_layout: Option<bool>,
@@ -7287,51 +7281,51 @@ pub struct SmlCTQueryTableRefresh {
     #[serde(default)]
     pub unbound_columns_right: Option<u32>,
     #[serde(rename = "queryTableFields")]
-    pub query_table_fields: Box<SmlCTQueryTableFields>,
+    pub query_table_fields: Box<CTQueryTableFields>,
     #[serde(rename = "queryTableDeletedFields")]
     #[serde(default)]
-    pub query_table_deleted_fields: Option<Box<SmlCTQueryTableDeletedFields>>,
+    pub query_table_deleted_fields: Option<Box<CTQueryTableDeletedFields>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
-    pub sort_state: Option<Box<SmlCTSortState>>,
+    pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryTableDeletedFields {
+pub struct CTQueryTableDeletedFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "deletedField")]
     #[serde(default)]
-    pub deleted_field: Vec<Box<SmlCTDeletedField>>,
+    pub deleted_field: Vec<Box<CTDeletedField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDeletedField {
+pub struct CTDeletedField {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryTableFields {
+pub struct CTQueryTableFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "queryTableField")]
     #[serde(default)]
-    pub query_table_field: Vec<Box<SmlCTQueryTableField>>,
+    pub query_table_field: Vec<Box<CTQueryTableField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTQueryTableField {
+pub struct CTQueryTableField {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@dataBound")]
     #[serde(default)]
     pub data_bound: Option<bool>,
@@ -7349,13 +7343,13 @@ pub struct SmlCTQueryTableField {
     pub table_column_id: Option<u32>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
-pub type SmlSst = Box<SmlCTSst>;
+pub type SmlSst = Box<SharedStrings>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSst {
+pub struct SharedStrings {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -7364,73 +7358,73 @@ pub struct SmlCTSst {
     pub unique_count: Option<u32>,
     #[serde(rename = "si")]
     #[serde(default)]
-    pub si: Vec<Box<SmlCTRst>>,
+    pub si: Vec<Box<RichString>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPhoneticRun {
+pub struct CTPhoneticRun {
     #[serde(rename = "@sb")]
     pub sb: u32,
     #[serde(rename = "@eb")]
     pub eb: u32,
     #[serde(rename = "t")]
-    pub t: SSTXstring,
+    pub cell_type: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRElt {
+pub struct CTRElt {
     #[serde(rename = "rPr")]
     #[serde(default)]
-    pub r_pr: Option<Box<SmlCTRPrElt>>,
+    pub r_pr: Option<Box<CTRPrElt>>,
     #[serde(rename = "t")]
-    pub t: SSTXstring,
+    pub cell_type: XmlString,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTRPrElt;
+pub struct CTRPrElt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRst {
+pub struct RichString {
     #[serde(rename = "t")]
     #[serde(default)]
-    pub t: Option<SSTXstring>,
+    pub cell_type: Option<XmlString>,
     #[serde(rename = "r")]
     #[serde(default)]
-    pub r: Vec<Box<SmlCTRElt>>,
+    pub reference: Vec<Box<CTRElt>>,
     #[serde(rename = "rPh")]
     #[serde(default)]
-    pub r_ph: Vec<Box<SmlCTPhoneticRun>>,
+    pub r_ph: Vec<Box<CTPhoneticRun>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<SmlCTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPhoneticPr {
+pub struct CTPhoneticPr {
     #[serde(rename = "@fontId")]
-    pub font_id: SmlSTFontId,
+    pub font_id: STFontId,
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTPhoneticType>,
+    pub r#type: Option<STPhoneticType>,
     #[serde(rename = "@alignment")]
     #[serde(default)]
-    pub alignment: Option<SmlSTPhoneticAlignment>,
+    pub alignment: Option<STPhoneticAlignment>,
 }
 
-pub type SmlHeaders = Box<SmlCTRevisionHeaders>;
+pub type SmlHeaders = Box<CTRevisionHeaders>;
 
-pub type SmlRevisions = Box<SmlCTRevisions>;
+pub type SmlRevisions = Box<CTRevisions>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionHeaders {
+pub struct CTRevisionHeaders {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@lastGuid")]
     #[serde(default)]
-    pub last_guid: Option<SSTGuid>,
+    pub last_guid: Option<Guid>,
     #[serde(rename = "@shared")]
     #[serde(default)]
     pub shared: Option<bool>,
@@ -7463,11 +7457,11 @@ pub struct SmlCTRevisionHeaders {
     pub preserve_history: Option<u32>,
     #[serde(rename = "header")]
     #[serde(default)]
-    pub header: Vec<Box<SmlCTRevisionHeader>>,
+    pub header: Vec<Box<CTRevisionHeader>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTRevisions;
+pub struct CTRevisions;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmlAGRevData {
@@ -7482,15 +7476,15 @@ pub struct SmlAGRevData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionHeader {
+pub struct CTRevisionHeader {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@dateTime")]
     pub date_time: String,
     #[serde(rename = "@maxSheetId")]
     pub max_sheet_id: u32,
     #[serde(rename = "@userName")]
-    pub user_name: SSTXstring,
+    pub user_name: XmlString,
     #[serde(rename = "@minRId")]
     #[serde(default)]
     pub min_r_id: Option<u32>,
@@ -7498,53 +7492,53 @@ pub struct SmlCTRevisionHeader {
     #[serde(default)]
     pub max_r_id: Option<u32>,
     #[serde(rename = "sheetIdMap")]
-    pub sheet_id_map: Box<SmlCTSheetIdMap>,
+    pub sheet_id_map: Box<CTSheetIdMap>,
     #[serde(rename = "reviewedList")]
     #[serde(default)]
-    pub reviewed_list: Option<Box<SmlCTReviewedRevisions>>,
+    pub reviewed_list: Option<Box<CTReviewedRevisions>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetIdMap {
+pub struct CTSheetIdMap {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "sheetId")]
     #[serde(default)]
-    pub sheet_id: Vec<Box<SmlCTSheetId>>,
+    pub sheet_id: Vec<Box<CTSheetId>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetId {
+pub struct CTSheetId {
     #[serde(rename = "@val")]
-    pub val: u32,
+    pub value: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTReviewedRevisions {
+pub struct CTReviewedRevisions {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "reviewed")]
     #[serde(default)]
-    pub reviewed: Vec<Box<SmlCTReviewed>>,
+    pub reviewed: Vec<Box<CTReviewed>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTReviewed {
+pub struct CTReviewed {
     #[serde(rename = "@rId")]
     pub r_id: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTUndoInfo {
+pub struct CTUndoInfo {
     #[serde(rename = "@index")]
     pub index: u32,
     #[serde(rename = "@exp")]
-    pub exp: SmlSTFormulaExpression,
+    pub exp: STFormulaExpression,
     #[serde(rename = "@ref3D")]
     #[serde(default)]
     pub ref3_d: Option<bool>,
@@ -7553,7 +7547,7 @@ pub struct SmlCTUndoInfo {
     pub array: Option<bool>,
     #[serde(rename = "@v")]
     #[serde(default)]
-    pub v: Option<bool>,
+    pub value: Option<bool>,
     #[serde(rename = "@nf")]
     #[serde(default)]
     pub nf: Option<bool>,
@@ -7561,80 +7555,80 @@ pub struct SmlCTUndoInfo {
     #[serde(default)]
     pub cs: Option<bool>,
     #[serde(rename = "@dr")]
-    pub dr: SmlSTRefA,
+    pub dr: STRefA,
     #[serde(rename = "@dn")]
     #[serde(default)]
-    pub dn: Option<SSTXstring>,
+    pub dn: Option<XmlString>,
     #[serde(rename = "@r")]
     #[serde(default)]
-    pub r: Option<SmlSTCellRef>,
+    pub reference: Option<CellRef>,
     #[serde(rename = "@sId")]
     #[serde(default)]
     pub s_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionRowColumn {
+pub struct CTRevisionRowColumn {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@eol")]
     #[serde(default)]
     pub eol: Option<bool>,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@action")]
-    pub action: SmlSTRwColActionType,
+    pub action: STRwColActionType,
     #[serde(rename = "@edge")]
     #[serde(default)]
     pub edge: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionMove {
+pub struct CTRevisionMove {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@source")]
-    pub source: SmlSTRef,
+    pub source: Reference,
     #[serde(rename = "@destination")]
-    pub destination: SmlSTRef,
+    pub destination: Reference,
     #[serde(rename = "@sourceSheetId")]
     #[serde(default)]
     pub source_sheet_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionCustomView {
+pub struct CTRevisionCustomView {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@action")]
-    pub action: SmlSTRevisionAction,
+    pub action: STRevisionAction,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionSheetRename {
+pub struct CTRevisionSheetRename {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@oldName")]
-    pub old_name: SSTXstring,
+    pub old_name: XmlString,
     #[serde(rename = "@newName")]
-    pub new_name: SSTXstring,
+    pub new_name: XmlString,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionInsertSheet {
+pub struct CTRevisionInsertSheet {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@sheetPosition")]
     pub sheet_position: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionCellChange {
+pub struct CTRevisionCellChange {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@odxf")]
@@ -7645,13 +7639,13 @@ pub struct SmlCTRevisionCellChange {
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<bool>,
+    pub style_index: Option<bool>,
     #[serde(rename = "@dxf")]
     #[serde(default)]
     pub dxf: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@quotePrefix")]
     #[serde(default)]
     pub quote_prefix: Option<bool>,
@@ -7660,7 +7654,7 @@ pub struct SmlCTRevisionCellChange {
     pub old_quote_prefix: Option<bool>,
     #[serde(rename = "@ph")]
     #[serde(default)]
-    pub ph: Option<bool>,
+    pub placeholder: Option<bool>,
     #[serde(rename = "@oldPh")]
     #[serde(default)]
     pub old_ph: Option<bool>,
@@ -7669,19 +7663,19 @@ pub struct SmlCTRevisionCellChange {
     pub end_of_list_formula_update: Option<bool>,
     #[serde(rename = "oc")]
     #[serde(default)]
-    pub oc: Option<Box<SmlCTCell>>,
+    pub oc: Option<Box<Cell>>,
     #[serde(rename = "nc")]
-    pub nc: Box<SmlCTCell>,
+    pub nc: Box<Cell>,
     #[serde(rename = "ndxf")]
     #[serde(default)]
-    pub ndxf: Option<Box<SmlCTDxf>>,
+    pub ndxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionFormatting {
+pub struct CTRevisionFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@xfDxf")]
@@ -7689,9 +7683,9 @@ pub struct SmlCTRevisionFormatting {
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<bool>,
+    pub style_index: Option<bool>,
     #[serde(rename = "@sqref")]
-    pub sqref: SmlSTSqref,
+    pub square_reference: SquareRef,
     #[serde(rename = "@start")]
     #[serde(default)]
     pub start: Option<u32>,
@@ -7700,31 +7694,31 @@ pub struct SmlCTRevisionFormatting {
     pub length: Option<u32>,
     #[serde(rename = "dxf")]
     #[serde(default)]
-    pub dxf: Option<Box<SmlCTDxf>>,
+    pub dxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionAutoFormatting {
+pub struct CTRevisionAutoFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionComment {
+pub struct CTRevisionComment {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@cell")]
-    pub cell: SmlSTCellRef,
+    pub cell: CellRef,
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@action")]
     #[serde(default)]
-    pub action: Option<SmlSTRevisionAction>,
+    pub action: Option<STRevisionAction>,
     #[serde(rename = "@alwaysShow")]
     #[serde(default)]
     pub always_show: Option<bool>,
@@ -7738,7 +7732,7 @@ pub struct SmlCTRevisionComment {
     #[serde(default)]
     pub hidden_column: Option<bool>,
     #[serde(rename = "@author")]
-    pub author: SSTXstring,
+    pub author: XmlString,
     #[serde(rename = "@oldLength")]
     #[serde(default)]
     pub old_length: Option<u32>,
@@ -7748,7 +7742,7 @@ pub struct SmlCTRevisionComment {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionDefinedName {
+pub struct CTRevisionDefinedName {
     #[serde(rename = "@localSheetId")]
     #[serde(default)]
     pub local_sheet_id: Option<u32>,
@@ -7756,7 +7750,7 @@ pub struct SmlCTRevisionDefinedName {
     #[serde(default)]
     pub custom_view: Option<bool>,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@function")]
     #[serde(default)]
     pub function: Option<bool>,
@@ -7783,367 +7777,367 @@ pub struct SmlCTRevisionDefinedName {
     pub old_hidden: Option<bool>,
     #[serde(rename = "@customMenu")]
     #[serde(default)]
-    pub custom_menu: Option<SSTXstring>,
+    pub custom_menu: Option<XmlString>,
     #[serde(rename = "@oldCustomMenu")]
     #[serde(default)]
-    pub old_custom_menu: Option<SSTXstring>,
+    pub old_custom_menu: Option<XmlString>,
     #[serde(rename = "@description")]
     #[serde(default)]
-    pub description: Option<SSTXstring>,
+    pub description: Option<XmlString>,
     #[serde(rename = "@oldDescription")]
     #[serde(default)]
-    pub old_description: Option<SSTXstring>,
+    pub old_description: Option<XmlString>,
     #[serde(rename = "@help")]
     #[serde(default)]
-    pub help: Option<SSTXstring>,
+    pub help: Option<XmlString>,
     #[serde(rename = "@oldHelp")]
     #[serde(default)]
-    pub old_help: Option<SSTXstring>,
+    pub old_help: Option<XmlString>,
     #[serde(rename = "@statusBar")]
     #[serde(default)]
-    pub status_bar: Option<SSTXstring>,
+    pub status_bar: Option<XmlString>,
     #[serde(rename = "@oldStatusBar")]
     #[serde(default)]
-    pub old_status_bar: Option<SSTXstring>,
+    pub old_status_bar: Option<XmlString>,
     #[serde(rename = "@comment")]
     #[serde(default)]
-    pub comment: Option<SSTXstring>,
+    pub comment: Option<XmlString>,
     #[serde(rename = "@oldComment")]
     #[serde(default)]
-    pub old_comment: Option<SSTXstring>,
+    pub old_comment: Option<XmlString>,
     #[serde(rename = "formula")]
     #[serde(default)]
-    pub formula: Option<SmlSTFormula>,
+    pub formula: Option<STFormula>,
     #[serde(rename = "oldFormula")]
     #[serde(default)]
-    pub old_formula: Option<SmlSTFormula>,
+    pub old_formula: Option<STFormula>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionConflict {
+pub struct CTRevisionConflict {
     #[serde(rename = "@sheetId")]
     #[serde(default)]
     pub sheet_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRevisionQueryTableField {
+pub struct CTRevisionQueryTableField {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@fieldId")]
     pub field_id: u32,
 }
 
-pub type SmlUsers = Box<SmlCTUsers>;
+pub type SmlUsers = Box<CTUsers>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTUsers {
+pub struct CTUsers {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "userInfo")]
     #[serde(default)]
-    pub user_info: Vec<Box<SmlCTSharedUser>>,
+    pub user_info: Vec<Box<CTSharedUser>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSharedUser {
+pub struct CTSharedUser {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@id")]
     pub id: i32,
     #[serde(rename = "@dateTime")]
     pub date_time: String,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
-pub type SmlWorksheet = Box<SmlCTWorksheet>;
+pub type SmlWorksheet = Box<Worksheet>;
 
-pub type SmlChartsheet = Box<SmlCTChartsheet>;
+pub type SmlChartsheet = Box<CTChartsheet>;
 
-pub type SmlDialogsheet = Box<SmlCTDialogsheet>;
+pub type SmlDialogsheet = Box<CTDialogsheet>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMacrosheet {
+pub struct CTMacrosheet {
     #[serde(rename = "sheetPr")]
     #[serde(default)]
-    pub sheet_pr: Option<Box<SmlCTSheetPr>>,
+    pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
     #[serde(default)]
-    pub dimension: Option<Box<SmlCTSheetDimension>>,
+    pub dimension: Option<Box<CTSheetDimension>>,
     #[serde(rename = "sheetViews")]
     #[serde(default)]
-    pub sheet_views: Option<Box<SmlCTSheetViews>>,
+    pub sheet_views: Option<Box<SheetViews>>,
     #[serde(rename = "sheetFormatPr")]
     #[serde(default)]
-    pub sheet_format_pr: Option<Box<SmlCTSheetFormatPr>>,
+    pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "cols")]
     #[serde(default)]
-    pub cols: Vec<Box<SmlCTCols>>,
+    pub cols: Vec<Box<Columns>>,
     #[serde(rename = "sheetData")]
-    pub sheet_data: Box<SmlCTSheetData>,
+    pub sheet_data: Box<SheetData>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
-    pub sheet_protection: Option<Box<SmlCTSheetProtection>>,
+    pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "autoFilter")]
     #[serde(default)]
-    pub auto_filter: Option<Box<SmlCTAutoFilter>>,
+    pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
-    pub sort_state: Option<Box<SmlCTSortState>>,
+    pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "dataConsolidate")]
     #[serde(default)]
-    pub data_consolidate: Option<Box<SmlCTDataConsolidate>>,
+    pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<SmlCTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<SmlCTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
     #[serde(rename = "conditionalFormatting")]
     #[serde(default)]
-    pub conditional_formatting: Vec<Box<SmlCTConditionalFormatting>>,
+    pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<SmlCTPrintOptions>>,
+    pub print_options: Option<Box<CTPrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTPageSetup>>,
+    pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<SmlCTPageBreak>>,
+    pub row_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<SmlCTPageBreak>>,
+    pub col_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "customProperties")]
     #[serde(default)]
-    pub custom_properties: Option<Box<SmlCTCustomProperties>>,
+    pub custom_properties: Option<Box<CTCustomProperties>>,
     #[serde(rename = "drawing")]
     #[serde(default)]
-    pub drawing: Option<Box<SmlCTDrawing>>,
+    pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<SmlCTDrawingHF>>,
+    pub drawing_h_f: Option<Box<CTDrawingHF>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<SmlCTSheetBackgroundPicture>>,
+    pub picture: Option<Box<CTSheetBackgroundPicture>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<SmlCTOleObjects>>,
+    pub ole_objects: Option<Box<CTOleObjects>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDialogsheet {
+pub struct CTDialogsheet {
     #[serde(rename = "sheetPr")]
     #[serde(default)]
-    pub sheet_pr: Option<Box<SmlCTSheetPr>>,
+    pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "sheetViews")]
     #[serde(default)]
-    pub sheet_views: Option<Box<SmlCTSheetViews>>,
+    pub sheet_views: Option<Box<SheetViews>>,
     #[serde(rename = "sheetFormatPr")]
     #[serde(default)]
-    pub sheet_format_pr: Option<Box<SmlCTSheetFormatPr>>,
+    pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
-    pub sheet_protection: Option<Box<SmlCTSheetProtection>>,
+    pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<SmlCTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<SmlCTPrintOptions>>,
+    pub print_options: Option<Box<CTPrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTPageSetup>>,
+    pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "drawing")]
     #[serde(default)]
-    pub drawing: Option<Box<SmlCTDrawing>>,
+    pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<SmlCTDrawingHF>>,
+    pub drawing_h_f: Option<Box<CTDrawingHF>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<SmlCTOleObjects>>,
+    pub ole_objects: Option<Box<CTOleObjects>>,
     #[serde(rename = "controls")]
     #[serde(default)]
-    pub controls: Option<Box<SmlCTControls>>,
+    pub controls: Option<Box<CTControls>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWorksheet {
+pub struct Worksheet {
     #[serde(rename = "sheetPr")]
     #[serde(default)]
-    pub sheet_pr: Option<Box<SmlCTSheetPr>>,
+    pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
     #[serde(default)]
-    pub dimension: Option<Box<SmlCTSheetDimension>>,
+    pub dimension: Option<Box<CTSheetDimension>>,
     #[serde(rename = "sheetViews")]
     #[serde(default)]
-    pub sheet_views: Option<Box<SmlCTSheetViews>>,
+    pub sheet_views: Option<Box<SheetViews>>,
     #[serde(rename = "sheetFormatPr")]
     #[serde(default)]
-    pub sheet_format_pr: Option<Box<SmlCTSheetFormatPr>>,
+    pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "cols")]
     #[serde(default)]
-    pub cols: Vec<Box<SmlCTCols>>,
+    pub cols: Vec<Box<Columns>>,
     #[serde(rename = "sheetData")]
-    pub sheet_data: Box<SmlCTSheetData>,
+    pub sheet_data: Box<SheetData>,
     #[serde(rename = "sheetCalcPr")]
     #[serde(default)]
-    pub sheet_calc_pr: Option<Box<SmlCTSheetCalcPr>>,
+    pub sheet_calc_pr: Option<Box<CTSheetCalcPr>>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
-    pub sheet_protection: Option<Box<SmlCTSheetProtection>>,
+    pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "protectedRanges")]
     #[serde(default)]
-    pub protected_ranges: Option<Box<SmlCTProtectedRanges>>,
+    pub protected_ranges: Option<Box<CTProtectedRanges>>,
     #[serde(rename = "scenarios")]
     #[serde(default)]
-    pub scenarios: Option<Box<SmlCTScenarios>>,
+    pub scenarios: Option<Box<CTScenarios>>,
     #[serde(rename = "autoFilter")]
     #[serde(default)]
-    pub auto_filter: Option<Box<SmlCTAutoFilter>>,
+    pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
-    pub sort_state: Option<Box<SmlCTSortState>>,
+    pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "dataConsolidate")]
     #[serde(default)]
-    pub data_consolidate: Option<Box<SmlCTDataConsolidate>>,
+    pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<SmlCTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
     #[serde(rename = "mergeCells")]
     #[serde(default)]
-    pub merge_cells: Option<Box<SmlCTMergeCells>>,
+    pub merged_cells: Option<Box<MergedCells>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<SmlCTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
     #[serde(rename = "conditionalFormatting")]
     #[serde(default)]
-    pub conditional_formatting: Vec<Box<SmlCTConditionalFormatting>>,
+    pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
     #[serde(rename = "dataValidations")]
     #[serde(default)]
-    pub data_validations: Option<Box<SmlCTDataValidations>>,
+    pub data_validations: Option<Box<DataValidations>>,
     #[serde(rename = "hyperlinks")]
     #[serde(default)]
-    pub hyperlinks: Option<Box<SmlCTHyperlinks>>,
+    pub hyperlinks: Option<Box<Hyperlinks>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<SmlCTPrintOptions>>,
+    pub print_options: Option<Box<CTPrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTPageSetup>>,
+    pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<SmlCTPageBreak>>,
+    pub row_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<SmlCTPageBreak>>,
+    pub col_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "customProperties")]
     #[serde(default)]
-    pub custom_properties: Option<Box<SmlCTCustomProperties>>,
+    pub custom_properties: Option<Box<CTCustomProperties>>,
     #[serde(rename = "cellWatches")]
     #[serde(default)]
-    pub cell_watches: Option<Box<SmlCTCellWatches>>,
+    pub cell_watches: Option<Box<CTCellWatches>>,
     #[serde(rename = "ignoredErrors")]
     #[serde(default)]
-    pub ignored_errors: Option<Box<SmlCTIgnoredErrors>>,
+    pub ignored_errors: Option<Box<CTIgnoredErrors>>,
     #[serde(rename = "smartTags")]
     #[serde(default)]
-    pub smart_tags: Option<Box<SmlCTSmartTags>>,
+    pub smart_tags: Option<Box<CTSmartTags>>,
     #[serde(rename = "drawing")]
     #[serde(default)]
-    pub drawing: Option<Box<SmlCTDrawing>>,
+    pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<SmlCTDrawingHF>>,
+    pub drawing_h_f: Option<Box<CTDrawingHF>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<SmlCTSheetBackgroundPicture>>,
+    pub picture: Option<Box<CTSheetBackgroundPicture>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<SmlCTOleObjects>>,
+    pub ole_objects: Option<Box<CTOleObjects>>,
     #[serde(rename = "controls")]
     #[serde(default)]
-    pub controls: Option<Box<SmlCTControls>>,
+    pub controls: Option<Box<CTControls>>,
     #[serde(rename = "webPublishItems")]
     #[serde(default)]
-    pub web_publish_items: Option<Box<SmlCTWebPublishItems>>,
+    pub web_publish_items: Option<Box<CTWebPublishItems>>,
     #[serde(rename = "tableParts")]
     #[serde(default)]
-    pub table_parts: Option<Box<SmlCTTableParts>>,
+    pub table_parts: Option<Box<CTTableParts>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetData {
+pub struct SheetData {
     #[serde(rename = "row")]
     #[serde(default)]
-    pub row: Vec<Box<SmlCTRow>>,
+    pub row: Vec<Box<Row>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetCalcPr {
+pub struct CTSheetCalcPr {
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(default)]
     pub full_calc_on_load: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetFormatPr {
+pub struct SheetFormat {
     #[serde(rename = "@baseColWidth")]
     #[serde(default)]
     pub base_col_width: Option<u32>,
@@ -8173,18 +8167,18 @@ pub struct SmlCTSheetFormatPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCols {
+pub struct Columns {
     #[serde(rename = "col")]
     #[serde(default)]
-    pub col: Vec<Box<SmlCTCol>>,
+    pub col: Vec<Box<Column>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCol {
+pub struct Column {
     #[serde(rename = "@min")]
-    pub min: u32,
+    pub start_column: u32,
     #[serde(rename = "@max")]
-    pub max: u32,
+    pub end_column: u32,
     #[serde(rename = "@width")]
     #[serde(default)]
     pub width: Option<f64>,
@@ -8212,22 +8206,22 @@ pub struct SmlCTCol {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRow {
+pub struct Row {
     #[serde(rename = "@r")]
     #[serde(default)]
-    pub r: Option<u32>,
+    pub reference: Option<u32>,
     #[serde(rename = "@spans")]
     #[serde(default)]
-    pub spans: Option<SmlSTCellSpans>,
+    pub cell_spans: Option<CellSpans>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<u32>,
+    pub style_index: Option<u32>,
     #[serde(rename = "@customFormat")]
     #[serde(default)]
     pub custom_format: Option<bool>,
     #[serde(rename = "@ht")]
     #[serde(default)]
-    pub ht: Option<f64>,
+    pub height: Option<f64>,
     #[serde(rename = "@hidden")]
     #[serde(default)]
     pub hidden: Option<bool>,
@@ -8248,26 +8242,26 @@ pub struct SmlCTRow {
     pub thick_bot: Option<bool>,
     #[serde(rename = "@ph")]
     #[serde(default)]
-    pub ph: Option<bool>,
+    pub placeholder: Option<bool>,
     #[serde(rename = "c")]
     #[serde(default)]
-    pub c: Vec<Box<SmlCTCell>>,
+    pub cells: Vec<Box<Cell>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCell {
+pub struct Cell {
     #[serde(rename = "@r")]
     #[serde(default)]
-    pub r: Option<SmlSTCellRef>,
+    pub reference: Option<CellRef>,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<u32>,
+    pub style_index: Option<u32>,
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTCellType>,
+    pub cell_type: Option<CellType>,
     #[serde(rename = "@cm")]
     #[serde(default)]
     pub cm: Option<u32>,
@@ -8276,23 +8270,23 @@ pub struct SmlCTCell {
     pub vm: Option<u32>,
     #[serde(rename = "@ph")]
     #[serde(default)]
-    pub ph: Option<bool>,
+    pub placeholder: Option<bool>,
     #[serde(rename = "f")]
     #[serde(default)]
-    pub f: Option<Box<SmlCTCellFormula>>,
+    pub formula: Option<Box<CellFormula>>,
     #[serde(rename = "v")]
     #[serde(default)]
-    pub v: Option<SSTXstring>,
+    pub value: Option<XmlString>,
     #[serde(rename = "is")]
     #[serde(default)]
-    pub is: Option<Box<SmlCTRst>>,
+    pub is: Option<Box<RichString>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetPr {
+pub struct SheetProperties {
     #[serde(rename = "@syncHorizontal")]
     #[serde(default)]
     pub sync_horizontal: Option<bool>,
@@ -8301,7 +8295,7 @@ pub struct SmlCTSheetPr {
     pub sync_vertical: Option<bool>,
     #[serde(rename = "@syncRef")]
     #[serde(default)]
-    pub sync_ref: Option<SmlSTRef>,
+    pub sync_ref: Option<Reference>,
     #[serde(rename = "@transitionEvaluation")]
     #[serde(default)]
     pub transition_evaluation: Option<bool>,
@@ -8322,33 +8316,33 @@ pub struct SmlCTSheetPr {
     pub enable_format_conditions_calculation: Option<bool>,
     #[serde(rename = "tabColor")]
     #[serde(default)]
-    pub tab_color: Option<Box<SmlCTColor>>,
+    pub tab_color: Option<Box<Color>>,
     #[serde(rename = "outlinePr")]
     #[serde(default)]
-    pub outline_pr: Option<Box<SmlCTOutlinePr>>,
+    pub outline_pr: Option<Box<CTOutlinePr>>,
     #[serde(rename = "pageSetUpPr")]
     #[serde(default)]
-    pub page_set_up_pr: Option<Box<SmlCTPageSetUpPr>>,
+    pub page_set_up_pr: Option<Box<CTPageSetUpPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetDimension {
+pub struct CTSheetDimension {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetViews {
+pub struct SheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default)]
-    pub sheet_view: Vec<Box<SmlCTSheetView>>,
+    pub sheet_view: Vec<Box<SheetView>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetView {
+pub struct SheetView {
     #[serde(rename = "@windowProtection")]
     #[serde(default)]
     pub window_protection: Option<bool>,
@@ -8384,10 +8378,10 @@ pub struct SmlCTSheetView {
     pub show_white_space: Option<bool>,
     #[serde(rename = "@view")]
     #[serde(default)]
-    pub view: Option<SmlSTSheetViewType>,
+    pub view: Option<SheetViewType>,
     #[serde(rename = "@topLeftCell")]
     #[serde(default)]
-    pub top_left_cell: Option<SmlSTCellRef>,
+    pub top_left_cell: Option<CellRef>,
     #[serde(rename = "@colorId")]
     #[serde(default)]
     pub color_id: Option<u32>,
@@ -8407,20 +8401,20 @@ pub struct SmlCTSheetView {
     pub workbook_view_id: u32,
     #[serde(rename = "pane")]
     #[serde(default)]
-    pub pane: Option<Box<SmlCTPane>>,
+    pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
     #[serde(default)]
-    pub selection: Vec<Box<SmlCTSelection>>,
+    pub selection: Vec<Box<Selection>>,
     #[serde(rename = "pivotSelection")]
     #[serde(default)]
-    pub pivot_selection: Vec<Box<SmlCTPivotSelection>>,
+    pub pivot_selection: Vec<Box<CTPivotSelection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPane {
+pub struct Pane {
     #[serde(rename = "@xSplit")]
     #[serde(default)]
     pub x_split: Option<f64>,
@@ -8429,20 +8423,20 @@ pub struct SmlCTPane {
     pub y_split: Option<f64>,
     #[serde(rename = "@topLeftCell")]
     #[serde(default)]
-    pub top_left_cell: Option<SmlSTCellRef>,
+    pub top_left_cell: Option<CellRef>,
     #[serde(rename = "@activePane")]
     #[serde(default)]
-    pub active_pane: Option<SmlSTPane>,
+    pub active_pane: Option<PaneType>,
     #[serde(rename = "@state")]
     #[serde(default)]
-    pub state: Option<SmlSTPaneState>,
+    pub state: Option<PaneState>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotSelection {
+pub struct CTPivotSelection {
     #[serde(rename = "@pane")]
     #[serde(default)]
-    pub pane: Option<SmlSTPane>,
+    pub pane: Option<PaneType>,
     #[serde(rename = "@showHeader")]
     #[serde(default)]
     pub show_header: Option<bool>,
@@ -8460,7 +8454,7 @@ pub struct SmlCTPivotSelection {
     pub count: Option<u32>,
     #[serde(rename = "@axis")]
     #[serde(default)]
-    pub axis: Option<SmlSTAxis>,
+    pub axis: Option<STAxis>,
     #[serde(rename = "@dimension")]
     #[serde(default)]
     pub dimension: Option<u32>,
@@ -8469,10 +8463,10 @@ pub struct SmlCTPivotSelection {
     pub start: Option<u32>,
     #[serde(rename = "@min")]
     #[serde(default)]
-    pub min: Option<u32>,
+    pub start_column: Option<u32>,
     #[serde(rename = "@max")]
     #[serde(default)]
-    pub max: Option<u32>,
+    pub end_column: Option<u32>,
     #[serde(rename = "@activeRow")]
     #[serde(default)]
     pub active_row: Option<u32>,
@@ -8489,27 +8483,27 @@ pub struct SmlCTPivotSelection {
     #[serde(default)]
     pub click: Option<u32>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<SmlCTPivotArea>,
+    pub pivot_area: Box<CTPivotArea>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSelection {
+pub struct Selection {
     #[serde(rename = "@pane")]
     #[serde(default)]
-    pub pane: Option<SmlSTPane>,
+    pub pane: Option<PaneType>,
     #[serde(rename = "@activeCell")]
     #[serde(default)]
-    pub active_cell: Option<SmlSTCellRef>,
+    pub active_cell: Option<CellRef>,
     #[serde(rename = "@activeCellId")]
     #[serde(default)]
     pub active_cell_id: Option<u32>,
     #[serde(rename = "@sqref")]
     #[serde(default)]
-    pub sqref: Option<SmlSTSqref>,
+    pub square_reference: Option<SquareRef>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageBreak {
+pub struct CTPageBreak {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -8518,20 +8512,20 @@ pub struct SmlCTPageBreak {
     pub manual_break_count: Option<u32>,
     #[serde(rename = "brk")]
     #[serde(default)]
-    pub brk: Vec<Box<SmlCTBreak>>,
+    pub brk: Vec<Box<CTBreak>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBreak {
+pub struct CTBreak {
     #[serde(rename = "@id")]
     #[serde(default)]
     pub id: Option<u32>,
     #[serde(rename = "@min")]
     #[serde(default)]
-    pub min: Option<u32>,
+    pub start_column: Option<u32>,
     #[serde(rename = "@max")]
     #[serde(default)]
-    pub max: Option<u32>,
+    pub end_column: Option<u32>,
     #[serde(rename = "@man")]
     #[serde(default)]
     pub man: Option<bool>,
@@ -8541,7 +8535,7 @@ pub struct SmlCTBreak {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOutlinePr {
+pub struct CTOutlinePr {
     #[serde(rename = "@applyStyles")]
     #[serde(default)]
     pub apply_styles: Option<bool>,
@@ -8557,7 +8551,7 @@ pub struct SmlCTOutlinePr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageSetUpPr {
+pub struct CTPageSetUpPr {
     #[serde(rename = "@autoPageBreaks")]
     #[serde(default)]
     pub auto_page_breaks: Option<bool>,
@@ -8567,10 +8561,10 @@ pub struct SmlCTPageSetUpPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataConsolidate {
+pub struct CTDataConsolidate {
     #[serde(rename = "@function")]
     #[serde(default)]
-    pub function: Option<SmlSTDataConsolidateFunction>,
+    pub function: Option<STDataConsolidateFunction>,
     #[serde(rename = "@startLabels")]
     #[serde(default)]
     pub start_labels: Option<bool>,
@@ -8585,66 +8579,66 @@ pub struct SmlCTDataConsolidate {
     pub link: Option<bool>,
     #[serde(rename = "dataRefs")]
     #[serde(default)]
-    pub data_refs: Option<Box<SmlCTDataRefs>>,
+    pub data_refs: Option<Box<CTDataRefs>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataRefs {
+pub struct CTDataRefs {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "dataRef")]
     #[serde(default)]
-    pub data_ref: Vec<Box<SmlCTDataRef>>,
+    pub data_ref: Vec<Box<CTDataRef>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataRef {
+pub struct CTDataRef {
     #[serde(rename = "@ref")]
     #[serde(default)]
-    pub r#ref: Option<SmlSTRef>,
+    pub reference: Option<Reference>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
     #[serde(default)]
-    pub sheet: Option<SSTXstring>,
+    pub sheet: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMergeCells {
+pub struct MergedCells {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "mergeCell")]
     #[serde(default)]
-    pub merge_cell: Vec<Box<SmlCTMergeCell>>,
+    pub merge_cell: Vec<Box<MergedCell>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMergeCell {
+pub struct MergedCell {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSmartTags {
+pub struct CTSmartTags {
     #[serde(rename = "cellSmartTags")]
     #[serde(default)]
-    pub cell_smart_tags: Vec<Box<SmlCTCellSmartTags>>,
+    pub cell_smart_tags: Vec<Box<CTCellSmartTags>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellSmartTags {
+pub struct CTCellSmartTags {
     #[serde(rename = "@r")]
-    pub r: SmlSTCellRef,
+    pub reference: CellRef,
     #[serde(rename = "cellSmartTag")]
     #[serde(default)]
-    pub cell_smart_tag: Vec<Box<SmlCTCellSmartTag>>,
+    pub cell_smart_tag: Vec<Box<CTCellSmartTag>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellSmartTag {
+pub struct CTCellSmartTag {
     #[serde(rename = "@type")]
     pub r#type: u32,
     #[serde(rename = "@deleted")]
@@ -8655,25 +8649,25 @@ pub struct SmlCTCellSmartTag {
     pub xml_based: Option<bool>,
     #[serde(rename = "cellSmartTagPr")]
     #[serde(default)]
-    pub cell_smart_tag_pr: Vec<Box<SmlCTCellSmartTagPr>>,
+    pub cell_smart_tag_pr: Vec<Box<CTCellSmartTagPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellSmartTagPr {
+pub struct CTCellSmartTagPr {
     #[serde(rename = "@key")]
-    pub key: SSTXstring,
+    pub key: XmlString,
     #[serde(rename = "@val")]
-    pub val: SSTXstring,
+    pub value: XmlString,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTDrawing;
+pub struct Drawing;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTLegacyDrawing;
+pub struct CTLegacyDrawing;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDrawingHF {
+pub struct CTDrawingHF {
     #[serde(rename = "@lho")]
     #[serde(default)]
     pub lho: Option<u32>,
@@ -8731,16 +8725,16 @@ pub struct SmlCTDrawingHF {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomSheetViews {
+pub struct CTCustomSheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
-    pub custom_sheet_view: Vec<Box<SmlCTCustomSheetView>>,
+    pub custom_sheet_view: Vec<Box<CTCustomSheetView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomSheetView {
+pub struct CTCustomSheetView {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@scale")]
     #[serde(default)]
     pub scale: Option<u32>,
@@ -8785,53 +8779,53 @@ pub struct SmlCTCustomSheetView {
     pub hidden_columns: Option<bool>,
     #[serde(rename = "@state")]
     #[serde(default)]
-    pub state: Option<SmlSTSheetState>,
+    pub state: Option<SheetState>,
     #[serde(rename = "@filterUnique")]
     #[serde(default)]
     pub filter_unique: Option<bool>,
     #[serde(rename = "@view")]
     #[serde(default)]
-    pub view: Option<SmlSTSheetViewType>,
+    pub view: Option<SheetViewType>,
     #[serde(rename = "@showRuler")]
     #[serde(default)]
     pub show_ruler: Option<bool>,
     #[serde(rename = "@topLeftCell")]
     #[serde(default)]
-    pub top_left_cell: Option<SmlSTCellRef>,
+    pub top_left_cell: Option<CellRef>,
     #[serde(rename = "pane")]
     #[serde(default)]
-    pub pane: Option<Box<SmlCTPane>>,
+    pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
     #[serde(default)]
-    pub selection: Option<Box<SmlCTSelection>>,
+    pub selection: Option<Box<Selection>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<SmlCTPageBreak>>,
+    pub row_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<SmlCTPageBreak>>,
+    pub col_breaks: Option<Box<CTPageBreak>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<SmlCTPrintOptions>>,
+    pub print_options: Option<Box<CTPrintOptions>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTPageSetup>>,
+    pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "autoFilter")]
     #[serde(default)]
-    pub auto_filter: Option<Box<SmlCTAutoFilter>>,
+    pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataValidations {
+pub struct DataValidations {
     #[serde(rename = "@disablePrompts")]
     #[serde(default)]
     pub disable_prompts: Option<bool>,
@@ -8846,23 +8840,23 @@ pub struct SmlCTDataValidations {
     pub count: Option<u32>,
     #[serde(rename = "dataValidation")]
     #[serde(default)]
-    pub data_validation: Vec<Box<SmlCTDataValidation>>,
+    pub data_validation: Vec<Box<DataValidation>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataValidation {
+pub struct DataValidation {
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTDataValidationType>,
+    pub r#type: Option<ValidationType>,
     #[serde(rename = "@errorStyle")]
     #[serde(default)]
-    pub error_style: Option<SmlSTDataValidationErrorStyle>,
+    pub error_style: Option<ValidationErrorStyle>,
     #[serde(rename = "@imeMode")]
     #[serde(default)]
-    pub ime_mode: Option<SmlSTDataValidationImeMode>,
+    pub ime_mode: Option<STDataValidationImeMode>,
     #[serde(rename = "@operator")]
     #[serde(default)]
-    pub operator: Option<SmlSTDataValidationOperator>,
+    pub operator: Option<ValidationOperator>,
     #[serde(rename = "@allowBlank")]
     #[serde(default)]
     pub allow_blank: Option<bool>,
@@ -8877,50 +8871,50 @@ pub struct SmlCTDataValidation {
     pub show_error_message: Option<bool>,
     #[serde(rename = "@errorTitle")]
     #[serde(default)]
-    pub error_title: Option<SSTXstring>,
+    pub error_title: Option<XmlString>,
     #[serde(rename = "@error")]
     #[serde(default)]
-    pub error: Option<SSTXstring>,
+    pub error: Option<XmlString>,
     #[serde(rename = "@promptTitle")]
     #[serde(default)]
-    pub prompt_title: Option<SSTXstring>,
+    pub prompt_title: Option<XmlString>,
     #[serde(rename = "@prompt")]
     #[serde(default)]
-    pub prompt: Option<SSTXstring>,
+    pub prompt: Option<XmlString>,
     #[serde(rename = "@sqref")]
-    pub sqref: SmlSTSqref,
+    pub square_reference: SquareRef,
     #[serde(rename = "formula1")]
     #[serde(default)]
-    pub formula1: Option<SmlSTFormula>,
+    pub formula1: Option<STFormula>,
     #[serde(rename = "formula2")]
     #[serde(default)]
-    pub formula2: Option<SmlSTFormula>,
+    pub formula2: Option<STFormula>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTConditionalFormatting {
+pub struct ConditionalFormatting {
     #[serde(rename = "@pivot")]
     #[serde(default)]
     pub pivot: Option<bool>,
     #[serde(rename = "@sqref")]
     #[serde(default)]
-    pub sqref: Option<SmlSTSqref>,
+    pub square_reference: Option<SquareRef>,
     #[serde(rename = "cfRule")]
     #[serde(default)]
-    pub cf_rule: Vec<Box<SmlCTCfRule>>,
+    pub cf_rule: Vec<Box<ConditionalRule>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCfRule {
+pub struct ConditionalRule {
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTCfType>,
+    pub r#type: Option<ConditionalType>,
     #[serde(rename = "@dxfId")]
     #[serde(default)]
-    pub dxf_id: Option<SmlSTDxfId>,
+    pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@priority")]
     pub priority: i32,
     #[serde(rename = "@stopIfTrue")]
@@ -8937,13 +8931,13 @@ pub struct SmlCTCfRule {
     pub bottom: Option<bool>,
     #[serde(rename = "@operator")]
     #[serde(default)]
-    pub operator: Option<SmlSTConditionalFormattingOperator>,
+    pub operator: Option<ConditionalOperator>,
     #[serde(rename = "@text")]
     #[serde(default)]
     pub text: Option<String>,
     #[serde(rename = "@timePeriod")]
     #[serde(default)]
-    pub time_period: Option<SmlSTTimePeriod>,
+    pub time_period: Option<STTimePeriod>,
     #[serde(rename = "@rank")]
     #[serde(default)]
     pub rank: Option<u32>,
@@ -8955,54 +8949,54 @@ pub struct SmlCTCfRule {
     pub equal_average: Option<bool>,
     #[serde(rename = "formula")]
     #[serde(default)]
-    pub formula: Vec<SmlSTFormula>,
+    pub formula: Vec<STFormula>,
     #[serde(rename = "colorScale")]
     #[serde(default)]
-    pub color_scale: Option<Box<SmlCTColorScale>>,
+    pub color_scale: Option<Box<ColorScale>>,
     #[serde(rename = "dataBar")]
     #[serde(default)]
-    pub data_bar: Option<Box<SmlCTDataBar>>,
+    pub data_bar: Option<Box<DataBar>>,
     #[serde(rename = "iconSet")]
     #[serde(default)]
-    pub icon_set: Option<Box<SmlCTIconSet>>,
+    pub icon_set: Option<Box<IconSet>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTHyperlinks {
+pub struct Hyperlinks {
     #[serde(rename = "hyperlink")]
     #[serde(default)]
-    pub hyperlink: Vec<Box<SmlCTHyperlink>>,
+    pub hyperlink: Vec<Box<Hyperlink>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTHyperlink {
+pub struct Hyperlink {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@location")]
     #[serde(default)]
-    pub location: Option<SSTXstring>,
+    pub location: Option<XmlString>,
     #[serde(rename = "@tooltip")]
     #[serde(default)]
-    pub tooltip: Option<SSTXstring>,
+    pub tooltip: Option<XmlString>,
     #[serde(rename = "@display")]
     #[serde(default)]
-    pub display: Option<SSTXstring>,
+    pub display: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellFormula {
+pub struct CellFormula {
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTCellFormulaType>,
+    pub cell_type: Option<FormulaType>,
     #[serde(rename = "@aca")]
     #[serde(default)]
     pub aca: Option<bool>,
     #[serde(rename = "@ref")]
     #[serde(default)]
-    pub r#ref: Option<SmlSTRef>,
+    pub reference: Option<Reference>,
     #[serde(rename = "@dt2D")]
     #[serde(default)]
     pub dt2_d: Option<bool>,
@@ -9017,10 +9011,10 @@ pub struct SmlCTCellFormula {
     pub del2: Option<bool>,
     #[serde(rename = "@r1")]
     #[serde(default)]
-    pub r1: Option<SmlSTCellRef>,
+    pub r1: Option<CellRef>,
     #[serde(rename = "@r2")]
     #[serde(default)]
-    pub r2: Option<SmlSTCellRef>,
+    pub r2: Option<CellRef>,
     #[serde(rename = "@ca")]
     #[serde(default)]
     pub ca: Option<bool>,
@@ -9033,17 +9027,17 @@ pub struct SmlCTCellFormula {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColorScale {
+pub struct ColorScale {
     #[serde(rename = "cfvo")]
     #[serde(default)]
-    pub cfvo: Vec<Box<SmlCTCfvo>>,
+    pub cfvo: Vec<Box<ConditionalFormatValue>>,
     #[serde(rename = "color")]
     #[serde(default)]
-    pub color: Vec<Box<SmlCTColor>>,
+    pub color: Vec<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDataBar {
+pub struct DataBar {
     #[serde(rename = "@minLength")]
     #[serde(default)]
     pub min_length: Option<u32>,
@@ -9055,16 +9049,16 @@ pub struct SmlCTDataBar {
     pub show_value: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default)]
-    pub cfvo: Vec<Box<SmlCTCfvo>>,
+    pub cfvo: Vec<Box<ConditionalFormatValue>>,
     #[serde(rename = "color")]
-    pub color: Box<SmlCTColor>,
+    pub color: Box<Color>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIconSet {
+pub struct IconSet {
     #[serde(rename = "@iconSet")]
     #[serde(default)]
-    pub icon_set: Option<SmlSTIconSetType>,
+    pub icon_set: Option<IconSetType>,
     #[serde(rename = "@showValue")]
     #[serde(default)]
     pub show_value: Option<bool>,
@@ -9076,26 +9070,26 @@ pub struct SmlCTIconSet {
     pub reverse: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default)]
-    pub cfvo: Vec<Box<SmlCTCfvo>>,
+    pub cfvo: Vec<Box<ConditionalFormatValue>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCfvo {
+pub struct ConditionalFormatValue {
     #[serde(rename = "@type")]
-    pub r#type: SmlSTCfvoType,
+    pub r#type: ConditionalValueType,
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<SSTXstring>,
+    pub value: Option<XmlString>,
     #[serde(rename = "@gte")]
     #[serde(default)]
     pub gte: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageMargins {
+pub struct PageMargins {
     #[serde(rename = "@left")]
     pub left: f64,
     #[serde(rename = "@right")]
@@ -9111,7 +9105,7 @@ pub struct SmlCTPageMargins {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPrintOptions {
+pub struct CTPrintOptions {
     #[serde(rename = "@horizontalCentered")]
     #[serde(default)]
     pub horizontal_centered: Option<bool>,
@@ -9130,16 +9124,16 @@ pub struct SmlCTPrintOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPageSetup {
+pub struct PageSetup {
     #[serde(rename = "@paperSize")]
     #[serde(default)]
     pub paper_size: Option<u32>,
     #[serde(rename = "@paperHeight")]
     #[serde(default)]
-    pub paper_height: Option<SSTPositiveUniversalMeasure>,
+    pub paper_height: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@paperWidth")]
     #[serde(default)]
-    pub paper_width: Option<SSTPositiveUniversalMeasure>,
+    pub paper_width: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@scale")]
     #[serde(default)]
     pub scale: Option<u32>,
@@ -9154,10 +9148,10 @@ pub struct SmlCTPageSetup {
     pub fit_to_height: Option<u32>,
     #[serde(rename = "@pageOrder")]
     #[serde(default)]
-    pub page_order: Option<SmlSTPageOrder>,
+    pub page_order: Option<STPageOrder>,
     #[serde(rename = "@orientation")]
     #[serde(default)]
-    pub orientation: Option<SmlSTOrientation>,
+    pub orientation: Option<STOrientation>,
     #[serde(rename = "@usePrinterDefaults")]
     #[serde(default)]
     pub use_printer_defaults: Option<bool>,
@@ -9169,13 +9163,13 @@ pub struct SmlCTPageSetup {
     pub draft: Option<bool>,
     #[serde(rename = "@cellComments")]
     #[serde(default)]
-    pub cell_comments: Option<SmlSTCellComments>,
+    pub cell_comments: Option<STCellComments>,
     #[serde(rename = "@useFirstPageNumber")]
     #[serde(default)]
     pub use_first_page_number: Option<bool>,
     #[serde(rename = "@errors")]
     #[serde(default)]
-    pub errors: Option<SmlSTPrintError>,
+    pub errors: Option<STPrintError>,
     #[serde(rename = "@horizontalDpi")]
     #[serde(default)]
     pub horizontal_dpi: Option<u32>,
@@ -9188,7 +9182,7 @@ pub struct SmlCTPageSetup {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTHeaderFooter {
+pub struct HeaderFooter {
     #[serde(rename = "@differentOddEven")]
     #[serde(default)]
     pub different_odd_even: Option<bool>,
@@ -9203,26 +9197,26 @@ pub struct SmlCTHeaderFooter {
     pub align_with_margins: Option<bool>,
     #[serde(rename = "oddHeader")]
     #[serde(default)]
-    pub odd_header: Option<SSTXstring>,
+    pub odd_header: Option<XmlString>,
     #[serde(rename = "oddFooter")]
     #[serde(default)]
-    pub odd_footer: Option<SSTXstring>,
+    pub odd_footer: Option<XmlString>,
     #[serde(rename = "evenHeader")]
     #[serde(default)]
-    pub even_header: Option<SSTXstring>,
+    pub even_header: Option<XmlString>,
     #[serde(rename = "evenFooter")]
     #[serde(default)]
-    pub even_footer: Option<SSTXstring>,
+    pub even_footer: Option<XmlString>,
     #[serde(rename = "firstHeader")]
     #[serde(default)]
-    pub first_header: Option<SSTXstring>,
+    pub first_header: Option<XmlString>,
     #[serde(rename = "firstFooter")]
     #[serde(default)]
-    pub first_footer: Option<SSTXstring>,
+    pub first_footer: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTScenarios {
+pub struct CTScenarios {
     #[serde(rename = "@current")]
     #[serde(default)]
     pub current: Option<u32>,
@@ -9231,20 +9225,20 @@ pub struct SmlCTScenarios {
     pub show: Option<u32>,
     #[serde(rename = "@sqref")]
     #[serde(default)]
-    pub sqref: Option<SmlSTSqref>,
+    pub square_reference: Option<SquareRef>,
     #[serde(rename = "scenario")]
     #[serde(default)]
-    pub scenario: Vec<Box<SmlCTScenario>>,
+    pub scenario: Vec<Box<CTScenario>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheetProtection {
+pub struct SheetProtection {
     #[serde(rename = "@password")]
     #[serde(default)]
-    pub password: Option<SmlSTUnsignedShortHex>,
+    pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
     #[serde(default)]
-    pub algorithm_name: Option<SSTXstring>,
+    pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
     #[serde(default)]
     pub hash_value: Option<Vec<u8>>,
@@ -9305,27 +9299,27 @@ pub struct SmlCTSheetProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTProtectedRanges {
+pub struct CTProtectedRanges {
     #[serde(rename = "protectedRange")]
     #[serde(default)]
-    pub protected_range: Vec<Box<SmlCTProtectedRange>>,
+    pub protected_range: Vec<Box<CTProtectedRange>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTProtectedRange {
+pub struct CTProtectedRange {
     #[serde(rename = "@password")]
     #[serde(default)]
-    pub password: Option<SmlSTUnsignedShortHex>,
+    pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@sqref")]
-    pub sqref: SmlSTSqref,
+    pub square_reference: SquareRef,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@securityDescriptor")]
     #[serde(default)]
     pub security_descriptor: Option<String>,
     #[serde(rename = "@algorithmName")]
     #[serde(default)]
-    pub algorithm_name: Option<SSTXstring>,
+    pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
     #[serde(default)]
     pub hash_value: Option<Vec<u8>>,
@@ -9338,9 +9332,9 @@ pub struct SmlCTProtectedRange {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTScenario {
+pub struct CTScenario {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -9352,19 +9346,19 @@ pub struct SmlCTScenario {
     pub count: Option<u32>,
     #[serde(rename = "@user")]
     #[serde(default)]
-    pub user: Option<SSTXstring>,
+    pub user: Option<XmlString>,
     #[serde(rename = "@comment")]
     #[serde(default)]
-    pub comment: Option<SSTXstring>,
+    pub comment: Option<XmlString>,
     #[serde(rename = "inputCells")]
     #[serde(default)]
-    pub input_cells: Vec<Box<SmlCTInputCells>>,
+    pub input_cells: Vec<Box<CTInputCells>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTInputCells {
+pub struct CTInputCells {
     #[serde(rename = "@r")]
-    pub r: SmlSTCellRef,
+    pub reference: CellRef,
     #[serde(rename = "@deleted")]
     #[serde(default)]
     pub deleted: Option<bool>,
@@ -9372,71 +9366,71 @@ pub struct SmlCTInputCells {
     #[serde(default)]
     pub undone: Option<bool>,
     #[serde(rename = "@val")]
-    pub val: SSTXstring,
+    pub value: XmlString,
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellWatches {
+pub struct CTCellWatches {
     #[serde(rename = "cellWatch")]
     #[serde(default)]
-    pub cell_watch: Vec<Box<SmlCTCellWatch>>,
+    pub cell_watch: Vec<Box<CTCellWatch>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellWatch {
+pub struct CTCellWatch {
     #[serde(rename = "@r")]
-    pub r: SmlSTCellRef,
+    pub reference: CellRef,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartsheet {
+pub struct CTChartsheet {
     #[serde(rename = "sheetPr")]
     #[serde(default)]
-    pub sheet_pr: Option<Box<SmlCTChartsheetPr>>,
+    pub sheet_properties: Option<Box<CTChartsheetPr>>,
     #[serde(rename = "sheetViews")]
-    pub sheet_views: Box<SmlCTChartsheetViews>,
+    pub sheet_views: Box<CTChartsheetViews>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
-    pub sheet_protection: Option<Box<SmlCTChartsheetProtection>>,
+    pub sheet_protection: Option<Box<CTChartsheetProtection>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<SmlCTCustomChartsheetViews>>,
+    pub custom_sheet_views: Option<Box<CTCustomChartsheetViews>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTCsPageSetup>>,
+    pub page_setup: Option<Box<CTCsPageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "drawing")]
-    pub drawing: Box<SmlCTDrawing>,
+    pub drawing: Box<Drawing>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<SmlCTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<SmlCTDrawingHF>>,
+    pub drawing_h_f: Option<Box<CTDrawingHF>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<SmlCTSheetBackgroundPicture>>,
+    pub picture: Option<Box<CTSheetBackgroundPicture>>,
     #[serde(rename = "webPublishItems")]
     #[serde(default)]
-    pub web_publish_items: Option<Box<SmlCTWebPublishItems>>,
+    pub web_publish_items: Option<Box<CTWebPublishItems>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartsheetPr {
+pub struct CTChartsheetPr {
     #[serde(rename = "@published")]
     #[serde(default)]
     pub published: Option<bool>,
@@ -9445,21 +9439,21 @@ pub struct SmlCTChartsheetPr {
     pub code_name: Option<String>,
     #[serde(rename = "tabColor")]
     #[serde(default)]
-    pub tab_color: Option<Box<SmlCTColor>>,
+    pub tab_color: Option<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartsheetViews {
+pub struct CTChartsheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default)]
-    pub sheet_view: Vec<Box<SmlCTChartsheetView>>,
+    pub sheet_view: Vec<Box<CTChartsheetView>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartsheetView {
+pub struct CTChartsheetView {
     #[serde(rename = "@tabSelected")]
     #[serde(default)]
     pub tab_selected: Option<bool>,
@@ -9473,17 +9467,17 @@ pub struct SmlCTChartsheetView {
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTChartsheetProtection {
+pub struct CTChartsheetProtection {
     #[serde(rename = "@password")]
     #[serde(default)]
-    pub password: Option<SmlSTUnsignedShortHex>,
+    pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
     #[serde(default)]
-    pub algorithm_name: Option<SSTXstring>,
+    pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
     #[serde(default)]
     pub hash_value: Option<Vec<u8>>,
@@ -9502,22 +9496,22 @@ pub struct SmlCTChartsheetProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCsPageSetup {
+pub struct CTCsPageSetup {
     #[serde(rename = "@paperSize")]
     #[serde(default)]
     pub paper_size: Option<u32>,
     #[serde(rename = "@paperHeight")]
     #[serde(default)]
-    pub paper_height: Option<SSTPositiveUniversalMeasure>,
+    pub paper_height: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@paperWidth")]
     #[serde(default)]
-    pub paper_width: Option<SSTPositiveUniversalMeasure>,
+    pub paper_width: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@firstPageNumber")]
     #[serde(default)]
     pub first_page_number: Option<u32>,
     #[serde(rename = "@orientation")]
     #[serde(default)]
-    pub orientation: Option<SmlSTOrientation>,
+    pub orientation: Option<STOrientation>,
     #[serde(rename = "@usePrinterDefaults")]
     #[serde(default)]
     pub use_printer_defaults: Option<bool>,
@@ -9542,70 +9536,70 @@ pub struct SmlCTCsPageSetup {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomChartsheetViews {
+pub struct CTCustomChartsheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
-    pub custom_sheet_view: Vec<Box<SmlCTCustomChartsheetView>>,
+    pub custom_sheet_view: Vec<Box<CTCustomChartsheetView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomChartsheetView {
+pub struct CTCustomChartsheetView {
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@scale")]
     #[serde(default)]
     pub scale: Option<u32>,
     #[serde(rename = "@state")]
     #[serde(default)]
-    pub state: Option<SmlSTSheetState>,
+    pub state: Option<SheetState>,
     #[serde(rename = "@zoomToFit")]
     #[serde(default)]
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
-    pub page_margins: Option<Box<SmlCTPageMargins>>,
+    pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<SmlCTCsPageSetup>>,
+    pub page_setup: Option<Box<CTCsPageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
-    pub header_footer: Option<Box<SmlCTHeaderFooter>>,
+    pub header_footer: Option<Box<HeaderFooter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomProperties {
+pub struct CTCustomProperties {
     #[serde(rename = "customPr")]
     #[serde(default)]
-    pub custom_pr: Vec<Box<SmlCTCustomProperty>>,
+    pub custom_pr: Vec<Box<CTCustomProperty>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomProperty {
+pub struct CTCustomProperty {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleObjects {
+pub struct CTOleObjects {
     #[serde(rename = "oleObject")]
     #[serde(default)]
-    pub ole_object: Vec<Box<SmlCTOleObject>>,
+    pub ole_object: Vec<Box<CTOleObject>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleObject {
+pub struct CTOleObject {
     #[serde(rename = "@progId")]
     #[serde(default)]
     pub prog_id: Option<String>,
     #[serde(rename = "@dvAspect")]
     #[serde(default)]
-    pub dv_aspect: Option<SmlSTDvAspect>,
+    pub dv_aspect: Option<STDvAspect>,
     #[serde(rename = "@link")]
     #[serde(default)]
-    pub link: Option<SSTXstring>,
+    pub link: Option<XmlString>,
     #[serde(rename = "@oleUpdate")]
     #[serde(default)]
-    pub ole_update: Option<SmlSTOleUpdate>,
+    pub ole_update: Option<STOleUpdate>,
     #[serde(rename = "@autoLoad")]
     #[serde(default)]
     pub auto_load: Option<bool>,
@@ -9613,11 +9607,11 @@ pub struct SmlCTOleObject {
     pub shape_id: u32,
     #[serde(rename = "objectPr")]
     #[serde(default)]
-    pub object_pr: Option<Box<SmlCTObjectPr>>,
+    pub object_pr: Option<Box<CTObjectPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTObjectPr {
+pub struct CTObjectPr {
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -9644,60 +9638,60 @@ pub struct SmlCTObjectPr {
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
     #[serde(default)]
-    pub r#macro: Option<SmlSTFormula>,
+    pub r#macro: Option<STFormula>,
     #[serde(rename = "@altText")]
     #[serde(default)]
-    pub alt_text: Option<SSTXstring>,
+    pub alt_text: Option<XmlString>,
     #[serde(rename = "@dde")]
     #[serde(default)]
     pub dde: Option<bool>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<SmlCTObjectAnchor>,
+    pub anchor: Box<CTObjectAnchor>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPublishItems {
+pub struct CTWebPublishItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "webPublishItem")]
     #[serde(default)]
-    pub web_publish_item: Vec<Box<SmlCTWebPublishItem>>,
+    pub web_publish_item: Vec<Box<CTWebPublishItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPublishItem {
+pub struct CTWebPublishItem {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@divId")]
-    pub div_id: SSTXstring,
+    pub div_id: XmlString,
     #[serde(rename = "@sourceType")]
-    pub source_type: SmlSTWebSourceType,
+    pub source_type: STWebSourceType,
     #[serde(rename = "@sourceRef")]
     #[serde(default)]
-    pub source_ref: Option<SmlSTRef>,
+    pub source_ref: Option<Reference>,
     #[serde(rename = "@sourceObject")]
     #[serde(default)]
-    pub source_object: Option<SSTXstring>,
+    pub source_object: Option<XmlString>,
     #[serde(rename = "@destinationFile")]
-    pub destination_file: SSTXstring,
+    pub destination_file: XmlString,
     #[serde(rename = "@title")]
     #[serde(default)]
-    pub title: Option<SSTXstring>,
+    pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
     #[serde(default)]
     pub auto_republish: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTControls {
+pub struct CTControls {
     #[serde(rename = "control")]
     #[serde(default)]
-    pub control: Vec<Box<SmlCTControl>>,
+    pub control: Vec<Box<CTControl>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTControl {
+pub struct CTControl {
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
     #[serde(rename = "@name")]
@@ -9705,11 +9699,11 @@ pub struct SmlCTControl {
     pub name: Option<String>,
     #[serde(rename = "controlPr")]
     #[serde(default)]
-    pub control_pr: Option<Box<SmlCTControlPr>>,
+    pub control_pr: Option<Box<CTControlPr>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTControlPr {
+pub struct CTControlPr {
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -9739,37 +9733,37 @@ pub struct SmlCTControlPr {
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
     #[serde(default)]
-    pub r#macro: Option<SmlSTFormula>,
+    pub r#macro: Option<STFormula>,
     #[serde(rename = "@altText")]
     #[serde(default)]
-    pub alt_text: Option<SSTXstring>,
+    pub alt_text: Option<XmlString>,
     #[serde(rename = "@linkedCell")]
     #[serde(default)]
-    pub linked_cell: Option<SmlSTFormula>,
+    pub linked_cell: Option<STFormula>,
     #[serde(rename = "@listFillRange")]
     #[serde(default)]
-    pub list_fill_range: Option<SmlSTFormula>,
+    pub list_fill_range: Option<STFormula>,
     #[serde(rename = "@cf")]
     #[serde(default)]
-    pub cf: Option<SSTXstring>,
+    pub cf: Option<XmlString>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<SmlCTObjectAnchor>,
+    pub anchor: Box<CTObjectAnchor>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIgnoredErrors {
+pub struct CTIgnoredErrors {
     #[serde(rename = "ignoredError")]
     #[serde(default)]
-    pub ignored_error: Vec<Box<SmlCTIgnoredError>>,
+    pub ignored_error: Vec<Box<CTIgnoredError>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIgnoredError {
+pub struct CTIgnoredError {
     #[serde(rename = "@sqref")]
-    pub sqref: SmlSTSqref,
+    pub square_reference: SquareRef,
     #[serde(rename = "@evalError")]
     #[serde(default)]
     pub eval_error: Option<bool>,
@@ -9800,59 +9794,59 @@ pub struct SmlCTIgnoredError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableParts {
+pub struct CTTableParts {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "tablePart")]
     #[serde(default)]
-    pub table_part: Vec<Box<SmlCTTablePart>>,
+    pub table_part: Vec<Box<CTTablePart>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTTablePart;
+pub struct CTTablePart;
 
-pub type SmlMetadata = Box<SmlCTMetadata>;
+pub type SmlMetadata = Box<CTMetadata>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadata {
+pub struct CTMetadata {
     #[serde(rename = "metadataTypes")]
     #[serde(default)]
-    pub metadata_types: Option<Box<SmlCTMetadataTypes>>,
+    pub metadata_types: Option<Box<CTMetadataTypes>>,
     #[serde(rename = "metadataStrings")]
     #[serde(default)]
-    pub metadata_strings: Option<Box<SmlCTMetadataStrings>>,
+    pub metadata_strings: Option<Box<CTMetadataStrings>>,
     #[serde(rename = "mdxMetadata")]
     #[serde(default)]
-    pub mdx_metadata: Option<Box<SmlCTMdxMetadata>>,
+    pub mdx_metadata: Option<Box<CTMdxMetadata>>,
     #[serde(rename = "futureMetadata")]
     #[serde(default)]
-    pub future_metadata: Vec<Box<SmlCTFutureMetadata>>,
+    pub future_metadata: Vec<Box<CTFutureMetadata>>,
     #[serde(rename = "cellMetadata")]
     #[serde(default)]
-    pub cell_metadata: Option<Box<SmlCTMetadataBlocks>>,
+    pub cell_metadata: Option<Box<CTMetadataBlocks>>,
     #[serde(rename = "valueMetadata")]
     #[serde(default)]
-    pub value_metadata: Option<Box<SmlCTMetadataBlocks>>,
+    pub value_metadata: Option<Box<CTMetadataBlocks>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataTypes {
+pub struct CTMetadataTypes {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "metadataType")]
     #[serde(default)]
-    pub metadata_type: Vec<Box<SmlCTMetadataType>>,
+    pub metadata_type: Vec<Box<CTMetadataType>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataType {
+pub struct CTMetadataType {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@minSupportedVersion")]
     pub min_supported_version: u32,
     #[serde(rename = "@ghostRow")]
@@ -9936,78 +9930,78 @@ pub struct SmlCTMetadataType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataBlocks {
+pub struct CTMetadataBlocks {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "bk")]
     #[serde(default)]
-    pub bk: Vec<Box<SmlCTMetadataBlock>>,
+    pub bk: Vec<Box<CTMetadataBlock>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataBlock {
+pub struct CTMetadataBlock {
     #[serde(rename = "rc")]
     #[serde(default)]
-    pub rc: Vec<Box<SmlCTMetadataRecord>>,
+    pub rc: Vec<Box<CTMetadataRecord>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataRecord {
+pub struct CTMetadataRecord {
     #[serde(rename = "@t")]
-    pub t: u32,
+    pub cell_type: u32,
     #[serde(rename = "@v")]
-    pub v: u32,
+    pub value: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFutureMetadata {
+pub struct CTFutureMetadata {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "bk")]
     #[serde(default)]
-    pub bk: Vec<Box<SmlCTFutureMetadataBlock>>,
+    pub bk: Vec<Box<CTFutureMetadataBlock>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFutureMetadataBlock {
+pub struct CTFutureMetadataBlock {
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdxMetadata {
+pub struct CTMdxMetadata {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "mdx")]
     #[serde(default)]
-    pub mdx: Vec<Box<SmlCTMdx>>,
+    pub mdx: Vec<Box<CTMdx>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdx {
+pub struct CTMdx {
     #[serde(rename = "@n")]
     pub n: u32,
     #[serde(rename = "@f")]
-    pub f: SmlSTMdxFunctionType,
+    pub formula: STMdxFunctionType,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdxTuple {
+pub struct CTMdxTuple {
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<u32>,
+    pub cells: Option<u32>,
     #[serde(rename = "@ct")]
     #[serde(default)]
-    pub ct: Option<SSTXstring>,
+    pub ct: Option<XmlString>,
     #[serde(rename = "@si")]
     #[serde(default)]
     pub si: Option<u32>,
@@ -10016,10 +10010,10 @@ pub struct SmlCTMdxTuple {
     pub fi: Option<u32>,
     #[serde(rename = "@bc")]
     #[serde(default)]
-    pub bc: Option<SmlSTUnsignedIntHex>,
+    pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
     #[serde(default)]
-    pub fc: Option<SmlSTUnsignedIntHex>,
+    pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
     #[serde(default)]
     pub i: Option<bool>,
@@ -10034,26 +10028,26 @@ pub struct SmlCTMdxTuple {
     pub b: Option<bool>,
     #[serde(rename = "n")]
     #[serde(default)]
-    pub n: Vec<Box<SmlCTMetadataStringIndex>>,
+    pub n: Vec<Box<CTMetadataStringIndex>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdxSet {
+pub struct CTMdxSet {
     #[serde(rename = "@ns")]
     pub ns: u32,
     #[serde(rename = "@c")]
     #[serde(default)]
-    pub c: Option<u32>,
+    pub cells: Option<u32>,
     #[serde(rename = "@o")]
     #[serde(default)]
-    pub o: Option<SmlSTMdxSetOrder>,
+    pub o: Option<STMdxSetOrder>,
     #[serde(rename = "n")]
     #[serde(default)]
-    pub n: Vec<Box<SmlCTMetadataStringIndex>>,
+    pub n: Vec<Box<CTMetadataStringIndex>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdxMemeberProp {
+pub struct CTMdxMemeberProp {
     #[serde(rename = "@n")]
     pub n: u32,
     #[serde(rename = "@np")]
@@ -10061,135 +10055,135 @@ pub struct SmlCTMdxMemeberProp {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMdxKPI {
+pub struct CTMdxKPI {
     #[serde(rename = "@n")]
     pub n: u32,
     #[serde(rename = "@np")]
     pub np: u32,
     #[serde(rename = "@p")]
-    pub p: SmlSTMdxKPIProperty,
+    pub p: STMdxKPIProperty,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataStringIndex {
+pub struct CTMetadataStringIndex {
     #[serde(rename = "@x")]
     pub x: u32,
     #[serde(rename = "@s")]
     #[serde(default)]
-    pub s: Option<bool>,
+    pub style_index: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMetadataStrings {
+pub struct CTMetadataStrings {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "s")]
     #[serde(default)]
-    pub s: Vec<Box<SmlCTXStringElement>>,
+    pub style_index: Vec<Box<CTXStringElement>>,
 }
 
-pub type SmlSingleXmlCells = Box<SmlCTSingleXmlCells>;
+pub type SmlSingleXmlCells = Box<CTSingleXmlCells>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSingleXmlCells {
+pub struct CTSingleXmlCells {
     #[serde(rename = "singleXmlCell")]
     #[serde(default)]
-    pub single_xml_cell: Vec<Box<SmlCTSingleXmlCell>>,
+    pub single_xml_cell: Vec<Box<CTSingleXmlCell>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSingleXmlCell {
+pub struct CTSingleXmlCell {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@r")]
-    pub r: SmlSTCellRef,
+    pub reference: CellRef,
     #[serde(rename = "@connectionId")]
     pub connection_id: u32,
     #[serde(rename = "xmlCellPr")]
-    pub xml_cell_pr: Box<SmlCTXmlCellPr>,
+    pub xml_cell_pr: Box<CTXmlCellPr>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTXmlCellPr {
+pub struct CTXmlCellPr {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
     #[serde(default)]
-    pub unique_name: Option<SSTXstring>,
+    pub unique_name: Option<XmlString>,
     #[serde(rename = "xmlPr")]
-    pub xml_pr: Box<SmlCTXmlPr>,
+    pub xml_pr: Box<CTXmlPr>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTXmlPr {
+pub struct CTXmlPr {
     #[serde(rename = "@mapId")]
     pub map_id: u32,
     #[serde(rename = "@xpath")]
-    pub xpath: SSTXstring,
+    pub xpath: XmlString,
     #[serde(rename = "@xmlDataType")]
-    pub xml_data_type: SmlSTXmlDataType,
+    pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
-pub type SmlStyleSheet = Box<SmlCTStylesheet>;
+pub type SmlStyleSheet = Box<Stylesheet>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTStylesheet {
+pub struct Stylesheet {
     #[serde(rename = "numFmts")]
     #[serde(default)]
-    pub num_fmts: Option<Box<SmlCTNumFmts>>,
+    pub num_fmts: Option<Box<NumberFormats>>,
     #[serde(rename = "fonts")]
     #[serde(default)]
-    pub fonts: Option<Box<SmlCTFonts>>,
+    pub fonts: Option<Box<Fonts>>,
     #[serde(rename = "fills")]
     #[serde(default)]
-    pub fills: Option<Box<SmlCTFills>>,
+    pub fills: Option<Box<Fills>>,
     #[serde(rename = "borders")]
     #[serde(default)]
-    pub borders: Option<Box<SmlCTBorders>>,
+    pub borders: Option<Box<Borders>>,
     #[serde(rename = "cellStyleXfs")]
     #[serde(default)]
-    pub cell_style_xfs: Option<Box<SmlCTCellStyleXfs>>,
+    pub cell_style_xfs: Option<Box<CellStyleFormats>>,
     #[serde(rename = "cellXfs")]
     #[serde(default)]
-    pub cell_xfs: Option<Box<SmlCTCellXfs>>,
+    pub cell_xfs: Option<Box<CellFormats>>,
     #[serde(rename = "cellStyles")]
     #[serde(default)]
-    pub cell_styles: Option<Box<SmlCTCellStyles>>,
+    pub cell_styles: Option<Box<CellStyles>>,
     #[serde(rename = "dxfs")]
     #[serde(default)]
-    pub dxfs: Option<Box<SmlCTDxfs>>,
+    pub dxfs: Option<Box<DifferentialFormats>>,
     #[serde(rename = "tableStyles")]
     #[serde(default)]
-    pub table_styles: Option<Box<SmlCTTableStyles>>,
+    pub table_styles: Option<Box<TableStyles>>,
     #[serde(rename = "colors")]
     #[serde(default)]
-    pub colors: Option<Box<SmlCTColors>>,
+    pub colors: Option<Box<Colors>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellAlignment {
+pub struct CellAlignment {
     #[serde(rename = "@horizontal")]
     #[serde(default)]
-    pub horizontal: Option<SmlSTHorizontalAlignment>,
+    pub horizontal: Option<HorizontalAlignment>,
     #[serde(rename = "@vertical")]
     #[serde(default)]
-    pub vertical: Option<SmlSTVerticalAlignment>,
+    pub vertical: Option<VerticalAlignment>,
     #[serde(rename = "@textRotation")]
     #[serde(default)]
-    pub text_rotation: Option<SmlSTTextRotation>,
+    pub text_rotation: Option<STTextRotation>,
     #[serde(rename = "@wrapText")]
     #[serde(default)]
     pub wrap_text: Option<bool>,
@@ -10211,17 +10205,17 @@ pub struct SmlCTCellAlignment {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBorders {
+pub struct Borders {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "border")]
     #[serde(default)]
-    pub border: Vec<Box<SmlCTBorder>>,
+    pub border: Vec<Box<Border>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBorder {
+pub struct Border {
     #[serde(rename = "@diagonalUp")]
     #[serde(default)]
     pub diagonal_up: Option<bool>,
@@ -10233,45 +10227,45 @@ pub struct SmlCTBorder {
     pub outline: Option<bool>,
     #[serde(rename = "start")]
     #[serde(default)]
-    pub start: Option<Box<SmlCTBorderPr>>,
+    pub start: Option<Box<BorderProperties>>,
     #[serde(rename = "end")]
     #[serde(default)]
-    pub end: Option<Box<SmlCTBorderPr>>,
+    pub end: Option<Box<BorderProperties>>,
     #[serde(rename = "left")]
     #[serde(default)]
-    pub left: Option<Box<SmlCTBorderPr>>,
+    pub left: Option<Box<BorderProperties>>,
     #[serde(rename = "right")]
     #[serde(default)]
-    pub right: Option<Box<SmlCTBorderPr>>,
+    pub right: Option<Box<BorderProperties>>,
     #[serde(rename = "top")]
     #[serde(default)]
-    pub top: Option<Box<SmlCTBorderPr>>,
+    pub top: Option<Box<BorderProperties>>,
     #[serde(rename = "bottom")]
     #[serde(default)]
-    pub bottom: Option<Box<SmlCTBorderPr>>,
+    pub bottom: Option<Box<BorderProperties>>,
     #[serde(rename = "diagonal")]
     #[serde(default)]
-    pub diagonal: Option<Box<SmlCTBorderPr>>,
+    pub diagonal: Option<Box<BorderProperties>>,
     #[serde(rename = "vertical")]
     #[serde(default)]
-    pub vertical: Option<Box<SmlCTBorderPr>>,
+    pub vertical: Option<Box<BorderProperties>>,
     #[serde(rename = "horizontal")]
     #[serde(default)]
-    pub horizontal: Option<Box<SmlCTBorderPr>>,
+    pub horizontal: Option<Box<BorderProperties>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBorderPr {
+pub struct BorderProperties {
     #[serde(rename = "@style")]
     #[serde(default)]
-    pub style: Option<SmlSTBorderStyle>,
+    pub style: Option<BorderStyle>,
     #[serde(rename = "color")]
     #[serde(default)]
-    pub color: Option<Box<SmlCTColor>>,
+    pub color: Option<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellProtection {
+pub struct CellProtection {
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -10281,43 +10275,43 @@ pub struct SmlCTCellProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFonts {
+pub struct Fonts {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "font")]
     #[serde(default)]
-    pub font: Vec<Box<SmlCTFont>>,
+    pub font: Vec<Box<Font>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFills {
+pub struct Fills {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "fill")]
     #[serde(default)]
-    pub fill: Vec<Box<SmlCTFill>>,
+    pub fill: Vec<Box<Fill>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTFill;
+pub struct Fill;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPatternFill {
+pub struct CTPatternFill {
     #[serde(rename = "@patternType")]
     #[serde(default)]
-    pub pattern_type: Option<SmlSTPatternType>,
+    pub pattern_type: Option<PatternType>,
     #[serde(rename = "fgColor")]
     #[serde(default)]
-    pub fg_color: Option<Box<SmlCTColor>>,
+    pub fg_color: Option<Box<Color>>,
     #[serde(rename = "bgColor")]
     #[serde(default)]
-    pub bg_color: Option<Box<SmlCTColor>>,
+    pub bg_color: Option<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColor {
+pub struct Color {
     #[serde(rename = "@auto")]
     #[serde(default)]
     pub auto: Option<bool>,
@@ -10326,7 +10320,7 @@ pub struct SmlCTColor {
     pub indexed: Option<u32>,
     #[serde(rename = "@rgb")]
     #[serde(default)]
-    pub rgb: Option<SmlSTUnsignedIntHex>,
+    pub rgb: Option<STUnsignedIntHex>,
     #[serde(rename = "@theme")]
     #[serde(default)]
     pub theme: Option<u32>,
@@ -10336,10 +10330,10 @@ pub struct SmlCTColor {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGradientFill {
+pub struct CTGradientFill {
     #[serde(rename = "@type")]
     #[serde(default)]
-    pub r#type: Option<SmlSTGradientType>,
+    pub r#type: Option<GradientType>,
     #[serde(rename = "@degree")]
     #[serde(default)]
     pub degree: Option<f64>,
@@ -10357,72 +10351,72 @@ pub struct SmlCTGradientFill {
     pub bottom: Option<f64>,
     #[serde(rename = "stop")]
     #[serde(default)]
-    pub stop: Vec<Box<SmlCTGradientStop>>,
+    pub stop: Vec<Box<CTGradientStop>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTGradientStop {
+pub struct CTGradientStop {
     #[serde(rename = "@position")]
     pub position: f64,
     #[serde(rename = "color")]
-    pub color: Box<SmlCTColor>,
+    pub color: Box<Color>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTNumFmts {
+pub struct NumberFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "numFmt")]
     #[serde(default)]
-    pub num_fmt: Vec<Box<SmlCTNumFmt>>,
+    pub num_fmt: Vec<Box<NumberFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTNumFmt {
+pub struct NumberFormat {
     #[serde(rename = "@numFmtId")]
-    pub num_fmt_id: SmlSTNumFmtId,
+    pub number_format_id: STNumFmtId,
     #[serde(rename = "@formatCode")]
-    pub format_code: SSTXstring,
+    pub format_code: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellStyleXfs {
+pub struct CellStyleFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "xf")]
     #[serde(default)]
-    pub xf: Vec<Box<SmlCTXf>>,
+    pub xf: Vec<Box<Format>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellXfs {
+pub struct CellFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "xf")]
     #[serde(default)]
-    pub xf: Vec<Box<SmlCTXf>>,
+    pub xf: Vec<Box<Format>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTXf {
+pub struct Format {
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
-    pub num_fmt_id: Option<SmlSTNumFmtId>,
+    pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@fontId")]
     #[serde(default)]
-    pub font_id: Option<SmlSTFontId>,
+    pub font_id: Option<STFontId>,
     #[serde(rename = "@fillId")]
     #[serde(default)]
-    pub fill_id: Option<SmlSTFillId>,
+    pub fill_id: Option<STFillId>,
     #[serde(rename = "@borderId")]
     #[serde(default)]
-    pub border_id: Option<SmlSTBorderId>,
+    pub border_id: Option<STBorderId>,
     #[serde(rename = "@xfId")]
     #[serde(default)]
-    pub xf_id: Option<SmlSTCellStyleXfId>,
+    pub format_id: Option<STCellStyleXfId>,
     #[serde(rename = "@quotePrefix")]
     #[serde(default)]
     pub quote_prefix: Option<bool>,
@@ -10449,32 +10443,32 @@ pub struct SmlCTXf {
     pub apply_protection: Option<bool>,
     #[serde(rename = "alignment")]
     #[serde(default)]
-    pub alignment: Option<Box<SmlCTCellAlignment>>,
+    pub alignment: Option<Box<CellAlignment>>,
     #[serde(rename = "protection")]
     #[serde(default)]
-    pub protection: Option<Box<SmlCTCellProtection>>,
+    pub protection: Option<Box<CellProtection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellStyles {
+pub struct CellStyles {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "cellStyle")]
     #[serde(default)]
-    pub cell_style: Vec<Box<SmlCTCellStyle>>,
+    pub cell_style: Vec<Box<CellStyle>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCellStyle {
+pub struct CellStyle {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@xfId")]
-    pub xf_id: SmlSTCellStyleXfId,
+    pub format_id: STCellStyleXfId,
     #[serde(rename = "@builtinId")]
     #[serde(default)]
     pub builtin_id: Option<u32>,
@@ -10489,77 +10483,77 @@ pub struct SmlCTCellStyle {
     pub custom_builtin: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDxfs {
+pub struct DifferentialFormats {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "dxf")]
     #[serde(default)]
-    pub dxf: Vec<Box<SmlCTDxf>>,
+    pub dxf: Vec<Box<DifferentialFormat>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDxf {
+pub struct DifferentialFormat {
     #[serde(rename = "font")]
     #[serde(default)]
-    pub font: Option<Box<SmlCTFont>>,
+    pub font: Option<Box<Font>>,
     #[serde(rename = "numFmt")]
     #[serde(default)]
-    pub num_fmt: Option<Box<SmlCTNumFmt>>,
+    pub num_fmt: Option<Box<NumberFormat>>,
     #[serde(rename = "fill")]
     #[serde(default)]
-    pub fill: Option<Box<SmlCTFill>>,
+    pub fill: Option<Box<Fill>>,
     #[serde(rename = "alignment")]
     #[serde(default)]
-    pub alignment: Option<Box<SmlCTCellAlignment>>,
+    pub alignment: Option<Box<CellAlignment>>,
     #[serde(rename = "border")]
     #[serde(default)]
-    pub border: Option<Box<SmlCTBorder>>,
+    pub border: Option<Box<Border>>,
     #[serde(rename = "protection")]
     #[serde(default)]
-    pub protection: Option<Box<SmlCTCellProtection>>,
+    pub protection: Option<Box<CellProtection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTColors {
+pub struct Colors {
     #[serde(rename = "indexedColors")]
     #[serde(default)]
-    pub indexed_colors: Option<Box<SmlCTIndexedColors>>,
+    pub indexed_colors: Option<Box<CTIndexedColors>>,
     #[serde(rename = "mruColors")]
     #[serde(default)]
-    pub mru_colors: Option<Box<SmlCTMRUColors>>,
+    pub mru_colors: Option<Box<CTMRUColors>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIndexedColors {
+pub struct CTIndexedColors {
     #[serde(rename = "rgbColor")]
     #[serde(default)]
-    pub rgb_color: Vec<Box<SmlCTRgbColor>>,
+    pub rgb_color: Vec<Box<CTRgbColor>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTMRUColors {
+pub struct CTMRUColors {
     #[serde(rename = "color")]
     #[serde(default)]
-    pub color: Vec<Box<SmlCTColor>>,
+    pub color: Vec<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTRgbColor {
+pub struct CTRgbColor {
     #[serde(rename = "@rgb")]
     #[serde(default)]
-    pub rgb: Option<SmlSTUnsignedIntHex>,
+    pub rgb: Option<STUnsignedIntHex>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableStyles {
+pub struct TableStyles {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -10571,11 +10565,11 @@ pub struct SmlCTTableStyles {
     pub default_pivot_style: Option<String>,
     #[serde(rename = "tableStyle")]
     #[serde(default)]
-    pub table_style: Vec<Box<SmlCTTableStyle>>,
+    pub table_style: Vec<Box<TableStyle>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableStyle {
+pub struct TableStyle {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "@pivot")]
@@ -10589,72 +10583,72 @@ pub struct SmlCTTableStyle {
     pub count: Option<u32>,
     #[serde(rename = "tableStyleElement")]
     #[serde(default)]
-    pub table_style_element: Vec<Box<SmlCTTableStyleElement>>,
+    pub table_style_element: Vec<Box<CTTableStyleElement>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableStyleElement {
+pub struct CTTableStyleElement {
     #[serde(rename = "@type")]
-    pub r#type: SmlSTTableStyleType,
+    pub r#type: STTableStyleType,
     #[serde(rename = "@size")]
     #[serde(default)]
     pub size: Option<u32>,
     #[serde(rename = "@dxfId")]
     #[serde(default)]
-    pub dxf_id: Option<SmlSTDxfId>,
+    pub dxf_id: Option<STDxfId>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBooleanProperty {
+pub struct CTBooleanProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<bool>,
+    pub value: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFontSize {
+pub struct CTFontSize {
     #[serde(rename = "@val")]
-    pub val: f64,
+    pub value: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTIntProperty {
+pub struct CTIntProperty {
     #[serde(rename = "@val")]
-    pub val: i32,
+    pub value: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFontName {
+pub struct CTFontName {
     #[serde(rename = "@val")]
-    pub val: SSTXstring,
+    pub value: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVerticalAlignFontProperty {
+pub struct CTVerticalAlignFontProperty {
     #[serde(rename = "@val")]
-    pub val: SSTVerticalAlignRun,
+    pub value: VerticalAlignRun,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFontScheme {
+pub struct CTFontScheme {
     #[serde(rename = "@val")]
-    pub val: SmlSTFontScheme,
+    pub value: FontScheme,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTUnderlineProperty {
+pub struct CTUnderlineProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<SmlSTUnderlineValues>,
+    pub value: Option<UnderlineStyle>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTFont;
+pub struct Font;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFontFamily {
+pub struct CTFontFamily {
     #[serde(rename = "@val")]
-    pub val: SmlSTFontFamily,
+    pub value: STFontFamily,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10682,70 +10676,70 @@ pub struct SmlAGAutoFormat {
     pub apply_width_height_formats: Option<bool>,
 }
 
-pub type SmlExternalLink = Box<SmlCTExternalLink>;
+pub type SmlExternalLink = Box<CTExternalLink>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalLink {
+pub struct CTExternalLink {
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalBook {
+pub struct CTExternalBook {
     #[serde(rename = "sheetNames")]
     #[serde(default)]
-    pub sheet_names: Option<Box<SmlCTExternalSheetNames>>,
+    pub sheet_names: Option<Box<CTExternalSheetNames>>,
     #[serde(rename = "definedNames")]
     #[serde(default)]
-    pub defined_names: Option<Box<SmlCTExternalDefinedNames>>,
+    pub defined_names: Option<Box<CTExternalDefinedNames>>,
     #[serde(rename = "sheetDataSet")]
     #[serde(default)]
-    pub sheet_data_set: Option<Box<SmlCTExternalSheetDataSet>>,
+    pub sheet_data_set: Option<Box<CTExternalSheetDataSet>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalSheetNames {
+pub struct CTExternalSheetNames {
     #[serde(rename = "sheetName")]
     #[serde(default)]
-    pub sheet_name: Vec<Box<SmlCTExternalSheetName>>,
+    pub sheet_name: Vec<Box<CTExternalSheetName>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalSheetName {
+pub struct CTExternalSheetName {
     #[serde(rename = "@val")]
     #[serde(default)]
-    pub val: Option<SSTXstring>,
+    pub value: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalDefinedNames {
+pub struct CTExternalDefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default)]
-    pub defined_name: Vec<Box<SmlCTExternalDefinedName>>,
+    pub defined_name: Vec<Box<CTExternalDefinedName>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalDefinedName {
+pub struct CTExternalDefinedName {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@refersTo")]
     #[serde(default)]
-    pub refers_to: Option<SSTXstring>,
+    pub refers_to: Option<XmlString>,
     #[serde(rename = "@sheetId")]
     #[serde(default)]
     pub sheet_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalSheetDataSet {
+pub struct CTExternalSheetDataSet {
     #[serde(rename = "sheetData")]
     #[serde(default)]
-    pub sheet_data: Vec<Box<SmlCTExternalSheetData>>,
+    pub sheet_data: Vec<Box<CTExternalSheetData>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalSheetData {
+pub struct CTExternalSheetData {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@refreshError")]
@@ -10753,57 +10747,57 @@ pub struct SmlCTExternalSheetData {
     pub refresh_error: Option<bool>,
     #[serde(rename = "row")]
     #[serde(default)]
-    pub row: Vec<Box<SmlCTExternalRow>>,
+    pub row: Vec<Box<CTExternalRow>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalRow {
+pub struct CTExternalRow {
     #[serde(rename = "@r")]
-    pub r: u32,
+    pub reference: u32,
     #[serde(rename = "cell")]
     #[serde(default)]
-    pub cell: Vec<Box<SmlCTExternalCell>>,
+    pub cell: Vec<Box<CTExternalCell>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalCell {
+pub struct CTExternalCell {
     #[serde(rename = "@r")]
     #[serde(default)]
-    pub r: Option<SmlSTCellRef>,
+    pub reference: Option<CellRef>,
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTCellType>,
+    pub cell_type: Option<CellType>,
     #[serde(rename = "@vm")]
     #[serde(default)]
     pub vm: Option<u32>,
     #[serde(rename = "v")]
     #[serde(default)]
-    pub v: Option<SSTXstring>,
+    pub value: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDdeLink {
+pub struct CTDdeLink {
     #[serde(rename = "@ddeService")]
-    pub dde_service: SSTXstring,
+    pub dde_service: XmlString,
     #[serde(rename = "@ddeTopic")]
-    pub dde_topic: SSTXstring,
+    pub dde_topic: XmlString,
     #[serde(rename = "ddeItems")]
     #[serde(default)]
-    pub dde_items: Option<Box<SmlCTDdeItems>>,
+    pub dde_items: Option<Box<CTDdeItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDdeItems {
+pub struct CTDdeItems {
     #[serde(rename = "ddeItem")]
     #[serde(default)]
-    pub dde_item: Vec<Box<SmlCTDdeItem>>,
+    pub dde_item: Vec<Box<CTDdeItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDdeItem {
+pub struct CTDdeItem {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@ole")]
     #[serde(default)]
     pub ole: Option<bool>,
@@ -10815,11 +10809,11 @@ pub struct SmlCTDdeItem {
     pub prefer_pic: Option<bool>,
     #[serde(rename = "values")]
     #[serde(default)]
-    pub values: Option<Box<SmlCTDdeValues>>,
+    pub values: Option<Box<CTDdeValues>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDdeValues {
+pub struct CTDdeValues {
     #[serde(rename = "@rows")]
     #[serde(default)]
     pub rows: Option<u32>,
@@ -10828,38 +10822,38 @@ pub struct SmlCTDdeValues {
     pub cols: Option<u32>,
     #[serde(rename = "value")]
     #[serde(default)]
-    pub value: Vec<Box<SmlCTDdeValue>>,
+    pub value: Vec<Box<CTDdeValue>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDdeValue {
+pub struct CTDdeValue {
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTDdeValueType>,
+    pub cell_type: Option<STDdeValueType>,
     #[serde(rename = "val")]
-    pub val: SSTXstring,
+    pub value: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleLink {
+pub struct CTOleLink {
     #[serde(rename = "@progId")]
-    pub prog_id: SSTXstring,
+    pub prog_id: XmlString,
     #[serde(rename = "oleItems")]
     #[serde(default)]
-    pub ole_items: Option<Box<SmlCTOleItems>>,
+    pub ole_items: Option<Box<CTOleItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleItems {
+pub struct CTOleItems {
     #[serde(rename = "oleItem")]
     #[serde(default)]
-    pub ole_item: Vec<Box<SmlCTOleItem>>,
+    pub ole_item: Vec<Box<CTOleItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleItem {
+pub struct CTOleItem {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@icon")]
     #[serde(default)]
     pub icon: Option<bool>,
@@ -10871,25 +10865,25 @@ pub struct SmlCTOleItem {
     pub prefer_pic: Option<bool>,
 }
 
-pub type SmlTable = Box<SmlCTTable>;
+pub type SmlTable = Box<CTTable>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTable {
+pub struct CTTable {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@displayName")]
-    pub display_name: SSTXstring,
+    pub display_name: XmlString,
     #[serde(rename = "@comment")]
     #[serde(default)]
-    pub comment: Option<SSTXstring>,
+    pub comment: Option<XmlString>,
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
     #[serde(rename = "@tableType")]
     #[serde(default)]
-    pub table_type: Option<SmlSTTableType>,
+    pub table_type: Option<STTableType>,
     #[serde(rename = "@headerRowCount")]
     #[serde(default)]
     pub header_row_count: Option<u32>,
@@ -10910,55 +10904,55 @@ pub struct SmlCTTable {
     pub published: Option<bool>,
     #[serde(rename = "@headerRowDxfId")]
     #[serde(default)]
-    pub header_row_dxf_id: Option<SmlSTDxfId>,
+    pub header_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@dataDxfId")]
     #[serde(default)]
-    pub data_dxf_id: Option<SmlSTDxfId>,
+    pub data_dxf_id: Option<STDxfId>,
     #[serde(rename = "@totalsRowDxfId")]
     #[serde(default)]
-    pub totals_row_dxf_id: Option<SmlSTDxfId>,
+    pub totals_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@headerRowBorderDxfId")]
     #[serde(default)]
-    pub header_row_border_dxf_id: Option<SmlSTDxfId>,
+    pub header_row_border_dxf_id: Option<STDxfId>,
     #[serde(rename = "@tableBorderDxfId")]
     #[serde(default)]
-    pub table_border_dxf_id: Option<SmlSTDxfId>,
+    pub table_border_dxf_id: Option<STDxfId>,
     #[serde(rename = "@totalsRowBorderDxfId")]
     #[serde(default)]
-    pub totals_row_border_dxf_id: Option<SmlSTDxfId>,
+    pub totals_row_border_dxf_id: Option<STDxfId>,
     #[serde(rename = "@headerRowCellStyle")]
     #[serde(default)]
-    pub header_row_cell_style: Option<SSTXstring>,
+    pub header_row_cell_style: Option<XmlString>,
     #[serde(rename = "@dataCellStyle")]
     #[serde(default)]
-    pub data_cell_style: Option<SSTXstring>,
+    pub data_cell_style: Option<XmlString>,
     #[serde(rename = "@totalsRowCellStyle")]
     #[serde(default)]
-    pub totals_row_cell_style: Option<SSTXstring>,
+    pub totals_row_cell_style: Option<XmlString>,
     #[serde(rename = "@connectionId")]
     #[serde(default)]
     pub connection_id: Option<u32>,
     #[serde(rename = "autoFilter")]
     #[serde(default)]
-    pub auto_filter: Option<Box<SmlCTAutoFilter>>,
+    pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
-    pub sort_state: Option<Box<SmlCTSortState>>,
+    pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "tableColumns")]
-    pub table_columns: Box<SmlCTTableColumns>,
+    pub table_columns: Box<CTTableColumns>,
     #[serde(rename = "tableStyleInfo")]
     #[serde(default)]
-    pub table_style_info: Option<Box<SmlCTTableStyleInfo>>,
+    pub table_style_info: Option<Box<CTTableStyleInfo>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableStyleInfo {
+pub struct CTTableStyleInfo {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@showFirstColumn")]
     #[serde(default)]
     pub show_first_column: Option<bool>,
@@ -10974,208 +10968,208 @@ pub struct SmlCTTableStyleInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableColumns {
+pub struct CTTableColumns {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "tableColumn")]
     #[serde(default)]
-    pub table_column: Vec<Box<SmlCTTableColumn>>,
+    pub table_column: Vec<Box<CTTableColumn>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableColumn {
+pub struct CTTableColumn {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
     #[serde(default)]
-    pub unique_name: Option<SSTXstring>,
+    pub unique_name: Option<XmlString>,
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@totalsRowFunction")]
     #[serde(default)]
-    pub totals_row_function: Option<SmlSTTotalsRowFunction>,
+    pub totals_row_function: Option<STTotalsRowFunction>,
     #[serde(rename = "@totalsRowLabel")]
     #[serde(default)]
-    pub totals_row_label: Option<SSTXstring>,
+    pub totals_row_label: Option<XmlString>,
     #[serde(rename = "@queryTableFieldId")]
     #[serde(default)]
     pub query_table_field_id: Option<u32>,
     #[serde(rename = "@headerRowDxfId")]
     #[serde(default)]
-    pub header_row_dxf_id: Option<SmlSTDxfId>,
+    pub header_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@dataDxfId")]
     #[serde(default)]
-    pub data_dxf_id: Option<SmlSTDxfId>,
+    pub data_dxf_id: Option<STDxfId>,
     #[serde(rename = "@totalsRowDxfId")]
     #[serde(default)]
-    pub totals_row_dxf_id: Option<SmlSTDxfId>,
+    pub totals_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@headerRowCellStyle")]
     #[serde(default)]
-    pub header_row_cell_style: Option<SSTXstring>,
+    pub header_row_cell_style: Option<XmlString>,
     #[serde(rename = "@dataCellStyle")]
     #[serde(default)]
-    pub data_cell_style: Option<SSTXstring>,
+    pub data_cell_style: Option<XmlString>,
     #[serde(rename = "@totalsRowCellStyle")]
     #[serde(default)]
-    pub totals_row_cell_style: Option<SSTXstring>,
+    pub totals_row_cell_style: Option<XmlString>,
     #[serde(rename = "calculatedColumnFormula")]
     #[serde(default)]
-    pub calculated_column_formula: Option<Box<SmlCTTableFormula>>,
+    pub calculated_column_formula: Option<Box<CTTableFormula>>,
     #[serde(rename = "totalsRowFormula")]
     #[serde(default)]
-    pub totals_row_formula: Option<Box<SmlCTTableFormula>>,
+    pub totals_row_formula: Option<Box<CTTableFormula>>,
     #[serde(rename = "xmlColumnPr")]
     #[serde(default)]
-    pub xml_column_pr: Option<Box<SmlCTXmlColumnPr>>,
+    pub xml_column_pr: Option<Box<CTXmlColumnPr>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTTableFormula {
+pub struct CTTableFormula {
     #[serde(rename = "@array")]
     #[serde(default)]
     pub array: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTXmlColumnPr {
+pub struct CTXmlColumnPr {
     #[serde(rename = "@mapId")]
     pub map_id: u32,
     #[serde(rename = "@xpath")]
-    pub xpath: SSTXstring,
+    pub xpath: XmlString,
     #[serde(rename = "@denormalized")]
     #[serde(default)]
     pub denormalized: Option<bool>,
     #[serde(rename = "@xmlDataType")]
-    pub xml_data_type: SmlSTXmlDataType,
+    pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
-pub type SmlVolTypes = Box<SmlCTVolTypes>;
+pub type SmlVolTypes = Box<CTVolTypes>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVolTypes {
+pub struct CTVolTypes {
     #[serde(rename = "volType")]
     #[serde(default)]
-    pub vol_type: Vec<Box<SmlCTVolType>>,
+    pub vol_type: Vec<Box<CTVolType>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVolType {
+pub struct CTVolType {
     #[serde(rename = "@type")]
-    pub r#type: SmlSTVolDepType,
+    pub r#type: STVolDepType,
     #[serde(rename = "main")]
     #[serde(default)]
-    pub main: Vec<Box<SmlCTVolMain>>,
+    pub main: Vec<Box<CTVolMain>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVolMain {
+pub struct CTVolMain {
     #[serde(rename = "@first")]
-    pub first: SSTXstring,
+    pub first: XmlString,
     #[serde(rename = "tp")]
     #[serde(default)]
-    pub tp: Vec<Box<SmlCTVolTopic>>,
+    pub tp: Vec<Box<CTVolTopic>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVolTopic {
+pub struct CTVolTopic {
     #[serde(rename = "@t")]
     #[serde(default)]
-    pub t: Option<SmlSTVolValueType>,
+    pub cell_type: Option<STVolValueType>,
     #[serde(rename = "v")]
-    pub v: SSTXstring,
+    pub value: XmlString,
     #[serde(rename = "stp")]
     #[serde(default)]
-    pub stp: Vec<SSTXstring>,
+    pub stp: Vec<XmlString>,
     #[serde(rename = "tr")]
     #[serde(default)]
-    pub tr: Vec<Box<SmlCTVolTopicRef>>,
+    pub tr: Vec<Box<CTVolTopicRef>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTVolTopicRef {
+pub struct CTVolTopicRef {
     #[serde(rename = "@r")]
-    pub r: SmlSTCellRef,
+    pub reference: CellRef,
     #[serde(rename = "@s")]
-    pub s: u32,
+    pub style_index: u32,
 }
 
-pub type SmlWorkbook = Box<SmlCTWorkbook>;
+pub type SmlWorkbook = Box<Workbook>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWorkbook {
+pub struct Workbook {
     #[serde(rename = "@conformance")]
     #[serde(default)]
-    pub conformance: Option<SSTConformanceClass>,
+    pub conformance: Option<STConformanceClass>,
     #[serde(rename = "fileVersion")]
     #[serde(default)]
-    pub file_version: Option<Box<SmlCTFileVersion>>,
+    pub file_version: Option<Box<CTFileVersion>>,
     #[serde(rename = "fileSharing")]
     #[serde(default)]
-    pub file_sharing: Option<Box<SmlCTFileSharing>>,
+    pub file_sharing: Option<Box<CTFileSharing>>,
     #[serde(rename = "workbookPr")]
     #[serde(default)]
-    pub workbook_pr: Option<Box<SmlCTWorkbookPr>>,
+    pub workbook_pr: Option<Box<WorkbookProperties>>,
     #[serde(rename = "workbookProtection")]
     #[serde(default)]
-    pub workbook_protection: Option<Box<SmlCTWorkbookProtection>>,
+    pub workbook_protection: Option<Box<CTWorkbookProtection>>,
     #[serde(rename = "bookViews")]
     #[serde(default)]
-    pub book_views: Option<Box<SmlCTBookViews>>,
+    pub book_views: Option<Box<BookViews>>,
     #[serde(rename = "sheets")]
-    pub sheets: Box<SmlCTSheets>,
+    pub sheets: Box<Sheets>,
     #[serde(rename = "functionGroups")]
     #[serde(default)]
-    pub function_groups: Option<Box<SmlCTFunctionGroups>>,
+    pub function_groups: Option<Box<CTFunctionGroups>>,
     #[serde(rename = "externalReferences")]
     #[serde(default)]
-    pub external_references: Option<Box<SmlCTExternalReferences>>,
+    pub external_references: Option<Box<ExternalReferences>>,
     #[serde(rename = "definedNames")]
     #[serde(default)]
-    pub defined_names: Option<Box<SmlCTDefinedNames>>,
+    pub defined_names: Option<Box<DefinedNames>>,
     #[serde(rename = "calcPr")]
     #[serde(default)]
-    pub calc_pr: Option<Box<SmlCTCalcPr>>,
+    pub calc_pr: Option<Box<CalculationProperties>>,
     #[serde(rename = "oleSize")]
     #[serde(default)]
-    pub ole_size: Option<Box<SmlCTOleSize>>,
+    pub ole_size: Option<Box<CTOleSize>>,
     #[serde(rename = "customWorkbookViews")]
     #[serde(default)]
-    pub custom_workbook_views: Option<Box<SmlCTCustomWorkbookViews>>,
+    pub custom_workbook_views: Option<Box<CTCustomWorkbookViews>>,
     #[serde(rename = "pivotCaches")]
     #[serde(default)]
-    pub pivot_caches: Option<Box<SmlCTPivotCaches>>,
+    pub pivot_caches: Option<Box<PivotCaches>>,
     #[serde(rename = "smartTagPr")]
     #[serde(default)]
-    pub smart_tag_pr: Option<Box<SmlCTSmartTagPr>>,
+    pub smart_tag_pr: Option<Box<CTSmartTagPr>>,
     #[serde(rename = "smartTagTypes")]
     #[serde(default)]
-    pub smart_tag_types: Option<Box<SmlCTSmartTagTypes>>,
+    pub smart_tag_types: Option<Box<CTSmartTagTypes>>,
     #[serde(rename = "webPublishing")]
     #[serde(default)]
-    pub web_publishing: Option<Box<SmlCTWebPublishing>>,
+    pub web_publishing: Option<Box<CTWebPublishing>>,
     #[serde(rename = "fileRecoveryPr")]
     #[serde(default)]
-    pub file_recovery_pr: Vec<Box<SmlCTFileRecoveryPr>>,
+    pub file_recovery_pr: Vec<Box<CTFileRecoveryPr>>,
     #[serde(rename = "webPublishObjects")]
     #[serde(default)]
-    pub web_publish_objects: Option<Box<SmlCTWebPublishObjects>>,
+    pub web_publish_objects: Option<Box<CTWebPublishObjects>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFileVersion {
+pub struct CTFileVersion {
     #[serde(rename = "@appName")]
     #[serde(default)]
     pub app_name: Option<String>,
@@ -11190,21 +11184,21 @@ pub struct SmlCTFileVersion {
     pub rup_build: Option<String>,
     #[serde(rename = "@codeName")]
     #[serde(default)]
-    pub code_name: Option<SSTGuid>,
+    pub code_name: Option<Guid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBookViews {
+pub struct BookViews {
     #[serde(rename = "workbookView")]
     #[serde(default)]
-    pub workbook_view: Vec<Box<SmlCTBookView>>,
+    pub workbook_view: Vec<Box<BookView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTBookView {
+pub struct BookView {
     #[serde(rename = "@visibility")]
     #[serde(default)]
-    pub visibility: Option<SmlSTVisibility>,
+    pub visibility: Option<Visibility>,
     #[serde(rename = "@minimized")]
     #[serde(default)]
     pub minimized: Option<bool>,
@@ -11243,22 +11237,22 @@ pub struct SmlCTBookView {
     pub auto_filter_date_grouping: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomWorkbookViews {
+pub struct CTCustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
     #[serde(default)]
-    pub custom_workbook_view: Vec<Box<SmlCTCustomWorkbookView>>,
+    pub custom_workbook_view: Vec<Box<CTCustomWorkbookView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCustomWorkbookView {
+pub struct CTCustomWorkbookView {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@guid")]
-    pub guid: SSTGuid,
+    pub guid: Guid,
     #[serde(rename = "@autoUpdate")]
     #[serde(default)]
     pub auto_update: Option<bool>,
@@ -11318,41 +11312,41 @@ pub struct SmlCTCustomWorkbookView {
     pub show_statusbar: Option<bool>,
     #[serde(rename = "@showComments")]
     #[serde(default)]
-    pub show_comments: Option<SmlSTComments>,
+    pub show_comments: Option<CommentVisibility>,
     #[serde(rename = "@showObjects")]
     #[serde(default)]
-    pub show_objects: Option<SmlSTObjects>,
+    pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub ext_lst: Option<Box<SmlCTExtensionList>>,
+    pub extension_list: Option<Box<CTExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheets {
+pub struct Sheets {
     #[serde(rename = "sheet")]
     #[serde(default)]
-    pub sheet: Vec<Box<SmlCTSheet>>,
+    pub sheet: Vec<Box<Sheet>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSheet {
+pub struct Sheet {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@state")]
     #[serde(default)]
-    pub state: Option<SmlSTSheetState>,
+    pub state: Option<SheetState>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWorkbookPr {
+pub struct WorkbookProperties {
     #[serde(rename = "@date1904")]
     #[serde(default)]
     pub date1904: Option<bool>,
     #[serde(rename = "@showObjects")]
     #[serde(default)]
-    pub show_objects: Option<SmlSTObjects>,
+    pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "@showBorderUnselectedTables")]
     #[serde(default)]
     pub show_border_unselected_tables: Option<bool>,
@@ -11373,7 +11367,7 @@ pub struct SmlCTWorkbookPr {
     pub save_external_link_values: Option<bool>,
     #[serde(rename = "@updateLinks")]
     #[serde(default)]
-    pub update_links: Option<SmlSTUpdateLinks>,
+    pub update_links: Option<UpdateLinks>,
     #[serde(rename = "@codeName")]
     #[serde(default)]
     pub code_name: Option<String>,
@@ -11404,37 +11398,37 @@ pub struct SmlCTWorkbookPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSmartTagPr {
+pub struct CTSmartTagPr {
     #[serde(rename = "@embed")]
     #[serde(default)]
     pub embed: Option<bool>,
     #[serde(rename = "@show")]
     #[serde(default)]
-    pub show: Option<SmlSTSmartTagShow>,
+    pub show: Option<STSmartTagShow>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSmartTagTypes {
+pub struct CTSmartTagTypes {
     #[serde(rename = "smartTagType")]
     #[serde(default)]
-    pub smart_tag_type: Vec<Box<SmlCTSmartTagType>>,
+    pub smart_tag_type: Vec<Box<CTSmartTagType>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTSmartTagType {
+pub struct CTSmartTagType {
     #[serde(rename = "@namespaceUri")]
     #[serde(default)]
-    pub namespace_uri: Option<SSTXstring>,
+    pub namespace_uri: Option<XmlString>,
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
     #[serde(rename = "@url")]
     #[serde(default)]
-    pub url: Option<SSTXstring>,
+    pub url: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFileRecoveryPr {
+pub struct CTFileRecoveryPr {
     #[serde(rename = "@autoRecover")]
     #[serde(default)]
     pub auto_recover: Option<bool>,
@@ -11450,19 +11444,19 @@ pub struct SmlCTFileRecoveryPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTCalcPr {
+pub struct CalculationProperties {
     #[serde(rename = "@calcId")]
     #[serde(default)]
     pub calc_id: Option<u32>,
     #[serde(rename = "@calcMode")]
     #[serde(default)]
-    pub calc_mode: Option<SmlSTCalcMode>,
+    pub calc_mode: Option<CalculationMode>,
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(default)]
     pub full_calc_on_load: Option<bool>,
     #[serde(rename = "@refMode")]
     #[serde(default)]
-    pub ref_mode: Option<SmlSTRefMode>,
+    pub ref_mode: Option<ReferenceMode>,
     #[serde(rename = "@iterate")]
     #[serde(default)]
     pub iterate: Option<bool>,
@@ -11493,31 +11487,31 @@ pub struct SmlCTCalcPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDefinedNames {
+pub struct DefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default)]
-    pub defined_name: Vec<Box<SmlCTDefinedName>>,
+    pub defined_name: Vec<Box<DefinedName>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTDefinedName {
+pub struct DefinedName {
     #[serde(rename = "@name")]
-    pub name: SSTXstring,
+    pub name: XmlString,
     #[serde(rename = "@comment")]
     #[serde(default)]
-    pub comment: Option<SSTXstring>,
+    pub comment: Option<XmlString>,
     #[serde(rename = "@customMenu")]
     #[serde(default)]
-    pub custom_menu: Option<SSTXstring>,
+    pub custom_menu: Option<XmlString>,
     #[serde(rename = "@description")]
     #[serde(default)]
-    pub description: Option<SSTXstring>,
+    pub description: Option<XmlString>,
     #[serde(rename = "@help")]
     #[serde(default)]
-    pub help: Option<SSTXstring>,
+    pub help: Option<XmlString>,
     #[serde(rename = "@statusBar")]
     #[serde(default)]
-    pub status_bar: Option<SSTXstring>,
+    pub status_bar: Option<XmlString>,
     #[serde(rename = "@localSheetId")]
     #[serde(default)]
     pub local_sheet_id: Option<u32>,
@@ -11538,7 +11532,7 @@ pub struct SmlCTDefinedName {
     pub function_group_id: Option<u32>,
     #[serde(rename = "@shortcutKey")]
     #[serde(default)]
-    pub shortcut_key: Option<SSTXstring>,
+    pub shortcut_key: Option<XmlString>,
     #[serde(rename = "@publishToServer")]
     #[serde(default)]
     pub publish_to_server: Option<bool>,
@@ -11548,45 +11542,45 @@ pub struct SmlCTDefinedName {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTExternalReferences {
+pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
     #[serde(default)]
-    pub external_reference: Vec<Box<SmlCTExternalReference>>,
+    pub external_reference: Vec<Box<CTExternalReference>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTExternalReference;
+pub struct CTExternalReference;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SmlCTSheetBackgroundPicture;
+pub struct CTSheetBackgroundPicture;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotCaches {
+pub struct PivotCaches {
     #[serde(rename = "pivotCache")]
     #[serde(default)]
-    pub pivot_cache: Vec<Box<SmlCTPivotCache>>,
+    pub pivot_cache: Vec<Box<CTPivotCache>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTPivotCache {
+pub struct CTPivotCache {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFileSharing {
+pub struct CTFileSharing {
     #[serde(rename = "@readOnlyRecommended")]
     #[serde(default)]
     pub read_only_recommended: Option<bool>,
     #[serde(rename = "@userName")]
     #[serde(default)]
-    pub user_name: Option<SSTXstring>,
+    pub user_name: Option<XmlString>,
     #[serde(rename = "@reservationPassword")]
     #[serde(default)]
-    pub reservation_password: Option<SmlSTUnsignedShortHex>,
+    pub reservation_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
     #[serde(default)]
-    pub algorithm_name: Option<SSTXstring>,
+    pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
     #[serde(default)]
     pub hash_value: Option<Vec<u8>>,
@@ -11599,22 +11593,22 @@ pub struct SmlCTFileSharing {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTOleSize {
+pub struct CTOleSize {
     #[serde(rename = "@ref")]
-    pub r#ref: SmlSTRef,
+    pub reference: Reference,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWorkbookProtection {
+pub struct CTWorkbookProtection {
     #[serde(rename = "@workbookPassword")]
     #[serde(default)]
-    pub workbook_password: Option<SmlSTUnsignedShortHex>,
+    pub workbook_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@workbookPasswordCharacterSet")]
     #[serde(default)]
     pub workbook_password_character_set: Option<String>,
     #[serde(rename = "@revisionsPassword")]
     #[serde(default)]
-    pub revisions_password: Option<SmlSTUnsignedShortHex>,
+    pub revisions_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@revisionsPasswordCharacterSet")]
     #[serde(default)]
     pub revisions_password_character_set: Option<String>,
@@ -11629,7 +11623,7 @@ pub struct SmlCTWorkbookProtection {
     pub lock_revision: Option<bool>,
     #[serde(rename = "@revisionsAlgorithmName")]
     #[serde(default)]
-    pub revisions_algorithm_name: Option<SSTXstring>,
+    pub revisions_algorithm_name: Option<XmlString>,
     #[serde(rename = "@revisionsHashValue")]
     #[serde(default)]
     pub revisions_hash_value: Option<Vec<u8>>,
@@ -11641,7 +11635,7 @@ pub struct SmlCTWorkbookProtection {
     pub revisions_spin_count: Option<u32>,
     #[serde(rename = "@workbookAlgorithmName")]
     #[serde(default)]
-    pub workbook_algorithm_name: Option<SSTXstring>,
+    pub workbook_algorithm_name: Option<XmlString>,
     #[serde(rename = "@workbookHashValue")]
     #[serde(default)]
     pub workbook_hash_value: Option<Vec<u8>>,
@@ -11654,7 +11648,7 @@ pub struct SmlCTWorkbookProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPublishing {
+pub struct CTWebPublishing {
     #[serde(rename = "@css")]
     #[serde(default)]
     pub css: Option<bool>,
@@ -11672,7 +11666,7 @@ pub struct SmlCTWebPublishing {
     pub allow_png: Option<bool>,
     #[serde(rename = "@targetScreenSize")]
     #[serde(default)]
-    pub target_screen_size: Option<SmlSTTargetScreenSize>,
+    pub target_screen_size: Option<STTargetScreenSize>,
     #[serde(rename = "@dpi")]
     #[serde(default)]
     pub dpi: Option<u32>,
@@ -11685,46 +11679,46 @@ pub struct SmlCTWebPublishing {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFunctionGroups {
+pub struct CTFunctionGroups {
     #[serde(rename = "@builtInGroupCount")]
     #[serde(default)]
     pub built_in_group_count: Option<u32>,
     #[serde(rename = "functionGroup")]
     #[serde(default)]
-    pub function_group: Vec<Box<SmlCTFunctionGroup>>,
+    pub function_group: Vec<Box<CTFunctionGroup>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTFunctionGroup {
+pub struct CTFunctionGroup {
     #[serde(rename = "@name")]
     #[serde(default)]
-    pub name: Option<SSTXstring>,
+    pub name: Option<XmlString>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPublishObjects {
+pub struct CTWebPublishObjects {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "webPublishObject")]
     #[serde(default)]
-    pub web_publish_object: Vec<Box<SmlCTWebPublishObject>>,
+    pub web_publish_object: Vec<Box<CTWebPublishObject>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SmlCTWebPublishObject {
+pub struct CTWebPublishObject {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@divId")]
-    pub div_id: SSTXstring,
+    pub div_id: XmlString,
     #[serde(rename = "@sourceObject")]
     #[serde(default)]
-    pub source_object: Option<SSTXstring>,
+    pub source_object: Option<XmlString>,
     #[serde(rename = "@destinationFile")]
-    pub destination_file: SSTXstring,
+    pub destination_file: XmlString,
     #[serde(rename = "@title")]
     #[serde(default)]
-    pub title: Option<SSTXstring>,
+    pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
     #[serde(default)]
     pub auto_republish: Option<bool>,
