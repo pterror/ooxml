@@ -39,7 +39,7 @@ pub mod writer;
 
 pub use error::{Error, Result};
 pub use presentation::{
-    Hyperlink, ImageData, Picture, Presentation, Shape, Slide, Transition, TransitionSpeed,
-    TransitionType,
+    Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,
+    SlideMaster, Transition, TransitionSpeed, TransitionType,
 };
 pub use writer::{PresentationBuilder, SlideBuilder};

@@ -40,7 +40,11 @@ pub mod writer;
 
 pub use error::{Error, Result};
 pub use workbook::{
-    Border, BorderSide, Cell, CellFormat, CellValue, ColumnInfo, Comment, Fill, Font, MergedCell,
-    NumberFormat, Row, Sheet, Stylesheet, Workbook,
+    Border, BorderSide, Cell, CellFormat, CellValue, ColorScale, ColorScaleValue, ColumnInfo,
+    Comment, ConditionalFormatting, ConditionalRule, ConditionalRuleType, DataBar, DataValidation,
+    DataValidationErrorStyle, DataValidationOperator, DataValidationType, DefinedName,
+    DefinedNameScope, Fill, Font, IconSet, IconSetValue, MergedCell, NumberFormat, Row, Sheet,
+    Stylesheet, Workbook, builtin_format_code, excel_date_to_ymd, excel_datetime_to_ymdhms,
+    format_excel_date, format_excel_datetime,
 };
 pub use writer::{SheetBuilder, WorkbookBuilder, WriteCellValue};

@@ -36,6 +36,8 @@ pub struct Workbook<R: Read + Seek> {
     shared_strings: Vec<String>,
     /// Stylesheet (number formats, fonts, fills, borders, cell formats).
     styles: Stylesheet,
+    /// Defined names (named ranges).
+    defined_names: Vec<DefinedName>,
 }
 
 /// Metadata about a sheet.
@@ -72,9 +74,10 @@ impl<R: Read + Seek> Workbook<R> {
             .read_part_relationships(&workbook_path)
             .unwrap_or_default();
 
-        // Parse workbook.xml to get sheet list
+        // Parse workbook.xml to get sheet list and defined names
         let workbook_xml = package.read_part(&workbook_path)?;
         let sheet_info = parse_workbook_sheets(&workbook_xml)?;
+        let defined_names = parse_defined_names(&workbook_xml)?;
 
         // Load shared strings if present
         let shared_strings = if let Some(rel) = workbook_rels.get_by_type(REL_SHARED_STRINGS) {
@@ -107,6 +110,7 @@ impl<R: Read + Seek> Workbook<R> {
             sheet_info,
             shared_strings,
             styles,
+            defined_names,
         })
     }
 
@@ -152,6 +156,41 @@ impl<R: Read + Seek> Workbook<R> {
     /// Get the workbook stylesheet.
     pub fn styles(&self) -> &Stylesheet {
         &self.styles
+    }
+
+    /// Get all defined names (named ranges).
+    pub fn defined_names(&self) -> &[DefinedName] {
+        &self.defined_names
+    }
+
+    /// Get a defined name by its name.
+    ///
+    /// For names with sheet scope, use `defined_name_in_sheet` instead.
+    pub fn defined_name(&self, name: &str) -> Option<&DefinedName> {
+        self.defined_names
+            .iter()
+            .find(|d| d.name.eq_ignore_ascii_case(name) && d.local_sheet_id.is_none())
+    }
+
+    /// Get a defined name by its name within a specific sheet scope.
+    pub fn defined_name_in_sheet(&self, name: &str, sheet_index: u32) -> Option<&DefinedName> {
+        self.defined_names
+            .iter()
+            .find(|d| d.name.eq_ignore_ascii_case(name) && d.local_sheet_id == Some(sheet_index))
+    }
+
+    /// Get all global defined names (workbook scope).
+    pub fn global_defined_names(&self) -> impl Iterator<Item = &DefinedName> {
+        self.defined_names
+            .iter()
+            .filter(|d| d.local_sheet_id.is_none())
+    }
+
+    /// Get all defined names scoped to a specific sheet.
+    pub fn sheet_defined_names(&self, sheet_index: u32) -> impl Iterator<Item = &DefinedName> {
+        self.defined_names
+            .iter()
+            .filter(move |d| d.local_sheet_id == Some(sheet_index))
     }
 
     /// Load a sheet's data.
@@ -308,6 +347,413 @@ impl Comment {
     }
 }
 
+/// Conditional formatting rules for a range.
+///
+/// ECMA-376 Part 1, Section 18.3.1.18 (conditionalFormatting).
+#[derive(Debug, Clone)]
+pub struct ConditionalFormatting {
+    /// Cell range(s) this formatting applies to (e.g., "A1:B10" or "A1:B10 C1:D10").
+    pub ranges: String,
+    /// Formatting rules (in priority order).
+    pub rules: Vec<ConditionalRule>,
+}
+
+impl ConditionalFormatting {
+    /// Get the cell ranges as individual strings.
+    pub fn range_list(&self) -> Vec<&str> {
+        self.ranges.split_whitespace().collect()
+    }
+
+    /// Check if a cell reference is within the conditional formatting range.
+    pub fn contains_ref(&self, reference: &str) -> bool {
+        for range in self.range_list() {
+            if range_contains_ref(range, reference) {
+                return true;
+            }
+        }
+        false
+    }
+}
+
+/// A single conditional formatting rule.
+///
+/// ECMA-376 Part 1, Section 18.3.1.10 (cfRule).
+#[derive(Debug, Clone)]
+pub struct ConditionalRule {
+    /// Rule type (e.g., "cellIs", "colorScale", "dataBar").
+    pub rule_type: ConditionalRuleType,
+    /// Priority (lower number = higher priority).
+    pub priority: u32,
+    /// Differential formatting ID (reference to dxf in styles).
+    pub dxf_id: Option<u32>,
+    /// Operator for comparison rules.
+    pub operator: Option<String>,
+    /// Formula(s) used in the rule.
+    pub formulas: Vec<String>,
+    /// Stop if this rule matches.
+    pub stop_if_true: bool,
+    /// For aboveAverage type: whether to match above average.
+    pub above_average: Option<bool>,
+    /// For aboveAverage type: whether to include equal values.
+    pub equal_average: Option<bool>,
+    /// For top10 type: rank value.
+    pub rank: Option<u32>,
+    /// For top10 type: whether it's top (true) or bottom (false).
+    pub top: Option<bool>,
+    /// For top10 type: whether rank is a percentage.
+    pub percent: Option<bool>,
+    /// Text value for containsText, beginsWith, endsWith rules.
+    pub text: Option<String>,
+    /// Time period for timePeriod rules.
+    pub time_period: Option<String>,
+    /// Color scale configuration.
+    pub color_scale: Option<ColorScale>,
+    /// Data bar configuration.
+    pub data_bar: Option<DataBar>,
+    /// Icon set configuration.
+    pub icon_set: Option<IconSet>,
+}
+
+impl ConditionalRule {
+    /// Check if this is a cell value comparison rule.
+    pub fn is_cell_is(&self) -> bool {
+        matches!(self.rule_type, ConditionalRuleType::CellIs)
+    }
+
+    /// Check if this is a color scale rule.
+    pub fn is_color_scale(&self) -> bool {
+        matches!(self.rule_type, ConditionalRuleType::ColorScale)
+    }
+
+    /// Check if this is a data bar rule.
+    pub fn is_data_bar(&self) -> bool {
+        matches!(self.rule_type, ConditionalRuleType::DataBar)
+    }
+
+    /// Check if this is an icon set rule.
+    pub fn is_icon_set(&self) -> bool {
+        matches!(self.rule_type, ConditionalRuleType::IconSet)
+    }
+}
+
+/// Type of conditional formatting rule.
+///
+/// ECMA-376 Part 1, Section 18.18.12 (ST_CfType).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ConditionalRuleType {
+    /// Expression-based rule.
+    Expression,
+    /// Cell value comparison.
+    CellIs,
+    /// Color scale gradient.
+    ColorScale,
+    /// Data bar visualization.
+    DataBar,
+    /// Icon set.
+    IconSet,
+    /// Top N values.
+    Top10,
+    /// Unique values.
+    UniqueValues,
+    /// Duplicate values.
+    DuplicateValues,
+    /// Contains specified text.
+    ContainsText,
+    /// Does not contain specified text.
+    NotContainsText,
+    /// Begins with specified text.
+    BeginsWith,
+    /// Ends with specified text.
+    EndsWith,
+    /// Contains blanks.
+    ContainsBlanks,
+    /// Does not contain blanks.
+    NotContainsBlanks,
+    /// Contains errors.
+    ContainsErrors,
+    /// Does not contain errors.
+    NotContainsErrors,
+    /// Time period comparison.
+    TimePeriod,
+    /// Above or below average.
+    AboveAverage,
+}
+
+impl ConditionalRuleType {
+    /// Parse from the cfRule type attribute string.
+    pub fn parse(s: &str) -> Option<Self> {
+        match s {
+            "expression" => Some(Self::Expression),
+            "cellIs" => Some(Self::CellIs),
+            "colorScale" => Some(Self::ColorScale),
+            "dataBar" => Some(Self::DataBar),
+            "iconSet" => Some(Self::IconSet),
+            "top10" => Some(Self::Top10),
+            "uniqueValues" => Some(Self::UniqueValues),
+            "duplicateValues" => Some(Self::DuplicateValues),
+            "containsText" => Some(Self::ContainsText),
+            "notContainsText" => Some(Self::NotContainsText),
+            "beginsWith" => Some(Self::BeginsWith),
+            "endsWith" => Some(Self::EndsWith),
+            "containsBlanks" => Some(Self::ContainsBlanks),
+            "notContainsBlanks" => Some(Self::NotContainsBlanks),
+            "containsErrors" => Some(Self::ContainsErrors),
+            "notContainsErrors" => Some(Self::NotContainsErrors),
+            "timePeriod" => Some(Self::TimePeriod),
+            "aboveAverage" => Some(Self::AboveAverage),
+            _ => None,
+        }
+    }
+}
+
+/// Color scale for conditional formatting.
+#[derive(Debug, Clone)]
+pub struct ColorScale {
+    /// Color values (2 or 3 for two-color or three-color scale).
+    pub colors: Vec<ColorScaleValue>,
+}
+
+/// A single color value in a color scale.
+#[derive(Debug, Clone)]
+pub struct ColorScaleValue {
+    /// Value type (min, max, num, percent, percentile, formula).
+    pub value_type: String,
+    /// Value (for num, percent, percentile, formula types).
+    pub value: Option<String>,
+    /// Color in ARGB format.
+    pub color: Option<String>,
+}
+
+/// Data bar configuration for conditional formatting.
+#[derive(Debug, Clone)]
+pub struct DataBar {
+    /// Minimum value type.
+    pub min_type: String,
+    /// Minimum value (optional).
+    pub min_value: Option<String>,
+    /// Maximum value type.
+    pub max_type: String,
+    /// Maximum value (optional).
+    pub max_value: Option<String>,
+    /// Bar color in ARGB format.
+    pub color: Option<String>,
+    /// Show value in cell.
+    pub show_value: bool,
+}
+
+/// Icon set configuration for conditional formatting.
+#[derive(Debug, Clone)]
+pub struct IconSet {
+    /// Icon set name (e.g., "3Arrows", "4Rating", "5Quarters").
+    pub icon_set: String,
+    /// Show icon only (no cell value).
+    pub show_value: bool,
+    /// Reverse icon order.
+    pub reverse: bool,
+    /// Threshold values for icons.
+    pub values: Vec<IconSetValue>,
+}
+
+/// A threshold value in an icon set.
+#[derive(Debug, Clone)]
+pub struct IconSetValue {
+    /// Value type (percent, num, percentile, formula).
+    pub value_type: String,
+    /// Threshold value.
+    pub value: Option<String>,
+}
+
+/// Data validation rule for a range of cells.
+///
+/// ECMA-376 Part 1, Section 18.3.1.32 (dataValidation).
+#[derive(Debug, Clone)]
+pub struct DataValidation {
+    /// Cell range(s) this validation applies to.
+    pub ranges: String,
+    /// Validation type.
+    pub validation_type: DataValidationType,
+    /// Comparison operator.
+    pub operator: DataValidationOperator,
+    /// First formula/value.
+    pub formula1: Option<String>,
+    /// Second formula/value (for between/notBetween operators).
+    pub formula2: Option<String>,
+    /// Allow blank cells.
+    pub allow_blank: bool,
+    /// Show input message when cell is selected.
+    pub show_input_message: bool,
+    /// Show error message on invalid input.
+    pub show_error_message: bool,
+    /// Error alert style.
+    pub error_style: DataValidationErrorStyle,
+    /// Error title.
+    pub error_title: Option<String>,
+    /// Error message.
+    pub error_message: Option<String>,
+    /// Input prompt title.
+    pub prompt_title: Option<String>,
+    /// Input prompt message.
+    pub prompt_message: Option<String>,
+}
+
+impl DataValidation {
+    /// Get the cell ranges as individual strings.
+    pub fn range_list(&self) -> Vec<&str> {
+        self.ranges.split_whitespace().collect()
+    }
+
+    /// Check if a cell reference is within the validation range.
+    pub fn contains_ref(&self, reference: &str) -> bool {
+        for range in self.range_list() {
+            if range_contains_ref(range, reference) {
+                return true;
+            }
+        }
+        false
+    }
+
+    /// Check if this is a list validation (dropdown).
+    pub fn is_list(&self) -> bool {
+        matches!(self.validation_type, DataValidationType::List)
+    }
+}
+
+/// Type of data validation.
+///
+/// ECMA-376 Part 1, Section 18.18.21 (ST_DataValidationType).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DataValidationType {
+    /// No validation.
+    #[default]
+    None,
+    /// Whole number.
+    Whole,
+    /// Decimal number.
+    Decimal,
+    /// List of values (dropdown).
+    List,
+    /// Date.
+    Date,
+    /// Time.
+    Time,
+    /// Text length.
+    TextLength,
+    /// Custom formula.
+    Custom,
+}
+
+impl DataValidationType {
+    /// Parse from the dataValidation type attribute.
+    fn parse(s: &str) -> Self {
+        match s {
+            "none" => Self::None,
+            "whole" => Self::Whole,
+            "decimal" => Self::Decimal,
+            "list" => Self::List,
+            "date" => Self::Date,
+            "time" => Self::Time,
+            "textLength" => Self::TextLength,
+            "custom" => Self::Custom,
+            _ => Self::None,
+        }
+    }
+}
+
+/// Comparison operator for data validation.
+///
+/// ECMA-376 Part 1, Section 18.18.22 (ST_DataValidationOperator).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DataValidationOperator {
+    /// Between formula1 and formula2.
+    #[default]
+    Between,
+    /// Not between formula1 and formula2.
+    NotBetween,
+    /// Equal to formula1.
+    Equal,
+    /// Not equal to formula1.
+    NotEqual,
+    /// Less than formula1.
+    LessThan,
+    /// Less than or equal to formula1.
+    LessThanOrEqual,
+    /// Greater than formula1.
+    GreaterThan,
+    /// Greater than or equal to formula1.
+    GreaterThanOrEqual,
+}
+
+impl DataValidationOperator {
+    /// Parse from the dataValidation operator attribute.
+    fn parse(s: &str) -> Self {
+        match s {
+            "between" => Self::Between,
+            "notBetween" => Self::NotBetween,
+            "equal" => Self::Equal,
+            "notEqual" => Self::NotEqual,
+            "lessThan" => Self::LessThan,
+            "lessThanOrEqual" => Self::LessThanOrEqual,
+            "greaterThan" => Self::GreaterThan,
+            "greaterThanOrEqual" => Self::GreaterThanOrEqual,
+            _ => Self::Between,
+        }
+    }
+}
+
+/// Error alert style for data validation.
+///
+/// ECMA-376 Part 1, Section 18.18.23 (ST_DataValidationErrorStyle).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum DataValidationErrorStyle {
+    /// Stop: Prevents the user from entering invalid data.
+    #[default]
+    Stop,
+    /// Warning: Warns the user but allows invalid data.
+    Warning,
+    /// Information: Informs the user but allows invalid data.
+    Information,
+}
+
+impl DataValidationErrorStyle {
+    /// Parse from the dataValidation errorStyle attribute.
+    fn parse(s: &str) -> Self {
+        match s {
+            "stop" => Self::Stop,
+            "warning" => Self::Warning,
+            "information" => Self::Information,
+            _ => Self::Stop,
+        }
+    }
+}
+
+/// Check if a cell reference is within a range.
+fn range_contains_ref(range: &str, reference: &str) -> bool {
+    let (cell_col, cell_row) = match parse_cell_reference(reference) {
+        Some(r) => r,
+        None => return false,
+    };
+
+    if let Some((start, end)) = range.split_once(':') {
+        // Range like "A1:B10"
+        let (start_col, start_row) = match parse_cell_reference(start) {
+            Some(r) => r,
+            None => return false,
+        };
+        let (end_col, end_row) = match parse_cell_reference(end) {
+            Some(r) => r,
+            None => return false,
+        };
+        cell_row >= start_row && cell_row <= end_row && cell_col >= start_col && cell_col <= end_col
+    } else {
+        // Single cell like "A1"
+        if let Some((range_col, range_row)) = parse_cell_reference(range) {
+            cell_row == range_row && cell_col == range_col
+        } else {
+            false
+        }
+    }
+}
+
 /// A worksheet in the workbook.
 #[derive(Debug, Clone)]
 pub struct Sheet {
@@ -316,6 +762,8 @@ pub struct Sheet {
     merged_cells: Vec<MergedCell>,
     columns: Vec<ColumnInfo>,
     comments: Vec<Comment>,
+    conditional_formats: Vec<ConditionalFormatting>,
+    data_validations: Vec<DataValidation>,
 }
 
 impl Sheet {
@@ -413,6 +861,43 @@ impl Sheet {
     /// Check if a cell has a comment.
     pub fn has_comment(&self, reference: &str) -> bool {
         self.comment(reference).is_some()
+    }
+
+    /// Get all conditional formatting rules in this sheet.
+    pub fn conditional_formats(&self) -> &[ConditionalFormatting] {
+        &self.conditional_formats
+    }
+
+    /// Get conditional formatting rules that apply to a specific cell.
+    pub fn conditional_formats_for(&self, reference: &str) -> Vec<&ConditionalFormatting> {
+        self.conditional_formats
+            .iter()
+            .filter(|cf| cf.contains_ref(reference))
+            .collect()
+    }
+
+    /// Check if a cell has any conditional formatting.
+    pub fn has_conditional_formatting(&self, reference: &str) -> bool {
+        self.conditional_formats
+            .iter()
+            .any(|cf| cf.contains_ref(reference))
+    }
+
+    /// Get all data validation rules in this sheet.
+    pub fn data_validations(&self) -> &[DataValidation] {
+        &self.data_validations
+    }
+
+    /// Get data validation for a specific cell.
+    pub fn data_validation(&self, reference: &str) -> Option<&DataValidation> {
+        self.data_validations
+            .iter()
+            .find(|dv| dv.contains_ref(reference))
+    }
+
+    /// Check if a cell has data validation.
+    pub fn has_data_validation(&self, reference: &str) -> bool {
+        self.data_validation(reference).is_some()
     }
 }
 
@@ -573,6 +1058,31 @@ pub struct Stylesheet {
     pub cell_formats: Vec<CellFormat>,
 }
 
+impl Stylesheet {
+    /// Get a number format code by ID.
+    ///
+    /// Looks up custom formats first, then falls back to built-in formats.
+    pub fn format_code(&self, id: u32) -> Option<String> {
+        // Check custom formats first
+        if let Some(fmt) = self.number_formats.iter().find(|f| f.id == id) {
+            return Some(fmt.code.clone());
+        }
+
+        // Fall back to built-in formats
+        builtin_format_code(id).map(|s| s.to_string())
+    }
+
+    /// Check if a format ID represents a date/time format.
+    pub fn is_date_format(&self, id: u32) -> bool {
+        if let Some(code) = self.format_code(id) {
+            is_date_format_code(&code)
+        } else {
+            // Check built-in date format IDs (14-22, 45-47)
+            matches!(id, 14..=22 | 45..=47)
+        }
+    }
+}
+
 /// A number format definition.
 ///
 /// ECMA-376 Part 1, Section 18.8.30 (numFmt).
@@ -582,6 +1092,227 @@ pub struct NumberFormat {
     pub id: u32,
     /// Format code (e.g., "0.00", "#,##0", "yyyy-mm-dd").
     pub code: String,
+}
+
+impl NumberFormat {
+    /// Check if this format represents a date/time format.
+    ///
+    /// Date formats contain patterns like y, m, d, h, s but not in contexts
+    /// like [Red] color codes or escaped characters.
+    pub fn is_date_format(&self) -> bool {
+        is_date_format_code(&self.code)
+    }
+}
+
+/// A named range (defined name) in the workbook.
+///
+/// ECMA-376 Part 1, Section 18.2.5 (definedName).
+/// Named ranges can be global (workbook scope) or local (sheet scope).
+#[derive(Debug, Clone)]
+pub struct DefinedName {
+    /// The name of the defined range (e.g., "MyRange", "_xlnm.Print_Area").
+    pub name: String,
+    /// The formula or reference (e.g., "Sheet1!$A$1:$B$10").
+    pub reference: String,
+    /// Optional sheet index if this name is scoped to a specific sheet.
+    /// If None, the name is global (workbook scope).
+    pub local_sheet_id: Option<u32>,
+    /// Optional comment/description.
+    pub comment: Option<String>,
+    /// Whether this is a hidden name.
+    pub hidden: bool,
+}
+
+impl DefinedName {
+    /// Check if this is a built-in Excel name (prefixed with "_xlnm.").
+    ///
+    /// Built-in names include:
+    /// - _xlnm.Print_Area
+    /// - _xlnm.Print_Titles
+    /// - _xlnm._FilterDatabase
+    /// - _xlnm.Criteria
+    /// - _xlnm.Extract
+    pub fn is_builtin(&self) -> bool {
+        self.name.starts_with("_xlnm.")
+    }
+
+    /// Get the scope of this defined name.
+    pub fn scope(&self) -> DefinedNameScope {
+        match self.local_sheet_id {
+            Some(id) => DefinedNameScope::Sheet(id),
+            None => DefinedNameScope::Workbook,
+        }
+    }
+}
+
+/// The scope of a defined name.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DefinedNameScope {
+    /// Global workbook scope.
+    Workbook,
+    /// Local to a specific sheet (by index).
+    Sheet(u32),
+}
+
+/// Get the format code for a built-in format ID.
+///
+/// Excel has built-in formats with IDs 0-49. Custom formats start at 164.
+/// Reference: ECMA-376 Part 1, Section 18.8.30.
+pub fn builtin_format_code(id: u32) -> Option<&'static str> {
+    match id {
+        0 => Some("General"),
+        1 => Some("0"),
+        2 => Some("0.00"),
+        3 => Some("#,##0"),
+        4 => Some("#,##0.00"),
+        9 => Some("0%"),
+        10 => Some("0.00%"),
+        11 => Some("0.00E+00"),
+        12 => Some("# ?/?"),
+        13 => Some("# ??/??"),
+        14 => Some("mm-dd-yy"),
+        15 => Some("d-mmm-yy"),
+        16 => Some("d-mmm"),
+        17 => Some("mmm-yy"),
+        18 => Some("h:mm AM/PM"),
+        19 => Some("h:mm:ss AM/PM"),
+        20 => Some("h:mm"),
+        21 => Some("h:mm:ss"),
+        22 => Some("m/d/yy h:mm"),
+        37 => Some("#,##0 ;(#,##0)"),
+        38 => Some("#,##0 ;[Red](#,##0)"),
+        39 => Some("#,##0.00;(#,##0.00)"),
+        40 => Some("#,##0.00;[Red](#,##0.00)"),
+        45 => Some("mm:ss"),
+        46 => Some("[h]:mm:ss"),
+        47 => Some("mmss.0"),
+        48 => Some("##0.0E+0"),
+        49 => Some("@"),
+        _ => None,
+    }
+}
+
+/// Convert an Excel serial date number to (year, month, day).
+///
+/// Excel stores dates as the number of days since 1899-12-30 (in the 1900 system).
+/// Serial 1 = January 1, 1900.
+/// Note: Excel incorrectly treats 1900 as a leap year (Feb 29, 1900 = serial 60).
+pub fn excel_date_to_ymd(serial: f64) -> Option<(i32, u32, u32)> {
+    if serial < 1.0 {
+        return None;
+    }
+
+    let mut days = serial.floor() as i32;
+
+    // Handle Excel's leap year bug: serial 60 = Feb 29, 1900 which doesn't exist
+    // For dates after this, we need to subtract 1
+    if days > 60 {
+        days -= 1;
+    } else if days == 60 {
+        // Feb 29, 1900 doesn't really exist, but Excel thinks it does
+        return Some((1900, 2, 29));
+    }
+
+    // days is now the actual number of days since Dec 31, 1899
+    // day 1 = Jan 1, 1900
+    days -= 1; // Convert to 0-based
+
+    // Calculate year
+    let mut year = 1900;
+    loop {
+        let days_in_year = if is_leap_year(year) { 366 } else { 365 };
+        if days < days_in_year {
+            break;
+        }
+        days -= days_in_year;
+        year += 1;
+    }
+
+    // Calculate month and day
+    let leap = is_leap_year(year);
+    let days_in_months: [i32; 12] = if leap {
+        [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    } else {
+        [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    };
+
+    let mut month = 1u32;
+    for &dim in &days_in_months {
+        if days < dim {
+            break;
+        }
+        days -= dim;
+        month += 1;
+    }
+
+    Some((year, month, (days + 1) as u32))
+}
+
+/// Check if a year is a leap year.
+fn is_leap_year(year: i32) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+
+/// Convert an Excel serial date/time to (year, month, day, hour, minute, second).
+pub fn excel_datetime_to_ymdhms(serial: f64) -> Option<(i32, u32, u32, u32, u32, u32)> {
+    let (y, m, d) = excel_date_to_ymd(serial)?;
+
+    // Extract time from fractional part
+    let time_fraction = serial.fract();
+    let total_seconds = (time_fraction * 86400.0).round() as u32;
+    let hours = total_seconds / 3600;
+    let minutes = (total_seconds % 3600) / 60;
+    let seconds = total_seconds % 60;
+
+    Some((y, m, d, hours, minutes, seconds))
+}
+
+/// Format an Excel date serial number as a string (YYYY-MM-DD).
+pub fn format_excel_date(serial: f64) -> Option<String> {
+    let (y, m, d) = excel_date_to_ymd(serial)?;
+    Some(format!("{:04}-{:02}-{:02}", y, m, d))
+}
+
+/// Format an Excel datetime serial number as a string (YYYY-MM-DD HH:MM:SS).
+pub fn format_excel_datetime(serial: f64) -> Option<String> {
+    let (y, m, d, h, min, s) = excel_datetime_to_ymdhms(serial)?;
+    if h == 0 && min == 0 && s == 0 {
+        Some(format!("{:04}-{:02}-{:02}", y, m, d))
+    } else {
+        Some(format!(
+            "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
+            y, m, d, h, min, s
+        ))
+    }
+}
+
+/// Check if a format code represents a date/time format.
+fn is_date_format_code(code: &str) -> bool {
+    // Skip color codes like [Red], [Color1], etc.
+    let code = code.to_lowercase();
+
+    // Remove sections in square brackets (colors, conditions)
+    let mut clean = String::new();
+    let mut in_bracket = false;
+    for c in code.chars() {
+        match c {
+            '[' => in_bracket = true,
+            ']' => in_bracket = false,
+            _ if !in_bracket => clean.push(c),
+            _ => {}
+        }
+    }
+
+    // Check for date/time tokens (not preceded by backslash escape)
+    let date_tokens = ["y", "m", "d", "h", "s"];
+    for token in date_tokens {
+        if clean.contains(token) {
+            // Make sure it's not just in a string literal
+            return true;
+        }
+    }
+
+    false
 }
 
 /// A font definition.
@@ -725,6 +1456,86 @@ fn parse_workbook_sheets(xml: &[u8]) -> Result<Vec<SheetInfo>> {
     }
 
     Ok(sheets)
+}
+
+/// Parse defined names (named ranges) from workbook.xml.
+fn parse_defined_names(xml: &[u8]) -> Result<Vec<DefinedName>> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut names = Vec::new();
+    let mut in_defined_names = false;
+    let mut current_name: Option<(String, Option<u32>, Option<String>, bool)> = None;
+    let mut current_text = String::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                if tag == b"definedNames" {
+                    in_defined_names = true;
+                } else if in_defined_names && tag == b"definedName" {
+                    let mut name = String::new();
+                    let mut local_sheet_id = None;
+                    let mut comment = None;
+                    let mut hidden = false;
+
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        match attr.key.as_ref() {
+                            b"name" => {
+                                name = String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                            b"localSheetId" => {
+                                local_sheet_id = String::from_utf8_lossy(&attr.value).parse().ok();
+                            }
+                            b"comment" => {
+                                comment = Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                            b"hidden" => {
+                                hidden = &*attr.value == b"1" || &*attr.value == b"true";
+                            }
+                            _ => {}
+                        }
+                    }
+
+                    current_name = Some((name, local_sheet_id, comment, hidden));
+                    current_text.clear();
+                }
+            }
+            Ok(Event::Text(e)) => {
+                if current_name.is_some() {
+                    current_text.push_str(&e.decode().unwrap_or_default());
+                }
+            }
+            Ok(Event::End(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                if tag == b"definedNames" {
+                    in_defined_names = false;
+                } else if tag == b"definedName" {
+                    if let Some((name, local_sheet_id, comment, hidden)) = current_name.take()
+                        && !name.is_empty()
+                        && !current_text.is_empty()
+                    {
+                        names.push(DefinedName {
+                            name,
+                            reference: current_text.clone(),
+                            local_sheet_id,
+                            comment,
+                            hidden,
+                        });
+                    }
+                    current_text.clear();
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(names)
 }
 
 /// Parse the shared strings table.
@@ -1038,6 +1849,28 @@ fn parse_sheet(
     let mut in_merge_cells = false;
     let mut in_cols = false;
 
+    // Conditional formatting state
+    let mut conditional_formats: Vec<ConditionalFormatting> = Vec::new();
+    let mut in_conditional_formatting = false;
+    let mut current_cf_ranges = String::new();
+    let mut current_cf_rules: Vec<ConditionalRule> = Vec::new();
+    let mut in_cf_rule = false;
+    let mut current_cf_rule: Option<ConditionalRule> = None;
+    let mut current_cf_formula = String::new();
+    let mut in_cf_formula = false;
+    let mut current_color_scale: Option<ColorScale> = None;
+    let mut current_data_bar: Option<DataBar> = None;
+    let mut current_icon_set: Option<IconSet> = None;
+
+    // Data validation state
+    let mut data_validations: Vec<DataValidation> = Vec::new();
+    let mut in_data_validation = false;
+    let mut current_dv: Option<DataValidation> = None;
+    let mut in_dv_formula1 = false;
+    let mut in_dv_formula2 = false;
+    let mut current_dv_formula1 = String::new();
+    let mut current_dv_formula2 = String::new();
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
@@ -1103,6 +1936,179 @@ fn parse_sheet(
                     }
                     b"mergeCells" => {
                         in_merge_cells = true;
+                    }
+                    b"conditionalFormatting" => {
+                        in_conditional_formatting = true;
+                        current_cf_ranges.clear();
+                        current_cf_rules.clear();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"sqref" {
+                                current_cf_ranges =
+                                    String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                        }
+                    }
+                    b"cfRule" if in_conditional_formatting => {
+                        in_cf_rule = true;
+                        let mut rule = ConditionalRule {
+                            rule_type: ConditionalRuleType::Expression,
+                            priority: 0,
+                            dxf_id: None,
+                            operator: None,
+                            formulas: Vec::new(),
+                            stop_if_true: false,
+                            above_average: None,
+                            equal_average: None,
+                            rank: None,
+                            top: None,
+                            percent: None,
+                            text: None,
+                            time_period: None,
+                            color_scale: None,
+                            data_bar: None,
+                            icon_set: None,
+                        };
+
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"type" => {
+                                    if let Some(rt) = ConditionalRuleType::parse(&val) {
+                                        rule.rule_type = rt;
+                                    }
+                                }
+                                b"priority" => {
+                                    rule.priority = val.parse().unwrap_or(0);
+                                }
+                                b"dxfId" => {
+                                    rule.dxf_id = val.parse().ok();
+                                }
+                                b"operator" => {
+                                    rule.operator = Some(val.into_owned());
+                                }
+                                b"stopIfTrue" => {
+                                    rule.stop_if_true = val == "1" || val == "true";
+                                }
+                                b"aboveAverage" => {
+                                    rule.above_average = Some(val != "0" && val != "false");
+                                }
+                                b"equalAverage" => {
+                                    rule.equal_average = Some(val == "1" || val == "true");
+                                }
+                                b"rank" => {
+                                    rule.rank = val.parse().ok();
+                                }
+                                b"top" => {
+                                    rule.top = Some(val != "0" && val != "false");
+                                }
+                                b"percent" => {
+                                    rule.percent = Some(val == "1" || val == "true");
+                                }
+                                b"text" => {
+                                    rule.text = Some(val.into_owned());
+                                }
+                                b"timePeriod" => {
+                                    rule.time_period = Some(val.into_owned());
+                                }
+                                _ => {}
+                            }
+                        }
+                        current_cf_rule = Some(rule);
+                    }
+                    b"colorScale" if in_cf_rule => {
+                        current_color_scale = Some(ColorScale { colors: Vec::new() });
+                    }
+                    b"dataBar" if in_cf_rule => {
+                        let mut data_bar = DataBar {
+                            min_type: String::new(),
+                            min_value: None,
+                            max_type: String::new(),
+                            max_value: None,
+                            color: None,
+                            show_value: true,
+                        };
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            if attr.key.as_ref() == b"showValue" {
+                                data_bar.show_value = val != "0" && val != "false";
+                            }
+                        }
+                        current_data_bar = Some(data_bar);
+                    }
+                    b"iconSet" if in_cf_rule => {
+                        let mut icon_set = IconSet {
+                            icon_set: "3TrafficLights1".to_string(),
+                            show_value: true,
+                            reverse: false,
+                            values: Vec::new(),
+                        };
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"iconSet" => icon_set.icon_set = val.into_owned(),
+                                b"showValue" => icon_set.show_value = val != "0" && val != "false",
+                                b"reverse" => icon_set.reverse = val == "1" || val == "true",
+                                _ => {}
+                            }
+                        }
+                        current_icon_set = Some(icon_set);
+                    }
+                    b"formula" if in_cf_rule => {
+                        in_cf_formula = true;
+                        current_cf_formula.clear();
+                    }
+                    b"dataValidation" => {
+                        in_data_validation = true;
+                        let mut dv = DataValidation {
+                            ranges: String::new(),
+                            validation_type: DataValidationType::None,
+                            operator: DataValidationOperator::Between,
+                            formula1: None,
+                            formula2: None,
+                            allow_blank: false,
+                            show_input_message: false,
+                            show_error_message: false,
+                            error_style: DataValidationErrorStyle::Stop,
+                            error_title: None,
+                            error_message: None,
+                            prompt_title: None,
+                            prompt_message: None,
+                        };
+
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"sqref" => dv.ranges = val.into_owned(),
+                                b"type" => dv.validation_type = DataValidationType::parse(&val),
+                                b"operator" => dv.operator = DataValidationOperator::parse(&val),
+                                b"allowBlank" => dv.allow_blank = val == "1" || val == "true",
+                                b"showInputMessage" => {
+                                    dv.show_input_message = val == "1" || val == "true"
+                                }
+                                b"showErrorMessage" => {
+                                    dv.show_error_message = val == "1" || val == "true"
+                                }
+                                b"errorStyle" => {
+                                    dv.error_style = DataValidationErrorStyle::parse(&val)
+                                }
+                                b"errorTitle" => dv.error_title = Some(val.into_owned()),
+                                b"error" => dv.error_message = Some(val.into_owned()),
+                                b"promptTitle" => dv.prompt_title = Some(val.into_owned()),
+                                b"prompt" => dv.prompt_message = Some(val.into_owned()),
+                                _ => {}
+                            }
+                        }
+                        current_dv = Some(dv);
+                        current_dv_formula1.clear();
+                        current_dv_formula2.clear();
+                    }
+                    b"formula1" if in_data_validation => {
+                        in_dv_formula1 = true;
+                        current_dv_formula1.clear();
+                    }
+                    b"formula2" if in_data_validation => {
+                        in_dv_formula2 = true;
+                        current_dv_formula2.clear();
                     }
                     _ => {}
                 }
@@ -1176,12 +2182,69 @@ fn parse_sheet(
                         }
                     }
                 }
+                // Handle cfvo (conditional format value object) - used in colorScale, dataBar, iconSet
+                else if tag_ref == b"cfvo" {
+                    let mut val_type = String::new();
+                    let mut val = None;
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let attr_val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"type" => val_type = attr_val.into_owned(),
+                            b"val" => val = Some(attr_val.into_owned()),
+                            _ => {}
+                        }
+                    }
+
+                    if let Some(ref mut cs) = current_color_scale {
+                        cs.colors.push(ColorScaleValue {
+                            value_type: val_type.clone(),
+                            value: val.clone(),
+                            color: None,
+                        });
+                    } else if let Some(ref mut db) = current_data_bar {
+                        if db.min_type.is_empty() {
+                            db.min_type = val_type;
+                            db.min_value = val;
+                        } else {
+                            db.max_type = val_type;
+                            db.max_value = val;
+                        }
+                    } else if let Some(ref mut is) = current_icon_set {
+                        is.values.push(IconSetValue {
+                            value_type: val_type,
+                            value: val,
+                        });
+                    }
+                }
+                // Handle color element in colorScale or dataBar
+                else if tag_ref == b"color" {
+                    let mut color = None;
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        if attr.key.as_ref() == b"rgb" {
+                            color = Some(String::from_utf8_lossy(&attr.value).into_owned());
+                        }
+                    }
+
+                    if let Some(ref mut cs) = current_color_scale {
+                        if let Some(last) = cs.colors.last_mut() {
+                            last.color = color;
+                        }
+                    } else if let Some(ref mut db) = current_data_bar {
+                        db.color = color;
+                    }
+                }
             }
             Ok(Event::Text(e)) => {
                 if in_value {
                     current_cell_value.push_str(&e.decode().unwrap_or_default());
                 } else if in_formula && let Some(ref mut f) = current_formula {
                     f.push_str(&e.decode().unwrap_or_default());
+                } else if in_cf_formula {
+                    current_cf_formula.push_str(&e.decode().unwrap_or_default());
+                } else if in_dv_formula1 {
+                    current_dv_formula1.push_str(&e.decode().unwrap_or_default());
+                } else if in_dv_formula2 {
+                    current_dv_formula2.push_str(&e.decode().unwrap_or_default());
                 }
             }
             Ok(Event::End(e)) => {
@@ -1244,6 +2307,62 @@ fn parse_sheet(
                     b"f" => in_formula = false,
                     b"cols" => in_cols = false,
                     b"mergeCells" => in_merge_cells = false,
+                    b"formula" if in_cf_rule => {
+                        if !current_cf_formula.is_empty()
+                            && let Some(ref mut rule) = current_cf_rule
+                        {
+                            rule.formulas.push(std::mem::take(&mut current_cf_formula));
+                        }
+                        in_cf_formula = false;
+                    }
+                    b"colorScale" if in_cf_rule => {
+                        if let Some(ref mut rule) = current_cf_rule {
+                            rule.color_scale = current_color_scale.take();
+                        }
+                    }
+                    b"dataBar" if in_cf_rule => {
+                        if let Some(ref mut rule) = current_cf_rule {
+                            rule.data_bar = current_data_bar.take();
+                        }
+                    }
+                    b"iconSet" if in_cf_rule => {
+                        if let Some(ref mut rule) = current_cf_rule {
+                            rule.icon_set = current_icon_set.take();
+                        }
+                    }
+                    b"cfRule" if in_cf_rule => {
+                        if let Some(rule) = current_cf_rule.take() {
+                            current_cf_rules.push(rule);
+                        }
+                        in_cf_rule = false;
+                    }
+                    b"conditionalFormatting" => {
+                        if !current_cf_ranges.is_empty() {
+                            conditional_formats.push(ConditionalFormatting {
+                                ranges: std::mem::take(&mut current_cf_ranges),
+                                rules: std::mem::take(&mut current_cf_rules),
+                            });
+                        }
+                        in_conditional_formatting = false;
+                    }
+                    b"formula1" if in_data_validation => {
+                        in_dv_formula1 = false;
+                    }
+                    b"formula2" if in_data_validation => {
+                        in_dv_formula2 = false;
+                    }
+                    b"dataValidation" => {
+                        if let Some(mut dv) = current_dv.take() {
+                            if !current_dv_formula1.is_empty() {
+                                dv.formula1 = Some(std::mem::take(&mut current_dv_formula1));
+                            }
+                            if !current_dv_formula2.is_empty() {
+                                dv.formula2 = Some(std::mem::take(&mut current_dv_formula2));
+                            }
+                            data_validations.push(dv);
+                        }
+                        in_data_validation = false;
+                    }
                     _ => {}
                 }
             }
@@ -1277,6 +2396,8 @@ fn parse_sheet(
         merged_cells,
         columns,
         comments: Vec::new(),
+        conditional_formats,
+        data_validations,
     })
 }
 
@@ -1636,5 +2757,96 @@ mod tests {
         assert_eq!(comments[1].reference(), "B2");
         assert_eq!(comments[1].author(), Some("Jane Smith"));
         assert_eq!(comments[1].text(), "Multi-line comment");
+    }
+
+    #[test]
+    fn test_excel_date_conversion() {
+        // Test some known dates
+        // January 1, 2000 = serial 36526
+        assert_eq!(excel_date_to_ymd(36526.0), Some((2000, 1, 1)));
+
+        // December 31, 1999 = serial 36525
+        assert_eq!(excel_date_to_ymd(36525.0), Some((1999, 12, 31)));
+
+        // January 1, 1900 = serial 1
+        assert_eq!(excel_date_to_ymd(1.0), Some((1900, 1, 1)));
+
+        // March 1, 1900 = serial 61 (after the leap year bug)
+        assert_eq!(excel_date_to_ymd(61.0), Some((1900, 3, 1)));
+
+        // Test datetime
+        // Noon on Jan 1, 2000 = 36526.5
+        assert_eq!(
+            excel_datetime_to_ymdhms(36526.5),
+            Some((2000, 1, 1, 12, 0, 0))
+        );
+
+        // Format functions
+        assert_eq!(format_excel_date(36526.0), Some("2000-01-01".to_string()));
+        assert_eq!(
+            format_excel_datetime(36526.5),
+            Some("2000-01-01 12:00:00".to_string())
+        );
+    }
+
+    #[test]
+    fn test_builtin_format_codes() {
+        assert_eq!(builtin_format_code(0), Some("General"));
+        assert_eq!(builtin_format_code(1), Some("0"));
+        assert_eq!(builtin_format_code(14), Some("mm-dd-yy"));
+        assert_eq!(builtin_format_code(22), Some("m/d/yy h:mm"));
+        assert_eq!(builtin_format_code(49), Some("@"));
+        assert_eq!(builtin_format_code(100), None);
+    }
+
+    #[test]
+    fn test_is_date_format() {
+        assert!(is_date_format_code("mm-dd-yy"));
+        assert!(is_date_format_code("yyyy-mm-dd"));
+        assert!(is_date_format_code("d-mmm-yy"));
+        assert!(is_date_format_code("h:mm:ss"));
+        assert!(is_date_format_code("[Red]yyyy-mm-dd")); // With color code
+        assert!(!is_date_format_code("0.00"));
+        assert!(!is_date_format_code("#,##0"));
+        assert!(!is_date_format_code("General"));
+        assert!(!is_date_format_code("@")); // Text format
+    }
+
+    #[test]
+    fn test_parse_defined_names() {
+        let xml = r#"<?xml version="1.0"?>
+        <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <sheets>
+                <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+            </sheets>
+            <definedNames>
+                <definedName name="MyRange">Sheet1!$A$1:$B$10</definedName>
+                <definedName name="LocalName" localSheetId="0">Sheet1!$C$1:$C$5</definedName>
+                <definedName name="_xlnm.Print_Area" localSheetId="0" comment="Print area">Sheet1!$A$1:$F$20</definedName>
+                <definedName name="HiddenName" hidden="1">Sheet1!$Z$1</definedName>
+            </definedNames>
+        </workbook>"#;
+
+        let names = parse_defined_names(xml.as_bytes()).unwrap();
+        assert_eq!(names.len(), 4);
+
+        // Global name
+        assert_eq!(names[0].name, "MyRange");
+        assert_eq!(names[0].reference, "Sheet1!$A$1:$B$10");
+        assert!(names[0].local_sheet_id.is_none());
+        assert!(!names[0].is_builtin());
+
+        // Local name
+        assert_eq!(names[1].name, "LocalName");
+        assert_eq!(names[1].local_sheet_id, Some(0));
+
+        // Built-in name with comment
+        assert_eq!(names[2].name, "_xlnm.Print_Area");
+        assert!(names[2].is_builtin());
+        assert_eq!(names[2].comment, Some("Print area".to_string()));
+
+        // Hidden name
+        assert_eq!(names[3].name, "HiddenName");
+        assert!(names[3].hidden);
     }
 }

@@ -25,6 +25,8 @@ use std::path::Path;
 const CT_PRESENTATION: &str =
     "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 const CT_SLIDE: &str = "application/vnd.openxmlformats-officedocument.presentationml.slide+xml";
+const CT_NOTES_SLIDE: &str =
+    "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml";
 const CT_RELATIONSHIPS: &str = "application/vnd.openxmlformats-package.relationships+xml";
 const CT_XML: &str = "application/xml";
 
@@ -32,6 +34,8 @@ const CT_XML: &str = "application/xml";
 const REL_OFFICE_DOCUMENT: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument";
 const REL_SLIDE: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
+const REL_NOTES_SLIDE: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
 
 // Namespaces
 const NS_PRES: &str = "http://schemas.openxmlformats.org/presentationml/2006/main";
@@ -54,13 +58,27 @@ pub struct TextElement {
 #[derive(Debug)]
 pub struct SlideBuilder {
     elements: Vec<TextElement>,
+    /// Speaker notes for this slide.
+    notes: Option<String>,
 }
 
 impl SlideBuilder {
     fn new() -> Self {
         Self {
             elements: Vec::new(),
+            notes: None,
         }
+    }
+
+    /// Set speaker notes for this slide.
+    pub fn set_notes(&mut self, notes: impl Into<String>) -> &mut Self {
+        self.notes = Some(notes.into());
+        self
+    }
+
+    /// Check if this slide has speaker notes.
+    pub fn has_notes(&self) -> bool {
+        self.notes.as_ref().is_some_and(|n| !n.is_empty())
     }
 
     /// Add a title to the slide.
@@ -227,12 +245,31 @@ impl PresentationBuilder {
             presentation_xml.as_bytes(),
         )?;
 
-        // Write each slide
+        // Write each slide and its notes
         for (i, slide) in self.slides.iter().enumerate() {
             let slide_num = i + 1;
             let slide_xml = self.serialize_slide(slide, slide_num);
             let part_name = format!("ppt/slides/slide{}.xml", slide_num);
             pkg.add_part(&part_name, CT_SLIDE, slide_xml.as_bytes())?;
+
+            // Write notes slide if present
+            if slide.has_notes() {
+                // Add slide relationships file
+                let slide_rels = format!(
+                    r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="{}" Target="../notesSlides/notesSlide{}.xml"/>
+</Relationships>"#,
+                    REL_NOTES_SLIDE, slide_num
+                );
+                let rels_name = format!("ppt/slides/_rels/slide{}.xml.rels", slide_num);
+                pkg.add_part(&rels_name, CT_RELATIONSHIPS, slide_rels.as_bytes())?;
+
+                // Write notes slide
+                let notes_xml = self.serialize_notes_slide(slide, slide_num);
+                let notes_name = format!("ppt/notesSlides/notesSlide{}.xml", slide_num);
+                pkg.add_part(&notes_name, CT_NOTES_SLIDE, notes_xml.as_bytes())?;
+            }
         }
 
         pkg.finish()?;
@@ -392,6 +429,106 @@ impl PresentationBuilder {
         xml.push_str("        </p:txBody>\n");
 
         xml.push_str("      </p:sp>\n");
+        xml
+    }
+
+    /// Serialize a notes slide to XML.
+    fn serialize_notes_slide(&self, slide: &SlideBuilder, slide_num: usize) -> String {
+        let notes_text = slide.notes.as_deref().unwrap_or("");
+
+        let mut xml = String::new();
+        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+        xml.push('\n');
+        xml.push_str(&format!(
+            r#"<p:notes xmlns:a="{}" xmlns:r="{}" xmlns:p="{}">"#,
+            NS_DRAWING, NS_REL, NS_PRES
+        ));
+        xml.push('\n');
+
+        xml.push_str("  <p:cSld>\n");
+        xml.push_str("    <p:spTree>\n");
+
+        // Non-visual group shape properties
+        xml.push_str("      <p:nvGrpSpPr>\n");
+        xml.push_str(r#"        <p:cNvPr id="1" name=""/>"#);
+        xml.push('\n');
+        xml.push_str("        <p:cNvGrpSpPr/>\n");
+        xml.push_str("        <p:nvPr/>\n");
+        xml.push_str("      </p:nvGrpSpPr>\n");
+
+        // Group shape properties
+        xml.push_str("      <p:grpSpPr>\n");
+        xml.push_str("        <a:xfrm>\n");
+        xml.push_str(r#"          <a:off x="0" y="0"/>"#);
+        xml.push('\n');
+        xml.push_str(r#"          <a:ext cx="0" cy="0"/>"#);
+        xml.push('\n');
+        xml.push_str(r#"          <a:chOff x="0" y="0"/>"#);
+        xml.push('\n');
+        xml.push_str(r#"          <a:chExt cx="0" cy="0"/>"#);
+        xml.push('\n');
+        xml.push_str("        </a:xfrm>\n");
+        xml.push_str("      </p:grpSpPr>\n");
+
+        // Slide image placeholder (shape 2)
+        xml.push_str("      <p:sp>\n");
+        xml.push_str("        <p:nvSpPr>\n");
+        xml.push_str(&format!(
+            r#"          <p:cNvPr id="2" name="Slide Image Placeholder {}"/>"#,
+            slide_num
+        ));
+        xml.push('\n');
+        xml.push_str("          <p:cNvSpPr>\n");
+        xml.push_str(r#"            <a:spLocks noGrp="1" noRot="1" noChangeAspect="1"/>"#);
+        xml.push('\n');
+        xml.push_str("          </p:cNvSpPr>\n");
+        xml.push_str(r#"          <p:nvPr><p:ph type="sldImg"/></p:nvPr>"#);
+        xml.push('\n');
+        xml.push_str("        </p:nvSpPr>\n");
+        xml.push_str("        <p:spPr/>\n");
+        xml.push_str("      </p:sp>\n");
+
+        // Notes body placeholder (shape 3)
+        xml.push_str("      <p:sp>\n");
+        xml.push_str("        <p:nvSpPr>\n");
+        xml.push_str(r#"          <p:cNvPr id="3" name="Notes Placeholder"/>"#);
+        xml.push('\n');
+        xml.push_str("          <p:cNvSpPr>\n");
+        xml.push_str(r#"            <a:spLocks noGrp="1"/>"#);
+        xml.push('\n');
+        xml.push_str("          </p:cNvSpPr>\n");
+        xml.push_str(r#"          <p:nvPr><p:ph type="body" idx="1"/></p:nvPr>"#);
+        xml.push('\n');
+        xml.push_str("        </p:nvSpPr>\n");
+        xml.push_str("        <p:spPr/>\n");
+        xml.push_str("        <p:txBody>\n");
+        xml.push_str(r#"          <a:bodyPr/>"#);
+        xml.push('\n');
+        xml.push_str(r#"          <a:lstStyle/>"#);
+        xml.push('\n');
+
+        // Write notes text, each line as a paragraph
+        for line in notes_text.lines() {
+            xml.push_str("          <a:p>\n");
+            xml.push_str("            <a:r>\n");
+            xml.push_str(r#"              <a:rPr lang="en-US"/>"#);
+            xml.push('\n');
+            xml.push_str(&format!("              <a:t>{}</a:t>\n", escape_xml(line)));
+            xml.push_str("            </a:r>\n");
+            xml.push_str("          </a:p>\n");
+        }
+
+        // If no text, add empty paragraph
+        if notes_text.is_empty() {
+            xml.push_str("          <a:p/>\n");
+        }
+
+        xml.push_str("        </p:txBody>\n");
+        xml.push_str("      </p:sp>\n");
+
+        xml.push_str("    </p:spTree>\n");
+        xml.push_str("  </p:cSld>\n");
+        xml.push_str("</p:notes>");
         xml
     }
 }

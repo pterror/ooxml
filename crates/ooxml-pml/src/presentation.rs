@@ -16,6 +16,10 @@ const REL_OFFICE_DOCUMENT: &str =
 const REL_SLIDE: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide";
 const REL_NOTES_SLIDE: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide";
+const REL_SLIDE_MASTER: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster";
+const REL_SLIDE_LAYOUT: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout";
 
 /// A PowerPoint presentation.
 ///
@@ -30,6 +34,10 @@ pub struct Presentation<R: Read + Seek> {
     pres_rels: Relationships,
     /// Slide metadata (relationship ID, path).
     slide_info: Vec<SlideInfo>,
+    /// Slide masters in the presentation.
+    slide_masters: Vec<SlideMaster>,
+    /// Slide layouts in the presentation.
+    slide_layouts: Vec<SlideLayout>,
 }
 
 /// Metadata about a slide.
@@ -39,6 +47,8 @@ struct SlideInfo {
     rel_id: String,
     path: String,
     index: usize,
+    /// Relationship ID to the slide layout.
+    layout_rel_id: Option<String>,
 }
 
 /// Image data loaded from the presentation.
@@ -48,6 +58,119 @@ pub struct ImageData {
     pub data: Vec<u8>,
     /// The content type (MIME type) of the image.
     pub content_type: String,
+}
+
+/// A slide master in the presentation.
+///
+/// Slide masters define the overall theme and formatting for slides.
+/// ECMA-376 Part 1, Section 19.3.1.42 (sldMaster).
+#[derive(Debug, Clone)]
+pub struct SlideMaster {
+    /// Path to the slide master part.
+    path: String,
+    /// Name of the slide master (if specified).
+    pub name: Option<String>,
+    /// Relationship IDs of layouts using this master.
+    layout_ids: Vec<String>,
+    /// Color scheme name.
+    pub color_scheme: Option<String>,
+    /// Background color (ARGB).
+    pub background_color: Option<String>,
+}
+
+impl SlideMaster {
+    /// Get the path to this slide master.
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
+    /// Get the number of layouts using this master.
+    pub fn layout_count(&self) -> usize {
+        self.layout_ids.len()
+    }
+}
+
+/// A slide layout in the presentation.
+///
+/// Slide layouts define the arrangement of content placeholders.
+/// ECMA-376 Part 1, Section 19.3.1.39 (sldLayout).
+#[derive(Debug, Clone)]
+pub struct SlideLayout {
+    /// Path to the slide layout part.
+    path: String,
+    /// Name of the layout (e.g., "Title Slide", "Title and Content").
+    pub name: Option<String>,
+    /// Layout type.
+    pub layout_type: SlideLayoutType,
+    /// Relationship ID to the slide master.
+    #[allow(dead_code)]
+    master_rel_id: Option<String>,
+    /// Whether to match slide names.
+    pub match_name: bool,
+    /// Whether to show master shapes.
+    pub show_master_shapes: bool,
+}
+
+impl SlideLayout {
+    /// Get the path to this slide layout.
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+}
+
+/// Type of slide layout.
+///
+/// ECMA-376 Part 1, Section 19.7.15 (ST_SlideLayoutType).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SlideLayoutType {
+    /// Blank slide.
+    Blank,
+    /// Title slide.
+    #[default]
+    Title,
+    /// Title and content.
+    TitleAndContent,
+    /// Section header.
+    SectionHeader,
+    /// Two content.
+    TwoContent,
+    /// Two content and text.
+    TwoContentAndText,
+    /// Title only.
+    TitleOnly,
+    /// Content with caption.
+    ContentWithCaption,
+    /// Picture with caption.
+    PictureWithCaption,
+    /// Vertical title and text.
+    VerticalTitleAndText,
+    /// Vertical text.
+    VerticalText,
+    /// Custom layout.
+    Custom,
+    /// Unknown layout type.
+    Unknown,
+}
+
+impl SlideLayoutType {
+    /// Parse from the slideLayout type attribute.
+    fn parse(s: &str) -> Self {
+        match s {
+            "blank" => Self::Blank,
+            "title" | "tx" => Self::Title,
+            "obj" | "objTx" | "twoObj" | "twoObjAndTx" => Self::TitleAndContent,
+            "secHead" => Self::SectionHeader,
+            "twoTxTwoObj" => Self::TwoContent,
+            "objAndTx" => Self::TwoContentAndText,
+            "titleOnly" => Self::TitleOnly,
+            "objOnly" => Self::ContentWithCaption,
+            "picTx" => Self::PictureWithCaption,
+            "vertTx" => Self::VerticalText,
+            "vertTitleAndTx" => Self::VerticalTitleAndText,
+            "cust" => Self::Custom,
+            _ => Self::Unknown,
+        }
+    }
 }
 
 impl Presentation<BufReader<File>> {
@@ -79,7 +202,40 @@ impl<R: Read + Seek> Presentation<R> {
         let pres_xml = package.read_part(&presentation_path)?;
         let slide_order = parse_presentation_slides(&pres_xml)?;
 
-        // Build slide info from relationships
+        // Load slide masters
+        let mut slide_masters: Vec<SlideMaster> = Vec::new();
+        let mut slide_layouts: Vec<SlideLayout> = Vec::new();
+
+        for rel in pres_rels.iter() {
+            if rel.relationship_type == REL_SLIDE_MASTER {
+                let path = resolve_path(&presentation_path, &rel.target);
+                if let Ok(master_xml) = package.read_part(&path) {
+                    let master = parse_slide_master(&master_xml, &path);
+                    let master_path = path.clone();
+
+                    // Load layouts for this master
+                    if let Ok(master_rels) = package.read_part_relationships(&path) {
+                        for layout_rel in master_rels.iter() {
+                            if layout_rel.relationship_type == REL_SLIDE_LAYOUT {
+                                let layout_path = resolve_path(&master_path, &layout_rel.target);
+                                if let Ok(layout_xml) = package.read_part(&layout_path) {
+                                    let layout = parse_slide_layout(
+                                        &layout_xml,
+                                        &layout_path,
+                                        Some(layout_rel.id.clone()),
+                                    );
+                                    slide_layouts.push(layout);
+                                }
+                            }
+                        }
+                    }
+
+                    slide_masters.push(master);
+                }
+            }
+        }
+
+        // Build slide info from relationships, getting layout references from slide XML
         let mut slide_info: Vec<SlideInfo> = Vec::new();
         for rel in pres_rels.iter() {
             if rel.relationship_type == REL_SLIDE {
@@ -89,10 +245,21 @@ impl<R: Read + Seek> Presentation<R> {
                     .iter()
                     .position(|id| id == &rel.id)
                     .unwrap_or(slide_info.len());
+
+                // Get layout relationship from slide
+                let layout_rel_id = if let Ok(slide_rels) = package.read_part_relationships(&path) {
+                    slide_rels
+                        .get_by_type(REL_SLIDE_LAYOUT)
+                        .map(|r| r.id.clone())
+                } else {
+                    None
+                };
+
                 slide_info.push(SlideInfo {
                     rel_id: rel.id.clone(),
                     path,
                     index,
+                    layout_rel_id,
                 });
             }
         }
@@ -105,12 +272,31 @@ impl<R: Read + Seek> Presentation<R> {
             presentation_path,
             pres_rels,
             slide_info,
+            slide_masters,
+            slide_layouts,
         })
     }
 
     /// Get the number of slides in the presentation.
     pub fn slide_count(&self) -> usize {
         self.slide_info.len()
+    }
+
+    /// Get all slide masters in the presentation.
+    pub fn slide_masters(&self) -> &[SlideMaster] {
+        &self.slide_masters
+    }
+
+    /// Get all slide layouts in the presentation.
+    pub fn slide_layouts(&self) -> &[SlideLayout] {
+        &self.slide_layouts
+    }
+
+    /// Get a slide layout by name.
+    pub fn layout_by_name(&self, name: &str) -> Option<&SlideLayout> {
+        self.slide_layouts
+            .iter()
+            .find(|l| l.name.as_deref() == Some(name))
     }
 
     /// Get a slide by index (0-based).
@@ -134,6 +320,9 @@ impl<R: Read + Seek> Presentation<R> {
     fn load_slide(&mut self, info: &SlideInfo) -> Result<Slide> {
         let data = self.package.read_part(&info.path)?;
         let mut slide = parse_slide(&data, info.index, &info.path)?;
+
+        // Set layout relationship ID
+        slide.layout_rel_id = info.layout_rel_id.clone();
 
         // Try to load speaker notes
         if let Ok(slide_rels) = self.package.read_part_relationships(&info.path)
@@ -228,6 +417,8 @@ pub struct Slide {
     notes: Option<String>,
     /// Slide transition effect.
     transition: Option<Transition>,
+    /// Relationship ID to the slide layout (for linking to layout info).
+    layout_rel_id: Option<String>,
 }
 
 /// Slide transition effect.
@@ -348,6 +539,13 @@ impl Slide {
     /// Check if this slide has a transition effect.
     pub fn has_transition(&self) -> bool {
         self.transition.is_some()
+    }
+
+    /// Get the relationship ID to the slide layout used by this slide.
+    ///
+    /// This can be used to look up the layout in the presentation's slide_layouts.
+    pub fn layout_rel_id(&self) -> Option<&str> {
+        self.layout_rel_id.as_deref()
     }
 
     /// Get all hyperlinks from all shapes on this slide.
@@ -696,6 +894,7 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
         slide_path: slide_path.to_string(),
         notes: None,
         transition,
+        layout_rel_id: None,
     })
 }
 
@@ -843,6 +1042,125 @@ fn content_type_from_path(path: &str) -> String {
         _ => "application/octet-stream",
     }
     .to_string()
+}
+
+/// Parse a slide master XML file.
+fn parse_slide_master(xml: &[u8], path: &str) -> SlideMaster {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut name = None;
+    let mut color_scheme = None;
+    let mut background_color = None;
+    let mut layout_ids = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                match tag {
+                    b"p:cSld" => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"name" {
+                                name = Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"p:sldLayoutId" => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"r:id" {
+                                layout_ids.push(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"a:clrScheme" => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"name" {
+                                color_scheme =
+                                    Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    b"a:srgbClr" => {
+                        if background_color.is_none() {
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"val" {
+                                    background_color =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    SlideMaster {
+        path: path.to_string(),
+        name,
+        layout_ids,
+        color_scheme,
+        background_color,
+    }
+}
+
+/// Parse a slide layout XML file.
+fn parse_slide_layout(xml: &[u8], path: &str, master_rel_id: Option<String>) -> SlideLayout {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+    let mut name = None;
+    let mut layout_type = SlideLayoutType::Unknown;
+    let mut match_name = false;
+    let mut show_master_shapes = true;
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
+                let tag = e.name();
+                let tag = tag.as_ref();
+                match tag {
+                    b"p:sldLayout" => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"type" => layout_type = SlideLayoutType::parse(&val),
+                                b"matchingName" => match_name = val == "1" || val == "true",
+                                b"showMasterSp" => {
+                                    show_master_shapes = val != "0" && val != "false"
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    b"p:cSld" => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"name" {
+                                name = Some(String::from_utf8_lossy(&attr.value).into_owned());
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    SlideLayout {
+        path: path.to_string(),
+        name,
+        layout_type,
+        master_rel_id,
+        match_name,
+        show_master_shapes,
+    }
 }
 
 #[cfg(test)]
