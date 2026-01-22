@@ -111,3 +111,5 @@ Do not:
 - Add format-specific code to `ooxml` core - that belongs in `ooxml-wml`, etc.
 - Commit without running `cargo clippy` and `cargo test`
 - Use path dependencies in Cargo.toml - causes clippy to stash changes across repos
+- Use `--no-verify` - fix the issue or fix the hook
+- Assume tools are missing - check if `nix develop` is available for the right environment
