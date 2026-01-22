@@ -6,6 +6,39 @@ use std::path::Path;
 
 #[test]
 #[ignore] // Run with `cargo test -p ooxml-sml -- --ignored`
+fn test_chart_parsing() {
+    let path = Path::new("/home/me/git/ooxml/corpora/napierone/XLSX/0084-xlsx.xlsx");
+    if !path.exists() {
+        eprintln!("Chart test file not found at {:?}, skipping", path);
+        return;
+    }
+
+    let mut wb = Workbook::open(path).expect("Failed to open workbook");
+    let sheets = wb.sheets().expect("Failed to load sheets");
+
+    let mut total_charts = 0;
+    for sheet in &sheets {
+        let charts = sheet.charts();
+        if !charts.is_empty() {
+            eprintln!("Sheet '{}' has {} chart(s)", sheet.name(), charts.len());
+            for chart in charts {
+                eprintln!(
+                    "  Type: {:?}, Title: {:?}, Series: {}",
+                    chart.chart_type(),
+                    chart.title(),
+                    chart.series().len()
+                );
+                total_charts += 1;
+            }
+        }
+    }
+
+    eprintln!("Total charts found: {}", total_charts);
+    assert!(total_charts > 0, "Expected to find charts in this file");
+}
+
+#[test]
+#[ignore] // Run with `cargo test -p ooxml-sml -- --ignored`
 fn test_napierone_xlsx_corpus() {
     let corpus_path = Path::new("/home/me/git/ooxml/corpora/napierone/XLSX");
     if !corpus_path.exists() {

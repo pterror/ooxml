@@ -40,13 +40,14 @@ pub mod writer;
 
 pub use error::{Error, Result};
 pub use workbook::{
-    AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue, ColorFilter, ColorScale,
-    ColorScaleValue, ColumnInfo, Comment, ConditionalFormatting, ConditionalRule,
-    ConditionalRuleType, CustomFilter, DataBar, DataValidation, DataValidationErrorStyle,
-    DataValidationOperator, DataValidationType, DefinedName, DefinedNameScope, Fill, FilterColumn,
-    FilterOperator, Font, FreezePane, IconSet, IconSetValue, MergedCell, NumberFormat,
-    PanePosition, Row, Sheet, Stylesheet, Top10Filter, Workbook, builtin_format_code,
-    excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date, format_excel_datetime,
+    AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue, Chart, ChartSeries, ChartType,
+    ColorFilter, ColorScale, ColorScaleValue, ColumnInfo, Comment, ConditionalFormatting,
+    ConditionalRule, ConditionalRuleType, CustomFilter, DataBar, DataValidation,
+    DataValidationErrorStyle, DataValidationOperator, DataValidationType, DefinedName,
+    DefinedNameScope, Fill, FilterColumn, FilterOperator, Font, FreezePane, IconSet, IconSetValue,
+    MergedCell, NumberFormat, PanePosition, Row, Sheet, Stylesheet, Top10Filter, Workbook,
+    builtin_format_code, excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date,
+    format_excel_datetime,
 };
 pub use writer::{
     BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, FillPattern, FillStyle, FontStyle,

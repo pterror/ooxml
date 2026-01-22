@@ -20,6 +20,11 @@ const REL_STYLES: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
 const REL_COMMENTS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments";
+const REL_DRAWING: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing";
+const REL_CHART: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
+const REL_CHARTSHEET: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet";
 
 /// An Excel workbook.
 ///
@@ -203,15 +208,52 @@ impl<R: Read + Seek> Workbook<R> {
         let path = resolve_path(&self.workbook_path, &rel.target);
         let data = self.package.read_part(&path)?;
 
-        let mut sheet = parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)?;
+        // Check if this is a chartsheet or regular worksheet
+        let is_chartsheet = rel.relationship_type == REL_CHARTSHEET;
 
-        // Try to load comments for this sheet
-        if let Ok(sheet_rels) = self.package.read_part_relationships(&path)
-            && let Some(comments_rel) = sheet_rels.get_by_type(REL_COMMENTS)
-        {
-            let comments_path = resolve_path(&path, &comments_rel.target);
-            if let Ok(comments_data) = self.package.read_part(&comments_path) {
-                sheet.comments = parse_comments(&comments_data)?;
+        let mut sheet = if is_chartsheet {
+            // Chartsheets don't have cell data
+            Sheet {
+                name: info.name.clone(),
+                rows: Vec::new(),
+                merged_cells: Vec::new(),
+                columns: Vec::new(),
+                comments: Vec::new(),
+                conditional_formats: Vec::new(),
+                data_validations: Vec::new(),
+                freeze_pane: None,
+                auto_filter: None,
+                charts: Vec::new(),
+            }
+        } else {
+            parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)?
+        };
+
+        // Try to load comments and charts for this sheet
+        if let Ok(sheet_rels) = self.package.read_part_relationships(&path) {
+            // Load comments (only for regular worksheets)
+            if !is_chartsheet && let Some(comments_rel) = sheet_rels.get_by_type(REL_COMMENTS) {
+                let comments_path = resolve_path(&path, &comments_rel.target);
+                if let Ok(comments_data) = self.package.read_part(&comments_path) {
+                    sheet.comments = parse_comments(&comments_data)?;
+                }
+            }
+
+            // Load charts via drawing relationships
+            if let Some(drawing_rel) = sheet_rels.get_by_type(REL_DRAWING) {
+                let drawing_path = resolve_path(&path, &drawing_rel.target);
+                if let Ok(drawing_rels) = self.package.read_part_relationships(&drawing_path) {
+                    for rel in drawing_rels.iter() {
+                        if rel.relationship_type == REL_CHART {
+                            let chart_path = resolve_path(&drawing_path, &rel.target);
+                            if let Ok(chart_data) = self.package.read_part(&chart_path)
+                                && let Ok(chart) = parse_chart(&chart_data)
+                            {
+                                sheet.charts.push(chart);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -746,6 +788,96 @@ pub struct ColorFilter {
     pub cell_color: bool,
 }
 
+/// A chart embedded in a worksheet.
+#[derive(Debug, Clone)]
+pub struct Chart {
+    title: Option<String>,
+    chart_type: ChartType,
+    series: Vec<ChartSeries>,
+}
+
+impl Chart {
+    /// Get the chart title (if any).
+    pub fn title(&self) -> Option<&str> {
+        self.title.as_deref()
+    }
+
+    /// Get the chart type.
+    pub fn chart_type(&self) -> ChartType {
+        self.chart_type
+    }
+
+    /// Get all data series in the chart.
+    pub fn series(&self) -> &[ChartSeries] {
+        &self.series
+    }
+}
+
+/// The type of chart.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ChartType {
+    Area,
+    Area3D,
+    Bar,
+    Bar3D,
+    Bubble,
+    Doughnut,
+    #[default]
+    Line,
+    Line3D,
+    Pie,
+    Pie3D,
+    Radar,
+    Scatter,
+    Stock,
+    Surface,
+    Surface3D,
+    Unknown,
+}
+
+/// A data series within a chart.
+#[derive(Debug, Clone)]
+pub struct ChartSeries {
+    index: u32,
+    name: Option<String>,
+    category_ref: Option<String>,
+    value_ref: Option<String>,
+    categories: Vec<String>,
+    values: Vec<f64>,
+}
+
+impl ChartSeries {
+    /// Get the series index.
+    pub fn index(&self) -> u32 {
+        self.index
+    }
+
+    /// Get the series name (if any).
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_deref()
+    }
+
+    /// Get the category data reference.
+    pub fn category_ref(&self) -> Option<&str> {
+        self.category_ref.as_deref()
+    }
+
+    /// Get the value data reference.
+    pub fn value_ref(&self) -> Option<&str> {
+        self.value_ref.as_deref()
+    }
+
+    /// Get the category labels.
+    pub fn categories(&self) -> &[String] {
+        &self.categories
+    }
+
+    /// Get the numeric values.
+    pub fn values(&self) -> &[f64] {
+        &self.values
+    }
+}
+
 /// Data validation rule for a range of cells.
 ///
 /// ECMA-376 Part 1, Section 18.3.1.32 (dataValidation).
@@ -949,6 +1081,7 @@ pub struct Sheet {
     data_validations: Vec<DataValidation>,
     freeze_pane: Option<FreezePane>,
     auto_filter: Option<AutoFilter>,
+    charts: Vec<Chart>,
 }
 
 impl Sheet {
@@ -1105,6 +1238,11 @@ impl Sheet {
     /// Check if the sheet has an auto-filter.
     pub fn has_auto_filter(&self) -> bool {
         self.auto_filter.is_some()
+    }
+
+    /// Get the charts embedded in this sheet.
+    pub fn charts(&self) -> &[Chart] {
+        &self.charts
     }
 }
 
@@ -2811,6 +2949,7 @@ fn parse_sheet(
         data_validations,
         freeze_pane,
         auto_filter,
+        charts: Vec::new(),
     })
 }
 
@@ -2921,6 +3060,252 @@ fn parse_comments(xml: &[u8]) -> Result<Vec<Comment>> {
     Ok(comments)
 }
 
+/// Parse a chart XML file.
+fn parse_chart(xml: &[u8]) -> Result<Chart> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    let mut title: Option<String> = None;
+    let mut chart_type = ChartType::Unknown;
+    let mut series: Vec<ChartSeries> = Vec::new();
+
+    let mut in_chart = false;
+    let mut in_plot_area = false;
+    let mut in_title = false;
+    let mut in_title_tx = false;
+    let mut in_title_rich = false;
+    let mut in_title_p = false;
+    let mut in_title_r = false;
+    let mut in_title_t = false;
+    let mut in_ser = false;
+    let mut in_cat = false;
+    let mut in_val = false;
+    let mut in_str_ref = false;
+    let mut in_num_ref = false;
+    let mut in_str_cache = false;
+    let mut in_num_cache = false;
+    let mut in_pt = false;
+    let mut in_v = false;
+    let mut in_f = false;
+    let mut in_tx = false;
+    let mut in_ser_name_str_ref = false;
+
+    let mut title_text = String::new();
+    let mut current_series_idx: u32 = 0;
+    let mut current_series_name: Option<String> = None;
+    let mut current_cat_ref: Option<String> = None;
+    let mut current_val_ref: Option<String> = None;
+    let mut current_cat_values: Vec<String> = Vec::new();
+    let mut current_val_values: Vec<f64> = Vec::new();
+    let mut current_ref = String::new();
+    let mut current_v = String::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let name = e.local_name();
+                let name = name.as_ref();
+                match name {
+                    b"chart" => in_chart = true,
+                    b"plotArea" if in_chart => in_plot_area = true,
+                    b"lineChart" | b"line3DChart" if in_plot_area => {
+                        chart_type = if name == b"line3DChart" {
+                            ChartType::Line3D
+                        } else {
+                            ChartType::Line
+                        };
+                    }
+                    b"barChart" | b"bar3DChart" if in_plot_area => {
+                        chart_type = if name == b"bar3DChart" {
+                            ChartType::Bar3D
+                        } else {
+                            ChartType::Bar
+                        };
+                    }
+                    b"areaChart" | b"area3DChart" if in_plot_area => {
+                        chart_type = if name == b"area3DChart" {
+                            ChartType::Area3D
+                        } else {
+                            ChartType::Area
+                        };
+                    }
+                    b"pieChart" | b"pie3DChart" if in_plot_area => {
+                        chart_type = if name == b"pie3DChart" {
+                            ChartType::Pie3D
+                        } else {
+                            ChartType::Pie
+                        };
+                    }
+                    b"doughnutChart" if in_plot_area => chart_type = ChartType::Doughnut,
+                    b"scatterChart" if in_plot_area => chart_type = ChartType::Scatter,
+                    b"bubbleChart" if in_plot_area => chart_type = ChartType::Bubble,
+                    b"radarChart" if in_plot_area => chart_type = ChartType::Radar,
+                    b"stockChart" if in_plot_area => chart_type = ChartType::Stock,
+                    b"surfaceChart" | b"surface3DChart" if in_plot_area => {
+                        chart_type = if name == b"surface3DChart" {
+                            ChartType::Surface3D
+                        } else {
+                            ChartType::Surface
+                        };
+                    }
+                    b"title" if in_chart && !in_plot_area => {
+                        in_title = true;
+                        title_text.clear();
+                    }
+                    b"tx" if in_title => in_title_tx = true,
+                    b"rich" if in_title_tx => in_title_rich = true,
+                    b"p" if in_title_rich => in_title_p = true,
+                    b"r" if in_title_p => in_title_r = true,
+                    b"t" if in_title_r => in_title_t = true,
+                    b"ser" if in_plot_area => {
+                        in_ser = true;
+                        current_series_idx = 0;
+                        current_series_name = None;
+                        current_cat_ref = None;
+                        current_val_ref = None;
+                        current_cat_values.clear();
+                        current_val_values.clear();
+                    }
+                    b"idx" if in_ser => {
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"val" {
+                                current_series_idx =
+                                    String::from_utf8_lossy(&attr.value).parse().unwrap_or(0);
+                            }
+                        }
+                    }
+                    b"tx" if in_ser && !in_cat && !in_val => in_tx = true,
+                    b"strRef" if in_tx => in_ser_name_str_ref = true,
+                    b"v" if in_ser_name_str_ref => in_v = true,
+                    b"cat" if in_ser => in_cat = true,
+                    b"val" if in_ser => in_val = true,
+                    b"strRef" if in_cat || in_val => {
+                        in_str_ref = true;
+                        current_ref.clear();
+                    }
+                    b"numRef" if in_cat || in_val => {
+                        in_num_ref = true;
+                        current_ref.clear();
+                    }
+                    b"strCache" if in_str_ref => in_str_cache = true,
+                    b"numCache" if in_num_ref => in_num_cache = true,
+                    b"pt" if in_str_cache || in_num_cache => {
+                        in_pt = true;
+                        current_v.clear();
+                    }
+                    b"v" if in_pt => in_v = true,
+                    b"f" if (in_str_ref || in_num_ref) && !in_str_cache && !in_num_cache => {
+                        in_f = true;
+                        current_ref.clear();
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Text(e)) => {
+                let text = e.decode().unwrap_or_default();
+                if in_title_t {
+                    title_text.push_str(&text);
+                } else if in_v {
+                    current_v.push_str(&text);
+                } else if in_f {
+                    current_ref.push_str(&text);
+                }
+            }
+            Ok(Event::End(e)) => {
+                let name = e.local_name();
+                let name = name.as_ref();
+                match name {
+                    b"chart" => in_chart = false,
+                    b"plotArea" => in_plot_area = false,
+                    b"title" if in_title => {
+                        in_title = false;
+                        if !title_text.is_empty() {
+                            title = Some(std::mem::take(&mut title_text));
+                        }
+                    }
+                    b"tx" if in_title => in_title_tx = false,
+                    b"rich" if in_title_rich => in_title_rich = false,
+                    b"p" if in_title_p => in_title_p = false,
+                    b"r" if in_title_r => in_title_r = false,
+                    b"t" if in_title_t => in_title_t = false,
+                    b"ser" if in_ser => {
+                        in_ser = false;
+                        series.push(ChartSeries {
+                            index: current_series_idx,
+                            name: current_series_name.take(),
+                            category_ref: current_cat_ref.take(),
+                            value_ref: current_val_ref.take(),
+                            categories: std::mem::take(&mut current_cat_values),
+                            values: std::mem::take(&mut current_val_values),
+                        });
+                    }
+                    b"tx" if in_tx => in_tx = false,
+                    b"strRef" if in_ser_name_str_ref => in_ser_name_str_ref = false,
+                    b"v" if in_v => {
+                        in_v = false;
+                        if in_pt {
+                            if in_str_cache && in_cat {
+                                current_cat_values.push(std::mem::take(&mut current_v));
+                            } else if in_num_cache {
+                                if let Ok(v) = current_v.parse::<f64>() {
+                                    if in_cat {
+                                        current_cat_values.push(current_v.clone());
+                                    } else if in_val {
+                                        current_val_values.push(v);
+                                    }
+                                }
+                                current_v.clear();
+                            }
+                        } else if in_ser_name_str_ref {
+                            current_series_name = Some(std::mem::take(&mut current_v));
+                        }
+                    }
+                    b"cat" if in_cat => in_cat = false,
+                    b"val" if in_val => in_val = false,
+                    b"strRef" if in_str_ref => {
+                        in_str_ref = false;
+                        if in_cat && !current_ref.is_empty() {
+                            current_cat_ref = Some(std::mem::take(&mut current_ref));
+                        }
+                    }
+                    b"numRef" if in_num_ref => {
+                        in_num_ref = false;
+                        if in_cat && current_cat_ref.is_none() && !current_ref.is_empty() {
+                            current_cat_ref = Some(std::mem::take(&mut current_ref));
+                        } else if in_val && !current_ref.is_empty() {
+                            current_val_ref = Some(std::mem::take(&mut current_ref));
+                        }
+                    }
+                    b"strCache" if in_str_cache => in_str_cache = false,
+                    b"numCache" if in_num_cache => in_num_cache = false,
+                    b"pt" if in_pt => in_pt = false,
+                    b"f" if in_f => {
+                        in_f = false;
+                        if (in_str_ref || in_num_ref) && !current_ref.is_empty() {
+                            if in_cat && current_cat_ref.is_none() {
+                                current_cat_ref = Some(current_ref.clone());
+                            } else if in_val && current_val_ref.is_none() {
+                                current_val_ref = Some(current_ref.clone());
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Ok(Chart {
+        title,
+        chart_type,
+        series,
+    })
+}
+
 // ============================================================================
 // Utilities
 // ============================================================================
@@ -2990,18 +3375,39 @@ fn parse_cell_reference(reference: &str) -> Option<(u32, u32)> {
 
 /// Resolve a relative path against a base path.
 fn resolve_path(base: &str, target: &str) -> String {
+    let has_leading_slash = base.starts_with('/');
+
     if target.starts_with('/') {
         return target.to_string();
     }
 
     // Get the directory of the base path
     let base_dir = if let Some(idx) = base.rfind('/') {
-        &base[..=idx]
+        &base[..idx]
     } else {
-        "/"
+        ""
     };
 
-    format!("{}{}", base_dir, target)
+    // Build path segments, handling ".." for parent directory
+    let mut parts: Vec<&str> = base_dir.split('/').filter(|s| !s.is_empty()).collect();
+    for segment in target.split('/') {
+        match segment {
+            ".." => {
+                parts.pop();
+            }
+            "." | "" => {}
+            _ => {
+                parts.push(segment);
+            }
+        }
+    }
+
+    let result = parts.join("/");
+    if has_leading_slash {
+        format!("/{}", result)
+    } else {
+        result
+    }
 }
 
 #[cfg(test)]
@@ -3040,6 +3446,15 @@ mod tests {
         assert_eq!(
             resolve_path("/xl/workbook.xml", "/xl/sharedStrings.xml"),
             "/xl/sharedStrings.xml"
+        );
+        // Parent directory handling
+        assert_eq!(
+            resolve_path("/xl/chartsheets/sheet1.xml", "../drawings/drawing1.xml"),
+            "/xl/drawings/drawing1.xml"
+        );
+        assert_eq!(
+            resolve_path("/xl/worksheets/sheet1.xml", "../comments1.xml"),
+            "/xl/comments1.xml"
         );
     }
 

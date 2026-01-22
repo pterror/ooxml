@@ -26,7 +26,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Bookmarks (add_bookmark_start/end methods, exported types)
 - [x] Text boxes - text extraction via VmlPicture/Drawing/EmbeddedObject.text()
 - [ ] SmartArt (limited)
-- [ ] Charts (limited)
+- [x] Charts (limited) - SML reading via Chart, ChartType, ChartSeries types
 
 ## Developer Experience
 
@@ -59,6 +59,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Named ranges - DefinedName with workbook/sheet scope, defined_names(), defined_name()
 - [x] Conditional formatting (read) - ConditionalFormatting, ConditionalRule, colorScale/dataBar/iconSet
 - [x] Data validation (read) - DataValidation, list/whole/decimal/date/time/textLength types
+- [x] Charts (read) - Chart, ChartType, ChartSeries types, Sheet.charts(), supports chartsheets
 
 ### PresentationML (PowerPoint) - ooxml-pml
 
