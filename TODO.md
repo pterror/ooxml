@@ -36,6 +36,10 @@ DocumentBuilder handles common cases but doesn't expose:
 - [ ] API documentation improvements
 - [ ] Consider using Default + field assignment instead of with_ builder methods for simpler configuration structs
 
+## Technical Debt
+
+- [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
+
 ## Robustness
 
 - [ ] Edge case handling from corpus analysis

@@ -56,6 +56,14 @@ pub enum Pattern {
     },
     /// Parenthesized pattern.
     Group(Box<Pattern>),
+    /// Mixed content: `mixed { pattern }`.
+    Mixed(Box<Pattern>),
+    /// List content: `list { pattern }` (space-separated).
+    List(Box<Pattern>),
+    /// Text content.
+    Text,
+    /// Any content (wildcard pattern).
+    Any,
 }
 
 /// Qualified name with optional prefix.
@@ -63,6 +71,21 @@ pub enum Pattern {
 pub struct QName {
     pub prefix: Option<String>,
     pub local: String,
+}
+
+/// Name class for element/attribute names (supports wildcards and exclusions).
+#[derive(Debug, Clone)]
+pub enum NameClass {
+    /// A specific qualified name.
+    Name(QName),
+    /// Wildcard: `*` (any name).
+    AnyName,
+    /// Namespace wildcard: `ns:*` (any name in namespace).
+    NsName(String),
+    /// Choice of name classes: `nc1 | nc2`.
+    Choice(Vec<NameClass>),
+    /// Subtraction: `nc1 - nc2` (nc1 except nc2).
+    Except(Box<NameClass>, Box<NameClass>),
 }
 
 /// Datatype parameter: `{ length = "4" }`.

@@ -22,6 +22,14 @@
 pub mod error;
 pub mod text;
 
+// Generated types from ECMA-376 schema.
+// Access via `ooxml_dml::types::*` for generated structs/enums.
+// This file is pre-generated and committed to avoid requiring spec downloads.
+// To regenerate: OOXML_REGENERATE=1 cargo build -p ooxml-dml (with specs in /spec/)
+#[allow(dead_code)]
+pub mod generated;
+pub use generated as types;
+
 pub use error::{Error, Result};
 pub use text::{
     Paragraph, ParagraphProperties, Run, RunProperties, TextAlignment, parse_text_body,

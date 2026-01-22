@@ -1,6 +1,6 @@
 //! Parser for RELAX NG Compact syntax.
 
-use crate::ast::{DatatypeParam, Definition, Namespace, Pattern, QName, Schema};
+use crate::ast::{DatatypeParam, Definition, NameClass, Namespace, Pattern, QName, Schema};
 use crate::lexer::Token;
 
 /// Parser state.
@@ -41,7 +41,15 @@ impl Parser {
         }
         self.expect(&Token::Namespace)?;
 
-        let prefix = self.expect_ident()?;
+        // Handle both forms:
+        // - `namespace prefix = "uri"`
+        // - `default namespace = "uri"` (no prefix for default namespace)
+        let prefix = if self.check(&Token::Equals) {
+            // No prefix - use empty string to indicate default namespace
+            String::new()
+        } else {
+            self.expect_ident()?
+        };
         self.expect(&Token::Equals)?;
         let uri = self.expect_string()?;
 
@@ -168,6 +176,33 @@ impl Parser {
             return self.parse_attribute();
         }
 
+        if self.check(&Token::Mixed) {
+            self.advance();
+            self.expect(&Token::LBrace)?;
+            let inner = self.parse_pattern()?;
+            self.expect(&Token::RBrace)?;
+            return Ok(Pattern::Mixed(Box::new(inner)));
+        }
+
+        if self.check(&Token::List) {
+            self.advance();
+            self.expect(&Token::LBrace)?;
+            let inner = self.parse_pattern()?;
+            self.expect(&Token::RBrace)?;
+            return Ok(Pattern::List(Box::new(inner)));
+        }
+
+        if self.check(&Token::Text) {
+            self.advance();
+            return Ok(Pattern::Text);
+        }
+
+        // Bare string literal (RELAX NG value pattern): "literal"
+        if let Some(Token::QuotedString(_)) = self.peek() {
+            let value = self.expect_string()?;
+            return Ok(Pattern::StringLiteral(value));
+        }
+
         if self.check(&Token::LParen) {
             self.advance();
             let inner = self.parse_pattern()?;
@@ -183,12 +218,33 @@ impl Parser {
             if self.check(&Token::Colon) {
                 self.advance();
                 let type_name = self.expect_ident_or_keyword()?;
-                let params = self.parse_datatype_params()?;
-                return Ok(Pattern::Datatype {
-                    library: name,
-                    name: type_name,
-                    params,
-                });
+
+                // Check for params { ... } or literal value "..."
+                if self.check(&Token::LBrace) {
+                    let params = self.parse_datatype_params()?;
+                    return Ok(Pattern::Datatype {
+                        library: name,
+                        name: type_name,
+                        params,
+                    });
+                } else if let Some(Token::QuotedString(_)) = self.peek() {
+                    // Datatype with literal value pattern: xsd:int "255"
+                    let value = self.expect_string()?;
+                    return Ok(Pattern::Datatype {
+                        library: name,
+                        name: type_name,
+                        params: vec![DatatypeParam {
+                            name: "pattern".to_string(),
+                            value,
+                        }],
+                    });
+                } else {
+                    return Ok(Pattern::Datatype {
+                        library: name,
+                        name: type_name,
+                        params: vec![],
+                    });
+                }
             }
 
             return Ok(Pattern::Ref(name));
@@ -199,10 +255,19 @@ impl Parser {
 
     fn parse_element(&mut self) -> Result<Pattern, ParseError> {
         self.expect(&Token::Element)?;
-        let name = self.parse_qname()?;
+        let name_class = self.parse_name_class()?;
         self.expect(&Token::LBrace)?;
         let pattern = self.parse_pattern()?;
         self.expect(&Token::RBrace)?;
+
+        // Convert NameClass to QName for simple cases, use placeholder for wildcards
+        let name = match name_class {
+            NameClass::Name(qn) => qn,
+            _ => QName {
+                prefix: None,
+                local: "_any".to_string(),
+            },
+        };
 
         Ok(Pattern::Element {
             name,
@@ -212,15 +277,74 @@ impl Parser {
 
     fn parse_attribute(&mut self) -> Result<Pattern, ParseError> {
         self.expect(&Token::Attribute)?;
-        let name = self.parse_qname()?;
+        let name_class = self.parse_name_class()?;
         self.expect(&Token::LBrace)?;
         let pattern = self.parse_pattern()?;
         self.expect(&Token::RBrace)?;
+
+        // Convert NameClass to QName for simple cases, use placeholder for wildcards
+        let name = match name_class {
+            NameClass::Name(qn) => qn,
+            _ => QName {
+                prefix: None,
+                local: "_any".to_string(),
+            },
+        };
 
         Ok(Pattern::Attribute {
             name,
             pattern: Box::new(pattern),
         })
+    }
+
+    /// Parse a name class (handles wildcards, namespace wildcards, and exclusions).
+    fn parse_name_class(&mut self) -> Result<NameClass, ParseError> {
+        let left = self.parse_name_class_primary()?;
+
+        // Check for subtraction: `nc - nc`
+        if self.check(&Token::Minus) {
+            self.advance();
+            let right = self.parse_name_class_primary()?;
+            return Ok(NameClass::Except(Box::new(left), Box::new(right)));
+        }
+
+        Ok(left)
+    }
+
+    fn parse_name_class_primary(&mut self) -> Result<NameClass, ParseError> {
+        // Check for wildcard `*`
+        if self.check(&Token::Star) {
+            self.advance();
+            return Ok(NameClass::AnyName);
+        }
+
+        // Check for parenthesized name class (for choices/groups)
+        if self.check(&Token::LParen) {
+            self.advance();
+            let mut choices = vec![self.parse_name_class()?];
+            while self.check(&Token::Pipe) {
+                self.advance();
+                choices.push(self.parse_name_class()?);
+            }
+            self.expect(&Token::RParen)?;
+            if choices.len() == 1 {
+                return Ok(choices.pop().unwrap());
+            }
+            return Ok(NameClass::Choice(choices));
+        }
+
+        // Otherwise, parse as a QName (possibly with ns:* wildcard)
+        let qname = self.parse_qname()?;
+
+        // Check if it's a namespace wildcard: `ns:*`
+        if qname.local == "*" {
+            if let Some(prefix) = qname.prefix {
+                return Ok(NameClass::NsName(prefix));
+            }
+            return Ok(NameClass::AnyName);
+        }
+
+        Ok(NameClass::Name(qname))
     }
 
     fn parse_qname(&mut self) -> Result<QName, ParseError> {
@@ -229,7 +353,13 @@ impl Parser {
 
         if self.check(&Token::Colon) {
             self.advance();
-            let local = self.expect_name()?;
+            // After colon, could be a name or `*` for namespace wildcard
+            let local = if self.check(&Token::Star) {
+                self.advance();
+                "*".to_string()
+            } else {
+                self.expect_name()?
+            };
             Ok(QName {
                 prefix: Some(first),
                 local,
@@ -273,6 +403,18 @@ impl Parser {
             Some(Token::Empty) => {
                 self.advance();
                 Ok("empty".to_string())
+            }
+            Some(Token::Mixed) => {
+                self.advance();
+                Ok("mixed".to_string())
+            }
+            Some(Token::List) => {
+                self.advance();
+                Ok("list".to_string())
+            }
+            Some(Token::Text) => {
+                self.advance();
+                Ok("text".to_string())
             }
             _ => Err(self.error("expected name")),
         }

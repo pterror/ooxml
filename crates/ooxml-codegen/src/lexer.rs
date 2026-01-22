@@ -13,6 +13,9 @@ pub enum Token {
     Attribute,
     Empty,
     String,
+    Mixed,
+    List,
+    Text,
     // Identifiers and literals
     Ident(String),
     QuotedString(String),
@@ -24,6 +27,7 @@ pub enum Token {
     Question,
     Star,
     Plus,
+    Minus,
     LBrace,
     RBrace,
     LParen,
@@ -97,6 +101,10 @@ impl<'a> Lexer<'a> {
             '+' => {
                 self.input.next();
                 Ok(Token::Plus)
+            }
+            '-' => {
+                self.input.next();
+                Ok(Token::Minus)
             }
             '{' => {
                 self.input.next();
@@ -206,6 +214,9 @@ impl<'a> Lexer<'a> {
             "attribute" => Token::Attribute,
             "empty" => Token::Empty,
             "string" => Token::String,
+            "mixed" => Token::Mixed,
+            "list" => Token::List,
+            "text" => Token::Text,
             _ => Token::Ident(s),
         };
         Ok(token)

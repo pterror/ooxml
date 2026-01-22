@@ -12,3 +12,6 @@ ooxml-dml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+
+[build-dependencies]
+ooxml-codegen.workspace = true

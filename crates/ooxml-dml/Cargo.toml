@@ -10,3 +10,6 @@ description = "DrawingML support for the ooxml library (shared by Word, Excel, P
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+
+[build-dependencies]
+ooxml-codegen.workspace = true

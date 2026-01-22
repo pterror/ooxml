@@ -581,6 +581,7 @@ dependencies = [
 name = "ooxml-dml"
 version = "0.1.0"
 dependencies = [
+ "ooxml-codegen",
  "quick-xml",
  "serde",
  "thiserror",
@@ -607,6 +608,7 @@ dependencies = [
 name = "ooxml-pml"
 version = "0.1.0"
 dependencies = [
+ "ooxml-codegen",
  "ooxml-dml",
  "ooxml-opc",
  "quick-xml",
@@ -618,6 +620,7 @@ dependencies = [
 name = "ooxml-sml"
 version = "0.1.0"
 dependencies = [
+ "ooxml-codegen",
  "ooxml-opc",
  "quick-xml",
  "serde",

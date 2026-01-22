@@ -37,6 +37,14 @@ pub mod error;
 pub mod presentation;
 pub mod writer;
 
+// Generated types from ECMA-376 schema.
+// Access via `ooxml_pml::types::*` for generated structs/enums.
+// This file is pre-generated and committed to avoid requiring spec downloads.
+// To regenerate: OOXML_REGENERATE=1 cargo build -p ooxml-pml (with specs in /spec/)
+#[allow(dead_code)]
+pub mod generated;
+pub use generated as types;
+
 pub use error::{Error, Result};
 pub use presentation::{
     Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,

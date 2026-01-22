@@ -110,6 +110,10 @@ impl<'a> Generator<'a> {
             writeln!(self.output, "pub mod ns {{").unwrap();
 
             for ns in &self.schema.namespaces {
+                // Skip namespaces with empty prefix (default namespace without name)
+                if ns.prefix.is_empty() {
+                    continue;
+                }
                 let const_name = ns.prefix.to_uppercase();
                 if ns.is_default {
                     writeln!(
@@ -141,6 +145,7 @@ impl<'a> Generator<'a> {
                 .all(|v| matches!(v, Pattern::StringLiteral(_))),
             Pattern::StringLiteral(_) => true,
             Pattern::Datatype { .. } => true,
+            Pattern::List(_) => true, // list { ... } is a simple type (space-separated string)
             Pattern::Ref(name) => {
                 // Check if the referenced type is simple
                 self.definitions
@@ -294,6 +299,12 @@ impl<'a> Generator<'a> {
                 };
                 let mut code = String::new();
                 writeln!(code, "pub type {} = {};", rust_name, target_rust).unwrap();
+                Some(code)
+            }
+            Pattern::List(_) => {
+                // List patterns (space-separated values) become String type aliases
+                let mut code = String::new();
+                writeln!(code, "pub type {} = String;", rust_name).unwrap();
                 Some(code)
             }
             _ => None,
@@ -664,6 +675,17 @@ fn to_snake_case(s: &str) -> String {
         "box" => "r#box".to_string(),
         "true" => "r#true".to_string(),
         "false" => "r#false".to_string(),
+        "macro" => "r#macro".to_string(),
+        "try" => "r#try".to_string(),
+        "abstract" => "r#abstract".to_string(),
+        "become" => "r#become".to_string(),
+        "final" => "r#final".to_string(),
+        "override" => "r#override".to_string(),
+        "priv" => "r#priv".to_string(),
+        "typeof" => "r#typeof".to_string(),
+        "unsized" => "r#unsized".to_string(),
+        "virtual" => "r#virtual".to_string(),
+        "yield" => "r#yield".to_string(),
         _ => result,
     }
 }

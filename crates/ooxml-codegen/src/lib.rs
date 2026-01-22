@@ -20,6 +20,11 @@ pub fn parse_rnc(input: &str) -> Result<Schema, Error> {
     Ok(schema)
 }
 
+/// Lex an RNC schema into tokens (for debugging).
+pub fn lex_rnc(input: &str) -> Result<Vec<lexer::Token>, LexError> {
+    Lexer::new(input).tokenize()
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("lexer error: {0}")]
