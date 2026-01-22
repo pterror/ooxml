@@ -1,8 +1,12 @@
-//! Benchmark comparing serde-based parsing vs event-based parsing of SheetData.
+//! Benchmark comparing parsing approaches for SheetData:
+//! - serde: quick-xml's serde deserialization
+//! - events: hand-written event-based parsing
+//! - fromxml: generated event-based FromXml parsers
 //!
 //! Run with: cargo bench -p ooxml-sml
 
 use criterion::{BenchmarkId, Criterion, Throughput, black_box, criterion_group, criterion_main};
+use ooxml_sml::parsers::{FromXml, ParseError};
 use ooxml_sml::types::{Cell, Row, SheetData};
 use quick_xml::Reader;
 use quick_xml::de::from_str;
@@ -69,6 +73,26 @@ fn col_letter(col: usize) -> String {
 /// Parse sheet data using serde (generated types).
 fn parse_serde(xml: &str) -> SheetData {
     from_str(xml).expect("serde parse failed")
+}
+
+/// Parse using the generated FromXml trait (event-based, generated code).
+fn parse_fromxml<T: FromXml>(xml: &[u8]) -> Result<T, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return T::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return T::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no element found".to_string(),
+    ))
 }
 
 /// Parse sheet data using event-based parsing (simplified version).
@@ -170,6 +194,17 @@ fn bench_parse_sheet_data(c: &mut Criterion) {
                 })
             },
         );
+
+        group.bench_with_input(
+            BenchmarkId::new("fromxml", format!("{}x{}", rows, cols)),
+            xml_bytes,
+            |b, xml| {
+                b.iter(|| {
+                    let data: SheetData = parse_fromxml(black_box(xml)).unwrap();
+                    black_box(data)
+                })
+            },
+        );
     }
 
     group.finish();
@@ -191,6 +226,20 @@ fn bench_parse_row(c: &mut Criterion) {
     group.bench_function("serde_large", |b| {
         b.iter(|| {
             let row: Row = from_str(black_box(&xml_large)).unwrap();
+            black_box(row)
+        })
+    });
+
+    group.bench_function("fromxml_small", |b| {
+        b.iter(|| {
+            let row: Row = parse_fromxml(black_box(xml_small.as_bytes())).unwrap();
+            black_box(row)
+        })
+    });
+
+    group.bench_function("fromxml_large", |b| {
+        b.iter(|| {
+            let row: Row = parse_fromxml(black_box(xml_large.as_bytes())).unwrap();
             black_box(row)
         })
     });
@@ -232,6 +281,28 @@ fn bench_parse_cell(c: &mut Criterion) {
     group.bench_function("with_formula", |b| {
         b.iter(|| {
             let cell: Cell = from_str(black_box(with_formula)).unwrap();
+            black_box(cell)
+        })
+    });
+
+    // FromXml benchmarks for cells
+    group.bench_function("fromxml_simple", |b| {
+        b.iter(|| {
+            let cell: Cell = parse_fromxml(black_box(simple.as_bytes())).unwrap();
+            black_box(cell)
+        })
+    });
+
+    group.bench_function("fromxml_with_type", |b| {
+        b.iter(|| {
+            let cell: Cell = parse_fromxml(black_box(with_type.as_bytes())).unwrap();
+            black_box(cell)
+        })
+    });
+
+    group.bench_function("fromxml_with_formula", |b| {
+        b.iter(|| {
+            let cell: Cell = parse_fromxml(black_box(with_formula.as_bytes())).unwrap();
             black_box(cell)
         })
     });
