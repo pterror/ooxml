@@ -4,7 +4,7 @@
 //!
 //! Run with: cargo run --example create_xlsx
 
-use ooxml_sml::WorkbookBuilder;
+use ooxml_sml::{CellResolveExt, RowExt, WorkbookBuilder};
 
 fn main() -> ooxml_sml::Result<()> {
     let mut wb = WorkbookBuilder::new();
@@ -69,12 +69,12 @@ fn main() -> ooxml_sml::Result<()> {
     println!("Sheet count: {}", workbook.sheet_count());
     println!("Sheet names: {:?}", workbook.sheet_names());
 
-    for sheet in workbook.sheets()? {
+    for sheet in workbook.resolved_sheets()? {
         println!("\n=== {} ===", sheet.name());
         for row in sheet.rows() {
-            print!("Row {:>2}: ", row.row_num());
-            for cell in row.cells() {
-                let value = cell.value_as_string();
+            print!("Row {:>2}: ", row.row_number().unwrap_or(0));
+            for cell in row.cells_iter() {
+                let value = cell.value_as_string(sheet.context());
                 if !value.is_empty() {
                     print!("{}  ", value);
                 }

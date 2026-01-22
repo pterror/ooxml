@@ -4405,7 +4405,7 @@ pub struct AutoFilter {
     pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4433,7 +4433,7 @@ pub struct Filters {
     pub filter: Vec<Box<Filter>>,
     #[serde(rename = "dateGroupItem")]
     #[serde(default)]
-    pub date_group_item: Vec<Box<CTDateGroupItem>>,
+    pub date_group_item: Vec<Box<DateGroupItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4444,17 +4444,17 @@ pub struct Filter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomFilters {
+pub struct CustomFilters {
     #[serde(rename = "@and")]
     #[serde(default)]
     pub and: Option<bool>,
     #[serde(rename = "customFilter")]
     #[serde(default)]
-    pub custom_filter: Vec<Box<CTCustomFilter>>,
+    pub custom_filter: Vec<Box<CustomFilter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomFilter {
+pub struct CustomFilter {
     #[serde(rename = "@operator")]
     #[serde(default)]
     pub operator: Option<FilterOperator>,
@@ -4464,7 +4464,7 @@ pub struct CTCustomFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTop10 {
+pub struct Top10Filter {
     #[serde(rename = "@top")]
     #[serde(default)]
     pub top: Option<bool>,
@@ -4479,7 +4479,7 @@ pub struct CTTop10 {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTColorFilter {
+pub struct ColorFilter {
     #[serde(rename = "@dxfId")]
     #[serde(default)]
     pub dxf_id: Option<STDxfId>,
@@ -4489,7 +4489,7 @@ pub struct CTColorFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTIconFilter {
+pub struct IconFilter {
     #[serde(rename = "@iconSet")]
     pub icon_set: IconSetType,
     #[serde(rename = "@iconId")]
@@ -4498,7 +4498,7 @@ pub struct CTIconFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDynamicFilter {
+pub struct DynamicFilter {
     #[serde(rename = "@type")]
     pub r#type: DynamicFilterType,
     #[serde(rename = "@val")]
@@ -4533,7 +4533,7 @@ pub struct SortState {
     pub sort_condition: Vec<Box<SortCondition>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4561,7 +4561,7 @@ pub struct SortCondition {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDateGroupItem {
+pub struct DateGroupItem {
     #[serde(rename = "@year")]
     pub year: u16,
     #[serde(rename = "@month")]
@@ -4590,7 +4590,7 @@ pub struct CTXStringElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExtension {
+pub struct Extension {
     #[serde(rename = "@uri")]
     #[serde(default)]
     pub uri: Option<String>,
@@ -4599,7 +4599,7 @@ pub struct CTExtension {
 pub type CTExtensionAny = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTObjectAnchor {
+pub struct ObjectAnchor {
     #[serde(rename = "@moveWithCells")]
     #[serde(default)]
     pub move_with_cells: Option<bool>,
@@ -4612,26 +4612,26 @@ pub struct CTObjectAnchor {
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default)]
-    pub ext: Vec<Box<CTExtension>>,
+    pub ext: Vec<Box<Extension>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTExtensionList;
+pub struct ExtensionList;
 
-pub type SmlCalcChain = Box<CTCalcChain>;
+pub type SmlCalcChain = Box<CalcChain>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCalcChain {
+pub struct CalcChain {
     #[serde(rename = "c")]
     #[serde(default)]
-    pub cells: Vec<Box<CTCalcCell>>,
+    pub cells: Vec<Box<CalcCell>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCalcCell {
+pub struct CalcCell {
     #[serde(rename = "@_any")]
     pub _any: CellRef,
     #[serde(rename = "@i")]
@@ -4661,7 +4661,7 @@ pub struct Comments {
     pub comment_list: Box<CommentList>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4736,30 +4736,30 @@ pub struct CTCommentPr {
     #[serde(default)]
     pub auto_scale: Option<bool>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<CTObjectAnchor>,
+    pub anchor: Box<ObjectAnchor>,
 }
 
-pub type SmlMapInfo = Box<CTMapInfo>;
+pub type SmlMapInfo = Box<MapInfo>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMapInfo {
+pub struct MapInfo {
     #[serde(rename = "@SelectionNamespaces")]
     pub selection_namespaces: String,
     #[serde(rename = "Schema")]
     #[serde(default)]
-    pub schema: Vec<Box<CTSchema>>,
+    pub schema: Vec<Box<XmlSchema>>,
     #[serde(rename = "Map")]
     #[serde(default)]
-    pub map: Vec<Box<CTMap>>,
+    pub map: Vec<Box<XmlMap>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTSchema;
+pub struct XmlSchema;
 
 pub type CTSchemaAny = String;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMap {
+pub struct XmlMap {
     #[serde(rename = "@ID")]
     pub i_d: u32,
     #[serde(rename = "@Name")]
@@ -4780,11 +4780,11 @@ pub struct CTMap {
     pub preserve_format: bool,
     #[serde(rename = "DataBinding")]
     #[serde(default)]
-    pub data_binding: Option<Box<CTDataBinding>>,
+    pub data_binding: Option<Box<DataBinding>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDataBinding {
+pub struct DataBinding {
     #[serde(rename = "@DataBindingName")]
     #[serde(default)]
     pub data_binding_name: Option<String>,
@@ -4803,17 +4803,17 @@ pub struct CTDataBinding {
 
 pub type CTDataBindingAny = String;
 
-pub type SmlConnections = Box<CTConnections>;
+pub type SmlConnections = Box<Connections>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTConnections {
+pub struct Connections {
     #[serde(rename = "connection")]
     #[serde(default)]
-    pub connection: Vec<Box<CTConnection>>,
+    pub connection: Vec<Box<Connection>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTConnection {
+pub struct Connection {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@sourceFile")]
@@ -4874,26 +4874,26 @@ pub struct CTConnection {
     pub single_sign_on_id: Option<XmlString>,
     #[serde(rename = "dbPr")]
     #[serde(default)]
-    pub db_pr: Option<Box<CTDbPr>>,
+    pub db_pr: Option<Box<DatabaseProperties>>,
     #[serde(rename = "olapPr")]
     #[serde(default)]
-    pub olap_pr: Option<Box<CTOlapPr>>,
+    pub olap_pr: Option<Box<OlapProperties>>,
     #[serde(rename = "webPr")]
     #[serde(default)]
-    pub web_pr: Option<Box<CTWebPr>>,
+    pub web_pr: Option<Box<WebQueryProperties>>,
     #[serde(rename = "textPr")]
     #[serde(default)]
-    pub text_pr: Option<Box<CTTextPr>>,
+    pub text_pr: Option<Box<TextImportProperties>>,
     #[serde(rename = "parameters")]
     #[serde(default)]
-    pub parameters: Option<Box<CTParameters>>,
+    pub parameters: Option<Box<Parameters>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDbPr {
+pub struct DatabaseProperties {
     #[serde(rename = "@connection")]
     pub connection: XmlString,
     #[serde(rename = "@command")]
@@ -4908,7 +4908,7 @@ pub struct CTDbPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOlapPr {
+pub struct OlapProperties {
     #[serde(rename = "@local")]
     #[serde(default)]
     pub local: Option<bool>,
@@ -4939,7 +4939,7 @@ pub struct CTOlapPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWebPr {
+pub struct WebQueryProperties {
     #[serde(rename = "@xml")]
     #[serde(default)]
     pub xml: Option<bool>,
@@ -4981,21 +4981,21 @@ pub struct CTWebPr {
     pub edit_page: Option<XmlString>,
     #[serde(rename = "tables")]
     #[serde(default)]
-    pub tables: Option<Box<CTTables>>,
+    pub tables: Option<Box<DataTables>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTParameters {
+pub struct Parameters {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "parameter")]
     #[serde(default)]
-    pub parameter: Vec<Box<CTParameter>>,
+    pub parameter: Vec<Box<Parameter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTParameter {
+pub struct Parameter {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
@@ -5029,17 +5029,17 @@ pub struct CTParameter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTables {
+pub struct DataTables {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTableMissing;
+pub struct TableMissing;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextPr {
+pub struct TextImportProperties {
     #[serde(rename = "@prompt")]
     #[serde(default)]
     pub prompt: Option<bool>,
@@ -5090,21 +5090,21 @@ pub struct CTTextPr {
     pub delimiter: Option<XmlString>,
     #[serde(rename = "textFields")]
     #[serde(default)]
-    pub text_fields: Option<Box<CTTextFields>>,
+    pub text_fields: Option<Box<TextFields>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextFields {
+pub struct TextFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "textField")]
     #[serde(default)]
-    pub text_field: Vec<Box<CTTextField>>,
+    pub text_field: Vec<Box<TextField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextField {
+pub struct TextField {
     #[serde(rename = "@type")]
     #[serde(default)]
     pub r#type: Option<STExternalConnectionType>,
@@ -5113,14 +5113,14 @@ pub struct CTTextField {
     pub position: Option<u32>,
 }
 
-pub type SmlPivotCacheDefinition = Box<CTPivotCacheDefinition>;
+pub type SmlPivotCacheDefinition = Box<PivotCacheDefinition>;
 
-pub type SmlPivotCacheRecords = Box<CTPivotCacheRecords>;
+pub type SmlPivotCacheRecords = Box<PivotCacheRecords>;
 
 pub type SmlPivotTableDefinition = Box<CTPivotTableDefinition>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotCacheDefinition {
+pub struct PivotCacheDefinition {
     #[serde(rename = "@invalid")]
     #[serde(default)]
     pub invalid: Option<bool>,
@@ -5176,9 +5176,9 @@ pub struct CTPivotCacheDefinition {
     #[serde(default)]
     pub support_advanced_drill: Option<bool>,
     #[serde(rename = "cacheSource")]
-    pub cache_source: Box<CTCacheSource>,
+    pub cache_source: Box<CacheSource>,
     #[serde(rename = "cacheFields")]
-    pub cache_fields: Box<CTCacheFields>,
+    pub cache_fields: Box<CacheFields>,
     #[serde(rename = "cacheHierarchies")]
     #[serde(default)]
     pub cache_hierarchies: Option<Box<CTCacheHierarchies>>,
@@ -5202,21 +5202,21 @@ pub struct CTPivotCacheDefinition {
     pub maps: Option<Box<CTMeasureDimensionMaps>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCacheFields {
+pub struct CacheFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "cacheField")]
     #[serde(default)]
-    pub cache_field: Vec<Box<CTCacheField>>,
+    pub cache_field: Vec<Box<CacheField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCacheField {
+pub struct CacheField {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@caption")]
@@ -5257,20 +5257,20 @@ pub struct CTCacheField {
     pub member_property_field: Option<bool>,
     #[serde(rename = "sharedItems")]
     #[serde(default)]
-    pub shared_items: Option<Box<CTSharedItems>>,
+    pub shared_items: Option<Box<SharedItems>>,
     #[serde(rename = "fieldGroup")]
     #[serde(default)]
-    pub field_group: Option<Box<CTFieldGroup>>,
+    pub field_group: Option<Box<FieldGroup>>,
     #[serde(rename = "mpMap")]
     #[serde(default)]
     pub mp_map: Vec<Box<CTX>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCacheSource {
+pub struct CacheSource {
     #[serde(rename = "@type")]
     pub r#type: STSourceType,
     #[serde(rename = "@connectionId")]
@@ -5279,7 +5279,7 @@ pub struct CTCacheSource {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWorksheetSource {
+pub struct WorksheetSource {
     #[serde(rename = "@ref")]
     #[serde(default)]
     pub reference: Option<Reference>,
@@ -5292,7 +5292,7 @@ pub struct CTWorksheetSource {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTConsolidation {
+pub struct Consolidation {
     #[serde(rename = "@autoPage")]
     #[serde(default)]
     pub auto_page: Option<bool>,
@@ -5365,7 +5365,7 @@ pub struct CTRangeSet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSharedItems {
+pub struct SharedItems {
     #[serde(rename = "@containsSemiMixedTypes")]
     #[serde(default)]
     pub contains_semi_mixed_types: Option<bool>,
@@ -5631,7 +5631,7 @@ pub struct CTDateTime {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFieldGroup {
+pub struct FieldGroup {
     #[serde(rename = "@par")]
     #[serde(default)]
     pub par: Option<u32>,
@@ -5646,7 +5646,7 @@ pub struct CTFieldGroup {
     pub discrete_pr: Option<Box<CTDiscretePr>>,
     #[serde(rename = "groupItems")]
     #[serde(default)]
-    pub group_items: Option<Box<CTGroupItems>>,
+    pub group_items: Option<Box<GroupItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5688,14 +5688,14 @@ pub struct CTDiscretePr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTGroupItems {
+pub struct GroupItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotCacheRecords {
+pub struct PivotCacheRecords {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -5704,7 +5704,7 @@ pub struct CTPivotCacheRecords {
     pub reference: Vec<Box<CTRecord>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5839,7 +5839,7 @@ pub struct CTCacheHierarchy {
     pub group_levels: Option<Box<CTGroupLevels>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5885,7 +5885,7 @@ pub struct CTGroupLevel {
     pub groups: Option<Box<CTGroups>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5951,7 +5951,7 @@ pub struct CTTupleCache {
     pub server_formats: Option<Box<CTServerFormats>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6074,10 +6074,10 @@ pub struct CTCalculatedItem {
     #[serde(default)]
     pub formula: Option<XmlString>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<CTPivotArea>,
+    pub pivot_area: Box<PivotArea>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6113,7 +6113,7 @@ pub struct CTCalculatedMember {
     pub set: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6299,28 +6299,28 @@ pub struct CTPivotTableDefinition {
     #[serde(default)]
     pub custom_list_sort: Option<bool>,
     #[serde(rename = "location")]
-    pub location: Box<CTLocation>,
+    pub location: Box<PivotLocation>,
     #[serde(rename = "pivotFields")]
     #[serde(default)]
-    pub pivot_fields: Option<Box<CTPivotFields>>,
+    pub pivot_fields: Option<Box<PivotFields>>,
     #[serde(rename = "rowFields")]
     #[serde(default)]
-    pub row_fields: Option<Box<CTRowFields>>,
+    pub row_fields: Option<Box<RowFields>>,
     #[serde(rename = "rowItems")]
     #[serde(default)]
     pub row_items: Option<Box<CTRowItems>>,
     #[serde(rename = "colFields")]
     #[serde(default)]
-    pub col_fields: Option<Box<CTColFields>>,
+    pub col_fields: Option<Box<ColFields>>,
     #[serde(rename = "colItems")]
     #[serde(default)]
     pub col_items: Option<Box<CTColItems>>,
     #[serde(rename = "pageFields")]
     #[serde(default)]
-    pub page_fields: Option<Box<CTPageFields>>,
+    pub page_fields: Option<Box<PageFields>>,
     #[serde(rename = "dataFields")]
     #[serde(default)]
-    pub data_fields: Option<Box<CTDataFields>>,
+    pub data_fields: Option<Box<DataFields>>,
     #[serde(rename = "formats")]
     #[serde(default)]
     pub formats: Option<Box<CTFormats>>,
@@ -6338,7 +6338,7 @@ pub struct CTPivotTableDefinition {
     pub pivot_table_style_info: Option<Box<CTPivotTableStyle>>,
     #[serde(rename = "filters")]
     #[serde(default)]
-    pub filters: Option<Box<CTPivotFilters>>,
+    pub filters: Option<Box<PivotFilters>>,
     #[serde(rename = "rowHierarchiesUsage")]
     #[serde(default)]
     pub row_hierarchies_usage: Option<Box<CTRowHierarchiesUsage>>,
@@ -6347,11 +6347,11 @@ pub struct CTPivotTableDefinition {
     pub col_hierarchies_usage: Option<Box<CTColHierarchiesUsage>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTLocation {
+pub struct PivotLocation {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[serde(rename = "@firstHeaderRow")]
@@ -6369,17 +6369,17 @@ pub struct CTLocation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotFields {
+pub struct PivotFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pivotField")]
     #[serde(default)]
-    pub pivot_field: Vec<Box<CTPivotField>>,
+    pub pivot_field: Vec<Box<PivotField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotField {
+pub struct PivotField {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
@@ -6526,29 +6526,29 @@ pub struct CTPivotField {
     pub default_attribute_drill_state: Option<bool>,
     #[serde(rename = "items")]
     #[serde(default)]
-    pub items: Option<Box<CTItems>>,
+    pub items: Option<Box<PivotItems>>,
     #[serde(rename = "autoSortScope")]
     #[serde(default)]
     pub auto_sort_scope: Option<Box<CTAutoSortScope>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
-pub type CTAutoSortScope = Box<CTPivotArea>;
+pub type CTAutoSortScope = Box<PivotArea>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTItems {
+pub struct PivotItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "item")]
     #[serde(default)]
-    pub item: Vec<Box<CTItem>>,
+    pub item: Vec<Box<PivotItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTItem {
+pub struct PivotItem {
     #[serde(rename = "@n")]
     #[serde(default)]
     pub n: Option<XmlString>,
@@ -6585,17 +6585,17 @@ pub struct CTItem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPageFields {
+pub struct PageFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pageField")]
     #[serde(default)]
-    pub page_field: Vec<Box<CTPageField>>,
+    pub page_field: Vec<Box<PageField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPageField {
+pub struct PageField {
     #[serde(rename = "@fld")]
     pub fld: i32,
     #[serde(rename = "@item")]
@@ -6612,21 +6612,21 @@ pub struct CTPageField {
     pub cap: Option<XmlString>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDataFields {
+pub struct DataFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "dataField")]
     #[serde(default)]
-    pub data_field: Vec<Box<CTDataField>>,
+    pub data_field: Vec<Box<DataField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDataField {
+pub struct DataField {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
@@ -6649,7 +6649,7 @@ pub struct CTDataField {
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6696,7 +6696,7 @@ pub struct CTX {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRowFields {
+pub struct RowFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -6706,7 +6706,7 @@ pub struct CTRowFields {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTColFields {
+pub struct ColFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -6740,10 +6740,10 @@ pub struct CTFormat {
     #[serde(default)]
     pub dxf_id: Option<STDxfId>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<CTPivotArea>,
+    pub pivot_area: Box<PivotArea>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6767,20 +6767,20 @@ pub struct CTConditionalFormat {
     #[serde(rename = "@priority")]
     pub priority: u32,
     #[serde(rename = "pivotAreas")]
-    pub pivot_areas: Box<CTPivotAreas>,
+    pub pivot_areas: Box<PivotAreas>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotAreas {
+pub struct PivotAreas {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "pivotArea")]
     #[serde(default)]
-    pub pivot_area: Vec<Box<CTPivotArea>>,
+    pub pivot_area: Vec<Box<PivotArea>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6803,7 +6803,7 @@ pub struct CTChartFormat {
     #[serde(default)]
     pub series: Option<bool>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<CTPivotArea>,
+    pub pivot_area: Box<PivotArea>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6859,7 +6859,7 @@ pub struct CTPivotHierarchy {
     pub members: Vec<Box<CTMembers>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7031,17 +7031,17 @@ pub struct CTPivotTableStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotFilters {
+pub struct PivotFilters {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "filter")]
     #[serde(default)]
-    pub filter: Vec<Box<CTPivotFilter>>,
+    pub filter: Vec<Box<PivotFilter>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotFilter {
+pub struct PivotFilter {
     #[serde(rename = "@fld")]
     pub fld: u32,
     #[serde(rename = "@mpFld")]
@@ -7076,11 +7076,11 @@ pub struct CTPivotFilter {
     pub auto_filter: Box<AutoFilter>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPivotArea {
+pub struct PivotArea {
     #[serde(rename = "@field")]
     #[serde(default)]
     pub field: Option<i32>,
@@ -7122,7 +7122,7 @@ pub struct CTPivotArea {
     pub references: Option<Box<CTPivotAreaReferences>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7193,7 +7193,7 @@ pub struct CTPivotAreaReference {
     pub x: Vec<Box<CTIndex>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7202,10 +7202,10 @@ pub struct CTIndex {
     pub value: u32,
 }
 
-pub type SmlQueryTable = Box<CTQueryTable>;
+pub type SmlQueryTable = Box<QueryTable>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTQueryTable {
+pub struct QueryTable {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@headers")]
@@ -7251,14 +7251,14 @@ pub struct CTQueryTable {
     pub connection_id: u32,
     #[serde(rename = "queryTableRefresh")]
     #[serde(default)]
-    pub query_table_refresh: Option<Box<CTQueryTableRefresh>>,
+    pub query_table_refresh: Option<Box<QueryTableRefresh>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTQueryTableRefresh {
+pub struct QueryTableRefresh {
     #[serde(rename = "@preserveSortFilterLayout")]
     #[serde(default)]
     pub preserve_sort_filter_layout: Option<bool>,
@@ -7281,20 +7281,20 @@ pub struct CTQueryTableRefresh {
     #[serde(default)]
     pub unbound_columns_right: Option<u32>,
     #[serde(rename = "queryTableFields")]
-    pub query_table_fields: Box<CTQueryTableFields>,
+    pub query_table_fields: Box<QueryTableFields>,
     #[serde(rename = "queryTableDeletedFields")]
     #[serde(default)]
-    pub query_table_deleted_fields: Option<Box<CTQueryTableDeletedFields>>,
+    pub query_table_deleted_fields: Option<Box<QueryTableDeletedFields>>,
     #[serde(rename = "sortState")]
     #[serde(default)]
     pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTQueryTableDeletedFields {
+pub struct QueryTableDeletedFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -7310,17 +7310,17 @@ pub struct CTDeletedField {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTQueryTableFields {
+pub struct QueryTableFields {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "queryTableField")]
     #[serde(default)]
-    pub query_table_field: Vec<Box<CTQueryTableField>>,
+    pub query_table_field: Vec<Box<QueryTableField>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTQueryTableField {
+pub struct QueryTableField {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@name")]
@@ -7343,7 +7343,7 @@ pub struct CTQueryTableField {
     pub table_column_id: Option<u32>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 pub type SmlSst = Box<SharedStrings>;
@@ -7361,11 +7361,11 @@ pub struct SharedStrings {
     pub si: Vec<Box<RichString>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPhoneticRun {
+pub struct PhoneticRun {
     #[serde(rename = "@sb")]
     pub sb: u32,
     #[serde(rename = "@eb")]
@@ -7375,16 +7375,16 @@ pub struct CTPhoneticRun {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRElt {
+pub struct RichTextElement {
     #[serde(rename = "rPr")]
     #[serde(default)]
-    pub r_pr: Option<Box<CTRPrElt>>,
+    pub r_pr: Option<Box<RichTextRunProperties>>,
     #[serde(rename = "t")]
     pub cell_type: XmlString,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRPrElt;
+pub struct RichTextRunProperties;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RichString {
@@ -7393,17 +7393,17 @@ pub struct RichString {
     pub cell_type: Option<XmlString>,
     #[serde(rename = "r")]
     #[serde(default)]
-    pub reference: Vec<Box<CTRElt>>,
+    pub reference: Vec<Box<RichTextElement>>,
     #[serde(rename = "rPh")]
     #[serde(default)]
-    pub r_ph: Vec<Box<CTPhoneticRun>>,
+    pub r_ph: Vec<Box<PhoneticRun>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<PhoneticProperties>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPhoneticPr {
+pub struct PhoneticProperties {
     #[serde(rename = "@fontId")]
     pub font_id: STFontId,
     #[serde(rename = "@type")]
@@ -7414,12 +7414,12 @@ pub struct CTPhoneticPr {
     pub alignment: Option<STPhoneticAlignment>,
 }
 
-pub type SmlHeaders = Box<CTRevisionHeaders>;
+pub type SmlHeaders = Box<RevisionHeaders>;
 
-pub type SmlRevisions = Box<CTRevisions>;
+pub type SmlRevisions = Box<Revisions>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionHeaders {
+pub struct RevisionHeaders {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@lastGuid")]
@@ -7457,11 +7457,11 @@ pub struct CTRevisionHeaders {
     pub preserve_history: Option<u32>,
     #[serde(rename = "header")]
     #[serde(default)]
-    pub header: Vec<Box<CTRevisionHeader>>,
+    pub header: Vec<Box<RevisionHeader>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRevisions;
+pub struct Revisions;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmlAGRevData {
@@ -7476,7 +7476,7 @@ pub struct SmlAGRevData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionHeader {
+pub struct RevisionHeader {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@dateTime")]
@@ -7495,10 +7495,10 @@ pub struct CTRevisionHeader {
     pub sheet_id_map: Box<CTSheetIdMap>,
     #[serde(rename = "reviewedList")]
     #[serde(default)]
-    pub reviewed_list: Option<Box<CTReviewedRevisions>>,
+    pub reviewed_list: Option<Box<ReviewedRevisions>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7518,23 +7518,23 @@ pub struct CTSheetId {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTReviewedRevisions {
+pub struct ReviewedRevisions {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "reviewed")]
     #[serde(default)]
-    pub reviewed: Vec<Box<CTReviewed>>,
+    pub reviewed: Vec<Box<Reviewed>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTReviewed {
+pub struct Reviewed {
     #[serde(rename = "@rId")]
     pub r_id: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTUndoInfo {
+pub struct UndoInfo {
     #[serde(rename = "@index")]
     pub index: u32,
     #[serde(rename = "@exp")]
@@ -7568,7 +7568,7 @@ pub struct CTUndoInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionRowColumn {
+pub struct RevisionRowColumn {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@eol")]
@@ -7584,7 +7584,7 @@ pub struct CTRevisionRowColumn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionMove {
+pub struct RevisionMove {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@source")]
@@ -7597,7 +7597,7 @@ pub struct CTRevisionMove {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionCustomView {
+pub struct RevisionCustomView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@action")]
@@ -7605,7 +7605,7 @@ pub struct CTRevisionCustomView {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionSheetRename {
+pub struct RevisionSheetRename {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@oldName")]
@@ -7614,11 +7614,11 @@ pub struct CTRevisionSheetRename {
     pub new_name: XmlString,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionInsertSheet {
+pub struct RevisionInsertSheet {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@name")]
@@ -7628,7 +7628,7 @@ pub struct CTRevisionInsertSheet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionCellChange {
+pub struct RevisionCellChange {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@odxf")]
@@ -7671,11 +7671,11 @@ pub struct CTRevisionCellChange {
     pub ndxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionFormatting {
+pub struct RevisionFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@xfDxf")]
@@ -7697,11 +7697,11 @@ pub struct CTRevisionFormatting {
     pub dxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionAutoFormatting {
+pub struct RevisionAutoFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@ref")]
@@ -7709,7 +7709,7 @@ pub struct CTRevisionAutoFormatting {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionComment {
+pub struct RevisionComment {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@cell")]
@@ -7742,7 +7742,7 @@ pub struct CTRevisionComment {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionDefinedName {
+pub struct RevisionDefinedName {
     #[serde(rename = "@localSheetId")]
     #[serde(default)]
     pub local_sheet_id: Option<u32>,
@@ -7813,18 +7813,18 @@ pub struct CTRevisionDefinedName {
     pub old_formula: Option<STFormula>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionConflict {
+pub struct RevisionConflict {
     #[serde(rename = "@sheetId")]
     #[serde(default)]
     pub sheet_id: Option<u32>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRevisionQueryTableField {
+pub struct RevisionQueryTableField {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@ref")]
@@ -7833,20 +7833,20 @@ pub struct CTRevisionQueryTableField {
     pub field_id: u32,
 }
 
-pub type SmlUsers = Box<CTUsers>;
+pub type SmlUsers = Box<Users>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTUsers {
+pub struct Users {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "userInfo")]
     #[serde(default)]
-    pub user_info: Vec<Box<CTSharedUser>>,
+    pub user_info: Vec<Box<SharedUser>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSharedUser {
+pub struct SharedUser {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@name")]
@@ -7857,12 +7857,12 @@ pub struct CTSharedUser {
     pub date_time: String,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 pub type SmlWorksheet = Box<Worksheet>;
 
-pub type SmlChartsheet = Box<CTChartsheet>;
+pub type SmlChartsheet = Box<Chartsheet>;
 
 pub type SmlDialogsheet = Box<CTDialogsheet>;
 
@@ -7873,7 +7873,7 @@ pub struct CTMacrosheet {
     pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
     #[serde(default)]
-    pub dimension: Option<Box<CTSheetDimension>>,
+    pub dimension: Option<Box<SheetDimension>>,
     #[serde(rename = "sheetViews")]
     #[serde(default)]
     pub sheet_views: Option<Box<SheetViews>>,
@@ -7899,16 +7899,16 @@ pub struct CTMacrosheet {
     pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<PhoneticProperties>>,
     #[serde(rename = "conditionalFormatting")]
     #[serde(default)]
     pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<CTPrintOptions>>,
+    pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
@@ -7920,10 +7920,10 @@ pub struct CTMacrosheet {
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<CTPageBreak>>,
+    pub row_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<CTPageBreak>>,
+    pub col_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "customProperties")]
     #[serde(default)]
     pub custom_properties: Option<Box<CTCustomProperties>>,
@@ -7932,22 +7932,22 @@ pub struct CTMacrosheet {
     pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<CTDrawingHF>>,
+    pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<CTSheetBackgroundPicture>>,
+    pub picture: Option<Box<SheetBackgroundPicture>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<CTOleObjects>>,
+    pub ole_objects: Option<Box<OleObjects>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7966,10 +7966,10 @@ pub struct CTDialogsheet {
     pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<CTPrintOptions>>,
+    pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
@@ -7984,22 +7984,22 @@ pub struct CTDialogsheet {
     pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<CTDrawingHF>>,
+    pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<CTOleObjects>>,
+    pub ole_objects: Option<Box<OleObjects>>,
     #[serde(rename = "controls")]
     #[serde(default)]
-    pub controls: Option<Box<CTControls>>,
+    pub controls: Option<Box<Controls>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8009,7 +8009,7 @@ pub struct Worksheet {
     pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
     #[serde(default)]
-    pub dimension: Option<Box<CTSheetDimension>>,
+    pub dimension: Option<Box<SheetDimension>>,
     #[serde(rename = "sheetViews")]
     #[serde(default)]
     pub sheet_views: Option<Box<SheetViews>>,
@@ -8023,16 +8023,16 @@ pub struct Worksheet {
     pub sheet_data: Box<SheetData>,
     #[serde(rename = "sheetCalcPr")]
     #[serde(default)]
-    pub sheet_calc_pr: Option<Box<CTSheetCalcPr>>,
+    pub sheet_calc_pr: Option<Box<SheetCalcProperties>>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
     pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "protectedRanges")]
     #[serde(default)]
-    pub protected_ranges: Option<Box<CTProtectedRanges>>,
+    pub protected_ranges: Option<Box<ProtectedRanges>>,
     #[serde(rename = "scenarios")]
     #[serde(default)]
-    pub scenarios: Option<Box<CTScenarios>>,
+    pub scenarios: Option<Box<Scenarios>>,
     #[serde(rename = "autoFilter")]
     #[serde(default)]
     pub auto_filter: Option<Box<AutoFilter>>,
@@ -8044,13 +8044,13 @@ pub struct Worksheet {
     pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<CTCustomSheetViews>>,
+    pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "mergeCells")]
     #[serde(default)]
     pub merged_cells: Option<Box<MergedCells>>,
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
-    pub phonetic_pr: Option<Box<CTPhoneticPr>>,
+    pub phonetic_pr: Option<Box<PhoneticProperties>>,
     #[serde(rename = "conditionalFormatting")]
     #[serde(default)]
     pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
@@ -8062,7 +8062,7 @@ pub struct Worksheet {
     pub hyperlinks: Option<Box<Hyperlinks>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<CTPrintOptions>>,
+    pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
@@ -8074,52 +8074,52 @@ pub struct Worksheet {
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<CTPageBreak>>,
+    pub row_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<CTPageBreak>>,
+    pub col_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "customProperties")]
     #[serde(default)]
     pub custom_properties: Option<Box<CTCustomProperties>>,
     #[serde(rename = "cellWatches")]
     #[serde(default)]
-    pub cell_watches: Option<Box<CTCellWatches>>,
+    pub cell_watches: Option<Box<CellWatches>>,
     #[serde(rename = "ignoredErrors")]
     #[serde(default)]
-    pub ignored_errors: Option<Box<CTIgnoredErrors>>,
+    pub ignored_errors: Option<Box<IgnoredErrors>>,
     #[serde(rename = "smartTags")]
     #[serde(default)]
-    pub smart_tags: Option<Box<CTSmartTags>>,
+    pub smart_tags: Option<Box<SmartTags>>,
     #[serde(rename = "drawing")]
     #[serde(default)]
     pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<CTDrawingHF>>,
+    pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<CTSheetBackgroundPicture>>,
+    pub picture: Option<Box<SheetBackgroundPicture>>,
     #[serde(rename = "oleObjects")]
     #[serde(default)]
-    pub ole_objects: Option<Box<CTOleObjects>>,
+    pub ole_objects: Option<Box<OleObjects>>,
     #[serde(rename = "controls")]
     #[serde(default)]
-    pub controls: Option<Box<CTControls>>,
+    pub controls: Option<Box<Controls>>,
     #[serde(rename = "webPublishItems")]
     #[serde(default)]
-    pub web_publish_items: Option<Box<CTWebPublishItems>>,
+    pub web_publish_items: Option<Box<WebPublishItems>>,
     #[serde(rename = "tableParts")]
     #[serde(default)]
-    pub table_parts: Option<Box<CTTableParts>>,
+    pub table_parts: Option<Box<TableParts>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8130,7 +8130,7 @@ pub struct SheetData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSheetCalcPr {
+pub struct SheetCalcProperties {
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(default)]
     pub full_calc_on_load: Option<bool>,
@@ -8248,7 +8248,7 @@ pub struct Row {
     pub cells: Vec<Box<Cell>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8282,7 +8282,7 @@ pub struct Cell {
     pub is: Option<Box<RichString>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8319,14 +8319,14 @@ pub struct SheetProperties {
     pub tab_color: Option<Box<Color>>,
     #[serde(rename = "outlinePr")]
     #[serde(default)]
-    pub outline_pr: Option<Box<CTOutlinePr>>,
+    pub outline_pr: Option<Box<OutlineProperties>>,
     #[serde(rename = "pageSetUpPr")]
     #[serde(default)]
-    pub page_set_up_pr: Option<Box<CTPageSetUpPr>>,
+    pub page_set_up_pr: Option<Box<PageSetupProperties>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSheetDimension {
+pub struct SheetDimension {
     #[serde(rename = "@ref")]
     pub reference: Reference,
 }
@@ -8338,7 +8338,7 @@ pub struct SheetViews {
     pub sheet_view: Vec<Box<SheetView>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8410,7 +8410,7 @@ pub struct SheetView {
     pub pivot_selection: Vec<Box<CTPivotSelection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8483,7 +8483,7 @@ pub struct CTPivotSelection {
     #[serde(default)]
     pub click: Option<u32>,
     #[serde(rename = "pivotArea")]
-    pub pivot_area: Box<CTPivotArea>,
+    pub pivot_area: Box<PivotArea>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8503,7 +8503,7 @@ pub struct Selection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPageBreak {
+pub struct PageBreaks {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -8512,11 +8512,11 @@ pub struct CTPageBreak {
     pub manual_break_count: Option<u32>,
     #[serde(rename = "brk")]
     #[serde(default)]
-    pub brk: Vec<Box<CTBreak>>,
+    pub brk: Vec<Box<PageBreak>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTBreak {
+pub struct PageBreak {
     #[serde(rename = "@id")]
     #[serde(default)]
     pub id: Option<u32>,
@@ -8535,7 +8535,7 @@ pub struct CTBreak {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOutlinePr {
+pub struct OutlineProperties {
     #[serde(rename = "@applyStyles")]
     #[serde(default)]
     pub apply_styles: Option<bool>,
@@ -8551,7 +8551,7 @@ pub struct CTOutlinePr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPageSetUpPr {
+pub struct PageSetupProperties {
     #[serde(rename = "@autoPageBreaks")]
     #[serde(default)]
     pub auto_page_breaks: Option<bool>,
@@ -8622,23 +8622,23 @@ pub struct MergedCell {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSmartTags {
+pub struct SmartTags {
     #[serde(rename = "cellSmartTags")]
     #[serde(default)]
-    pub cell_smart_tags: Vec<Box<CTCellSmartTags>>,
+    pub cell_smart_tags: Vec<Box<CellSmartTags>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCellSmartTags {
+pub struct CellSmartTags {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     #[serde(rename = "cellSmartTag")]
     #[serde(default)]
-    pub cell_smart_tag: Vec<Box<CTCellSmartTag>>,
+    pub cell_smart_tag: Vec<Box<CellSmartTag>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCellSmartTag {
+pub struct CellSmartTag {
     #[serde(rename = "@type")]
     pub r#type: u32,
     #[serde(rename = "@deleted")]
@@ -8664,10 +8664,10 @@ pub struct CTCellSmartTagPr {
 pub struct Drawing;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTLegacyDrawing;
+pub struct LegacyDrawing;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDrawingHF {
+pub struct DrawingHeaderFooter {
     #[serde(rename = "@lho")]
     #[serde(default)]
     pub lho: Option<u32>,
@@ -8725,14 +8725,14 @@ pub struct CTDrawingHF {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomSheetViews {
+pub struct CustomSheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
-    pub custom_sheet_view: Vec<Box<CTCustomSheetView>>,
+    pub custom_sheet_view: Vec<Box<CustomSheetView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomSheetView {
+pub struct CustomSheetView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@scale")]
@@ -8800,16 +8800,16 @@ pub struct CTCustomSheetView {
     pub selection: Option<Box<Selection>>,
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
-    pub row_breaks: Option<Box<CTPageBreak>>,
+    pub row_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "colBreaks")]
     #[serde(default)]
-    pub col_breaks: Option<Box<CTPageBreak>>,
+    pub col_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "printOptions")]
     #[serde(default)]
-    pub print_options: Option<Box<CTPrintOptions>>,
+    pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
     pub page_setup: Option<Box<PageSetup>>,
@@ -8821,7 +8821,7 @@ pub struct CTCustomSheetView {
     pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8904,7 +8904,7 @@ pub struct ConditionalFormatting {
     pub cf_rule: Vec<Box<ConditionalRule>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8961,7 +8961,7 @@ pub struct ConditionalRule {
     pub icon_set: Option<Box<IconSet>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8988,6 +8988,8 @@ pub struct Hyperlink {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CellFormula {
+    #[serde(rename = "$text")]
+    pub text: String,
     #[serde(rename = "@t")]
     #[serde(default)]
     pub cell_type: Option<FormulaType>,
@@ -9085,7 +9087,7 @@ pub struct ConditionalFormatValue {
     pub gte: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9105,7 +9107,7 @@ pub struct PageMargins {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPrintOptions {
+pub struct PrintOptions {
     #[serde(rename = "@horizontalCentered")]
     #[serde(default)]
     pub horizontal_centered: Option<bool>,
@@ -9216,7 +9218,7 @@ pub struct HeaderFooter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTScenarios {
+pub struct Scenarios {
     #[serde(rename = "@current")]
     #[serde(default)]
     pub current: Option<u32>,
@@ -9228,7 +9230,7 @@ pub struct CTScenarios {
     pub square_reference: Option<SquareRef>,
     #[serde(rename = "scenario")]
     #[serde(default)]
-    pub scenario: Vec<Box<CTScenario>>,
+    pub scenario: Vec<Box<Scenario>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9299,14 +9301,14 @@ pub struct SheetProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTProtectedRanges {
+pub struct ProtectedRanges {
     #[serde(rename = "protectedRange")]
     #[serde(default)]
-    pub protected_range: Vec<Box<CTProtectedRange>>,
+    pub protected_range: Vec<Box<ProtectedRange>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTProtectedRange {
+pub struct ProtectedRange {
     #[serde(rename = "@password")]
     #[serde(default)]
     pub password: Option<STUnsignedShortHex>,
@@ -9332,7 +9334,7 @@ pub struct CTProtectedRange {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTScenario {
+pub struct Scenario {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@locked")]
@@ -9352,11 +9354,11 @@ pub struct CTScenario {
     pub comment: Option<XmlString>,
     #[serde(rename = "inputCells")]
     #[serde(default)]
-    pub input_cells: Vec<Box<CTInputCells>>,
+    pub input_cells: Vec<Box<InputCells>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTInputCells {
+pub struct InputCells {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     #[serde(rename = "@deleted")]
@@ -9373,37 +9375,37 @@ pub struct CTInputCells {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCellWatches {
+pub struct CellWatches {
     #[serde(rename = "cellWatch")]
     #[serde(default)]
-    pub cell_watch: Vec<Box<CTCellWatch>>,
+    pub cell_watch: Vec<Box<CellWatch>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCellWatch {
+pub struct CellWatch {
     #[serde(rename = "@r")]
     pub reference: CellRef,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTChartsheet {
+pub struct Chartsheet {
     #[serde(rename = "sheetPr")]
     #[serde(default)]
-    pub sheet_properties: Option<Box<CTChartsheetPr>>,
+    pub sheet_properties: Option<Box<ChartsheetProperties>>,
     #[serde(rename = "sheetViews")]
-    pub sheet_views: Box<CTChartsheetViews>,
+    pub sheet_views: Box<ChartsheetViews>,
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
-    pub sheet_protection: Option<Box<CTChartsheetProtection>>,
+    pub sheet_protection: Option<Box<ChartsheetProtection>>,
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
-    pub custom_sheet_views: Option<Box<CTCustomChartsheetViews>>,
+    pub custom_sheet_views: Option<Box<CustomChartsheetViews>>,
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<CTCsPageSetup>>,
+    pub page_setup: Option<Box<ChartsheetPageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
     pub header_footer: Option<Box<HeaderFooter>>,
@@ -9411,26 +9413,26 @@ pub struct CTChartsheet {
     pub drawing: Box<Drawing>,
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
-    pub legacy_drawing: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
-    pub legacy_drawing_h_f: Option<Box<CTLegacyDrawing>>,
+    pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
     #[serde(default)]
-    pub drawing_h_f: Option<Box<CTDrawingHF>>,
+    pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "picture")]
     #[serde(default)]
-    pub picture: Option<Box<CTSheetBackgroundPicture>>,
+    pub picture: Option<Box<SheetBackgroundPicture>>,
     #[serde(rename = "webPublishItems")]
     #[serde(default)]
-    pub web_publish_items: Option<Box<CTWebPublishItems>>,
+    pub web_publish_items: Option<Box<WebPublishItems>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTChartsheetPr {
+pub struct ChartsheetProperties {
     #[serde(rename = "@published")]
     #[serde(default)]
     pub published: Option<bool>,
@@ -9443,17 +9445,17 @@ pub struct CTChartsheetPr {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTChartsheetViews {
+pub struct ChartsheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default)]
-    pub sheet_view: Vec<Box<CTChartsheetView>>,
+    pub sheet_view: Vec<Box<ChartsheetView>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTChartsheetView {
+pub struct ChartsheetView {
     #[serde(rename = "@tabSelected")]
     #[serde(default)]
     pub tab_selected: Option<bool>,
@@ -9467,11 +9469,11 @@ pub struct CTChartsheetView {
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTChartsheetProtection {
+pub struct ChartsheetProtection {
     #[serde(rename = "@password")]
     #[serde(default)]
     pub password: Option<STUnsignedShortHex>,
@@ -9496,7 +9498,7 @@ pub struct CTChartsheetProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCsPageSetup {
+pub struct ChartsheetPageSetup {
     #[serde(rename = "@paperSize")]
     #[serde(default)]
     pub paper_size: Option<u32>,
@@ -9536,14 +9538,14 @@ pub struct CTCsPageSetup {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomChartsheetViews {
+pub struct CustomChartsheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
-    pub custom_sheet_view: Vec<Box<CTCustomChartsheetView>>,
+    pub custom_sheet_view: Vec<Box<CustomChartsheetView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomChartsheetView {
+pub struct CustomChartsheetView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@scale")]
@@ -9560,7 +9562,7 @@ pub struct CTCustomChartsheetView {
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
     #[serde(default)]
-    pub page_setup: Option<Box<CTCsPageSetup>>,
+    pub page_setup: Option<Box<ChartsheetPageSetup>>,
     #[serde(rename = "headerFooter")]
     #[serde(default)]
     pub header_footer: Option<Box<HeaderFooter>>,
@@ -9580,14 +9582,14 @@ pub struct CTCustomProperty {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOleObjects {
+pub struct OleObjects {
     #[serde(rename = "oleObject")]
     #[serde(default)]
-    pub ole_object: Vec<Box<CTOleObject>>,
+    pub ole_object: Vec<Box<OleObject>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOleObject {
+pub struct OleObject {
     #[serde(rename = "@progId")]
     #[serde(default)]
     pub prog_id: Option<String>,
@@ -9607,11 +9609,11 @@ pub struct CTOleObject {
     pub shape_id: u32,
     #[serde(rename = "objectPr")]
     #[serde(default)]
-    pub object_pr: Option<Box<CTObjectPr>>,
+    pub object_pr: Option<Box<ObjectProperties>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTObjectPr {
+pub struct ObjectProperties {
     #[serde(rename = "@locked")]
     #[serde(default)]
     pub locked: Option<bool>,
@@ -9646,21 +9648,21 @@ pub struct CTObjectPr {
     #[serde(default)]
     pub dde: Option<bool>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<CTObjectAnchor>,
+    pub anchor: Box<ObjectAnchor>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWebPublishItems {
+pub struct WebPublishItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "webPublishItem")]
     #[serde(default)]
-    pub web_publish_item: Vec<Box<CTWebPublishItem>>,
+    pub web_publish_item: Vec<Box<WebPublishItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWebPublishItem {
+pub struct WebPublishItem {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@divId")]
@@ -9684,14 +9686,14 @@ pub struct CTWebPublishItem {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTControls {
+pub struct Controls {
     #[serde(rename = "control")]
     #[serde(default)]
-    pub control: Vec<Box<CTControl>>,
+    pub control: Vec<Box<Control>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTControl {
+pub struct Control {
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
     #[serde(rename = "@name")]
@@ -9747,21 +9749,21 @@ pub struct CTControlPr {
     #[serde(default)]
     pub cf: Option<XmlString>,
     #[serde(rename = "anchor")]
-    pub anchor: Box<CTObjectAnchor>,
+    pub anchor: Box<ObjectAnchor>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTIgnoredErrors {
+pub struct IgnoredErrors {
     #[serde(rename = "ignoredError")]
     #[serde(default)]
-    pub ignored_error: Vec<Box<CTIgnoredError>>,
+    pub ignored_error: Vec<Box<IgnoredError>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTIgnoredError {
+pub struct IgnoredError {
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[serde(rename = "@evalError")]
@@ -9794,28 +9796,28 @@ pub struct CTIgnoredError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableParts {
+pub struct TableParts {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "tablePart")]
     #[serde(default)]
-    pub table_part: Vec<Box<CTTablePart>>,
+    pub table_part: Vec<Box<TablePart>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTablePart;
+pub struct TablePart;
 
-pub type SmlMetadata = Box<CTMetadata>;
+pub type SmlMetadata = Box<Metadata>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadata {
+pub struct Metadata {
     #[serde(rename = "metadataTypes")]
     #[serde(default)]
-    pub metadata_types: Option<Box<CTMetadataTypes>>,
+    pub metadata_types: Option<Box<MetadataTypes>>,
     #[serde(rename = "metadataStrings")]
     #[serde(default)]
-    pub metadata_strings: Option<Box<CTMetadataStrings>>,
+    pub metadata_strings: Option<Box<MetadataStrings>>,
     #[serde(rename = "mdxMetadata")]
     #[serde(default)]
     pub mdx_metadata: Option<Box<CTMdxMetadata>>,
@@ -9824,27 +9826,27 @@ pub struct CTMetadata {
     pub future_metadata: Vec<Box<CTFutureMetadata>>,
     #[serde(rename = "cellMetadata")]
     #[serde(default)]
-    pub cell_metadata: Option<Box<CTMetadataBlocks>>,
+    pub cell_metadata: Option<Box<MetadataBlocks>>,
     #[serde(rename = "valueMetadata")]
     #[serde(default)]
-    pub value_metadata: Option<Box<CTMetadataBlocks>>,
+    pub value_metadata: Option<Box<MetadataBlocks>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataTypes {
+pub struct MetadataTypes {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "metadataType")]
     #[serde(default)]
-    pub metadata_type: Vec<Box<CTMetadataType>>,
+    pub metadata_type: Vec<Box<MetadataType>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataType {
+pub struct MetadataType {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@minSupportedVersion")]
@@ -9930,24 +9932,24 @@ pub struct CTMetadataType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataBlocks {
+pub struct MetadataBlocks {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "bk")]
     #[serde(default)]
-    pub bk: Vec<Box<CTMetadataBlock>>,
+    pub bk: Vec<Box<MetadataBlock>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataBlock {
+pub struct MetadataBlock {
     #[serde(rename = "rc")]
     #[serde(default)]
-    pub rc: Vec<Box<CTMetadataRecord>>,
+    pub rc: Vec<Box<MetadataRecord>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataRecord {
+pub struct MetadataRecord {
     #[serde(rename = "@t")]
     pub cell_type: u32,
     #[serde(rename = "@v")]
@@ -9966,14 +9968,14 @@ pub struct CTFutureMetadata {
     pub bk: Vec<Box<CTFutureMetadataBlock>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFutureMetadataBlock {
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10074,7 +10076,7 @@ pub struct CTMetadataStringIndex {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMetadataStrings {
+pub struct MetadataStrings {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
@@ -10083,17 +10085,17 @@ pub struct CTMetadataStrings {
     pub style_index: Vec<Box<CTXStringElement>>,
 }
 
-pub type SmlSingleXmlCells = Box<CTSingleXmlCells>;
+pub type SmlSingleXmlCells = Box<SingleXmlCells>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSingleXmlCells {
+pub struct SingleXmlCells {
     #[serde(rename = "singleXmlCell")]
     #[serde(default)]
-    pub single_xml_cell: Vec<Box<CTSingleXmlCell>>,
+    pub single_xml_cell: Vec<Box<SingleXmlCell>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSingleXmlCell {
+pub struct SingleXmlCell {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@r")]
@@ -10101,28 +10103,28 @@ pub struct CTSingleXmlCell {
     #[serde(rename = "@connectionId")]
     pub connection_id: u32,
     #[serde(rename = "xmlCellPr")]
-    pub xml_cell_pr: Box<CTXmlCellPr>,
+    pub xml_cell_pr: Box<XmlCellProperties>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTXmlCellPr {
+pub struct XmlCellProperties {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
     #[serde(default)]
     pub unique_name: Option<XmlString>,
     #[serde(rename = "xmlPr")]
-    pub xml_pr: Box<CTXmlPr>,
+    pub xml_pr: Box<XmlProperties>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTXmlPr {
+pub struct XmlProperties {
     #[serde(rename = "@mapId")]
     pub map_id: u32,
     #[serde(rename = "@xpath")]
@@ -10131,7 +10133,7 @@ pub struct CTXmlPr {
     pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 pub type SmlStyleSheet = Box<Stylesheet>;
@@ -10170,7 +10172,7 @@ pub struct Stylesheet {
     pub colors: Option<Box<Colors>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10298,7 +10300,7 @@ pub struct Fills {
 pub struct Fill;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPatternFill {
+pub struct PatternFill {
     #[serde(rename = "@patternType")]
     #[serde(default)]
     pub pattern_type: Option<PatternType>,
@@ -10330,7 +10332,7 @@ pub struct Color {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTGradientFill {
+pub struct GradientFill {
     #[serde(rename = "@type")]
     #[serde(default)]
     pub r#type: Option<GradientType>,
@@ -10351,11 +10353,11 @@ pub struct CTGradientFill {
     pub bottom: Option<f64>,
     #[serde(rename = "stop")]
     #[serde(default)]
-    pub stop: Vec<Box<CTGradientStop>>,
+    pub stop: Vec<Box<GradientStop>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTGradientStop {
+pub struct GradientStop {
     #[serde(rename = "@position")]
     pub position: f64,
     #[serde(rename = "color")]
@@ -10449,7 +10451,7 @@ pub struct Format {
     pub protection: Option<Box<CellProtection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10483,7 +10485,7 @@ pub struct CellStyle {
     pub custom_builtin: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10518,35 +10520,35 @@ pub struct DifferentialFormat {
     pub protection: Option<Box<CellProtection>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Colors {
     #[serde(rename = "indexedColors")]
     #[serde(default)]
-    pub indexed_colors: Option<Box<CTIndexedColors>>,
+    pub indexed_colors: Option<Box<IndexedColors>>,
     #[serde(rename = "mruColors")]
     #[serde(default)]
-    pub mru_colors: Option<Box<CTMRUColors>>,
+    pub mru_colors: Option<Box<MostRecentColors>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTIndexedColors {
+pub struct IndexedColors {
     #[serde(rename = "rgbColor")]
     #[serde(default)]
-    pub rgb_color: Vec<Box<CTRgbColor>>,
+    pub rgb_color: Vec<Box<RgbColor>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTMRUColors {
+pub struct MostRecentColors {
     #[serde(rename = "color")]
     #[serde(default)]
     pub color: Vec<Box<Color>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRgbColor {
+pub struct RgbColor {
     #[serde(rename = "@rgb")]
     #[serde(default)]
     pub rgb: Option<STUnsignedIntHex>,
@@ -10583,11 +10585,11 @@ pub struct TableStyle {
     pub count: Option<u32>,
     #[serde(rename = "tableStyleElement")]
     #[serde(default)]
-    pub table_style_element: Vec<Box<CTTableStyleElement>>,
+    pub table_style_element: Vec<Box<TableStyleElement>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableStyleElement {
+pub struct TableStyleElement {
     #[serde(rename = "@type")]
     pub r#type: STTableStyleType,
     #[serde(rename = "@size")]
@@ -10599,44 +10601,44 @@ pub struct CTTableStyleElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTBooleanProperty {
+pub struct BooleanProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFontSize {
+pub struct FontSize {
     #[serde(rename = "@val")]
     pub value: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTIntProperty {
+pub struct IntProperty {
     #[serde(rename = "@val")]
     pub value: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFontName {
+pub struct FontName {
     #[serde(rename = "@val")]
     pub value: XmlString,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTVerticalAlignFontProperty {
+pub struct VerticalAlignFontProperty {
     #[serde(rename = "@val")]
     pub value: VerticalAlignRun,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFontScheme {
+pub struct FontSchemeProperty {
     #[serde(rename = "@val")]
     pub value: FontScheme,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTUnderlineProperty {
+pub struct UnderlineProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<UnderlineStyle>,
@@ -10646,7 +10648,7 @@ pub struct CTUnderlineProperty {
 pub struct Font;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFontFamily {
+pub struct FontFamily {
     #[serde(rename = "@val")]
     pub value: STFontFamily,
 }
@@ -10676,17 +10678,17 @@ pub struct SmlAGAutoFormat {
     pub apply_width_height_formats: Option<bool>,
 }
 
-pub type SmlExternalLink = Box<CTExternalLink>;
+pub type SmlExternalLink = Box<ExternalLink>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalLink {
+pub struct ExternalLink {
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalBook {
+pub struct ExternalBook {
     #[serde(rename = "sheetNames")]
     #[serde(default)]
     pub sheet_names: Option<Box<CTExternalSheetNames>>,
@@ -10695,7 +10697,7 @@ pub struct CTExternalBook {
     pub defined_names: Option<Box<CTExternalDefinedNames>>,
     #[serde(rename = "sheetDataSet")]
     #[serde(default)]
-    pub sheet_data_set: Option<Box<CTExternalSheetDataSet>>,
+    pub sheet_data_set: Option<Box<ExternalSheetDataSet>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10732,14 +10734,14 @@ pub struct CTExternalDefinedName {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalSheetDataSet {
+pub struct ExternalSheetDataSet {
     #[serde(rename = "sheetData")]
     #[serde(default)]
-    pub sheet_data: Vec<Box<CTExternalSheetData>>,
+    pub sheet_data: Vec<Box<ExternalSheetData>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalSheetData {
+pub struct ExternalSheetData {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@refreshError")]
@@ -10747,20 +10749,20 @@ pub struct CTExternalSheetData {
     pub refresh_error: Option<bool>,
     #[serde(rename = "row")]
     #[serde(default)]
-    pub row: Vec<Box<CTExternalRow>>,
+    pub row: Vec<Box<ExternalRow>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalRow {
+pub struct ExternalRow {
     #[serde(rename = "@r")]
     pub reference: u32,
     #[serde(rename = "cell")]
     #[serde(default)]
-    pub cell: Vec<Box<CTExternalCell>>,
+    pub cell: Vec<Box<ExternalCell>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTExternalCell {
+pub struct ExternalCell {
     #[serde(rename = "@r")]
     #[serde(default)]
     pub reference: Option<CellRef>,
@@ -10776,25 +10778,25 @@ pub struct CTExternalCell {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDdeLink {
+pub struct DdeLink {
     #[serde(rename = "@ddeService")]
     pub dde_service: XmlString,
     #[serde(rename = "@ddeTopic")]
     pub dde_topic: XmlString,
     #[serde(rename = "ddeItems")]
     #[serde(default)]
-    pub dde_items: Option<Box<CTDdeItems>>,
+    pub dde_items: Option<Box<DdeItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDdeItems {
+pub struct DdeItems {
     #[serde(rename = "ddeItem")]
     #[serde(default)]
-    pub dde_item: Vec<Box<CTDdeItem>>,
+    pub dde_item: Vec<Box<DdeItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTDdeItem {
+pub struct DdeItem {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
@@ -10835,23 +10837,23 @@ pub struct CTDdeValue {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOleLink {
+pub struct OleLink {
     #[serde(rename = "@progId")]
     pub prog_id: XmlString,
     #[serde(rename = "oleItems")]
     #[serde(default)]
-    pub ole_items: Option<Box<CTOleItems>>,
+    pub ole_items: Option<Box<OleItems>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOleItems {
+pub struct OleItems {
     #[serde(rename = "oleItem")]
     #[serde(default)]
-    pub ole_item: Vec<Box<CTOleItem>>,
+    pub ole_item: Vec<Box<OleItem>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTOleItem {
+pub struct OleItem {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@icon")]
@@ -10865,10 +10867,10 @@ pub struct CTOleItem {
     pub prefer_pic: Option<bool>,
 }
 
-pub type SmlTable = Box<CTTable>;
+pub type SmlTable = Box<Table>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTable {
+pub struct Table {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@name")]
@@ -10939,17 +10941,17 @@ pub struct CTTable {
     #[serde(default)]
     pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "tableColumns")]
-    pub table_columns: Box<CTTableColumns>,
+    pub table_columns: Box<TableColumns>,
     #[serde(rename = "tableStyleInfo")]
     #[serde(default)]
-    pub table_style_info: Option<Box<CTTableStyleInfo>>,
+    pub table_style_info: Option<Box<TableStyleInfo>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableStyleInfo {
+pub struct TableStyleInfo {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
@@ -10968,17 +10970,17 @@ pub struct CTTableStyleInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableColumns {
+pub struct TableColumns {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
     #[serde(rename = "tableColumn")]
     #[serde(default)]
-    pub table_column: Vec<Box<CTTableColumn>>,
+    pub table_column: Vec<Box<TableColumn>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableColumn {
+pub struct TableColumn {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
@@ -11015,27 +11017,29 @@ pub struct CTTableColumn {
     pub totals_row_cell_style: Option<XmlString>,
     #[serde(rename = "calculatedColumnFormula")]
     #[serde(default)]
-    pub calculated_column_formula: Option<Box<CTTableFormula>>,
+    pub calculated_column_formula: Option<Box<TableFormula>>,
     #[serde(rename = "totalsRowFormula")]
     #[serde(default)]
-    pub totals_row_formula: Option<Box<CTTableFormula>>,
+    pub totals_row_formula: Option<Box<TableFormula>>,
     #[serde(rename = "xmlColumnPr")]
     #[serde(default)]
-    pub xml_column_pr: Option<Box<CTXmlColumnPr>>,
+    pub xml_column_pr: Option<Box<XmlColumnProperties>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTableFormula {
+pub struct TableFormula {
+    #[serde(rename = "$text")]
+    pub text: String,
     #[serde(rename = "@array")]
     #[serde(default)]
     pub array: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTXmlColumnPr {
+pub struct XmlColumnProperties {
     #[serde(rename = "@mapId")]
     pub map_id: u32,
     #[serde(rename = "@xpath")]
@@ -11047,7 +11051,7 @@ pub struct CTXmlColumnPr {
     pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 pub type SmlVolTypes = Box<CTVolTypes>;
@@ -11059,7 +11063,7 @@ pub struct CTVolTypes {
     pub vol_type: Vec<Box<CTVolType>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11112,16 +11116,16 @@ pub struct Workbook {
     pub conformance: Option<STConformanceClass>,
     #[serde(rename = "fileVersion")]
     #[serde(default)]
-    pub file_version: Option<Box<CTFileVersion>>,
+    pub file_version: Option<Box<FileVersion>>,
     #[serde(rename = "fileSharing")]
     #[serde(default)]
-    pub file_sharing: Option<Box<CTFileSharing>>,
+    pub file_sharing: Option<Box<FileSharing>>,
     #[serde(rename = "workbookPr")]
     #[serde(default)]
     pub workbook_pr: Option<Box<WorkbookProperties>>,
     #[serde(rename = "workbookProtection")]
     #[serde(default)]
-    pub workbook_protection: Option<Box<CTWorkbookProtection>>,
+    pub workbook_protection: Option<Box<WorkbookProtection>>,
     #[serde(rename = "bookViews")]
     #[serde(default)]
     pub book_views: Option<Box<BookViews>>,
@@ -11144,7 +11148,7 @@ pub struct Workbook {
     pub ole_size: Option<Box<CTOleSize>>,
     #[serde(rename = "customWorkbookViews")]
     #[serde(default)]
-    pub custom_workbook_views: Option<Box<CTCustomWorkbookViews>>,
+    pub custom_workbook_views: Option<Box<CustomWorkbookViews>>,
     #[serde(rename = "pivotCaches")]
     #[serde(default)]
     pub pivot_caches: Option<Box<PivotCaches>>,
@@ -11156,20 +11160,20 @@ pub struct Workbook {
     pub smart_tag_types: Option<Box<CTSmartTagTypes>>,
     #[serde(rename = "webPublishing")]
     #[serde(default)]
-    pub web_publishing: Option<Box<CTWebPublishing>>,
+    pub web_publishing: Option<Box<WebPublishing>>,
     #[serde(rename = "fileRecoveryPr")]
     #[serde(default)]
-    pub file_recovery_pr: Vec<Box<CTFileRecoveryPr>>,
+    pub file_recovery_pr: Vec<Box<FileRecoveryProperties>>,
     #[serde(rename = "webPublishObjects")]
     #[serde(default)]
     pub web_publish_objects: Option<Box<CTWebPublishObjects>>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFileVersion {
+pub struct FileVersion {
     #[serde(rename = "@appName")]
     #[serde(default)]
     pub app_name: Option<String>,
@@ -11237,18 +11241,18 @@ pub struct BookView {
     pub auto_filter_date_grouping: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomWorkbookViews {
+pub struct CustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
     #[serde(default)]
-    pub custom_workbook_view: Vec<Box<CTCustomWorkbookView>>,
+    pub custom_workbook_view: Vec<Box<CustomWorkbookView>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTCustomWorkbookView {
+pub struct CustomWorkbookView {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@guid")]
@@ -11318,7 +11322,7 @@ pub struct CTCustomWorkbookView {
     pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "extLst")]
     #[serde(default)]
-    pub extension_list: Option<Box<CTExtensionList>>,
+    pub extension_list: Option<Box<ExtensionList>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11428,7 +11432,7 @@ pub struct CTSmartTagType {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFileRecoveryPr {
+pub struct FileRecoveryProperties {
     #[serde(rename = "@autoRecover")]
     #[serde(default)]
     pub auto_recover: Option<bool>,
@@ -11495,6 +11499,8 @@ pub struct DefinedNames {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DefinedName {
+    #[serde(rename = "$text")]
+    pub text: String,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@comment")]
@@ -11545,14 +11551,14 @@ pub struct DefinedName {
 pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
     #[serde(default)]
-    pub external_reference: Vec<Box<CTExternalReference>>,
+    pub external_reference: Vec<Box<ExternalReference>>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTExternalReference;
+pub struct ExternalReference;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTSheetBackgroundPicture;
+pub struct SheetBackgroundPicture;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCaches {
@@ -11568,7 +11574,7 @@ pub struct CTPivotCache {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFileSharing {
+pub struct FileSharing {
     #[serde(rename = "@readOnlyRecommended")]
     #[serde(default)]
     pub read_only_recommended: Option<bool>,
@@ -11599,7 +11605,7 @@ pub struct CTOleSize {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWorkbookProtection {
+pub struct WorkbookProtection {
     #[serde(rename = "@workbookPassword")]
     #[serde(default)]
     pub workbook_password: Option<STUnsignedShortHex>,
@@ -11648,7 +11654,7 @@ pub struct CTWorkbookProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTWebPublishing {
+pub struct WebPublishing {
     #[serde(rename = "@css")]
     #[serde(default)]
     pub css: Option<bool>,

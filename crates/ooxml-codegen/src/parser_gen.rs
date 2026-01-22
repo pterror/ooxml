@@ -453,9 +453,13 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "        }}").unwrap();
         }
 
-        // Parse child elements (only if not empty element)
-        let elem_fields: Vec<_> = fields.iter().filter(|f| !f.is_attribute).collect();
-        if !elem_fields.is_empty() {
+        // Parse child elements and text content (only if not empty element)
+        let elem_fields: Vec<_> = fields
+            .iter()
+            .filter(|f| !f.is_attribute && !f.is_text_content)
+            .collect();
+        let text_fields: Vec<_> = fields.iter().filter(|f| f.is_text_content).collect();
+        if !elem_fields.is_empty() || !text_fields.is_empty() {
             writeln!(code).unwrap();
             writeln!(code, "        // Parse child elements").unwrap();
             writeln!(code, "        if !is_empty {{").unwrap();
@@ -547,6 +551,23 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                            _ => {{}}").unwrap();
             writeln!(code, "                        }}").unwrap();
             writeln!(code, "                    }}").unwrap();
+
+            // Handle text content if any text fields
+            if !text_fields.is_empty() {
+                writeln!(code, "                    Event::Text(e) => {{").unwrap();
+                for field in &text_fields {
+                    let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+                    let base_name = base_name.trim_start_matches('_');
+                    let var_name = format!("f_{}", base_name);
+                    writeln!(
+                        code,
+                        "                        {} = Some(e.decode().unwrap_or_default().into_owned());",
+                        var_name
+                    ).unwrap();
+                }
+                writeln!(code, "                    }}").unwrap();
+            }
+
             writeln!(code, "                    Event::End(_) => break,").unwrap();
             writeln!(code, "                    Event::Eof => break,").unwrap();
             writeln!(code, "                    _ => {{}}").unwrap();
@@ -654,6 +675,7 @@ impl<'a> ParserGenerator<'a> {
                     is_optional,
                     is_attribute: true,
                     is_vec: false,
+                    is_text_content: false,
                 });
             }
             Pattern::Element { name, pattern } => {
@@ -664,6 +686,7 @@ impl<'a> ParserGenerator<'a> {
                     is_optional,
                     is_attribute: false,
                     is_vec: false,
+                    is_text_content: false,
                 });
             }
             Pattern::Sequence(items) | Pattern::Interleave(items) => {
@@ -683,6 +706,7 @@ impl<'a> ParserGenerator<'a> {
                         is_optional: false,
                         is_attribute: false,
                         is_vec: true,
+                        is_text_content: false,
                     });
                 }
                 Pattern::Ref(name) if name.contains("_EG_") => {
@@ -696,8 +720,45 @@ impl<'a> ParserGenerator<'a> {
             Pattern::Group(inner) => {
                 self.collect_fields(inner, fields, is_optional);
             }
-            Pattern::Ref(_) | Pattern::Choice(_) => {}
+            Pattern::Ref(name) => {
+                // Check if this is a reference to a simple type (text content)
+                if let Some(pattern) = self.definitions.get(name.as_str())
+                    && self.is_string_type(pattern)
+                {
+                    // This is text content - add as a "text" field
+                    fields.push(Field {
+                        name: "text".to_string(),
+                        xml_name: "$text".to_string(),
+                        pattern: Pattern::Datatype {
+                            library: "xsd".to_string(),
+                            name: "string".to_string(),
+                            params: vec![],
+                        },
+                        is_optional,
+                        is_attribute: false,
+                        is_vec: false,
+                        is_text_content: true,
+                    });
+                }
+            }
+            Pattern::Choice(_) => {}
             _ => {}
+        }
+    }
+
+    /// Check if a pattern resolves to a string type (for text content detection).
+    fn is_string_type(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Datatype { library, name, .. } => {
+                library == "xsd" && (name == "string" || name == "token" || name == "NCName")
+            }
+            Pattern::Ref(name) => {
+                // Check if the referenced type is a string type
+                self.definitions
+                    .get(name.as_str())
+                    .is_some_and(|p| self.is_string_type(p))
+            }
+            _ => false,
         }
     }
 
@@ -945,6 +1006,7 @@ struct Field {
     is_optional: bool,
     is_attribute: bool,
     is_vec: bool,
+    is_text_content: bool,
 }
 
 fn strip_namespace_prefix(name: &str) -> &str {

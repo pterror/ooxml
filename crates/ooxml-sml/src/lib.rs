@@ -5,14 +5,14 @@
 //! # Reading Workbooks
 //!
 //! ```no_run
-//! use ooxml_sml::Workbook;
+//! use ooxml_sml::{CellResolveExt, RowExt, Workbook};
 //!
 //! let mut workbook = Workbook::open("spreadsheet.xlsx")?;
-//! for sheet in workbook.sheets()? {
+//! for sheet in workbook.resolved_sheets()? {
 //!     println!("Sheet: {}", sheet.name());
 //!     for row in sheet.rows() {
-//!         for cell in row.cells() {
-//!             print!("{}\t", cell.value_as_string());
+//!         for cell in row.cells_iter() {
+//!             print!("{}\t", cell.value_as_string(sheet.context()));
 //!         }
 //!         println!();
 //!     }
@@ -53,22 +53,16 @@ pub use generated_parsers as parsers;
 // Extension traits for generated types (see ADR-003)
 pub mod ext;
 pub use ext::{
-    CellExt, CellResolveExt, CellValue, ResolveContext, RowExt, SheetDataExt, WorksheetExt,
-    parse_worksheet,
+    CellExt, CellResolveExt, CellValue, Chart, ChartType, Comment, ResolveContext, ResolvedSheet,
+    RowExt, SheetDataExt, WorksheetExt, parse_worksheet,
 };
 
 pub use error::{Error, Result};
-// Note: workbook::CellValue is aliased to avoid conflict with ext::CellValue
-// During migration (ADR-003), prefer ext::CellValue for generated types
+// Writer-required types from workbook module
 pub use workbook::{
-    AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue as WorkbookCellValue, Chart,
-    ChartSeries, ChartType, ColorFilter, ColorScale, ColorScaleValue, ColumnInfo, Comment,
-    ConditionalFormatting, ConditionalRule, ConditionalRuleType, CustomFilter, DataBar,
-    DataValidation, DataValidationErrorStyle, DataValidationOperator, DataValidationType,
-    DefinedName, DefinedNameScope, Fill, FilterColumn, FilterOperator, Font, FreezePane, IconSet,
-    IconSetValue, MergedCell, NumberFormat, PanePosition, Row, Sheet, Stylesheet, Top10Filter,
-    Workbook, builtin_format_code, excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date,
-    format_excel_datetime,
+    ConditionalRuleType, DataValidationErrorStyle, DataValidationOperator, DataValidationType,
+    DefinedName, DefinedNameScope, Stylesheet, Workbook, builtin_format_code, excel_date_to_ymd,
+    excel_datetime_to_ymdhms, format_excel_date, format_excel_datetime,
 };
 pub use writer::{
     BorderLineStyle, BorderSideStyle, BorderStyle, CellStyle, CommentBuilder, ConditionalFormat,

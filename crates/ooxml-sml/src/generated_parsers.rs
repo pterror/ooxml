@@ -3,6 +3,7 @@
 
 #![allow(unused_variables)]
 #![allow(clippy::single_match)]
+#![allow(clippy::match_single_binding)]
 #![allow(clippy::manual_is_multiple_of)]
 
 use super::generated::*;
@@ -125,7 +126,7 @@ impl FromXml for AutoFilter {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -143,7 +144,7 @@ impl FromXml for AutoFilter {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -252,7 +253,7 @@ impl FromXml for Filters {
                             }
                             b"dateGroupItem" => {
                                 f_date_group_item
-                                    .push(Box::new(CTDateGroupItem::from_xml(reader, &e, false)?));
+                                    .push(Box::new(DateGroupItem::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -266,7 +267,7 @@ impl FromXml for Filters {
                         }
                         b"dateGroupItem" => {
                             f_date_group_item
-                                .push(Box::new(CTDateGroupItem::from_xml(reader, &e, true)?));
+                                .push(Box::new(DateGroupItem::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -322,7 +323,7 @@ impl FromXml for Filter {
     }
 }
 
-impl FromXml for CTCustomFilters {
+impl FromXml for CustomFilters {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -351,7 +352,7 @@ impl FromXml for CTCustomFilters {
                         match e.name().as_ref() {
                             b"customFilter" => {
                                 f_custom_filter
-                                    .push(Box::new(CTCustomFilter::from_xml(reader, &e, false)?));
+                                    .push(Box::new(CustomFilter::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -362,7 +363,7 @@ impl FromXml for CTCustomFilters {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"customFilter" => {
                             f_custom_filter
-                                .push(Box::new(CTCustomFilter::from_xml(reader, &e, true)?));
+                                .push(Box::new(CustomFilter::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -381,7 +382,7 @@ impl FromXml for CTCustomFilters {
     }
 }
 
-impl FromXml for CTCustomFilter {
+impl FromXml for CustomFilter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -424,7 +425,7 @@ impl FromXml for CTCustomFilter {
     }
 }
 
-impl FromXml for CTTop10 {
+impl FromXml for Top10Filter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -479,7 +480,7 @@ impl FromXml for CTTop10 {
     }
 }
 
-impl FromXml for CTColorFilter {
+impl FromXml for ColorFilter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -522,7 +523,7 @@ impl FromXml for CTColorFilter {
     }
 }
 
-impl FromXml for CTIconFilter {
+impl FromXml for IconFilter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -566,7 +567,7 @@ impl FromXml for CTIconFilter {
     }
 }
 
-impl FromXml for CTDynamicFilter {
+impl FromXml for DynamicFilter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -676,7 +677,7 @@ impl FromXml for SortState {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -691,7 +692,7 @@ impl FromXml for SortState {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -789,7 +790,7 @@ impl FromXml for SortCondition {
     }
 }
 
-impl FromXml for CTDateGroupItem {
+impl FromXml for DateGroupItem {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -900,7 +901,7 @@ impl FromXml for CTXStringElement {
     }
 }
 
-impl FromXml for CTExtension {
+impl FromXml for Extension {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -935,7 +936,7 @@ impl FromXml for CTExtension {
     }
 }
 
-impl FromXml for CTObjectAnchor {
+impl FromXml for ObjectAnchor {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -994,7 +995,7 @@ impl FromXml for EGExtensionList {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"ext" => {
-                                f_ext.push(Box::new(CTExtension::from_xml(reader, &e, false)?));
+                                f_ext.push(Box::new(Extension::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1004,7 +1005,7 @@ impl FromXml for EGExtensionList {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"ext" => {
-                            f_ext.push(Box::new(CTExtension::from_xml(reader, &e, true)?));
+                            f_ext.push(Box::new(Extension::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1020,7 +1021,7 @@ impl FromXml for EGExtensionList {
     }
 }
 
-impl FromXml for CTExtensionList {
+impl FromXml for ExtensionList {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -1042,7 +1043,7 @@ impl FromXml for CTExtensionList {
     }
 }
 
-impl FromXml for CTCalcChain {
+impl FromXml for CalcChain {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1059,11 +1060,11 @@ impl FromXml for CTCalcChain {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"c" => {
-                                f_cells.push(Box::new(CTCalcCell::from_xml(reader, &e, false)?));
+                                f_cells.push(Box::new(CalcCell::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1073,11 +1074,11 @@ impl FromXml for CTCalcChain {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"c" => {
-                            f_cells.push(Box::new(CTCalcCell::from_xml(reader, &e, true)?));
+                            f_cells.push(Box::new(CalcCell::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1096,7 +1097,7 @@ impl FromXml for CTCalcChain {
     }
 }
 
-impl FromXml for CTCalcCell {
+impl FromXml for CalcCell {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1189,7 +1190,7 @@ impl FromXml for Comments {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1207,7 +1208,7 @@ impl FromXml for Comments {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1417,7 +1418,7 @@ impl FromXml for CTCommentPr {
         let mut f_lock_text = None;
         let mut f_just_last_x = None;
         let mut f_auto_scale = None;
-        let mut f_anchor: Option<Box<CTObjectAnchor>> = None;
+        let mut f_anchor: Option<Box<ObjectAnchor>> = None;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -1483,7 +1484,7 @@ impl FromXml for CTCommentPr {
                         match e.name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
-                                    Some(Box::new(CTObjectAnchor::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1493,7 +1494,7 @@ impl FromXml for CTCommentPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"anchor" => {
-                            f_anchor = Some(Box::new(CTObjectAnchor::from_xml(reader, &e, true)?));
+                            f_anchor = Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1523,7 +1524,7 @@ impl FromXml for CTCommentPr {
     }
 }
 
-impl FromXml for CTMapInfo {
+impl FromXml for MapInfo {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1552,10 +1553,10 @@ impl FromXml for CTMapInfo {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"Schema" => {
-                                f_schema.push(Box::new(CTSchema::from_xml(reader, &e, false)?));
+                                f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, false)?));
                             }
                             b"Map" => {
-                                f_map.push(Box::new(CTMap::from_xml(reader, &e, false)?));
+                                f_map.push(Box::new(XmlMap::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1565,10 +1566,10 @@ impl FromXml for CTMapInfo {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"Schema" => {
-                            f_schema.push(Box::new(CTSchema::from_xml(reader, &e, true)?));
+                            f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, true)?));
                         }
                         b"Map" => {
-                            f_map.push(Box::new(CTMap::from_xml(reader, &e, true)?));
+                            f_map.push(Box::new(XmlMap::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1589,7 +1590,7 @@ impl FromXml for CTMapInfo {
     }
 }
 
-impl FromXml for CTSchema {
+impl FromXml for XmlSchema {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -1611,7 +1612,7 @@ impl FromXml for CTSchema {
     }
 }
 
-impl FromXml for CTMap {
+impl FromXml for XmlMap {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1680,7 +1681,7 @@ impl FromXml for CTMap {
                         match e.name().as_ref() {
                             b"DataBinding" => {
                                 f_data_binding =
-                                    Some(Box::new(CTDataBinding::from_xml(reader, &e, false)?));
+                                    Some(Box::new(DataBinding::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1691,7 +1692,7 @@ impl FromXml for CTMap {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"DataBinding" => {
                             f_data_binding =
-                                Some(Box::new(CTDataBinding::from_xml(reader, &e, true)?));
+                                Some(Box::new(DataBinding::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1726,7 +1727,7 @@ impl FromXml for CTMap {
     }
 }
 
-impl FromXml for CTDataBinding {
+impl FromXml for DataBinding {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1788,7 +1789,7 @@ impl FromXml for CTDataBinding {
     }
 }
 
-impl FromXml for CTConnections {
+impl FromXml for Connections {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1805,7 +1806,7 @@ impl FromXml for CTConnections {
                         match e.name().as_ref() {
                             b"connection" => {
                                 f_connection
-                                    .push(Box::new(CTConnection::from_xml(reader, &e, false)?));
+                                    .push(Box::new(Connection::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1815,7 +1816,7 @@ impl FromXml for CTConnections {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"connection" => {
-                            f_connection.push(Box::new(CTConnection::from_xml(reader, &e, true)?));
+                            f_connection.push(Box::new(Connection::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -1833,7 +1834,7 @@ impl FromXml for CTConnections {
     }
 }
 
-impl FromXml for CTConnection {
+impl FromXml for Connection {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -1961,24 +1962,31 @@ impl FromXml for CTConnection {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"dbPr" => {
-                                f_db_pr = Some(Box::new(CTDbPr::from_xml(reader, &e, false)?));
+                                f_db_pr = Some(Box::new(DatabaseProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"olapPr" => {
-                                f_olap_pr = Some(Box::new(CTOlapPr::from_xml(reader, &e, false)?));
+                                f_olap_pr =
+                                    Some(Box::new(OlapProperties::from_xml(reader, &e, false)?));
                             }
                             b"webPr" => {
-                                f_web_pr = Some(Box::new(CTWebPr::from_xml(reader, &e, false)?));
+                                f_web_pr = Some(Box::new(WebQueryProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"textPr" => {
-                                f_text_pr = Some(Box::new(CTTextPr::from_xml(reader, &e, false)?));
+                                f_text_pr = Some(Box::new(TextImportProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"parameters" => {
                                 f_parameters =
-                                    Some(Box::new(CTParameters::from_xml(reader, &e, false)?));
+                                    Some(Box::new(Parameters::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -1988,24 +1996,26 @@ impl FromXml for CTConnection {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"dbPr" => {
-                            f_db_pr = Some(Box::new(CTDbPr::from_xml(reader, &e, true)?));
+                            f_db_pr =
+                                Some(Box::new(DatabaseProperties::from_xml(reader, &e, true)?));
                         }
                         b"olapPr" => {
-                            f_olap_pr = Some(Box::new(CTOlapPr::from_xml(reader, &e, true)?));
+                            f_olap_pr = Some(Box::new(OlapProperties::from_xml(reader, &e, true)?));
                         }
                         b"webPr" => {
-                            f_web_pr = Some(Box::new(CTWebPr::from_xml(reader, &e, true)?));
+                            f_web_pr =
+                                Some(Box::new(WebQueryProperties::from_xml(reader, &e, true)?));
                         }
                         b"textPr" => {
-                            f_text_pr = Some(Box::new(CTTextPr::from_xml(reader, &e, true)?));
+                            f_text_pr =
+                                Some(Box::new(TextImportProperties::from_xml(reader, &e, true)?));
                         }
                         b"parameters" => {
-                            f_parameters =
-                                Some(Box::new(CTParameters::from_xml(reader, &e, true)?));
+                            f_parameters = Some(Box::new(Parameters::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -2049,7 +2059,7 @@ impl FromXml for CTConnection {
     }
 }
 
-impl FromXml for CTDbPr {
+impl FromXml for DatabaseProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2105,7 +2115,7 @@ impl FromXml for CTDbPr {
     }
 }
 
-impl FromXml for CTOlapPr {
+impl FromXml for OlapProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2190,7 +2200,7 @@ impl FromXml for CTOlapPr {
     }
 }
 
-impl FromXml for CTWebPr {
+impl FromXml for WebQueryProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2278,7 +2288,7 @@ impl FromXml for CTWebPr {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"tables" => {
-                                f_tables = Some(Box::new(CTTables::from_xml(reader, &e, false)?));
+                                f_tables = Some(Box::new(DataTables::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -2288,7 +2298,7 @@ impl FromXml for CTWebPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"tables" => {
-                            f_tables = Some(Box::new(CTTables::from_xml(reader, &e, true)?));
+                            f_tables = Some(Box::new(DataTables::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -2319,7 +2329,7 @@ impl FromXml for CTWebPr {
     }
 }
 
-impl FromXml for CTParameters {
+impl FromXml for Parameters {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2347,8 +2357,7 @@ impl FromXml for CTParameters {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"parameter" => {
-                                f_parameter
-                                    .push(Box::new(CTParameter::from_xml(reader, &e, false)?));
+                                f_parameter.push(Box::new(Parameter::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -2358,7 +2367,7 @@ impl FromXml for CTParameters {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"parameter" => {
-                            f_parameter.push(Box::new(CTParameter::from_xml(reader, &e, true)?));
+                            f_parameter.push(Box::new(Parameter::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -2377,7 +2386,7 @@ impl FromXml for CTParameters {
     }
 }
 
-impl FromXml for CTParameter {
+impl FromXml for Parameter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2468,7 +2477,7 @@ impl FromXml for CTParameter {
     }
 }
 
-impl FromXml for CTTables {
+impl FromXml for DataTables {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2503,7 +2512,7 @@ impl FromXml for CTTables {
     }
 }
 
-impl FromXml for CTTableMissing {
+impl FromXml for TableMissing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -2525,7 +2534,7 @@ impl FromXml for CTTableMissing {
     }
 }
 
-impl FromXml for CTTextPr {
+impl FromXml for TextImportProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2629,7 +2638,7 @@ impl FromXml for CTTextPr {
                         match e.name().as_ref() {
                             b"textFields" => {
                                 f_text_fields =
-                                    Some(Box::new(CTTextFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TextFields::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -2639,8 +2648,7 @@ impl FromXml for CTTextPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"textFields" => {
-                            f_text_fields =
-                                Some(Box::new(CTTextFields::from_xml(reader, &e, true)?));
+                            f_text_fields = Some(Box::new(TextFields::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -2674,7 +2682,7 @@ impl FromXml for CTTextPr {
     }
 }
 
-impl FromXml for CTTextFields {
+impl FromXml for TextFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2703,7 +2711,7 @@ impl FromXml for CTTextFields {
                         match e.name().as_ref() {
                             b"textField" => {
                                 f_text_field
-                                    .push(Box::new(CTTextField::from_xml(reader, &e, false)?));
+                                    .push(Box::new(TextField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -2713,7 +2721,7 @@ impl FromXml for CTTextFields {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"textField" => {
-                            f_text_field.push(Box::new(CTTextField::from_xml(reader, &e, true)?));
+                            f_text_field.push(Box::new(TextField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -2732,7 +2740,7 @@ impl FromXml for CTTextFields {
     }
 }
 
-impl FromXml for CTTextField {
+impl FromXml for TextField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2775,7 +2783,7 @@ impl FromXml for CTTextField {
     }
 }
 
-impl FromXml for CTPivotCacheDefinition {
+impl FromXml for PivotCacheDefinition {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -2799,8 +2807,8 @@ impl FromXml for CTPivotCacheDefinition {
         let mut f_tuple_cache = None;
         let mut f_support_subquery = None;
         let mut f_support_advanced_drill = None;
-        let mut f_cache_source: Option<Box<CTCacheSource>> = None;
-        let mut f_cache_fields: Option<Box<CTCacheFields>> = None;
+        let mut f_cache_source: Option<Box<CacheSource>> = None;
+        let mut f_cache_fields: Option<Box<CacheFields>> = None;
         let mut f_cache_hierarchies = None;
         let mut f_kpis = None;
         let mut f_calculated_items = None;
@@ -2898,11 +2906,11 @@ impl FromXml for CTPivotCacheDefinition {
                         match e.name().as_ref() {
                             b"cacheSource" => {
                                 f_cache_source =
-                                    Some(Box::new(CTCacheSource::from_xml(reader, &e, false)?));
+                                    Some(Box::new(CacheSource::from_xml(reader, &e, false)?));
                             }
                             b"cacheFields" => {
                                 f_cache_fields =
-                                    Some(Box::new(CTCacheFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(CacheFields::from_xml(reader, &e, false)?));
                             }
                             b"cacheHierarchies" => {
                                 f_cache_hierarchies = Some(Box::new(CTCacheHierarchies::from_xml(
@@ -2936,7 +2944,7 @@ impl FromXml for CTPivotCacheDefinition {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -2947,11 +2955,11 @@ impl FromXml for CTPivotCacheDefinition {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cacheSource" => {
                             f_cache_source =
-                                Some(Box::new(CTCacheSource::from_xml(reader, &e, true)?));
+                                Some(Box::new(CacheSource::from_xml(reader, &e, true)?));
                         }
                         b"cacheFields" => {
                             f_cache_fields =
-                                Some(Box::new(CTCacheFields::from_xml(reader, &e, true)?));
+                                Some(Box::new(CacheFields::from_xml(reader, &e, true)?));
                         }
                         b"cacheHierarchies" => {
                             f_cache_hierarchies =
@@ -2983,7 +2991,7 @@ impl FromXml for CTPivotCacheDefinition {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -3030,7 +3038,7 @@ impl FromXml for CTPivotCacheDefinition {
     }
 }
 
-impl FromXml for CTCacheFields {
+impl FromXml for CacheFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -3059,7 +3067,7 @@ impl FromXml for CTCacheFields {
                         match e.name().as_ref() {
                             b"cacheField" => {
                                 f_cache_field
-                                    .push(Box::new(CTCacheField::from_xml(reader, &e, false)?));
+                                    .push(Box::new(CacheField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -3069,7 +3077,7 @@ impl FromXml for CTCacheFields {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cacheField" => {
-                            f_cache_field.push(Box::new(CTCacheField::from_xml(reader, &e, true)?));
+                            f_cache_field.push(Box::new(CacheField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -3088,7 +3096,7 @@ impl FromXml for CTCacheFields {
     }
 }
 
-impl FromXml for CTCacheField {
+impl FromXml for CacheField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -3180,18 +3188,18 @@ impl FromXml for CTCacheField {
                         match e.name().as_ref() {
                             b"sharedItems" => {
                                 f_shared_items =
-                                    Some(Box::new(CTSharedItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(SharedItems::from_xml(reader, &e, false)?));
                             }
                             b"fieldGroup" => {
                                 f_field_group =
-                                    Some(Box::new(CTFieldGroup::from_xml(reader, &e, false)?));
+                                    Some(Box::new(FieldGroup::from_xml(reader, &e, false)?));
                             }
                             b"mpMap" => {
                                 f_mp_map.push(Box::new(CTX::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -3202,18 +3210,17 @@ impl FromXml for CTCacheField {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"sharedItems" => {
                             f_shared_items =
-                                Some(Box::new(CTSharedItems::from_xml(reader, &e, true)?));
+                                Some(Box::new(SharedItems::from_xml(reader, &e, true)?));
                         }
                         b"fieldGroup" => {
-                            f_field_group =
-                                Some(Box::new(CTFieldGroup::from_xml(reader, &e, true)?));
+                            f_field_group = Some(Box::new(FieldGroup::from_xml(reader, &e, true)?));
                         }
                         b"mpMap" => {
                             f_mp_map.push(Box::new(CTX::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -3247,7 +3254,7 @@ impl FromXml for CTCacheField {
     }
 }
 
-impl FromXml for CTCacheSource {
+impl FromXml for CacheSource {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -3290,7 +3297,7 @@ impl FromXml for CTCacheSource {
     }
 }
 
-impl FromXml for CTWorksheetSource {
+impl FromXml for WorksheetSource {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -3339,7 +3346,7 @@ impl FromXml for CTWorksheetSource {
     }
 }
 
-impl FromXml for CTConsolidation {
+impl FromXml for Consolidation {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -3689,7 +3696,7 @@ impl FromXml for CTRangeSet {
     }
 }
 
-impl FromXml for CTSharedItems {
+impl FromXml for SharedItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4484,7 +4491,7 @@ impl FromXml for CTDateTime {
     }
 }
 
-impl FromXml for CTFieldGroup {
+impl FromXml for FieldGroup {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4528,7 +4535,7 @@ impl FromXml for CTFieldGroup {
                             }
                             b"groupItems" => {
                                 f_group_items =
-                                    Some(Box::new(CTGroupItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(GroupItems::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -4545,8 +4552,7 @@ impl FromXml for CTFieldGroup {
                                 Some(Box::new(CTDiscretePr::from_xml(reader, &e, true)?));
                         }
                         b"groupItems" => {
-                            f_group_items =
-                                Some(Box::new(CTGroupItems::from_xml(reader, &e, true)?));
+                            f_group_items = Some(Box::new(GroupItems::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -4704,7 +4710,7 @@ impl FromXml for CTDiscretePr {
     }
 }
 
-impl FromXml for CTGroupItems {
+impl FromXml for GroupItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4739,7 +4745,7 @@ impl FromXml for CTGroupItems {
     }
 }
 
-impl FromXml for CTPivotCacheRecords {
+impl FromXml for PivotCacheRecords {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4772,7 +4778,7 @@ impl FromXml for CTPivotCacheRecords {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -4786,7 +4792,7 @@ impl FromXml for CTPivotCacheRecords {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -5186,7 +5192,7 @@ impl FromXml for CTCacheHierarchy {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -5205,7 +5211,7 @@ impl FromXml for CTCacheHierarchy {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -5449,7 +5455,7 @@ impl FromXml for CTGroupLevel {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -5463,7 +5469,7 @@ impl FromXml for CTGroupLevel {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -5770,7 +5776,7 @@ impl FromXml for CTTupleCache {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -5796,7 +5802,7 @@ impl FromXml for CTTupleCache {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -6391,7 +6397,7 @@ impl FromXml for CTCalculatedItem {
     ) -> Result<Self, ParseError> {
         let mut f_field = None;
         let mut f_formula = None;
-        let mut f_pivot_area: Option<Box<CTPivotArea>> = None;
+        let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
 
         // Parse attributes
@@ -6418,11 +6424,11 @@ impl FromXml for CTCalculatedItem {
                         match e.name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
-                                    Some(Box::new(CTPivotArea::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -6432,11 +6438,11 @@ impl FromXml for CTCalculatedItem {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotArea" => {
-                            f_pivot_area = Some(Box::new(CTPivotArea::from_xml(reader, &e, true)?));
+                            f_pivot_area = Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -6577,7 +6583,7 @@ impl FromXml for CTCalculatedMember {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -6588,7 +6594,7 @@ impl FromXml for CTCalculatedMember {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -6680,7 +6686,7 @@ impl FromXml for CTPivotTableDefinition {
         let mut f_field_list_sort_ascending = None;
         let mut f_mdx_subqueries = None;
         let mut f_custom_list_sort = None;
-        let mut f_location: Option<Box<CTLocation>> = None;
+        let mut f_location: Option<Box<PivotLocation>> = None;
         let mut f_pivot_fields = None;
         let mut f_row_fields = None;
         let mut f_row_items = None;
@@ -6958,15 +6964,15 @@ impl FromXml for CTPivotTableDefinition {
                         match e.name().as_ref() {
                             b"location" => {
                                 f_location =
-                                    Some(Box::new(CTLocation::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotLocation::from_xml(reader, &e, false)?));
                             }
                             b"pivotFields" => {
                                 f_pivot_fields =
-                                    Some(Box::new(CTPivotFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotFields::from_xml(reader, &e, false)?));
                             }
                             b"rowFields" => {
                                 f_row_fields =
-                                    Some(Box::new(CTRowFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(RowFields::from_xml(reader, &e, false)?));
                             }
                             b"rowItems" => {
                                 f_row_items =
@@ -6974,7 +6980,7 @@ impl FromXml for CTPivotTableDefinition {
                             }
                             b"colFields" => {
                                 f_col_fields =
-                                    Some(Box::new(CTColFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ColFields::from_xml(reader, &e, false)?));
                             }
                             b"colItems" => {
                                 f_col_items =
@@ -6982,11 +6988,11 @@ impl FromXml for CTPivotTableDefinition {
                             }
                             b"pageFields" => {
                                 f_page_fields =
-                                    Some(Box::new(CTPageFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageFields::from_xml(reader, &e, false)?));
                             }
                             b"dataFields" => {
                                 f_data_fields =
-                                    Some(Box::new(CTDataFields::from_xml(reader, &e, false)?));
+                                    Some(Box::new(DataFields::from_xml(reader, &e, false)?));
                             }
                             b"formats" => {
                                 f_formats = Some(Box::new(CTFormats::from_xml(reader, &e, false)?));
@@ -7011,7 +7017,7 @@ impl FromXml for CTPivotTableDefinition {
                             }
                             b"filters" => {
                                 f_filters =
-                                    Some(Box::new(CTPivotFilters::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotFilters::from_xml(reader, &e, false)?));
                             }
                             b"rowHierarchiesUsage" => {
                                 f_row_hierarchies_usage = Some(Box::new(
@@ -7025,7 +7031,7 @@ impl FromXml for CTPivotTableDefinition {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7035,31 +7041,29 @@ impl FromXml for CTPivotTableDefinition {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"location" => {
-                            f_location = Some(Box::new(CTLocation::from_xml(reader, &e, true)?));
+                            f_location = Some(Box::new(PivotLocation::from_xml(reader, &e, true)?));
                         }
                         b"pivotFields" => {
                             f_pivot_fields =
-                                Some(Box::new(CTPivotFields::from_xml(reader, &e, true)?));
+                                Some(Box::new(PivotFields::from_xml(reader, &e, true)?));
                         }
                         b"rowFields" => {
-                            f_row_fields = Some(Box::new(CTRowFields::from_xml(reader, &e, true)?));
+                            f_row_fields = Some(Box::new(RowFields::from_xml(reader, &e, true)?));
                         }
                         b"rowItems" => {
                             f_row_items = Some(Box::new(CTRowItems::from_xml(reader, &e, true)?));
                         }
                         b"colFields" => {
-                            f_col_fields = Some(Box::new(CTColFields::from_xml(reader, &e, true)?));
+                            f_col_fields = Some(Box::new(ColFields::from_xml(reader, &e, true)?));
                         }
                         b"colItems" => {
                             f_col_items = Some(Box::new(CTColItems::from_xml(reader, &e, true)?));
                         }
                         b"pageFields" => {
-                            f_page_fields =
-                                Some(Box::new(CTPageFields::from_xml(reader, &e, true)?));
+                            f_page_fields = Some(Box::new(PageFields::from_xml(reader, &e, true)?));
                         }
                         b"dataFields" => {
-                            f_data_fields =
-                                Some(Box::new(CTDataFields::from_xml(reader, &e, true)?));
+                            f_data_fields = Some(Box::new(DataFields::from_xml(reader, &e, true)?));
                         }
                         b"formats" => {
                             f_formats = Some(Box::new(CTFormats::from_xml(reader, &e, true)?));
@@ -7081,7 +7085,7 @@ impl FromXml for CTPivotTableDefinition {
                                 Some(Box::new(CTPivotTableStyle::from_xml(reader, &e, true)?));
                         }
                         b"filters" => {
-                            f_filters = Some(Box::new(CTPivotFilters::from_xml(reader, &e, true)?));
+                            f_filters = Some(Box::new(PivotFilters::from_xml(reader, &e, true)?));
                         }
                         b"rowHierarchiesUsage" => {
                             f_row_hierarchies_usage =
@@ -7093,7 +7097,7 @@ impl FromXml for CTPivotTableDefinition {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7191,7 +7195,7 @@ impl FromXml for CTPivotTableDefinition {
     }
 }
 
-impl FromXml for CTLocation {
+impl FromXml for PivotLocation {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7262,7 +7266,7 @@ impl FromXml for CTLocation {
     }
 }
 
-impl FromXml for CTPivotFields {
+impl FromXml for PivotFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7291,7 +7295,7 @@ impl FromXml for CTPivotFields {
                         match e.name().as_ref() {
                             b"pivotField" => {
                                 f_pivot_field
-                                    .push(Box::new(CTPivotField::from_xml(reader, &e, false)?));
+                                    .push(Box::new(PivotField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7301,7 +7305,7 @@ impl FromXml for CTPivotFields {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotField" => {
-                            f_pivot_field.push(Box::new(CTPivotField::from_xml(reader, &e, true)?));
+                            f_pivot_field.push(Box::new(PivotField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7320,7 +7324,7 @@ impl FromXml for CTPivotFields {
     }
 }
 
-impl FromXml for CTPivotField {
+impl FromXml for PivotField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7585,16 +7589,16 @@ impl FromXml for CTPivotField {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"items" => {
-                                f_items = Some(Box::new(CTItems::from_xml(reader, &e, false)?));
+                                f_items = Some(Box::new(PivotItems::from_xml(reader, &e, false)?));
                             }
                             b"autoSortScope" => {
-                                f_auto_sort_scope = Some(Box::new(Box::new(
-                                    CTPivotArea::from_xml(reader, &e, false)?,
-                                )));
+                                f_auto_sort_scope = Some(Box::new(Box::new(PivotArea::from_xml(
+                                    reader, &e, false,
+                                )?)));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7604,15 +7608,15 @@ impl FromXml for CTPivotField {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"items" => {
-                            f_items = Some(Box::new(CTItems::from_xml(reader, &e, true)?));
+                            f_items = Some(Box::new(PivotItems::from_xml(reader, &e, true)?));
                         }
                         b"autoSortScope" => {
                             f_auto_sort_scope =
-                                Some(Box::new(Box::new(CTPivotArea::from_xml(reader, &e, true)?)));
+                                Some(Box::new(Box::new(PivotArea::from_xml(reader, &e, true)?)));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7680,7 +7684,7 @@ impl FromXml for CTPivotField {
     }
 }
 
-impl FromXml for CTItems {
+impl FromXml for PivotItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7708,7 +7712,7 @@ impl FromXml for CTItems {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"item" => {
-                                f_item.push(Box::new(CTItem::from_xml(reader, &e, false)?));
+                                f_item.push(Box::new(PivotItem::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7718,7 +7722,7 @@ impl FromXml for CTItems {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"item" => {
-                            f_item.push(Box::new(CTItem::from_xml(reader, &e, true)?));
+                            f_item.push(Box::new(PivotItem::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7737,7 +7741,7 @@ impl FromXml for CTItems {
     }
 }
 
-impl FromXml for CTItem {
+impl FromXml for PivotItem {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7834,7 +7838,7 @@ impl FromXml for CTItem {
     }
 }
 
-impl FromXml for CTPageFields {
+impl FromXml for PageFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7863,7 +7867,7 @@ impl FromXml for CTPageFields {
                         match e.name().as_ref() {
                             b"pageField" => {
                                 f_page_field
-                                    .push(Box::new(CTPageField::from_xml(reader, &e, false)?));
+                                    .push(Box::new(PageField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7873,7 +7877,7 @@ impl FromXml for CTPageFields {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pageField" => {
-                            f_page_field.push(Box::new(CTPageField::from_xml(reader, &e, true)?));
+                            f_page_field.push(Box::new(PageField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7892,7 +7896,7 @@ impl FromXml for CTPageFields {
     }
 }
 
-impl FromXml for CTPageField {
+impl FromXml for PageField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -7941,7 +7945,7 @@ impl FromXml for CTPageField {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -7952,7 +7956,7 @@ impl FromXml for CTPageField {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -7975,7 +7979,7 @@ impl FromXml for CTPageField {
     }
 }
 
-impl FromXml for CTDataFields {
+impl FromXml for DataFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8004,7 +8008,7 @@ impl FromXml for CTDataFields {
                         match e.name().as_ref() {
                             b"dataField" => {
                                 f_data_field
-                                    .push(Box::new(CTDataField::from_xml(reader, &e, false)?));
+                                    .push(Box::new(DataField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8014,7 +8018,7 @@ impl FromXml for CTDataFields {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"dataField" => {
-                            f_data_field.push(Box::new(CTDataField::from_xml(reader, &e, true)?));
+                            f_data_field.push(Box::new(DataField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -8033,7 +8037,7 @@ impl FromXml for CTDataFields {
     }
 }
 
-impl FromXml for CTDataField {
+impl FromXml for DataField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8092,7 +8096,7 @@ impl FromXml for CTDataField {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8103,7 +8107,7 @@ impl FromXml for CTDataField {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -8346,7 +8350,7 @@ impl FromXml for CTX {
     }
 }
 
-impl FromXml for CTRowFields {
+impl FromXml for RowFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8403,7 +8407,7 @@ impl FromXml for CTRowFields {
     }
 }
 
-impl FromXml for CTColFields {
+impl FromXml for ColFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8562,7 +8566,7 @@ impl FromXml for CTFormat {
     ) -> Result<Self, ParseError> {
         let mut f_action = None;
         let mut f_dxf_id = None;
-        let mut f_pivot_area: Option<Box<CTPivotArea>> = None;
+        let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
 
         // Parse attributes
@@ -8589,11 +8593,11 @@ impl FromXml for CTFormat {
                         match e.name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
-                                    Some(Box::new(CTPivotArea::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8603,11 +8607,11 @@ impl FromXml for CTFormat {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotArea" => {
-                            f_pivot_area = Some(Box::new(CTPivotArea::from_xml(reader, &e, true)?));
+                            f_pivot_area = Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -8698,7 +8702,7 @@ impl FromXml for CTConditionalFormat {
         let mut f_scope = None;
         let mut f_type = None;
         let mut f_priority: Option<u32> = None;
-        let mut f_pivot_areas: Option<Box<CTPivotAreas>> = None;
+        let mut f_pivot_areas: Option<Box<PivotAreas>> = None;
         let mut f_extension_list = None;
 
         // Parse attributes
@@ -8729,11 +8733,11 @@ impl FromXml for CTConditionalFormat {
                         match e.name().as_ref() {
                             b"pivotAreas" => {
                                 f_pivot_areas =
-                                    Some(Box::new(CTPivotAreas::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotAreas::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8743,12 +8747,11 @@ impl FromXml for CTConditionalFormat {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotAreas" => {
-                            f_pivot_areas =
-                                Some(Box::new(CTPivotAreas::from_xml(reader, &e, true)?));
+                            f_pivot_areas = Some(Box::new(PivotAreas::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -8772,7 +8775,7 @@ impl FromXml for CTConditionalFormat {
     }
 }
 
-impl FromXml for CTPivotAreas {
+impl FromXml for PivotAreas {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8801,7 +8804,7 @@ impl FromXml for CTPivotAreas {
                         match e.name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area
-                                    .push(Box::new(CTPivotArea::from_xml(reader, &e, false)?));
+                                    .push(Box::new(PivotArea::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8811,7 +8814,7 @@ impl FromXml for CTPivotAreas {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotArea" => {
-                            f_pivot_area.push(Box::new(CTPivotArea::from_xml(reader, &e, true)?));
+                            f_pivot_area.push(Box::new(PivotArea::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -8898,7 +8901,7 @@ impl FromXml for CTChartFormat {
         let mut f_chart: Option<u32> = None;
         let mut f_format: Option<u32> = None;
         let mut f_series = None;
-        let mut f_pivot_area: Option<Box<CTPivotArea>> = None;
+        let mut f_pivot_area: Option<Box<PivotArea>> = None;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8928,7 +8931,7 @@ impl FromXml for CTChartFormat {
                         match e.name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
-                                    Some(Box::new(CTPivotArea::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -8938,7 +8941,7 @@ impl FromXml for CTChartFormat {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotArea" => {
-                            f_pivot_area = Some(Box::new(CTPivotArea::from_xml(reader, &e, true)?));
+                            f_pivot_area = Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -9108,7 +9111,7 @@ impl FromXml for CTPivotHierarchy {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -9125,7 +9128,7 @@ impl FromXml for CTPivotHierarchy {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -9943,7 +9946,7 @@ impl FromXml for CTPivotTableStyle {
     }
 }
 
-impl FromXml for CTPivotFilters {
+impl FromXml for PivotFilters {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -9971,8 +9974,7 @@ impl FromXml for CTPivotFilters {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"filter" => {
-                                f_filter
-                                    .push(Box::new(CTPivotFilter::from_xml(reader, &e, false)?));
+                                f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -9982,7 +9984,7 @@ impl FromXml for CTPivotFilters {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"filter" => {
-                            f_filter.push(Box::new(CTPivotFilter::from_xml(reader, &e, true)?));
+                            f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10001,7 +10003,7 @@ impl FromXml for CTPivotFilters {
     }
 }
 
-impl FromXml for CTPivotFilter {
+impl FromXml for PivotFilter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10085,7 +10087,7 @@ impl FromXml for CTPivotFilter {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10099,7 +10101,7 @@ impl FromXml for CTPivotFilter {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10130,7 +10132,7 @@ impl FromXml for CTPivotFilter {
     }
 }
 
-impl FromXml for CTPivotArea {
+impl FromXml for PivotArea {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10220,7 +10222,7 @@ impl FromXml for CTPivotArea {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10235,7 +10237,7 @@ impl FromXml for CTPivotArea {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10439,7 +10441,7 @@ impl FromXml for CTPivotAreaReference {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10453,7 +10455,7 @@ impl FromXml for CTPivotAreaReference {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10526,7 +10528,7 @@ impl FromXml for CTIndex {
     }
 }
 
-impl FromXml for CTQueryTable {
+impl FromXml for QueryTable {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10625,13 +10627,12 @@ impl FromXml for CTQueryTable {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"queryTableRefresh" => {
-                                f_query_table_refresh = Some(Box::new(
-                                    CTQueryTableRefresh::from_xml(reader, &e, false)?,
-                                ));
+                                f_query_table_refresh =
+                                    Some(Box::new(QueryTableRefresh::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10642,11 +10643,11 @@ impl FromXml for CTQueryTable {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"queryTableRefresh" => {
                             f_query_table_refresh =
-                                Some(Box::new(CTQueryTableRefresh::from_xml(reader, &e, true)?));
+                                Some(Box::new(QueryTableRefresh::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10681,7 +10682,7 @@ impl FromXml for CTQueryTable {
     }
 }
 
-impl FromXml for CTQueryTableRefresh {
+impl FromXml for QueryTableRefresh {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10694,7 +10695,7 @@ impl FromXml for CTQueryTableRefresh {
         let mut f_next_id = None;
         let mut f_unbound_columns_left = None;
         let mut f_unbound_columns_right = None;
-        let mut f_query_table_fields: Option<Box<CTQueryTableFields>> = None;
+        let mut f_query_table_fields: Option<Box<QueryTableFields>> = None;
         let mut f_query_table_deleted_fields = None;
         let mut f_sort_state = None;
         let mut f_extension_list = None;
@@ -10742,13 +10743,12 @@ impl FromXml for CTQueryTableRefresh {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"queryTableFields" => {
-                                f_query_table_fields = Some(Box::new(
-                                    CTQueryTableFields::from_xml(reader, &e, false)?,
-                                ));
+                                f_query_table_fields =
+                                    Some(Box::new(QueryTableFields::from_xml(reader, &e, false)?));
                             }
                             b"queryTableDeletedFields" => {
                                 f_query_table_deleted_fields = Some(Box::new(
-                                    CTQueryTableDeletedFields::from_xml(reader, &e, false)?,
+                                    QueryTableDeletedFields::from_xml(reader, &e, false)?,
                                 ));
                             }
                             b"sortState" => {
@@ -10757,7 +10757,7 @@ impl FromXml for CTQueryTableRefresh {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10768,11 +10768,11 @@ impl FromXml for CTQueryTableRefresh {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"queryTableFields" => {
                             f_query_table_fields =
-                                Some(Box::new(CTQueryTableFields::from_xml(reader, &e, true)?));
+                                Some(Box::new(QueryTableFields::from_xml(reader, &e, true)?));
                         }
                         b"queryTableDeletedFields" => {
                             f_query_table_deleted_fields = Some(Box::new(
-                                CTQueryTableDeletedFields::from_xml(reader, &e, true)?,
+                                QueryTableDeletedFields::from_xml(reader, &e, true)?,
                             ));
                         }
                         b"sortState" => {
@@ -10780,7 +10780,7 @@ impl FromXml for CTQueryTableRefresh {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10809,7 +10809,7 @@ impl FromXml for CTQueryTableRefresh {
     }
 }
 
-impl FromXml for CTQueryTableDeletedFields {
+impl FromXml for QueryTableDeletedFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10905,7 +10905,7 @@ impl FromXml for CTDeletedField {
     }
 }
 
-impl FromXml for CTQueryTableFields {
+impl FromXml for QueryTableFields {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10933,9 +10933,8 @@ impl FromXml for CTQueryTableFields {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"queryTableField" => {
-                                f_query_table_field.push(Box::new(CTQueryTableField::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_query_table_field
+                                    .push(Box::new(QueryTableField::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -10946,7 +10945,7 @@ impl FromXml for CTQueryTableFields {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"queryTableField" => {
                             f_query_table_field
-                                .push(Box::new(CTQueryTableField::from_xml(reader, &e, true)?));
+                                .push(Box::new(QueryTableField::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -10965,7 +10964,7 @@ impl FromXml for CTQueryTableFields {
     }
 }
 
-impl FromXml for CTQueryTableField {
+impl FromXml for QueryTableField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11024,7 +11023,7 @@ impl FromXml for CTQueryTableField {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11035,7 +11034,7 @@ impl FromXml for CTQueryTableField {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11098,7 +11097,7 @@ impl FromXml for SharedStrings {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11112,7 +11111,7 @@ impl FromXml for SharedStrings {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11133,7 +11132,7 @@ impl FromXml for SharedStrings {
     }
 }
 
-impl FromXml for CTPhoneticRun {
+impl FromXml for PhoneticRun {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11196,7 +11195,7 @@ impl FromXml for CTPhoneticRun {
     }
 }
 
-impl FromXml for CTRElt {
+impl FromXml for RichTextElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11213,7 +11212,9 @@ impl FromXml for CTRElt {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"rPr" => {
-                                f_r_pr = Some(Box::new(CTRPrElt::from_xml(reader, &e, false)?));
+                                f_r_pr = Some(Box::new(RichTextRunProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
@@ -11226,7 +11227,8 @@ impl FromXml for CTRElt {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"rPr" => {
-                            f_r_pr = Some(Box::new(CTRPrElt::from_xml(reader, &e, true)?));
+                            f_r_pr =
+                                Some(Box::new(RichTextRunProperties::from_xml(reader, &e, true)?));
                         }
                         b"t" => {
                             f_cell_type = Some(String::new());
@@ -11248,7 +11250,7 @@ impl FromXml for CTRElt {
     }
 }
 
-impl FromXml for CTRPrElt {
+impl FromXml for RichTextRunProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -11292,14 +11294,16 @@ impl FromXml for RichString {
                                 f_cell_type = Some(read_text_content(reader)?);
                             }
                             b"r" => {
-                                f_reference.push(Box::new(CTRElt::from_xml(reader, &e, false)?));
+                                f_reference
+                                    .push(Box::new(RichTextElement::from_xml(reader, &e, false)?));
                             }
                             b"rPh" => {
-                                f_r_ph.push(Box::new(CTPhoneticRun::from_xml(reader, &e, false)?));
+                                f_r_ph.push(Box::new(PhoneticRun::from_xml(reader, &e, false)?));
                             }
                             b"phoneticPr" => {
-                                f_phonetic_pr =
-                                    Some(Box::new(CTPhoneticPr::from_xml(reader, &e, false)?));
+                                f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11312,14 +11316,15 @@ impl FromXml for RichString {
                             f_cell_type = Some(String::new());
                         }
                         b"r" => {
-                            f_reference.push(Box::new(CTRElt::from_xml(reader, &e, true)?));
+                            f_reference
+                                .push(Box::new(RichTextElement::from_xml(reader, &e, true)?));
                         }
                         b"rPh" => {
-                            f_r_ph.push(Box::new(CTPhoneticRun::from_xml(reader, &e, true)?));
+                            f_r_ph.push(Box::new(PhoneticRun::from_xml(reader, &e, true)?));
                         }
                         b"phoneticPr" => {
                             f_phonetic_pr =
-                                Some(Box::new(CTPhoneticPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11340,7 +11345,7 @@ impl FromXml for RichString {
     }
 }
 
-impl FromXml for CTPhoneticPr {
+impl FromXml for PhoneticProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11389,7 +11394,7 @@ impl FromXml for CTPhoneticPr {
     }
 }
 
-impl FromXml for CTRevisionHeaders {
+impl FromXml for RevisionHeaders {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11473,7 +11478,7 @@ impl FromXml for CTRevisionHeaders {
                         match e.name().as_ref() {
                             b"header" => {
                                 f_header
-                                    .push(Box::new(CTRevisionHeader::from_xml(reader, &e, false)?));
+                                    .push(Box::new(RevisionHeader::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11483,7 +11488,7 @@ impl FromXml for CTRevisionHeaders {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"header" => {
-                            f_header.push(Box::new(CTRevisionHeader::from_xml(reader, &e, true)?));
+                            f_header.push(Box::new(RevisionHeader::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11513,7 +11518,7 @@ impl FromXml for CTRevisionHeaders {
     }
 }
 
-impl FromXml for CTRevisions {
+impl FromXml for Revisions {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -11584,7 +11589,7 @@ impl FromXml for SmlAGRevData {
     }
 }
 
-impl FromXml for CTRevisionHeader {
+impl FromXml for RevisionHeader {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11643,13 +11648,12 @@ impl FromXml for CTRevisionHeader {
                                     Some(Box::new(CTSheetIdMap::from_xml(reader, &e, false)?));
                             }
                             b"reviewedList" => {
-                                f_reviewed_list = Some(Box::new(CTReviewedRevisions::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_reviewed_list =
+                                    Some(Box::new(ReviewedRevisions::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11664,11 +11668,11 @@ impl FromXml for CTRevisionHeader {
                         }
                         b"reviewedList" => {
                             f_reviewed_list =
-                                Some(Box::new(CTReviewedRevisions::from_xml(reader, &e, true)?));
+                                Some(Box::new(ReviewedRevisions::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11792,7 +11796,7 @@ impl FromXml for CTSheetId {
     }
 }
 
-impl FromXml for CTReviewedRevisions {
+impl FromXml for ReviewedRevisions {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11820,7 +11824,7 @@ impl FromXml for CTReviewedRevisions {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"reviewed" => {
-                                f_reviewed.push(Box::new(CTReviewed::from_xml(reader, &e, false)?));
+                                f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -11830,7 +11834,7 @@ impl FromXml for CTReviewedRevisions {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"reviewed" => {
-                            f_reviewed.push(Box::new(CTReviewed::from_xml(reader, &e, true)?));
+                            f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -11849,7 +11853,7 @@ impl FromXml for CTReviewedRevisions {
     }
 }
 
-impl FromXml for CTReviewed {
+impl FromXml for Reviewed {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11886,7 +11890,7 @@ impl FromXml for CTReviewed {
     }
 }
 
-impl FromXml for CTUndoInfo {
+impl FromXml for UndoInfo {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -11983,7 +11987,7 @@ impl FromXml for CTUndoInfo {
     }
 }
 
-impl FromXml for CTRevisionRowColumn {
+impl FromXml for RevisionRowColumn {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12045,7 +12049,7 @@ impl FromXml for CTRevisionRowColumn {
     }
 }
 
-impl FromXml for CTRevisionMove {
+impl FromXml for RevisionMove {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12102,7 +12106,7 @@ impl FromXml for CTRevisionMove {
     }
 }
 
-impl FromXml for CTRevisionCustomView {
+impl FromXml for RevisionCustomView {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12145,7 +12149,7 @@ impl FromXml for CTRevisionCustomView {
     }
 }
 
-impl FromXml for CTRevisionSheetRename {
+impl FromXml for RevisionSheetRename {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12184,7 +12188,7 @@ impl FromXml for CTRevisionSheetRename {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -12195,7 +12199,7 @@ impl FromXml for CTRevisionSheetRename {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -12219,7 +12223,7 @@ impl FromXml for CTRevisionSheetRename {
     }
 }
 
-impl FromXml for CTRevisionInsertSheet {
+impl FromXml for RevisionInsertSheet {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12270,7 +12274,7 @@ impl FromXml for CTRevisionInsertSheet {
     }
 }
 
-impl FromXml for CTRevisionCellChange {
+impl FromXml for RevisionCellChange {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12363,7 +12367,7 @@ impl FromXml for CTRevisionCellChange {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -12384,7 +12388,7 @@ impl FromXml for CTRevisionCellChange {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -12416,7 +12420,7 @@ impl FromXml for CTRevisionCellChange {
     }
 }
 
-impl FromXml for CTRevisionFormatting {
+impl FromXml for RevisionFormatting {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12476,7 +12480,7 @@ impl FromXml for CTRevisionFormatting {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -12490,7 +12494,7 @@ impl FromXml for CTRevisionFormatting {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -12517,7 +12521,7 @@ impl FromXml for CTRevisionFormatting {
     }
 }
 
-impl FromXml for CTRevisionAutoFormatting {
+impl FromXml for RevisionAutoFormatting {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12562,7 +12566,7 @@ impl FromXml for CTRevisionAutoFormatting {
     }
 }
 
-impl FromXml for CTRevisionComment {
+impl FromXml for RevisionComment {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12660,7 +12664,7 @@ impl FromXml for CTRevisionComment {
     }
 }
 
-impl FromXml for CTRevisionDefinedName {
+impl FromXml for RevisionDefinedName {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12797,7 +12801,7 @@ impl FromXml for CTRevisionDefinedName {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -12814,7 +12818,7 @@ impl FromXml for CTRevisionDefinedName {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -12855,7 +12859,7 @@ impl FromXml for CTRevisionDefinedName {
     }
 }
 
-impl FromXml for CTRevisionConflict {
+impl FromXml for RevisionConflict {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12892,7 +12896,7 @@ impl FromXml for CTRevisionConflict {
     }
 }
 
-impl FromXml for CTRevisionQueryTableField {
+impl FromXml for RevisionQueryTableField {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12944,7 +12948,7 @@ impl FromXml for CTRevisionQueryTableField {
     }
 }
 
-impl FromXml for CTUsers {
+impl FromXml for Users {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -12973,7 +12977,7 @@ impl FromXml for CTUsers {
                         match e.name().as_ref() {
                             b"userInfo" => {
                                 f_user_info
-                                    .push(Box::new(CTSharedUser::from_xml(reader, &e, false)?));
+                                    .push(Box::new(SharedUser::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -12983,7 +12987,7 @@ impl FromXml for CTUsers {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"userInfo" => {
-                            f_user_info.push(Box::new(CTSharedUser::from_xml(reader, &e, true)?));
+                            f_user_info.push(Box::new(SharedUser::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -13002,7 +13006,7 @@ impl FromXml for CTUsers {
     }
 }
 
-impl FromXml for CTSharedUser {
+impl FromXml for SharedUser {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -13046,7 +13050,7 @@ impl FromXml for CTSharedUser {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -13057,7 +13061,7 @@ impl FromXml for CTSharedUser {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -13127,7 +13131,7 @@ impl FromXml for CTMacrosheet {
                             }
                             b"dimension" => {
                                 f_dimension =
-                                    Some(Box::new(CTSheetDimension::from_xml(reader, &e, false)?));
+                                    Some(Box::new(SheetDimension::from_xml(reader, &e, false)?));
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
@@ -13161,13 +13165,13 @@ impl FromXml for CTMacrosheet {
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, false)?));
                             }
                             b"customSheetViews" => {
-                                f_custom_sheet_views = Some(Box::new(
-                                    CTCustomSheetViews::from_xml(reader, &e, false)?,
-                                ));
+                                f_custom_sheet_views =
+                                    Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
                             }
                             b"phoneticPr" => {
-                                f_phonetic_pr =
-                                    Some(Box::new(CTPhoneticPr::from_xml(reader, &e, false)?));
+                                f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
@@ -13176,7 +13180,7 @@ impl FromXml for CTMacrosheet {
                             }
                             b"printOptions" => {
                                 f_print_options =
-                                    Some(Box::new(CTPrintOptions::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
                             }
                             b"pageMargins" => {
                                 f_page_margins =
@@ -13192,11 +13196,11 @@ impl FromXml for CTMacrosheet {
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"customProperties" => {
                                 f_custom_properties = Some(Box::new(CTCustomProperties::from_xml(
@@ -13208,28 +13212,29 @@ impl FromXml for CTMacrosheet {
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"drawingHF" => {
-                                f_drawing_h_f =
-                                    Some(Box::new(CTDrawingHF::from_xml(reader, &e, false)?));
+                                f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"picture" => {
-                                f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                                f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
-                                    Some(Box::new(CTOleObjects::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -13244,7 +13249,7 @@ impl FromXml for CTMacrosheet {
                         }
                         b"dimension" => {
                             f_dimension =
-                                Some(Box::new(CTSheetDimension::from_xml(reader, &e, true)?));
+                                Some(Box::new(SheetDimension::from_xml(reader, &e, true)?));
                         }
                         b"sheetViews" => {
                             f_sheet_views = Some(Box::new(SheetViews::from_xml(reader, &e, true)?));
@@ -13275,11 +13280,11 @@ impl FromXml for CTMacrosheet {
                         }
                         b"customSheetViews" => {
                             f_custom_sheet_views =
-                                Some(Box::new(CTCustomSheetViews::from_xml(reader, &e, true)?));
+                                Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
                         }
                         b"phoneticPr" => {
                             f_phonetic_pr =
-                                Some(Box::new(CTPhoneticPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
                         }
                         b"conditionalFormatting" => {
                             f_conditional_formatting
@@ -13287,7 +13292,7 @@ impl FromXml for CTMacrosheet {
                         }
                         b"printOptions" => {
                             f_print_options =
-                                Some(Box::new(CTPrintOptions::from_xml(reader, &e, true)?));
+                                Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
                         }
                         b"pageMargins" => {
                             f_page_margins =
@@ -13301,10 +13306,10 @@ impl FromXml for CTMacrosheet {
                                 Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"rowBreaks" => {
-                            f_row_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_row_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"colBreaks" => {
-                            f_col_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_col_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"customProperties" => {
                             f_custom_properties =
@@ -13315,28 +13320,27 @@ impl FromXml for CTMacrosheet {
                         }
                         b"legacyDrawing" => {
                             f_legacy_drawing =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"legacyDrawingHF" => {
                             f_legacy_drawing_h_f =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"drawingHF" => {
                             f_drawing_h_f =
-                                Some(Box::new(CTDrawingHF::from_xml(reader, &e, true)?));
+                                Some(Box::new(DrawingHeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"picture" => {
-                            f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                            f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                 reader, &e, true,
                             )?));
                         }
                         b"oleObjects" => {
-                            f_ole_objects =
-                                Some(Box::new(CTOleObjects::from_xml(reader, &e, true)?));
+                            f_ole_objects = Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -13428,13 +13432,12 @@ impl FromXml for CTDialogsheet {
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, false)?));
                             }
                             b"customSheetViews" => {
-                                f_custom_sheet_views = Some(Box::new(
-                                    CTCustomSheetViews::from_xml(reader, &e, false)?,
-                                ));
+                                f_custom_sheet_views =
+                                    Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
                             }
                             b"printOptions" => {
                                 f_print_options =
-                                    Some(Box::new(CTPrintOptions::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
                             }
                             b"pageMargins" => {
                                 f_page_margins =
@@ -13453,27 +13456,27 @@ impl FromXml for CTDialogsheet {
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"drawingHF" => {
-                                f_drawing_h_f =
-                                    Some(Box::new(CTDrawingHF::from_xml(reader, &e, false)?));
+                                f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
-                                    Some(Box::new(CTOleObjects::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
                             }
                             b"controls" => {
-                                f_controls =
-                                    Some(Box::new(CTControls::from_xml(reader, &e, false)?));
+                                f_controls = Some(Box::new(Controls::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -13499,11 +13502,11 @@ impl FromXml for CTDialogsheet {
                         }
                         b"customSheetViews" => {
                             f_custom_sheet_views =
-                                Some(Box::new(CTCustomSheetViews::from_xml(reader, &e, true)?));
+                                Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
                         }
                         b"printOptions" => {
                             f_print_options =
-                                Some(Box::new(CTPrintOptions::from_xml(reader, &e, true)?));
+                                Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
                         }
                         b"pageMargins" => {
                             f_page_margins =
@@ -13521,26 +13524,25 @@ impl FromXml for CTDialogsheet {
                         }
                         b"legacyDrawing" => {
                             f_legacy_drawing =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"legacyDrawingHF" => {
                             f_legacy_drawing_h_f =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"drawingHF" => {
                             f_drawing_h_f =
-                                Some(Box::new(CTDrawingHF::from_xml(reader, &e, true)?));
+                                Some(Box::new(DrawingHeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"oleObjects" => {
-                            f_ole_objects =
-                                Some(Box::new(CTOleObjects::from_xml(reader, &e, true)?));
+                            f_ole_objects = Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
                         }
                         b"controls" => {
-                            f_controls = Some(Box::new(CTControls::from_xml(reader, &e, true)?));
+                            f_controls = Some(Box::new(Controls::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -13632,7 +13634,7 @@ impl FromXml for Worksheet {
                             }
                             b"dimension" => {
                                 f_dimension =
-                                    Some(Box::new(CTSheetDimension::from_xml(reader, &e, false)?));
+                                    Some(Box::new(SheetDimension::from_xml(reader, &e, false)?));
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
@@ -13650,8 +13652,9 @@ impl FromXml for Worksheet {
                                     Some(Box::new(SheetData::from_xml(reader, &e, false)?));
                             }
                             b"sheetCalcPr" => {
-                                f_sheet_calc_pr =
-                                    Some(Box::new(CTSheetCalcPr::from_xml(reader, &e, false)?));
+                                f_sheet_calc_pr = Some(Box::new(SheetCalcProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection =
@@ -13659,11 +13662,11 @@ impl FromXml for Worksheet {
                             }
                             b"protectedRanges" => {
                                 f_protected_ranges =
-                                    Some(Box::new(CTProtectedRanges::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ProtectedRanges::from_xml(reader, &e, false)?));
                             }
                             b"scenarios" => {
                                 f_scenarios =
-                                    Some(Box::new(CTScenarios::from_xml(reader, &e, false)?));
+                                    Some(Box::new(Scenarios::from_xml(reader, &e, false)?));
                             }
                             b"autoFilter" => {
                                 f_auto_filter =
@@ -13678,17 +13681,17 @@ impl FromXml for Worksheet {
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, false)?));
                             }
                             b"customSheetViews" => {
-                                f_custom_sheet_views = Some(Box::new(
-                                    CTCustomSheetViews::from_xml(reader, &e, false)?,
-                                ));
+                                f_custom_sheet_views =
+                                    Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
                             }
                             b"mergeCells" => {
                                 f_merged_cells =
                                     Some(Box::new(MergedCells::from_xml(reader, &e, false)?));
                             }
                             b"phoneticPr" => {
-                                f_phonetic_pr =
-                                    Some(Box::new(CTPhoneticPr::from_xml(reader, &e, false)?));
+                                f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
@@ -13705,7 +13708,7 @@ impl FromXml for Worksheet {
                             }
                             b"printOptions" => {
                                 f_print_options =
-                                    Some(Box::new(CTPrintOptions::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
                             }
                             b"pageMargins" => {
                                 f_page_margins =
@@ -13721,11 +13724,11 @@ impl FromXml for Worksheet {
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"customProperties" => {
                                 f_custom_properties = Some(Box::new(CTCustomProperties::from_xml(
@@ -13734,55 +13737,55 @@ impl FromXml for Worksheet {
                             }
                             b"cellWatches" => {
                                 f_cell_watches =
-                                    Some(Box::new(CTCellWatches::from_xml(reader, &e, false)?));
+                                    Some(Box::new(CellWatches::from_xml(reader, &e, false)?));
                             }
                             b"ignoredErrors" => {
                                 f_ignored_errors =
-                                    Some(Box::new(CTIgnoredErrors::from_xml(reader, &e, false)?));
+                                    Some(Box::new(IgnoredErrors::from_xml(reader, &e, false)?));
                             }
                             b"smartTags" => {
                                 f_smart_tags =
-                                    Some(Box::new(CTSmartTags::from_xml(reader, &e, false)?));
+                                    Some(Box::new(SmartTags::from_xml(reader, &e, false)?));
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, false)?));
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"drawingHF" => {
-                                f_drawing_h_f =
-                                    Some(Box::new(CTDrawingHF::from_xml(reader, &e, false)?));
+                                f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"picture" => {
-                                f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                                f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
-                                    Some(Box::new(CTOleObjects::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
                             }
                             b"controls" => {
-                                f_controls =
-                                    Some(Box::new(CTControls::from_xml(reader, &e, false)?));
+                                f_controls = Some(Box::new(Controls::from_xml(reader, &e, false)?));
                             }
                             b"webPublishItems" => {
                                 f_web_publish_items =
-                                    Some(Box::new(CTWebPublishItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(WebPublishItems::from_xml(reader, &e, false)?));
                             }
                             b"tableParts" => {
                                 f_table_parts =
-                                    Some(Box::new(CTTableParts::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TableParts::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -13797,7 +13800,7 @@ impl FromXml for Worksheet {
                         }
                         b"dimension" => {
                             f_dimension =
-                                Some(Box::new(CTSheetDimension::from_xml(reader, &e, true)?));
+                                Some(Box::new(SheetDimension::from_xml(reader, &e, true)?));
                         }
                         b"sheetViews" => {
                             f_sheet_views = Some(Box::new(SheetViews::from_xml(reader, &e, true)?));
@@ -13814,7 +13817,7 @@ impl FromXml for Worksheet {
                         }
                         b"sheetCalcPr" => {
                             f_sheet_calc_pr =
-                                Some(Box::new(CTSheetCalcPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(SheetCalcProperties::from_xml(reader, &e, true)?));
                         }
                         b"sheetProtection" => {
                             f_sheet_protection =
@@ -13822,10 +13825,10 @@ impl FromXml for Worksheet {
                         }
                         b"protectedRanges" => {
                             f_protected_ranges =
-                                Some(Box::new(CTProtectedRanges::from_xml(reader, &e, true)?));
+                                Some(Box::new(ProtectedRanges::from_xml(reader, &e, true)?));
                         }
                         b"scenarios" => {
-                            f_scenarios = Some(Box::new(CTScenarios::from_xml(reader, &e, true)?));
+                            f_scenarios = Some(Box::new(Scenarios::from_xml(reader, &e, true)?));
                         }
                         b"autoFilter" => {
                             f_auto_filter = Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
@@ -13839,7 +13842,7 @@ impl FromXml for Worksheet {
                         }
                         b"customSheetViews" => {
                             f_custom_sheet_views =
-                                Some(Box::new(CTCustomSheetViews::from_xml(reader, &e, true)?));
+                                Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
                         }
                         b"mergeCells" => {
                             f_merged_cells =
@@ -13847,7 +13850,7 @@ impl FromXml for Worksheet {
                         }
                         b"phoneticPr" => {
                             f_phonetic_pr =
-                                Some(Box::new(CTPhoneticPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
                         }
                         b"conditionalFormatting" => {
                             f_conditional_formatting
@@ -13862,7 +13865,7 @@ impl FromXml for Worksheet {
                         }
                         b"printOptions" => {
                             f_print_options =
-                                Some(Box::new(CTPrintOptions::from_xml(reader, &e, true)?));
+                                Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
                         }
                         b"pageMargins" => {
                             f_page_margins =
@@ -13876,10 +13879,10 @@ impl FromXml for Worksheet {
                                 Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"rowBreaks" => {
-                            f_row_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_row_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"colBreaks" => {
-                            f_col_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_col_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"customProperties" => {
                             f_custom_properties =
@@ -13887,53 +13890,51 @@ impl FromXml for Worksheet {
                         }
                         b"cellWatches" => {
                             f_cell_watches =
-                                Some(Box::new(CTCellWatches::from_xml(reader, &e, true)?));
+                                Some(Box::new(CellWatches::from_xml(reader, &e, true)?));
                         }
                         b"ignoredErrors" => {
                             f_ignored_errors =
-                                Some(Box::new(CTIgnoredErrors::from_xml(reader, &e, true)?));
+                                Some(Box::new(IgnoredErrors::from_xml(reader, &e, true)?));
                         }
                         b"smartTags" => {
-                            f_smart_tags = Some(Box::new(CTSmartTags::from_xml(reader, &e, true)?));
+                            f_smart_tags = Some(Box::new(SmartTags::from_xml(reader, &e, true)?));
                         }
                         b"drawing" => {
                             f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, true)?));
                         }
                         b"legacyDrawing" => {
                             f_legacy_drawing =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"legacyDrawingHF" => {
                             f_legacy_drawing_h_f =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"drawingHF" => {
                             f_drawing_h_f =
-                                Some(Box::new(CTDrawingHF::from_xml(reader, &e, true)?));
+                                Some(Box::new(DrawingHeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"picture" => {
-                            f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                            f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                 reader, &e, true,
                             )?));
                         }
                         b"oleObjects" => {
-                            f_ole_objects =
-                                Some(Box::new(CTOleObjects::from_xml(reader, &e, true)?));
+                            f_ole_objects = Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
                         }
                         b"controls" => {
-                            f_controls = Some(Box::new(CTControls::from_xml(reader, &e, true)?));
+                            f_controls = Some(Box::new(Controls::from_xml(reader, &e, true)?));
                         }
                         b"webPublishItems" => {
                             f_web_publish_items =
-                                Some(Box::new(CTWebPublishItems::from_xml(reader, &e, true)?));
+                                Some(Box::new(WebPublishItems::from_xml(reader, &e, true)?));
                         }
                         b"tableParts" => {
-                            f_table_parts =
-                                Some(Box::new(CTTableParts::from_xml(reader, &e, true)?));
+                            f_table_parts = Some(Box::new(TableParts::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -14032,7 +14033,7 @@ impl FromXml for SheetData {
     }
 }
 
-impl FromXml for CTSheetCalcPr {
+impl FromXml for SheetCalcProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -14378,7 +14379,7 @@ impl FromXml for Row {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -14392,7 +14393,7 @@ impl FromXml for Row {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -14490,7 +14491,7 @@ impl FromXml for Cell {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -14510,7 +14511,7 @@ impl FromXml for Cell {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -14611,11 +14612,12 @@ impl FromXml for SheetProperties {
                             }
                             b"outlinePr" => {
                                 f_outline_pr =
-                                    Some(Box::new(CTOutlinePr::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OutlineProperties::from_xml(reader, &e, false)?));
                             }
                             b"pageSetUpPr" => {
-                                f_page_set_up_pr =
-                                    Some(Box::new(CTPageSetUpPr::from_xml(reader, &e, false)?));
+                                f_page_set_up_pr = Some(Box::new(PageSetupProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -14628,11 +14630,12 @@ impl FromXml for SheetProperties {
                             f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                         }
                         b"outlinePr" => {
-                            f_outline_pr = Some(Box::new(CTOutlinePr::from_xml(reader, &e, true)?));
+                            f_outline_pr =
+                                Some(Box::new(OutlineProperties::from_xml(reader, &e, true)?));
                         }
                         b"pageSetUpPr" => {
                             f_page_set_up_pr =
-                                Some(Box::new(CTPageSetUpPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(PageSetupProperties::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -14661,7 +14664,7 @@ impl FromXml for SheetProperties {
     }
 }
 
-impl FromXml for CTSheetDimension {
+impl FromXml for SheetDimension {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -14721,7 +14724,7 @@ impl FromXml for SheetViews {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -14735,7 +14738,7 @@ impl FromXml for SheetViews {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -14886,7 +14889,7 @@ impl FromXml for SheetView {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -14907,7 +14910,7 @@ impl FromXml for SheetView {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -15031,7 +15034,7 @@ impl FromXml for CTPivotSelection {
         let mut f_previous_row = None;
         let mut f_previous_col = None;
         let mut f_click = None;
-        let mut f_pivot_area: Option<Box<CTPivotArea>> = None;
+        let mut f_pivot_area: Option<Box<PivotArea>> = None;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -15113,7 +15116,7 @@ impl FromXml for CTPivotSelection {
                         match e.name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
-                                    Some(Box::new(CTPivotArea::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -15123,7 +15126,7 @@ impl FromXml for CTPivotSelection {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"pivotArea" => {
-                            f_pivot_area = Some(Box::new(CTPivotArea::from_xml(reader, &e, true)?));
+                            f_pivot_area = Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -15213,7 +15216,7 @@ impl FromXml for Selection {
     }
 }
 
-impl FromXml for CTPageBreak {
+impl FromXml for PageBreaks {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15246,7 +15249,7 @@ impl FromXml for CTPageBreak {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"brk" => {
-                                f_brk.push(Box::new(CTBreak::from_xml(reader, &e, false)?));
+                                f_brk.push(Box::new(PageBreak::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -15256,7 +15259,7 @@ impl FromXml for CTPageBreak {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"brk" => {
-                            f_brk.push(Box::new(CTBreak::from_xml(reader, &e, true)?));
+                            f_brk.push(Box::new(PageBreak::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -15276,7 +15279,7 @@ impl FromXml for CTPageBreak {
     }
 }
 
-impl FromXml for CTBreak {
+impl FromXml for PageBreak {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15337,7 +15340,7 @@ impl FromXml for CTBreak {
     }
 }
 
-impl FromXml for CTOutlinePr {
+impl FromXml for OutlineProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15392,7 +15395,7 @@ impl FromXml for CTOutlinePr {
     }
 }
 
-impl FromXml for CTPageSetUpPr {
+impl FromXml for PageSetupProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15719,7 +15722,7 @@ impl FromXml for MergedCell {
     }
 }
 
-impl FromXml for CTSmartTags {
+impl FromXml for SmartTags {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15736,7 +15739,7 @@ impl FromXml for CTSmartTags {
                         match e.name().as_ref() {
                             b"cellSmartTags" => {
                                 f_cell_smart_tags
-                                    .push(Box::new(CTCellSmartTags::from_xml(reader, &e, false)?));
+                                    .push(Box::new(CellSmartTags::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -15747,7 +15750,7 @@ impl FromXml for CTSmartTags {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cellSmartTags" => {
                             f_cell_smart_tags
-                                .push(Box::new(CTCellSmartTags::from_xml(reader, &e, true)?));
+                                .push(Box::new(CellSmartTags::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -15765,7 +15768,7 @@ impl FromXml for CTSmartTags {
     }
 }
 
-impl FromXml for CTCellSmartTags {
+impl FromXml for CellSmartTags {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15794,7 +15797,7 @@ impl FromXml for CTCellSmartTags {
                         match e.name().as_ref() {
                             b"cellSmartTag" => {
                                 f_cell_smart_tag
-                                    .push(Box::new(CTCellSmartTag::from_xml(reader, &e, false)?));
+                                    .push(Box::new(CellSmartTag::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -15805,7 +15808,7 @@ impl FromXml for CTCellSmartTags {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cellSmartTag" => {
                             f_cell_smart_tag
-                                .push(Box::new(CTCellSmartTag::from_xml(reader, &e, true)?));
+                                .push(Box::new(CellSmartTag::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -15824,7 +15827,7 @@ impl FromXml for CTCellSmartTags {
     }
 }
 
-impl FromXml for CTCellSmartTag {
+impl FromXml for CellSmartTag {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15960,7 +15963,7 @@ impl FromXml for Drawing {
     }
 }
 
-impl FromXml for CTLegacyDrawing {
+impl FromXml for LegacyDrawing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -15982,7 +15985,7 @@ impl FromXml for CTLegacyDrawing {
     }
 }
 
-impl FromXml for CTDrawingHF {
+impl FromXml for DrawingHeaderFooter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -16121,7 +16124,7 @@ impl FromXml for CTDrawingHF {
     }
 }
 
-impl FromXml for CTCustomSheetViews {
+impl FromXml for CustomSheetViews {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -16137,9 +16140,8 @@ impl FromXml for CTCustomSheetViews {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"customSheetView" => {
-                                f_custom_sheet_view.push(Box::new(CTCustomSheetView::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_custom_sheet_view
+                                    .push(Box::new(CustomSheetView::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -16150,7 +16152,7 @@ impl FromXml for CTCustomSheetViews {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"customSheetView" => {
                             f_custom_sheet_view
-                                .push(Box::new(CTCustomSheetView::from_xml(reader, &e, true)?));
+                                .push(Box::new(CustomSheetView::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -16168,7 +16170,7 @@ impl FromXml for CTCustomSheetViews {
     }
 }
 
-impl FromXml for CTCustomSheetView {
+impl FromXml for CustomSheetView {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -16308,11 +16310,11 @@ impl FromXml for CTCustomSheetView {
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
-                                    Some(Box::new(CTPageBreak::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
                             }
                             b"pageMargins" => {
                                 f_page_margins =
@@ -16320,7 +16322,7 @@ impl FromXml for CTCustomSheetView {
                             }
                             b"printOptions" => {
                                 f_print_options =
-                                    Some(Box::new(CTPrintOptions::from_xml(reader, &e, false)?));
+                                    Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
                             }
                             b"pageSetup" => {
                                 f_page_setup =
@@ -16336,7 +16338,7 @@ impl FromXml for CTCustomSheetView {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -16352,10 +16354,10 @@ impl FromXml for CTCustomSheetView {
                             f_selection = Some(Box::new(Selection::from_xml(reader, &e, true)?));
                         }
                         b"rowBreaks" => {
-                            f_row_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_row_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"colBreaks" => {
-                            f_col_breaks = Some(Box::new(CTPageBreak::from_xml(reader, &e, true)?));
+                            f_col_breaks = Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
                         }
                         b"pageMargins" => {
                             f_page_margins =
@@ -16363,7 +16365,7 @@ impl FromXml for CTCustomSheetView {
                         }
                         b"printOptions" => {
                             f_print_options =
-                                Some(Box::new(CTPrintOptions::from_xml(reader, &e, true)?));
+                                Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
                         }
                         b"pageSetup" => {
                             f_page_setup = Some(Box::new(PageSetup::from_xml(reader, &e, true)?));
@@ -16377,7 +16379,7 @@ impl FromXml for CTCustomSheetView {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -16678,7 +16680,7 @@ impl FromXml for ConditionalFormatting {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -16692,7 +16694,7 @@ impl FromXml for ConditionalFormatting {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -16819,7 +16821,7 @@ impl FromXml for ConditionalRule {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -16842,7 +16844,7 @@ impl FromXml for ConditionalRule {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -16984,6 +16986,7 @@ impl FromXml for CellFormula {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_text: Option<String> = None;
         let mut f_cell_type = None;
         let mut f_aca = None;
         let mut f_reference = None;
@@ -17052,10 +17055,25 @@ impl FromXml for CellFormula {
             }
         }
 
+        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.name().as_ref() {
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => match e.name().as_ref() {
+                        _ => {}
+                    },
+                    Event::Text(e) => {
+                        f_text = Some(e.decode().unwrap_or_default().into_owned());
+                    }
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -17065,6 +17083,7 @@ impl FromXml for CellFormula {
         }
 
         Ok(Self {
+            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
             cell_type: f_cell_type,
             aca: f_aca,
             reference: f_reference,
@@ -17336,7 +17355,7 @@ impl FromXml for ConditionalFormatValue {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -17347,7 +17366,7 @@ impl FromXml for ConditionalFormatValue {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -17435,7 +17454,7 @@ impl FromXml for PageMargins {
     }
 }
 
-impl FromXml for CTPrintOptions {
+impl FromXml for PrintOptions {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -17750,7 +17769,7 @@ impl FromXml for HeaderFooter {
     }
 }
 
-impl FromXml for CTScenarios {
+impl FromXml for Scenarios {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -17788,7 +17807,7 @@ impl FromXml for CTScenarios {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"scenario" => {
-                                f_scenario.push(Box::new(CTScenario::from_xml(reader, &e, false)?));
+                                f_scenario.push(Box::new(Scenario::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -17798,7 +17817,7 @@ impl FromXml for CTScenarios {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"scenario" => {
-                            f_scenario.push(Box::new(CTScenario::from_xml(reader, &e, true)?));
+                            f_scenario.push(Box::new(Scenario::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -17976,7 +17995,7 @@ impl FromXml for SheetProtection {
     }
 }
 
-impl FromXml for CTProtectedRanges {
+impl FromXml for ProtectedRanges {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -17993,7 +18012,7 @@ impl FromXml for CTProtectedRanges {
                         match e.name().as_ref() {
                             b"protectedRange" => {
                                 f_protected_range
-                                    .push(Box::new(CTProtectedRange::from_xml(reader, &e, false)?));
+                                    .push(Box::new(ProtectedRange::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18004,7 +18023,7 @@ impl FromXml for CTProtectedRanges {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"protectedRange" => {
                             f_protected_range
-                                .push(Box::new(CTProtectedRange::from_xml(reader, &e, true)?));
+                                .push(Box::new(ProtectedRange::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18022,7 +18041,7 @@ impl FromXml for CTProtectedRanges {
     }
 }
 
-impl FromXml for CTProtectedRange {
+impl FromXml for ProtectedRange {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18102,7 +18121,7 @@ impl FromXml for CTProtectedRange {
     }
 }
 
-impl FromXml for CTScenario {
+impl FromXml for Scenario {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18156,7 +18175,7 @@ impl FromXml for CTScenario {
                         match e.name().as_ref() {
                             b"inputCells" => {
                                 f_input_cells
-                                    .push(Box::new(CTInputCells::from_xml(reader, &e, false)?));
+                                    .push(Box::new(InputCells::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18166,7 +18185,7 @@ impl FromXml for CTScenario {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"inputCells" => {
-                            f_input_cells.push(Box::new(CTInputCells::from_xml(reader, &e, true)?));
+                            f_input_cells.push(Box::new(InputCells::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18190,7 +18209,7 @@ impl FromXml for CTScenario {
     }
 }
 
-impl FromXml for CTInputCells {
+impl FromXml for InputCells {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18251,7 +18270,7 @@ impl FromXml for CTInputCells {
     }
 }
 
-impl FromXml for CTCellWatches {
+impl FromXml for CellWatches {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18268,7 +18287,7 @@ impl FromXml for CTCellWatches {
                         match e.name().as_ref() {
                             b"cellWatch" => {
                                 f_cell_watch
-                                    .push(Box::new(CTCellWatch::from_xml(reader, &e, false)?));
+                                    .push(Box::new(CellWatch::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18278,7 +18297,7 @@ impl FromXml for CTCellWatches {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cellWatch" => {
-                            f_cell_watch.push(Box::new(CTCellWatch::from_xml(reader, &e, true)?));
+                            f_cell_watch.push(Box::new(CellWatch::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18296,7 +18315,7 @@ impl FromXml for CTCellWatches {
     }
 }
 
-impl FromXml for CTCellWatch {
+impl FromXml for CellWatch {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18333,14 +18352,14 @@ impl FromXml for CTCellWatch {
     }
 }
 
-impl FromXml for CTChartsheet {
+impl FromXml for Chartsheet {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_sheet_properties = None;
-        let mut f_sheet_views: Option<Box<CTChartsheetViews>> = None;
+        let mut f_sheet_views: Option<Box<ChartsheetViews>> = None;
         let mut f_sheet_protection = None;
         let mut f_custom_sheet_views = None;
         let mut f_page_margins = None;
@@ -18362,21 +18381,22 @@ impl FromXml for CTChartsheet {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"sheetPr" => {
-                                f_sheet_properties =
-                                    Some(Box::new(CTChartsheetPr::from_xml(reader, &e, false)?));
+                                f_sheet_properties = Some(Box::new(
+                                    ChartsheetProperties::from_xml(reader, &e, false)?,
+                                ));
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
-                                    Some(Box::new(CTChartsheetViews::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ChartsheetViews::from_xml(reader, &e, false)?));
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection = Some(Box::new(
-                                    CTChartsheetProtection::from_xml(reader, &e, false)?,
+                                    ChartsheetProtection::from_xml(reader, &e, false)?,
                                 ));
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views = Some(Box::new(
-                                    CTCustomChartsheetViews::from_xml(reader, &e, false)?,
+                                    CustomChartsheetViews::from_xml(reader, &e, false)?,
                                 ));
                             }
                             b"pageMargins" => {
@@ -18384,8 +18404,9 @@ impl FromXml for CTChartsheet {
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
                             }
                             b"pageSetup" => {
-                                f_page_setup =
-                                    Some(Box::new(CTCsPageSetup::from_xml(reader, &e, false)?));
+                                f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"headerFooter" => {
                                 f_header_footer =
@@ -18396,28 +18417,29 @@ impl FromXml for CTChartsheet {
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
-                                    Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
                             }
                             b"drawingHF" => {
-                                f_drawing_h_f =
-                                    Some(Box::new(CTDrawingHF::from_xml(reader, &e, false)?));
+                                f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"picture" => {
-                                f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                                f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
                             b"webPublishItems" => {
                                 f_web_publish_items =
-                                    Some(Box::new(CTWebPublishItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(WebPublishItems::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18428,21 +18450,19 @@ impl FromXml for CTChartsheet {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"sheetPr" => {
                             f_sheet_properties =
-                                Some(Box::new(CTChartsheetPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(ChartsheetProperties::from_xml(reader, &e, true)?));
                         }
                         b"sheetViews" => {
                             f_sheet_views =
-                                Some(Box::new(CTChartsheetViews::from_xml(reader, &e, true)?));
+                                Some(Box::new(ChartsheetViews::from_xml(reader, &e, true)?));
                         }
                         b"sheetProtection" => {
-                            f_sheet_protection = Some(Box::new(CTChartsheetProtection::from_xml(
-                                reader, &e, true,
-                            )?));
+                            f_sheet_protection =
+                                Some(Box::new(ChartsheetProtection::from_xml(reader, &e, true)?));
                         }
                         b"customSheetViews" => {
-                            f_custom_sheet_views = Some(Box::new(
-                                CTCustomChartsheetViews::from_xml(reader, &e, true)?,
-                            ));
+                            f_custom_sheet_views =
+                                Some(Box::new(CustomChartsheetViews::from_xml(reader, &e, true)?));
                         }
                         b"pageMargins" => {
                             f_page_margins =
@@ -18450,7 +18470,7 @@ impl FromXml for CTChartsheet {
                         }
                         b"pageSetup" => {
                             f_page_setup =
-                                Some(Box::new(CTCsPageSetup::from_xml(reader, &e, true)?));
+                                Some(Box::new(ChartsheetPageSetup::from_xml(reader, &e, true)?));
                         }
                         b"headerFooter" => {
                             f_header_footer =
@@ -18461,28 +18481,28 @@ impl FromXml for CTChartsheet {
                         }
                         b"legacyDrawing" => {
                             f_legacy_drawing =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"legacyDrawingHF" => {
                             f_legacy_drawing_h_f =
-                                Some(Box::new(CTLegacyDrawing::from_xml(reader, &e, true)?));
+                                Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
                         }
                         b"drawingHF" => {
                             f_drawing_h_f =
-                                Some(Box::new(CTDrawingHF::from_xml(reader, &e, true)?));
+                                Some(Box::new(DrawingHeaderFooter::from_xml(reader, &e, true)?));
                         }
                         b"picture" => {
-                            f_picture = Some(Box::new(CTSheetBackgroundPicture::from_xml(
+                            f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                 reader, &e, true,
                             )?));
                         }
                         b"webPublishItems" => {
                             f_web_publish_items =
-                                Some(Box::new(CTWebPublishItems::from_xml(reader, &e, true)?));
+                                Some(Box::new(WebPublishItems::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18515,7 +18535,7 @@ impl FromXml for CTChartsheet {
     }
 }
 
-impl FromXml for CTChartsheetPr {
+impl FromXml for ChartsheetProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18578,7 +18598,7 @@ impl FromXml for CTChartsheetPr {
     }
 }
 
-impl FromXml for CTChartsheetViews {
+impl FromXml for ChartsheetViews {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18596,11 +18616,11 @@ impl FromXml for CTChartsheetViews {
                         match e.name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view
-                                    .push(Box::new(CTChartsheetView::from_xml(reader, &e, false)?));
+                                    .push(Box::new(ChartsheetView::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18611,11 +18631,11 @@ impl FromXml for CTChartsheetViews {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"sheetView" => {
                             f_sheet_view
-                                .push(Box::new(CTChartsheetView::from_xml(reader, &e, true)?));
+                                .push(Box::new(ChartsheetView::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18634,7 +18654,7 @@ impl FromXml for CTChartsheetViews {
     }
 }
 
-impl FromXml for CTChartsheetView {
+impl FromXml for ChartsheetView {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18678,7 +18698,7 @@ impl FromXml for CTChartsheetView {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18689,7 +18709,7 @@ impl FromXml for CTChartsheetView {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18712,7 +18732,7 @@ impl FromXml for CTChartsheetView {
     }
 }
 
-impl FromXml for CTChartsheetProtection {
+impl FromXml for ChartsheetProtection {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18785,7 +18805,7 @@ impl FromXml for CTChartsheetProtection {
     }
 }
 
-impl FromXml for CTCsPageSetup {
+impl FromXml for ChartsheetPageSetup {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18888,7 +18908,7 @@ impl FromXml for CTCsPageSetup {
     }
 }
 
-impl FromXml for CTCustomChartsheetViews {
+impl FromXml for CustomChartsheetViews {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18904,9 +18924,9 @@ impl FromXml for CTCustomChartsheetViews {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"customSheetView" => {
-                                f_custom_sheet_view.push(Box::new(
-                                    CTCustomChartsheetView::from_xml(reader, &e, false)?,
-                                ));
+                                f_custom_sheet_view.push(Box::new(CustomChartsheetView::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -18916,9 +18936,8 @@ impl FromXml for CTCustomChartsheetViews {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"customSheetView" => {
-                            f_custom_sheet_view.push(Box::new(CTCustomChartsheetView::from_xml(
-                                reader, &e, true,
-                            )?));
+                            f_custom_sheet_view
+                                .push(Box::new(CustomChartsheetView::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -18936,7 +18955,7 @@ impl FromXml for CTCustomChartsheetViews {
     }
 }
 
-impl FromXml for CTCustomChartsheetView {
+impl FromXml for CustomChartsheetView {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -18985,8 +19004,9 @@ impl FromXml for CTCustomChartsheetView {
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
                             }
                             b"pageSetup" => {
-                                f_page_setup =
-                                    Some(Box::new(CTCsPageSetup::from_xml(reader, &e, false)?));
+                                f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"headerFooter" => {
                                 f_header_footer =
@@ -19005,7 +19025,7 @@ impl FromXml for CTCustomChartsheetView {
                         }
                         b"pageSetup" => {
                             f_page_setup =
-                                Some(Box::new(CTCsPageSetup::from_xml(reader, &e, true)?));
+                                Some(Box::new(ChartsheetPageSetup::from_xml(reader, &e, true)?));
                         }
                         b"headerFooter" => {
                             f_header_footer =
@@ -19116,7 +19136,7 @@ impl FromXml for CTCustomProperty {
     }
 }
 
-impl FromXml for CTOleObjects {
+impl FromXml for OleObjects {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19133,7 +19153,7 @@ impl FromXml for CTOleObjects {
                         match e.name().as_ref() {
                             b"oleObject" => {
                                 f_ole_object
-                                    .push(Box::new(CTOleObject::from_xml(reader, &e, false)?));
+                                    .push(Box::new(OleObject::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19143,7 +19163,7 @@ impl FromXml for CTOleObjects {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"oleObject" => {
-                            f_ole_object.push(Box::new(CTOleObject::from_xml(reader, &e, true)?));
+                            f_ole_object.push(Box::new(OleObject::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19161,7 +19181,7 @@ impl FromXml for CTOleObjects {
     }
 }
 
-impl FromXml for CTOleObject {
+impl FromXml for OleObject {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19215,7 +19235,7 @@ impl FromXml for CTOleObject {
                         match e.name().as_ref() {
                             b"objectPr" => {
                                 f_object_pr =
-                                    Some(Box::new(CTObjectPr::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ObjectProperties::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19225,7 +19245,8 @@ impl FromXml for CTOleObject {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"objectPr" => {
-                            f_object_pr = Some(Box::new(CTObjectPr::from_xml(reader, &e, true)?));
+                            f_object_pr =
+                                Some(Box::new(ObjectProperties::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19250,7 +19271,7 @@ impl FromXml for CTOleObject {
     }
 }
 
-impl FromXml for CTObjectPr {
+impl FromXml for ObjectProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19267,7 +19288,7 @@ impl FromXml for CTObjectPr {
         let mut f_macro = None;
         let mut f_alt_text = None;
         let mut f_dde = None;
-        let mut f_anchor: Option<Box<CTObjectAnchor>> = None;
+        let mut f_anchor: Option<Box<ObjectAnchor>> = None;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19329,7 +19350,7 @@ impl FromXml for CTObjectPr {
                         match e.name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
-                                    Some(Box::new(CTObjectAnchor::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19339,7 +19360,7 @@ impl FromXml for CTObjectPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"anchor" => {
-                            f_anchor = Some(Box::new(CTObjectAnchor::from_xml(reader, &e, true)?));
+                            f_anchor = Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19368,7 +19389,7 @@ impl FromXml for CTObjectPr {
     }
 }
 
-impl FromXml for CTWebPublishItems {
+impl FromXml for WebPublishItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19397,7 +19418,7 @@ impl FromXml for CTWebPublishItems {
                         match e.name().as_ref() {
                             b"webPublishItem" => {
                                 f_web_publish_item
-                                    .push(Box::new(CTWebPublishItem::from_xml(reader, &e, false)?));
+                                    .push(Box::new(WebPublishItem::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19408,7 +19429,7 @@ impl FromXml for CTWebPublishItems {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"webPublishItem" => {
                             f_web_publish_item
-                                .push(Box::new(CTWebPublishItem::from_xml(reader, &e, true)?));
+                                .push(Box::new(WebPublishItem::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19427,7 +19448,7 @@ impl FromXml for CTWebPublishItems {
     }
 }
 
-impl FromXml for CTWebPublishItem {
+impl FromXml for WebPublishItem {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19508,7 +19529,7 @@ impl FromXml for CTWebPublishItem {
     }
 }
 
-impl FromXml for CTControls {
+impl FromXml for Controls {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19524,7 +19545,7 @@ impl FromXml for CTControls {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"control" => {
-                                f_control.push(Box::new(CTControl::from_xml(reader, &e, false)?));
+                                f_control.push(Box::new(Control::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19534,7 +19555,7 @@ impl FromXml for CTControls {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"control" => {
-                            f_control.push(Box::new(CTControl::from_xml(reader, &e, true)?));
+                            f_control.push(Box::new(Control::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19550,7 +19571,7 @@ impl FromXml for CTControls {
     }
 }
 
-impl FromXml for CTControl {
+impl FromXml for Control {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19635,7 +19656,7 @@ impl FromXml for CTControlPr {
         let mut f_linked_cell = None;
         let mut f_list_fill_range = None;
         let mut f_cf = None;
-        let mut f_anchor: Option<Box<CTObjectAnchor>> = None;
+        let mut f_anchor: Option<Box<ObjectAnchor>> = None;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19709,7 +19730,7 @@ impl FromXml for CTControlPr {
                         match e.name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
-                                    Some(Box::new(CTObjectAnchor::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19719,7 +19740,7 @@ impl FromXml for CTControlPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"anchor" => {
-                            f_anchor = Some(Box::new(CTObjectAnchor::from_xml(reader, &e, true)?));
+                            f_anchor = Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19751,7 +19772,7 @@ impl FromXml for CTControlPr {
     }
 }
 
-impl FromXml for CTIgnoredErrors {
+impl FromXml for IgnoredErrors {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19769,11 +19790,11 @@ impl FromXml for CTIgnoredErrors {
                         match e.name().as_ref() {
                             b"ignoredError" => {
                                 f_ignored_error
-                                    .push(Box::new(CTIgnoredError::from_xml(reader, &e, false)?));
+                                    .push(Box::new(IgnoredError::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19784,11 +19805,11 @@ impl FromXml for CTIgnoredErrors {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"ignoredError" => {
                             f_ignored_error
-                                .push(Box::new(CTIgnoredError::from_xml(reader, &e, true)?));
+                                .push(Box::new(IgnoredError::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19807,7 +19828,7 @@ impl FromXml for CTIgnoredErrors {
     }
 }
 
-impl FromXml for CTIgnoredError {
+impl FromXml for IgnoredError {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19899,7 +19920,7 @@ impl FromXml for CTIgnoredError {
     }
 }
 
-impl FromXml for CTTableParts {
+impl FromXml for TableParts {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -19928,7 +19949,7 @@ impl FromXml for CTTableParts {
                         match e.name().as_ref() {
                             b"tablePart" => {
                                 f_table_part
-                                    .push(Box::new(CTTablePart::from_xml(reader, &e, false)?));
+                                    .push(Box::new(TablePart::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -19938,7 +19959,7 @@ impl FromXml for CTTableParts {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"tablePart" => {
-                            f_table_part.push(Box::new(CTTablePart::from_xml(reader, &e, true)?));
+                            f_table_part.push(Box::new(TablePart::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -19957,7 +19978,7 @@ impl FromXml for CTTableParts {
     }
 }
 
-impl FromXml for CTTablePart {
+impl FromXml for TablePart {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -19979,7 +20000,7 @@ impl FromXml for CTTablePart {
     }
 }
 
-impl FromXml for CTMetadata {
+impl FromXml for Metadata {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20002,11 +20023,11 @@ impl FromXml for CTMetadata {
                         match e.name().as_ref() {
                             b"metadataTypes" => {
                                 f_metadata_types =
-                                    Some(Box::new(CTMetadataTypes::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MetadataTypes::from_xml(reader, &e, false)?));
                             }
                             b"metadataStrings" => {
                                 f_metadata_strings =
-                                    Some(Box::new(CTMetadataStrings::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MetadataStrings::from_xml(reader, &e, false)?));
                             }
                             b"mdxMetadata" => {
                                 f_mdx_metadata =
@@ -20018,15 +20039,15 @@ impl FromXml for CTMetadata {
                             }
                             b"cellMetadata" => {
                                 f_cell_metadata =
-                                    Some(Box::new(CTMetadataBlocks::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MetadataBlocks::from_xml(reader, &e, false)?));
                             }
                             b"valueMetadata" => {
                                 f_value_metadata =
-                                    Some(Box::new(CTMetadataBlocks::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MetadataBlocks::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20037,11 +20058,11 @@ impl FromXml for CTMetadata {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"metadataTypes" => {
                             f_metadata_types =
-                                Some(Box::new(CTMetadataTypes::from_xml(reader, &e, true)?));
+                                Some(Box::new(MetadataTypes::from_xml(reader, &e, true)?));
                         }
                         b"metadataStrings" => {
                             f_metadata_strings =
-                                Some(Box::new(CTMetadataStrings::from_xml(reader, &e, true)?));
+                                Some(Box::new(MetadataStrings::from_xml(reader, &e, true)?));
                         }
                         b"mdxMetadata" => {
                             f_mdx_metadata =
@@ -20053,15 +20074,15 @@ impl FromXml for CTMetadata {
                         }
                         b"cellMetadata" => {
                             f_cell_metadata =
-                                Some(Box::new(CTMetadataBlocks::from_xml(reader, &e, true)?));
+                                Some(Box::new(MetadataBlocks::from_xml(reader, &e, true)?));
                         }
                         b"valueMetadata" => {
                             f_value_metadata =
-                                Some(Box::new(CTMetadataBlocks::from_xml(reader, &e, true)?));
+                                Some(Box::new(MetadataBlocks::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -20085,7 +20106,7 @@ impl FromXml for CTMetadata {
     }
 }
 
-impl FromXml for CTMetadataTypes {
+impl FromXml for MetadataTypes {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20114,7 +20135,7 @@ impl FromXml for CTMetadataTypes {
                         match e.name().as_ref() {
                             b"metadataType" => {
                                 f_metadata_type
-                                    .push(Box::new(CTMetadataType::from_xml(reader, &e, false)?));
+                                    .push(Box::new(MetadataType::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20125,7 +20146,7 @@ impl FromXml for CTMetadataTypes {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"metadataType" => {
                             f_metadata_type
-                                .push(Box::new(CTMetadataType::from_xml(reader, &e, true)?));
+                                .push(Box::new(MetadataType::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -20144,7 +20165,7 @@ impl FromXml for CTMetadataTypes {
     }
 }
 
-impl FromXml for CTMetadataType {
+impl FromXml for MetadataType {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20344,7 +20365,7 @@ impl FromXml for CTMetadataType {
     }
 }
 
-impl FromXml for CTMetadataBlocks {
+impl FromXml for MetadataBlocks {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20372,7 +20393,7 @@ impl FromXml for CTMetadataBlocks {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"bk" => {
-                                f_bk.push(Box::new(CTMetadataBlock::from_xml(reader, &e, false)?));
+                                f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20382,7 +20403,7 @@ impl FromXml for CTMetadataBlocks {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"bk" => {
-                            f_bk.push(Box::new(CTMetadataBlock::from_xml(reader, &e, true)?));
+                            f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -20401,7 +20422,7 @@ impl FromXml for CTMetadataBlocks {
     }
 }
 
-impl FromXml for CTMetadataBlock {
+impl FromXml for MetadataBlock {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20417,7 +20438,7 @@ impl FromXml for CTMetadataBlock {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"rc" => {
-                                f_rc.push(Box::new(CTMetadataRecord::from_xml(reader, &e, false)?));
+                                f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20427,7 +20448,7 @@ impl FromXml for CTMetadataBlock {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"rc" => {
-                            f_rc.push(Box::new(CTMetadataRecord::from_xml(reader, &e, true)?));
+                            f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -20443,7 +20464,7 @@ impl FromXml for CTMetadataBlock {
     }
 }
 
-impl FromXml for CTMetadataRecord {
+impl FromXml for MetadataRecord {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -20526,7 +20547,7 @@ impl FromXml for CTFutureMetadata {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20540,7 +20561,7 @@ impl FromXml for CTFutureMetadata {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -20578,7 +20599,7 @@ impl FromXml for CTFutureMetadataBlock {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -20589,7 +20610,7 @@ impl FromXml for CTFutureMetadataBlock {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -21026,7 +21047,7 @@ impl FromXml for CTMetadataStringIndex {
     }
 }
 
-impl FromXml for CTMetadataStrings {
+impl FromXml for MetadataStrings {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21085,7 +21106,7 @@ impl FromXml for CTMetadataStrings {
     }
 }
 
-impl FromXml for CTSingleXmlCells {
+impl FromXml for SingleXmlCells {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21102,7 +21123,7 @@ impl FromXml for CTSingleXmlCells {
                         match e.name().as_ref() {
                             b"singleXmlCell" => {
                                 f_single_xml_cell
-                                    .push(Box::new(CTSingleXmlCell::from_xml(reader, &e, false)?));
+                                    .push(Box::new(SingleXmlCell::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -21113,7 +21134,7 @@ impl FromXml for CTSingleXmlCells {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"singleXmlCell" => {
                             f_single_xml_cell
-                                .push(Box::new(CTSingleXmlCell::from_xml(reader, &e, true)?));
+                                .push(Box::new(SingleXmlCell::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -21131,7 +21152,7 @@ impl FromXml for CTSingleXmlCells {
     }
 }
 
-impl FromXml for CTSingleXmlCell {
+impl FromXml for SingleXmlCell {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21140,7 +21161,7 @@ impl FromXml for CTSingleXmlCell {
         let mut f_id: Option<u32> = None;
         let mut f_reference: Option<CellRef> = None;
         let mut f_connection_id: Option<u32> = None;
-        let mut f_xml_cell_pr: Option<Box<CTXmlCellPr>> = None;
+        let mut f_xml_cell_pr: Option<Box<XmlCellProperties>> = None;
         let mut f_extension_list = None;
 
         // Parse attributes
@@ -21171,11 +21192,11 @@ impl FromXml for CTSingleXmlCell {
                         match e.name().as_ref() {
                             b"xmlCellPr" => {
                                 f_xml_cell_pr =
-                                    Some(Box::new(CTXmlCellPr::from_xml(reader, &e, false)?));
+                                    Some(Box::new(XmlCellProperties::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -21186,11 +21207,11 @@ impl FromXml for CTSingleXmlCell {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"xmlCellPr" => {
                             f_xml_cell_pr =
-                                Some(Box::new(CTXmlCellPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(XmlCellProperties::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -21214,7 +21235,7 @@ impl FromXml for CTSingleXmlCell {
     }
 }
 
-impl FromXml for CTXmlCellPr {
+impl FromXml for XmlCellProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21222,7 +21243,7 @@ impl FromXml for CTXmlCellPr {
     ) -> Result<Self, ParseError> {
         let mut f_id: Option<u32> = None;
         let mut f_unique_name = None;
-        let mut f_xml_pr: Option<Box<CTXmlPr>> = None;
+        let mut f_xml_pr: Option<Box<XmlProperties>> = None;
         let mut f_extension_list = None;
 
         // Parse attributes
@@ -21248,11 +21269,12 @@ impl FromXml for CTXmlCellPr {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"xmlPr" => {
-                                f_xml_pr = Some(Box::new(CTXmlPr::from_xml(reader, &e, false)?));
+                                f_xml_pr =
+                                    Some(Box::new(XmlProperties::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -21262,11 +21284,11 @@ impl FromXml for CTXmlCellPr {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"xmlPr" => {
-                            f_xml_pr = Some(Box::new(CTXmlPr::from_xml(reader, &e, true)?));
+                            f_xml_pr = Some(Box::new(XmlProperties::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -21287,7 +21309,7 @@ impl FromXml for CTXmlCellPr {
     }
 }
 
-impl FromXml for CTXmlPr {
+impl FromXml for XmlProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21326,7 +21348,7 @@ impl FromXml for CTXmlPr {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -21337,7 +21359,7 @@ impl FromXml for CTXmlPr {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -21423,7 +21445,7 @@ impl FromXml for Stylesheet {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -21467,7 +21489,7 @@ impl FromXml for Stylesheet {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -22019,7 +22041,7 @@ impl FromXml for Fill {
     }
 }
 
-impl FromXml for CTPatternFill {
+impl FromXml for PatternFill {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -22145,7 +22167,7 @@ impl FromXml for Color {
     }
 }
 
-impl FromXml for CTGradientFill {
+impl FromXml for GradientFill {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -22198,7 +22220,7 @@ impl FromXml for CTGradientFill {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"stop" => {
-                                f_stop.push(Box::new(CTGradientStop::from_xml(reader, &e, false)?));
+                                f_stop.push(Box::new(GradientStop::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -22208,7 +22230,7 @@ impl FromXml for CTGradientFill {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"stop" => {
-                            f_stop.push(Box::new(CTGradientStop::from_xml(reader, &e, true)?));
+                            f_stop.push(Box::new(GradientStop::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -22232,7 +22254,7 @@ impl FromXml for CTGradientFill {
     }
 }
 
-impl FromXml for CTGradientStop {
+impl FromXml for GradientStop {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -22606,7 +22628,7 @@ impl FromXml for Format {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -22625,7 +22647,7 @@ impl FromXml for Format {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -22770,7 +22792,7 @@ impl FromXml for CellStyle {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -22781,7 +22803,7 @@ impl FromXml for CellStyle {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -22909,7 +22931,7 @@ impl FromXml for DifferentialFormat {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -22940,7 +22962,7 @@ impl FromXml for DifferentialFormat {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -22982,11 +23004,11 @@ impl FromXml for Colors {
                         match e.name().as_ref() {
                             b"indexedColors" => {
                                 f_indexed_colors =
-                                    Some(Box::new(CTIndexedColors::from_xml(reader, &e, false)?));
+                                    Some(Box::new(IndexedColors::from_xml(reader, &e, false)?));
                             }
                             b"mruColors" => {
                                 f_mru_colors =
-                                    Some(Box::new(CTMRUColors::from_xml(reader, &e, false)?));
+                                    Some(Box::new(MostRecentColors::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -22997,10 +23019,11 @@ impl FromXml for Colors {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"indexedColors" => {
                             f_indexed_colors =
-                                Some(Box::new(CTIndexedColors::from_xml(reader, &e, true)?));
+                                Some(Box::new(IndexedColors::from_xml(reader, &e, true)?));
                         }
                         b"mruColors" => {
-                            f_mru_colors = Some(Box::new(CTMRUColors::from_xml(reader, &e, true)?));
+                            f_mru_colors =
+                                Some(Box::new(MostRecentColors::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -23019,7 +23042,7 @@ impl FromXml for Colors {
     }
 }
 
-impl FromXml for CTIndexedColors {
+impl FromXml for IndexedColors {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23035,8 +23058,7 @@ impl FromXml for CTIndexedColors {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"rgbColor" => {
-                                f_rgb_color
-                                    .push(Box::new(CTRgbColor::from_xml(reader, &e, false)?));
+                                f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -23046,7 +23068,7 @@ impl FromXml for CTIndexedColors {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"rgbColor" => {
-                            f_rgb_color.push(Box::new(CTRgbColor::from_xml(reader, &e, true)?));
+                            f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -23064,7 +23086,7 @@ impl FromXml for CTIndexedColors {
     }
 }
 
-impl FromXml for CTMRUColors {
+impl FromXml for MostRecentColors {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23106,7 +23128,7 @@ impl FromXml for CTMRUColors {
     }
 }
 
-impl FromXml for CTRgbColor {
+impl FromXml for RgbColor {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23254,9 +23276,9 @@ impl FromXml for TableStyle {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"tableStyleElement" => {
-                                f_table_style_element.push(Box::new(
-                                    CTTableStyleElement::from_xml(reader, &e, false)?,
-                                ));
+                                f_table_style_element.push(Box::new(TableStyleElement::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -23267,7 +23289,7 @@ impl FromXml for TableStyle {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"tableStyleElement" => {
                             f_table_style_element
-                                .push(Box::new(CTTableStyleElement::from_xml(reader, &e, true)?));
+                                .push(Box::new(TableStyleElement::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -23289,7 +23311,7 @@ impl FromXml for TableStyle {
     }
 }
 
-impl FromXml for CTTableStyleElement {
+impl FromXml for TableStyleElement {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23338,7 +23360,7 @@ impl FromXml for CTTableStyleElement {
     }
 }
 
-impl FromXml for CTBooleanProperty {
+impl FromXml for BooleanProperty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23373,7 +23395,7 @@ impl FromXml for CTBooleanProperty {
     }
 }
 
-impl FromXml for CTFontSize {
+impl FromXml for FontSize {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23410,7 +23432,7 @@ impl FromXml for CTFontSize {
     }
 }
 
-impl FromXml for CTIntProperty {
+impl FromXml for IntProperty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23447,7 +23469,7 @@ impl FromXml for CTIntProperty {
     }
 }
 
-impl FromXml for CTFontName {
+impl FromXml for FontName {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23484,7 +23506,7 @@ impl FromXml for CTFontName {
     }
 }
 
-impl FromXml for CTVerticalAlignFontProperty {
+impl FromXml for VerticalAlignFontProperty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23521,7 +23543,7 @@ impl FromXml for CTVerticalAlignFontProperty {
     }
 }
 
-impl FromXml for CTFontScheme {
+impl FromXml for FontSchemeProperty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23558,7 +23580,7 @@ impl FromXml for CTFontScheme {
     }
 }
 
-impl FromXml for CTUnderlineProperty {
+impl FromXml for UnderlineProperty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23615,7 +23637,7 @@ impl FromXml for Font {
     }
 }
 
-impl FromXml for CTFontFamily {
+impl FromXml for FontFamily {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23725,7 +23747,7 @@ impl FromXml for SmlAGAutoFormat {
     }
 }
 
-impl FromXml for CTExternalLink {
+impl FromXml for ExternalLink {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23742,7 +23764,7 @@ impl FromXml for CTExternalLink {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -23753,7 +23775,7 @@ impl FromXml for CTExternalLink {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -23771,7 +23793,7 @@ impl FromXml for CTExternalLink {
     }
 }
 
-impl FromXml for CTExternalBook {
+impl FromXml for ExternalBook {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -23799,9 +23821,9 @@ impl FromXml for CTExternalBook {
                                 )?));
                             }
                             b"sheetDataSet" => {
-                                f_sheet_data_set = Some(Box::new(
-                                    CTExternalSheetDataSet::from_xml(reader, &e, false)?,
-                                ));
+                                f_sheet_data_set = Some(Box::new(ExternalSheetDataSet::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -23820,9 +23842,8 @@ impl FromXml for CTExternalBook {
                             )?));
                         }
                         b"sheetDataSet" => {
-                            f_sheet_data_set = Some(Box::new(CTExternalSheetDataSet::from_xml(
-                                reader, &e, true,
-                            )?));
+                            f_sheet_data_set =
+                                Some(Box::new(ExternalSheetDataSet::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24020,7 +24041,7 @@ impl FromXml for CTExternalDefinedName {
     }
 }
 
-impl FromXml for CTExternalSheetDataSet {
+impl FromXml for ExternalSheetDataSet {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24036,7 +24057,7 @@ impl FromXml for CTExternalSheetDataSet {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"sheetData" => {
-                                f_sheet_data.push(Box::new(CTExternalSheetData::from_xml(
+                                f_sheet_data.push(Box::new(ExternalSheetData::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
@@ -24049,7 +24070,7 @@ impl FromXml for CTExternalSheetDataSet {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"sheetData" => {
                             f_sheet_data
-                                .push(Box::new(CTExternalSheetData::from_xml(reader, &e, true)?));
+                                .push(Box::new(ExternalSheetData::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24067,7 +24088,7 @@ impl FromXml for CTExternalSheetDataSet {
     }
 }
 
-impl FromXml for CTExternalSheetData {
+impl FromXml for ExternalSheetData {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24100,7 +24121,7 @@ impl FromXml for CTExternalSheetData {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"row" => {
-                                f_row.push(Box::new(CTExternalRow::from_xml(reader, &e, false)?));
+                                f_row.push(Box::new(ExternalRow::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24110,7 +24131,7 @@ impl FromXml for CTExternalSheetData {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"row" => {
-                            f_row.push(Box::new(CTExternalRow::from_xml(reader, &e, true)?));
+                            f_row.push(Box::new(ExternalRow::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24131,7 +24152,7 @@ impl FromXml for CTExternalSheetData {
     }
 }
 
-impl FromXml for CTExternalRow {
+impl FromXml for ExternalRow {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24159,7 +24180,7 @@ impl FromXml for CTExternalRow {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"cell" => {
-                                f_cell.push(Box::new(CTExternalCell::from_xml(reader, &e, false)?));
+                                f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24169,7 +24190,7 @@ impl FromXml for CTExternalRow {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"cell" => {
-                            f_cell.push(Box::new(CTExternalCell::from_xml(reader, &e, true)?));
+                            f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24188,7 +24209,7 @@ impl FromXml for CTExternalRow {
     }
 }
 
-impl FromXml for CTExternalCell {
+impl FromXml for ExternalCell {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24257,7 +24278,7 @@ impl FromXml for CTExternalCell {
     }
 }
 
-impl FromXml for CTDdeLink {
+impl FromXml for DdeLink {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24291,7 +24312,7 @@ impl FromXml for CTDdeLink {
                         match e.name().as_ref() {
                             b"ddeItems" => {
                                 f_dde_items =
-                                    Some(Box::new(CTDdeItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(DdeItems::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24301,7 +24322,7 @@ impl FromXml for CTDdeLink {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"ddeItems" => {
-                            f_dde_items = Some(Box::new(CTDdeItems::from_xml(reader, &e, true)?));
+                            f_dde_items = Some(Box::new(DdeItems::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24323,7 +24344,7 @@ impl FromXml for CTDdeLink {
     }
 }
 
-impl FromXml for CTDdeItems {
+impl FromXml for DdeItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24339,7 +24360,7 @@ impl FromXml for CTDdeItems {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"ddeItem" => {
-                                f_dde_item.push(Box::new(CTDdeItem::from_xml(reader, &e, false)?));
+                                f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24349,7 +24370,7 @@ impl FromXml for CTDdeItems {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"ddeItem" => {
-                            f_dde_item.push(Box::new(CTDdeItem::from_xml(reader, &e, true)?));
+                            f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24367,7 +24388,7 @@ impl FromXml for CTDdeItems {
     }
 }
 
-impl FromXml for CTDdeItem {
+impl FromXml for DdeItem {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24563,7 +24584,7 @@ impl FromXml for CTDdeValue {
     }
 }
 
-impl FromXml for CTOleLink {
+impl FromXml for OleLink {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24592,7 +24613,7 @@ impl FromXml for CTOleLink {
                         match e.name().as_ref() {
                             b"oleItems" => {
                                 f_ole_items =
-                                    Some(Box::new(CTOleItems::from_xml(reader, &e, false)?));
+                                    Some(Box::new(OleItems::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24602,7 +24623,7 @@ impl FromXml for CTOleLink {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"oleItems" => {
-                            f_ole_items = Some(Box::new(CTOleItems::from_xml(reader, &e, true)?));
+                            f_ole_items = Some(Box::new(OleItems::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24621,7 +24642,7 @@ impl FromXml for CTOleLink {
     }
 }
 
-impl FromXml for CTOleItems {
+impl FromXml for OleItems {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24637,7 +24658,7 @@ impl FromXml for CTOleItems {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"oleItem" => {
-                                f_ole_item.push(Box::new(CTOleItem::from_xml(reader, &e, false)?));
+                                f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24647,7 +24668,7 @@ impl FromXml for CTOleItems {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"oleItem" => {
-                            f_ole_item.push(Box::new(CTOleItem::from_xml(reader, &e, true)?));
+                            f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24665,7 +24686,7 @@ impl FromXml for CTOleItems {
     }
 }
 
-impl FromXml for CTOleItem {
+impl FromXml for OleItem {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24720,7 +24741,7 @@ impl FromXml for CTOleItem {
     }
 }
 
-impl FromXml for CTTable {
+impl FromXml for Table {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -24750,7 +24771,7 @@ impl FromXml for CTTable {
         let mut f_connection_id = None;
         let mut f_auto_filter = None;
         let mut f_sort_state = None;
-        let mut f_table_columns: Option<Box<CTTableColumns>> = None;
+        let mut f_table_columns: Option<Box<TableColumns>> = None;
         let mut f_table_style_info = None;
         let mut f_extension_list = None;
 
@@ -24866,15 +24887,15 @@ impl FromXml for CTTable {
                             }
                             b"tableColumns" => {
                                 f_table_columns =
-                                    Some(Box::new(CTTableColumns::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TableColumns::from_xml(reader, &e, false)?));
                             }
                             b"tableStyleInfo" => {
                                 f_table_style_info =
-                                    Some(Box::new(CTTableStyleInfo::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TableStyleInfo::from_xml(reader, &e, false)?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -24891,15 +24912,15 @@ impl FromXml for CTTable {
                         }
                         b"tableColumns" => {
                             f_table_columns =
-                                Some(Box::new(CTTableColumns::from_xml(reader, &e, true)?));
+                                Some(Box::new(TableColumns::from_xml(reader, &e, true)?));
                         }
                         b"tableStyleInfo" => {
                             f_table_style_info =
-                                Some(Box::new(CTTableStyleInfo::from_xml(reader, &e, true)?));
+                                Some(Box::new(TableStyleInfo::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -24946,7 +24967,7 @@ impl FromXml for CTTable {
     }
 }
 
-impl FromXml for CTTableStyleInfo {
+impl FromXml for TableStyleInfo {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -25007,7 +25028,7 @@ impl FromXml for CTTableStyleInfo {
     }
 }
 
-impl FromXml for CTTableColumns {
+impl FromXml for TableColumns {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -25036,7 +25057,7 @@ impl FromXml for CTTableColumns {
                         match e.name().as_ref() {
                             b"tableColumn" => {
                                 f_table_column
-                                    .push(Box::new(CTTableColumn::from_xml(reader, &e, false)?));
+                                    .push(Box::new(TableColumn::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -25046,8 +25067,7 @@ impl FromXml for CTTableColumns {
                     }
                     Event::Empty(e) => match e.name().as_ref() {
                         b"tableColumn" => {
-                            f_table_column
-                                .push(Box::new(CTTableColumn::from_xml(reader, &e, true)?));
+                            f_table_column.push(Box::new(TableColumn::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -25066,7 +25086,7 @@ impl FromXml for CTTableColumns {
     }
 }
 
-impl FromXml for CTTableColumn {
+impl FromXml for TableColumn {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -25153,19 +25173,20 @@ impl FromXml for CTTableColumn {
                         match e.name().as_ref() {
                             b"calculatedColumnFormula" => {
                                 f_calculated_column_formula =
-                                    Some(Box::new(CTTableFormula::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TableFormula::from_xml(reader, &e, false)?));
                             }
                             b"totalsRowFormula" => {
                                 f_totals_row_formula =
-                                    Some(Box::new(CTTableFormula::from_xml(reader, &e, false)?));
+                                    Some(Box::new(TableFormula::from_xml(reader, &e, false)?));
                             }
                             b"xmlColumnPr" => {
-                                f_xml_column_pr =
-                                    Some(Box::new(CTXmlColumnPr::from_xml(reader, &e, false)?));
+                                f_xml_column_pr = Some(Box::new(XmlColumnProperties::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -25176,19 +25197,19 @@ impl FromXml for CTTableColumn {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"calculatedColumnFormula" => {
                             f_calculated_column_formula =
-                                Some(Box::new(CTTableFormula::from_xml(reader, &e, true)?));
+                                Some(Box::new(TableFormula::from_xml(reader, &e, true)?));
                         }
                         b"totalsRowFormula" => {
                             f_totals_row_formula =
-                                Some(Box::new(CTTableFormula::from_xml(reader, &e, true)?));
+                                Some(Box::new(TableFormula::from_xml(reader, &e, true)?));
                         }
                         b"xmlColumnPr" => {
                             f_xml_column_pr =
-                                Some(Box::new(CTXmlColumnPr::from_xml(reader, &e, true)?));
+                                Some(Box::new(XmlColumnProperties::from_xml(reader, &e, true)?));
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -25221,12 +25242,13 @@ impl FromXml for CTTableColumn {
     }
 }
 
-impl FromXml for CTTableFormula {
+impl FromXml for TableFormula {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_text: Option<String> = None;
         let mut f_array = None;
 
         // Parse attributes
@@ -25240,10 +25262,25 @@ impl FromXml for CTTableFormula {
             }
         }
 
+        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.name().as_ref() {
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => match e.name().as_ref() {
+                        _ => {}
+                    },
+                    Event::Text(e) => {
+                        f_text = Some(e.decode().unwrap_or_default().into_owned());
+                    }
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -25252,11 +25289,14 @@ impl FromXml for CTTableFormula {
             }
         }
 
-        Ok(Self { array: f_array })
+        Ok(Self {
+            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
+            array: f_array,
+        })
     }
 }
 
-impl FromXml for CTXmlColumnPr {
+impl FromXml for XmlColumnProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -25300,7 +25340,7 @@ impl FromXml for CTXmlColumnPr {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -25311,7 +25351,7 @@ impl FromXml for CTXmlColumnPr {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -25355,7 +25395,7 @@ impl FromXml for CTVolTypes {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -25369,7 +25409,7 @@ impl FromXml for CTVolTypes {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -25666,11 +25706,11 @@ impl FromXml for Workbook {
                         match e.name().as_ref() {
                             b"fileVersion" => {
                                 f_file_version =
-                                    Some(Box::new(CTFileVersion::from_xml(reader, &e, false)?));
+                                    Some(Box::new(FileVersion::from_xml(reader, &e, false)?));
                             }
                             b"fileSharing" => {
                                 f_file_sharing =
-                                    Some(Box::new(CTFileSharing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(FileSharing::from_xml(reader, &e, false)?));
                             }
                             b"workbookPr" => {
                                 f_workbook_pr = Some(Box::new(WorkbookProperties::from_xml(
@@ -25679,7 +25719,7 @@ impl FromXml for Workbook {
                             }
                             b"workbookProtection" => {
                                 f_workbook_protection = Some(Box::new(
-                                    CTWorkbookProtection::from_xml(reader, &e, false)?,
+                                    WorkbookProtection::from_xml(reader, &e, false)?,
                                 ));
                             }
                             b"bookViews" => {
@@ -25713,7 +25753,7 @@ impl FromXml for Workbook {
                             }
                             b"customWorkbookViews" => {
                                 f_custom_workbook_views = Some(Box::new(
-                                    CTCustomWorkbookViews::from_xml(reader, &e, false)?,
+                                    CustomWorkbookViews::from_xml(reader, &e, false)?,
                                 ));
                             }
                             b"pivotCaches" => {
@@ -25730,11 +25770,12 @@ impl FromXml for Workbook {
                             }
                             b"webPublishing" => {
                                 f_web_publishing =
-                                    Some(Box::new(CTWebPublishing::from_xml(reader, &e, false)?));
+                                    Some(Box::new(WebPublishing::from_xml(reader, &e, false)?));
                             }
                             b"fileRecoveryPr" => {
-                                f_file_recovery_pr
-                                    .push(Box::new(CTFileRecoveryPr::from_xml(reader, &e, false)?));
+                                f_file_recovery_pr.push(Box::new(
+                                    FileRecoveryProperties::from_xml(reader, &e, false)?,
+                                ));
                             }
                             b"webPublishObjects" => {
                                 f_web_publish_objects = Some(Box::new(
@@ -25743,7 +25784,7 @@ impl FromXml for Workbook {
                             }
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -25754,11 +25795,11 @@ impl FromXml for Workbook {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"fileVersion" => {
                             f_file_version =
-                                Some(Box::new(CTFileVersion::from_xml(reader, &e, true)?));
+                                Some(Box::new(FileVersion::from_xml(reader, &e, true)?));
                         }
                         b"fileSharing" => {
                             f_file_sharing =
-                                Some(Box::new(CTFileSharing::from_xml(reader, &e, true)?));
+                                Some(Box::new(FileSharing::from_xml(reader, &e, true)?));
                         }
                         b"workbookPr" => {
                             f_workbook_pr =
@@ -25766,7 +25807,7 @@ impl FromXml for Workbook {
                         }
                         b"workbookProtection" => {
                             f_workbook_protection =
-                                Some(Box::new(CTWorkbookProtection::from_xml(reader, &e, true)?));
+                                Some(Box::new(WorkbookProtection::from_xml(reader, &e, true)?));
                         }
                         b"bookViews" => {
                             f_book_views = Some(Box::new(BookViews::from_xml(reader, &e, true)?));
@@ -25795,7 +25836,7 @@ impl FromXml for Workbook {
                         }
                         b"customWorkbookViews" => {
                             f_custom_workbook_views =
-                                Some(Box::new(CTCustomWorkbookViews::from_xml(reader, &e, true)?));
+                                Some(Box::new(CustomWorkbookViews::from_xml(reader, &e, true)?));
                         }
                         b"pivotCaches" => {
                             f_pivot_caches =
@@ -25811,11 +25852,12 @@ impl FromXml for Workbook {
                         }
                         b"webPublishing" => {
                             f_web_publishing =
-                                Some(Box::new(CTWebPublishing::from_xml(reader, &e, true)?));
+                                Some(Box::new(WebPublishing::from_xml(reader, &e, true)?));
                         }
                         b"fileRecoveryPr" => {
-                            f_file_recovery_pr
-                                .push(Box::new(CTFileRecoveryPr::from_xml(reader, &e, true)?));
+                            f_file_recovery_pr.push(Box::new(FileRecoveryProperties::from_xml(
+                                reader, &e, true,
+                            )?));
                         }
                         b"webPublishObjects" => {
                             f_web_publish_objects =
@@ -25823,7 +25865,7 @@ impl FromXml for Workbook {
                         }
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -25860,7 +25902,7 @@ impl FromXml for Workbook {
     }
 }
 
-impl FromXml for CTFileVersion {
+impl FromXml for FileVersion {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -26055,7 +26097,7 @@ impl FromXml for BookView {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -26066,7 +26108,7 @@ impl FromXml for BookView {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -26097,7 +26139,7 @@ impl FromXml for BookView {
     }
 }
 
-impl FromXml for CTCustomWorkbookViews {
+impl FromXml for CustomWorkbookViews {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -26114,7 +26156,7 @@ impl FromXml for CTCustomWorkbookViews {
                         match e.name().as_ref() {
                             b"customWorkbookView" => {
                                 f_custom_workbook_view.push(Box::new(
-                                    CTCustomWorkbookView::from_xml(reader, &e, false)?,
+                                    CustomWorkbookView::from_xml(reader, &e, false)?,
                                 ));
                             }
                             _ => {
@@ -26126,7 +26168,7 @@ impl FromXml for CTCustomWorkbookViews {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"customWorkbookView" => {
                             f_custom_workbook_view
-                                .push(Box::new(CTCustomWorkbookView::from_xml(reader, &e, true)?));
+                                .push(Box::new(CustomWorkbookView::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -26144,7 +26186,7 @@ impl FromXml for CTCustomWorkbookViews {
     }
 }
 
-impl FromXml for CTCustomWorkbookView {
+impl FromXml for CustomWorkbookView {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -26288,7 +26330,7 @@ impl FromXml for CTCustomWorkbookView {
                         match e.name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
-                                    Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
+                                    Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
                             }
                             _ => {
                                 // Skip unknown element
@@ -26299,7 +26341,7 @@ impl FromXml for CTCustomWorkbookView {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"extLst" => {
                             f_extension_list =
-                                Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
+                                Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -26713,7 +26755,7 @@ impl FromXml for CTSmartTagType {
     }
 }
 
-impl FromXml for CTFileRecoveryPr {
+impl FromXml for FileRecoveryProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -26928,6 +26970,7 @@ impl FromXml for DefinedName {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_text: Option<String> = None;
         let mut f_name: Option<XmlString> = None;
         let mut f_comment = None;
         let mut f_custom_menu = None;
@@ -27011,10 +27054,25 @@ impl FromXml for DefinedName {
             }
         }
 
+        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.name().as_ref() {
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => match e.name().as_ref() {
+                        _ => {}
+                    },
+                    Event::Text(e) => {
+                        f_text = Some(e.decode().unwrap_or_default().into_owned());
+                    }
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -27024,6 +27082,7 @@ impl FromXml for DefinedName {
         }
 
         Ok(Self {
+            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             comment: f_comment,
             custom_menu: f_custom_menu,
@@ -27059,7 +27118,7 @@ impl FromXml for ExternalReferences {
                     Event::Start(e) => {
                         match e.name().as_ref() {
                             b"externalReference" => {
-                                f_external_reference.push(Box::new(CTExternalReference::from_xml(
+                                f_external_reference.push(Box::new(ExternalReference::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
@@ -27072,7 +27131,7 @@ impl FromXml for ExternalReferences {
                     Event::Empty(e) => match e.name().as_ref() {
                         b"externalReference" => {
                             f_external_reference
-                                .push(Box::new(CTExternalReference::from_xml(reader, &e, true)?));
+                                .push(Box::new(ExternalReference::from_xml(reader, &e, true)?));
                         }
                         _ => {}
                     },
@@ -27090,7 +27149,7 @@ impl FromXml for ExternalReferences {
     }
 }
 
-impl FromXml for CTExternalReference {
+impl FromXml for ExternalReference {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -27112,7 +27171,7 @@ impl FromXml for CTExternalReference {
     }
 }
 
-impl FromXml for CTSheetBackgroundPicture {
+impl FromXml for SheetBackgroundPicture {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         _start: &BytesStart,
@@ -27217,7 +27276,7 @@ impl FromXml for CTPivotCache {
     }
 }
 
-impl FromXml for CTFileSharing {
+impl FromXml for FileSharing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -27328,7 +27387,7 @@ impl FromXml for CTOleSize {
     }
 }
 
-impl FromXml for CTWorkbookProtection {
+impl FromXml for WorkbookProtection {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -27449,7 +27508,7 @@ impl FromXml for CTWorkbookProtection {
     }
 }
 
-impl FromXml for CTWebPublishing {
+impl FromXml for WebPublishing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,

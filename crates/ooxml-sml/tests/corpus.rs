@@ -14,7 +14,7 @@ fn test_chart_parsing() {
     }
 
     let mut wb = Workbook::open(path).expect("Failed to open workbook");
-    let sheets = wb.sheets().expect("Failed to load sheets");
+    let sheets = wb.resolved_sheets().expect("Failed to load sheets");
 
     let mut total_charts = 0;
     for sheet in &sheets {
@@ -22,12 +22,7 @@ fn test_chart_parsing() {
         if !charts.is_empty() {
             eprintln!("Sheet '{}' has {} chart(s)", sheet.name(), charts.len());
             for chart in charts {
-                eprintln!(
-                    "  Type: {:?}, Title: {:?}, Series: {}",
-                    chart.chart_type(),
-                    chart.title(),
-                    chart.series().len()
-                );
+                eprintln!("  Type: {:?}, Title: {:?}", chart.chart_type, chart.title,);
                 total_charts += 1;
             }
         }
@@ -63,7 +58,7 @@ fn test_napierone_xlsx_corpus() {
             match Workbook::open(&path) {
                 Ok(mut wb) => {
                     // Try to actually load the sheets
-                    match wb.sheets() {
+                    match wb.resolved_sheets() {
                         Ok(_) => success += 1,
                         Err(e) => {
                             failures.push((path.display().to_string(), e.to_string()));

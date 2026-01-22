@@ -3,6 +3,10 @@
 //! This module provides the main entry point for working with XLSX files.
 
 use crate::error::{Error, Result};
+use crate::ext::{
+    Chart as ExtChart, ChartType as ExtChartType, Comment as ExtComment, ResolvedSheet,
+    parse_worksheet,
+};
 use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -129,35 +133,6 @@ impl<R: Read + Seek> Workbook<R> {
         self.sheet_info.iter().map(|s| s.name.as_str()).collect()
     }
 
-    /// Get a sheet by index.
-    pub fn sheet(&mut self, index: usize) -> Result<Sheet> {
-        let info = self
-            .sheet_info
-            .get(index)
-            .ok_or_else(|| Error::Invalid(format!("Sheet index {} out of range", index)))?
-            .clone();
-
-        self.load_sheet(&info)
-    }
-
-    /// Get a sheet by name.
-    pub fn sheet_by_name(&mut self, name: &str) -> Result<Sheet> {
-        let info = self
-            .sheet_info
-            .iter()
-            .find(|s| s.name == name)
-            .ok_or_else(|| Error::Invalid(format!("Sheet '{}' not found", name)))?
-            .clone();
-
-        self.load_sheet(&info)
-    }
-
-    /// Load all sheets.
-    pub fn sheets(&mut self) -> Result<Vec<Sheet>> {
-        let infos: Vec<_> = self.sheet_info.clone();
-        infos.iter().map(|info| self.load_sheet(info)).collect()
-    }
-
     /// Get the workbook stylesheet.
     pub fn styles(&self) -> &Stylesheet {
         &self.styles
@@ -197,9 +172,52 @@ impl<R: Read + Seek> Workbook<R> {
             .iter()
             .filter(move |d| d.local_sheet_id == Some(sheet_index))
     }
+    // =========================================================================
+    // New API using generated types (ADR-003)
+    // =========================================================================
 
-    /// Load a sheet's data.
-    fn load_sheet(&mut self, info: &SheetInfo) -> Result<Sheet> {
+    /// Get a sheet by index using the new generated parser.
+    ///
+    /// Returns a `ResolvedSheet` which wraps the generated `types::Worksheet`
+    /// and provides automatic value resolution via extension traits.
+    ///
+    /// This is the recommended API for new code.
+    pub fn resolved_sheet(&mut self, index: usize) -> Result<ResolvedSheet> {
+        let info = self
+            .sheet_info
+            .get(index)
+            .ok_or_else(|| Error::Invalid(format!("Sheet index {} out of range", index)))?
+            .clone();
+
+        self.load_resolved_sheet(&info)
+    }
+
+    /// Get a sheet by name using the new generated parser.
+    ///
+    /// Returns a `ResolvedSheet` which wraps the generated `types::Worksheet`
+    /// and provides automatic value resolution via extension traits.
+    pub fn resolved_sheet_by_name(&mut self, name: &str) -> Result<ResolvedSheet> {
+        let info = self
+            .sheet_info
+            .iter()
+            .find(|s| s.name == name)
+            .ok_or_else(|| Error::Invalid(format!("Sheet '{}' not found", name)))?
+            .clone();
+
+        self.load_resolved_sheet(&info)
+    }
+
+    /// Load all sheets using the new generated parser.
+    pub fn resolved_sheets(&mut self) -> Result<Vec<ResolvedSheet>> {
+        let infos: Vec<_> = self.sheet_info.clone();
+        infos
+            .iter()
+            .map(|info| self.load_resolved_sheet(info))
+            .collect()
+    }
+
+    /// Load a sheet using the generated parser.
+    fn load_resolved_sheet(&mut self, info: &SheetInfo) -> Result<ResolvedSheet> {
         // Find the sheet path from relationships
         let rel = self.workbook_rels.get(&info.rel_id).ok_or_else(|| {
             Error::Invalid(format!("Missing relationship for sheet '{}'", info.name))
@@ -211,31 +229,64 @@ impl<R: Read + Seek> Workbook<R> {
         // Check if this is a chartsheet or regular worksheet
         let is_chartsheet = rel.relationship_type == REL_CHARTSHEET;
 
-        let mut sheet = if is_chartsheet {
-            // Chartsheets don't have cell data
-            Sheet {
-                name: info.name.clone(),
-                rows: Vec::new(),
-                merged_cells: Vec::new(),
-                columns: Vec::new(),
-                comments: Vec::new(),
-                conditional_formats: Vec::new(),
-                data_validations: Vec::new(),
-                freeze_pane: None,
+        // Parse the worksheet using generated FromXml parser
+        let worksheet = if is_chartsheet {
+            // Chartsheets don't have the same structure - create empty worksheet
+            crate::types::Worksheet {
+                sheet_properties: None,
+                dimension: None,
+                sheet_views: None,
+                sheet_format: None,
+                cols: Vec::new(),
+                sheet_data: Box::new(crate::types::SheetData { row: Vec::new() }),
+                sheet_calc_pr: None,
+                sheet_protection: None,
+                protected_ranges: None,
+                scenarios: None,
                 auto_filter: None,
-                charts: Vec::new(),
+                sort_state: None,
+                data_consolidate: None,
+                custom_sheet_views: None,
+                merged_cells: None,
+                phonetic_pr: None,
+                conditional_formatting: Vec::new(),
+                data_validations: None,
+                hyperlinks: None,
+                print_options: None,
+                page_margins: None,
+                page_setup: None,
+                header_footer: None,
+                row_breaks: None,
+                col_breaks: None,
+                custom_properties: None,
+                cell_watches: None,
+                ignored_errors: None,
+                smart_tags: None,
+                drawing: None,
+                legacy_drawing: None,
+                legacy_drawing_h_f: None,
+                drawing_h_f: None,
+                picture: None,
+                ole_objects: None,
+                controls: None,
+                web_publish_items: None,
+                table_parts: None,
+                extension_list: None,
             }
         } else {
-            parse_sheet(&data, &info.name, &self.shared_strings, &self.styles)?
+            parse_worksheet(&data).map_err(|e| Error::Invalid(format!("Parse error: {:?}", e)))?
         };
 
-        // Try to load comments and charts for this sheet
+        // Load comments and charts
+        let mut comments = Vec::new();
+        let mut charts = Vec::new();
+
         if let Ok(sheet_rels) = self.package.read_part_relationships(&path) {
-            // Load comments (only for regular worksheets)
+            // Load comments
             if !is_chartsheet && let Some(comments_rel) = sheet_rels.get_by_type(REL_COMMENTS) {
                 let comments_path = resolve_path(&path, &comments_rel.target);
                 if let Ok(comments_data) = self.package.read_part(&comments_path) {
-                    sheet.comments = parse_comments(&comments_data)?;
+                    comments = parse_comments_ext(&comments_data)?;
                 }
             }
 
@@ -244,21 +295,61 @@ impl<R: Read + Seek> Workbook<R> {
                 let drawing_path = resolve_path(&path, &drawing_rel.target);
                 if let Ok(drawing_rels) = self.package.read_part_relationships(&drawing_path) {
                     for rel in drawing_rels.iter() {
-                        if rel.relationship_type == REL_CHART {
-                            let chart_path = resolve_path(&drawing_path, &rel.target);
-                            if let Ok(chart_data) = self.package.read_part(&chart_path)
-                                && let Ok(chart) = parse_chart(&chart_data)
-                            {
-                                sheet.charts.push(chart);
-                            }
+                        let chart_path = resolve_path(&drawing_path, &rel.target);
+                        if rel.relationship_type == REL_CHART
+                            && let Ok(chart_data) = self.package.read_part(&chart_path)
+                            && let Ok(chart) = parse_chart_ext(&chart_data)
+                        {
+                            charts.push(chart);
                         }
                     }
                 }
             }
         }
 
-        Ok(sheet)
+        Ok(ResolvedSheet::with_extras(
+            info.name.clone(),
+            worksheet,
+            self.shared_strings.clone(),
+            comments,
+            charts,
+        ))
     }
+}
+
+/// Parse comments for ext::Comment
+fn parse_comments_ext(xml: &[u8]) -> Result<Vec<ExtComment>> {
+    // Reuse existing comment parsing but convert to ext::Comment
+    let old_comments = parse_comments(xml)?;
+    Ok(old_comments
+        .into_iter()
+        .map(|c| ExtComment {
+            reference: c.reference,
+            author: c.author,
+            text: c.text,
+        })
+        .collect())
+}
+
+/// Parse chart for ext::Chart
+fn parse_chart_ext(xml: &[u8]) -> Result<ExtChart> {
+    let old_chart = parse_chart(xml)?;
+    Ok(ExtChart {
+        title: old_chart.title,
+        chart_type: match old_chart.chart_type {
+            ChartType::Bar | ChartType::Bar3D => ExtChartType::Bar,
+            ChartType::Line | ChartType::Line3D => ExtChartType::Line,
+            ChartType::Pie | ChartType::Pie3D => ExtChartType::Pie,
+            ChartType::Area | ChartType::Area3D => ExtChartType::Area,
+            ChartType::Surface | ChartType::Surface3D => ExtChartType::Surface,
+            ChartType::Scatter => ExtChartType::Scatter,
+            ChartType::Doughnut => ExtChartType::Doughnut,
+            ChartType::Radar => ExtChartType::Radar,
+            ChartType::Bubble => ExtChartType::Bubble,
+            ChartType::Stock => ExtChartType::Stock,
+            ChartType::Unknown => ExtChartType::Unknown,
+        },
+    })
 }
 
 /// A merged cell range.
@@ -685,6 +776,7 @@ pub enum PanePosition {
 
 impl PanePosition {
     /// Parse from the pane activePane attribute.
+    #[allow(dead_code)]
     fn parse(s: &str) -> Self {
         match s {
             "bottomLeft" => Self::BottomLeft,
@@ -773,6 +865,7 @@ pub enum FilterOperator {
 }
 
 impl FilterOperator {
+    #[allow(dead_code)]
     fn parse(s: &str) -> Self {
         match s {
             "equal" => Self::Equal,
@@ -983,6 +1076,7 @@ pub enum DataValidationType {
 
 impl DataValidationType {
     /// Parse from the dataValidation type attribute.
+    #[allow(dead_code)]
     fn parse(s: &str) -> Self {
         match s {
             "none" => Self::None,
@@ -1038,6 +1132,7 @@ pub enum DataValidationOperator {
 
 impl DataValidationOperator {
     /// Parse from the dataValidation operator attribute.
+    #[allow(dead_code)]
     fn parse(s: &str) -> Self {
         match s {
             "between" => Self::Between,
@@ -1083,6 +1178,7 @@ pub enum DataValidationErrorStyle {
 
 impl DataValidationErrorStyle {
     /// Parse from the dataValidation errorStyle attribute.
+    #[allow(dead_code)]
     fn parse(s: &str) -> Self {
         match s {
             "stop" => Self::Stop,
@@ -2228,7 +2324,12 @@ fn parse_styles(xml: &[u8]) -> Result<Stylesheet> {
     Ok(styles)
 }
 
+// =============================================================================
+// Legacy parsing functions (not used with generated types API)
+// =============================================================================
+
 /// Parse a worksheet.
+#[allow(dead_code)]
 fn parse_sheet(
     xml: &[u8],
     name: &str,
@@ -3110,6 +3211,7 @@ fn parse_sheet(
 /// Parse comments from a comments XML file.
 ///
 /// ECMA-376 Part 1, Section 18.7 (Comments).
+#[allow(dead_code)]
 fn parse_comments(xml: &[u8]) -> Result<Vec<Comment>> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
@@ -3215,6 +3317,7 @@ fn parse_comments(xml: &[u8]) -> Result<Vec<Comment>> {
 }
 
 /// Parse a chart XML file.
+#[allow(dead_code)]
 fn parse_chart(xml: &[u8]) -> Result<Chart> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
@@ -3477,6 +3580,7 @@ fn column_number_to_letter(mut col: u32) -> String {
 }
 
 /// Parse a merge cell range like "A1:B2" into a MergedCell.
+#[allow(dead_code)]
 fn parse_merge_cell_range(range: &str) -> Option<MergedCell> {
     let parts: Vec<&str> = range.split(':').collect();
     if parts.len() != 2 {

@@ -237,6 +237,22 @@ impl<'a> Generator<'a> {
         }
     }
 
+    /// Check if a pattern resolves to a string type (for text content detection).
+    fn is_string_type(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Datatype { library, name, .. } => {
+                library == "xsd" && (name == "string" || name == "token" || name == "NCName")
+            }
+            Pattern::Ref(name) => {
+                // Check if the referenced type is a string type
+                self.definitions
+                    .get(name.as_str())
+                    .is_some_and(|p| self.is_string_type(p))
+            }
+            _ => false,
+        }
+    }
+
     /// Check if a pattern is a choice of elements (for element groups).
     fn is_element_choice(&self, pattern: &Pattern) -> bool {
         match pattern {
@@ -484,7 +500,9 @@ impl<'a> Generator<'a> {
 
                 // Add serde attributes
                 let xml_name = &field.xml_name;
-                if field.is_attribute {
+                if field.is_text_content {
+                    writeln!(code, "    #[serde(rename = \"$text\")]").unwrap();
+                } else if field.is_attribute {
                     writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
                 } else {
                     writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
@@ -520,6 +538,7 @@ impl<'a> Generator<'a> {
                     is_optional,
                     is_attribute: true,
                     is_vec: false,
+                    is_text_content: false,
                 });
             }
             Pattern::Element { name, pattern } => {
@@ -530,6 +549,7 @@ impl<'a> Generator<'a> {
                     is_optional,
                     is_attribute: false,
                     is_vec: false,
+                    is_text_content: false,
                 });
             }
             Pattern::Sequence(items) | Pattern::Interleave(items) => {
@@ -551,6 +571,7 @@ impl<'a> Generator<'a> {
                             is_optional: false,
                             is_attribute: false,
                             is_vec: true,
+                            is_text_content: false,
                         });
                     }
                     Pattern::Ref(name) if name.contains("_EG_") => {
@@ -568,11 +589,26 @@ impl<'a> Generator<'a> {
                 self.collect_fields(inner, fields, is_optional);
             }
             Pattern::Ref(name) => {
-                // EG_* element group references are skipped for now - they need
-                // special mixed content handling that isn't implemented yet.
-                // The EG_* enums are generated separately and can be used manually.
-                // Non-EG_* refs are type references, not fields.
-                let _ = name;
+                // Check if this is a reference to a simple type (text content)
+                if let Some(pattern) = self.definitions.get(name.as_str())
+                    && self.is_string_type(pattern)
+                {
+                    // This is text content - add as a "text" field
+                    fields.push(Field {
+                        name: "text".to_string(),
+                        xml_name: "$text".to_string(),
+                        pattern: Pattern::Datatype {
+                            library: "xsd".to_string(),
+                            name: "string".to_string(),
+                            params: vec![],
+                        },
+                        is_optional,
+                        is_attribute: false,
+                        is_vec: false,
+                        is_text_content: true,
+                    });
+                }
+                // EG_* element group references and complex refs are skipped
             }
             Pattern::Choice(_) => {
                 // Choice patterns are complex - for now, skip them
@@ -720,6 +756,7 @@ struct Field {
     is_optional: bool,
     is_attribute: bool,
     is_vec: bool,
+    is_text_content: bool,
 }
 
 /// Strip namespace prefix from a definition name.

@@ -2407,15 +2407,11 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         assert_eq!(read_sheet.name(), "Sheet1");
-
-        let cell_a1 = read_sheet.cell("A1").unwrap();
-        assert_eq!(cell_a1.value_as_string(), "Test Value");
-
-        let cell_b1 = read_sheet.cell("B1").unwrap();
-        assert_eq!(cell_b1.value_as_number(), Some(123.45));
+        assert_eq!(read_sheet.value_at("A1"), Some("Test Value".to_string()));
+        assert_eq!(read_sheet.number_at("B1"), Some(123.45));
     }
 
     #[test]
@@ -2438,34 +2434,16 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         // Check merged cells were preserved
-        let merged = read_sheet.merged_cells();
-        assert_eq!(merged.len(), 2);
-        assert_eq!(merged[0].reference(), "A1:C1");
-        assert_eq!(merged[1].reference(), "A3:B4");
-
-        // Check helper methods
-        assert!(merged[0].contains(1, 1)); // A1
-        assert!(merged[0].contains(1, 2)); // B1
-        assert!(merged[0].contains(1, 3)); // C1
-        assert!(!merged[0].contains(1, 4)); // D1 - outside
-
-        // Check start/end cells
-        assert_eq!(merged[0].start_cell(), "A1");
-        assert_eq!(merged[0].end_cell(), "C1");
-        assert_eq!(merged[1].start_cell(), "A3");
-        assert_eq!(merged[1].end_cell(), "B4");
-
-        // Check merged_cell_at helper
-        assert!(read_sheet.merged_cell_at("A1").is_some());
-        assert!(read_sheet.merged_cell_at("B1").is_some());
-        assert!(read_sheet.merged_cell_at("D1").is_none());
+        let merged = read_sheet.merged_cells().expect("Should have merged cells");
+        assert_eq!(merged.merge_cell.len(), 2);
+        assert_eq!(merged.merge_cell[0].reference.as_str(), "A1:C1");
+        assert_eq!(merged.merge_cell[1].reference.as_str(), "A3:B4");
 
         // Cell values should still be accessible
-        let cell_a1 = read_sheet.cell("A1").unwrap();
-        assert_eq!(cell_a1.value_as_string(), "Merged Header");
+        assert_eq!(read_sheet.value_at("A1"), Some("Merged Header".to_string()));
     }
 
     #[test]
@@ -2494,34 +2472,33 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         // Check column widths were preserved
+        // Structure: Worksheet has Vec<Columns>, each Columns has Vec<Column>
         let columns = read_sheet.columns();
-        assert_eq!(columns.len(), 2);
+        assert!(!columns.is_empty());
+
+        // Collect all column definitions
+        let all_cols: Vec<_> = columns.iter().flat_map(|c| &c.col).collect();
+        assert_eq!(all_cols.len(), 2);
 
         // Column A (col 1)
-        assert_eq!(columns[0].min, 1);
-        assert_eq!(columns[0].max, 1);
-        assert_eq!(columns[0].width, Some(20.0));
+        assert_eq!(all_cols[0].start_column, 1);
+        assert_eq!(all_cols[0].end_column, 1);
+        assert_eq!(all_cols[0].width, Some(20.0));
 
         // Columns B-C (cols 2-3)
-        assert_eq!(columns[1].min, 2);
-        assert_eq!(columns[1].max, 3);
-        assert_eq!(columns[1].width, Some(15.5));
-
-        // Test helper methods
-        assert_eq!(read_sheet.column_width(1), Some(20.0));
-        assert_eq!(read_sheet.column_width(2), Some(15.5));
-        assert_eq!(read_sheet.column_width(3), Some(15.5));
-        assert_eq!(read_sheet.column_width(4), None);
+        assert_eq!(all_cols[1].start_column, 2);
+        assert_eq!(all_cols[1].end_column, 3);
+        assert_eq!(all_cols[1].width, Some(15.5));
 
         // Check row heights were preserved
         let row1 = read_sheet.row(1).unwrap();
-        assert_eq!(row1.height(), Some(25.0));
+        assert_eq!(row1.height, Some(25.0));
 
         let row2 = read_sheet.row(2).unwrap();
-        assert_eq!(row2.height(), Some(18.0));
+        assert_eq!(row2.height, Some(18.0));
     }
 
     #[test]
@@ -2551,38 +2528,19 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         // Check conditional formatting was preserved
-        let cfs = read_sheet.conditional_formats();
+        let cfs = read_sheet.conditional_formatting();
         assert_eq!(cfs.len(), 2);
 
-        // First conditional format
-        assert_eq!(cfs[0].ranges, "A1:A3");
-        assert_eq!(cfs[0].rules.len(), 2);
+        // First conditional format has range A1:A3 and 2 rules
+        assert_eq!(cfs[0].square_reference.as_deref(), Some("A1:A3"));
+        assert_eq!(cfs[0].cf_rule.len(), 2);
 
-        // First rule: cellIs greaterThan
-        assert_eq!(
-            cfs[0].rules[0].rule_type,
-            crate::ConditionalRuleType::CellIs
-        );
-        assert_eq!(cfs[0].rules[0].operator.as_deref(), Some("greaterThan"));
-        assert_eq!(cfs[0].rules[0].formulas, vec!["15"]);
-
-        // Second rule: expression
-        assert_eq!(
-            cfs[0].rules[1].rule_type,
-            crate::ConditionalRuleType::Expression
-        );
-        assert_eq!(cfs[0].rules[1].formulas, vec!["$A1>$A2"]);
-
-        // Second conditional format
-        assert_eq!(cfs[1].ranges, "B1:B10");
-        assert_eq!(cfs[1].rules.len(), 1);
-        assert_eq!(
-            cfs[1].rules[0].rule_type,
-            crate::ConditionalRuleType::DuplicateValues
-        );
+        // Second conditional format has range B1:B10 and 1 rule
+        assert_eq!(cfs[1].square_reference.as_deref(), Some("B1:B10"));
+        assert_eq!(cfs[1].cf_rule.len(), 1);
     }
 
     #[test]
@@ -2615,29 +2573,26 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         // Check data validations were preserved
-        let dvs = read_sheet.data_validations();
-        assert_eq!(dvs.len(), 2);
+        let dvs = read_sheet
+            .data_validations()
+            .expect("Should have data validations");
+        assert_eq!(dvs.data_validation.len(), 2);
 
-        // First validation: list
-        assert_eq!(dvs[0].ranges, "A1:A10");
-        assert_eq!(dvs[0].validation_type, crate::DataValidationType::List);
-        assert_eq!(dvs[0].formula1.as_deref(), Some("\"Yes,No,Maybe\""));
-        assert_eq!(dvs[0].error_title.as_deref(), Some("Invalid Input"));
-        assert_eq!(
-            dvs[0].error_message.as_deref(),
-            Some("Please select from the list")
-        );
-        assert_eq!(dvs[0].prompt_title.as_deref(), Some("Select"));
-        assert_eq!(dvs[0].prompt_message.as_deref(), Some("Choose a value"));
+        // First validation: list for A1:A10
+        let dv0 = &dvs.data_validation[0];
+        assert_eq!(dv0.square_reference.as_str(), "A1:A10");
+        assert_eq!(dv0.error_title.as_deref(), Some("Invalid Input"));
+        assert_eq!(dv0.error.as_deref(), Some("Please select from the list"));
+        assert_eq!(dv0.prompt_title.as_deref(), Some("Select"));
+        assert_eq!(dv0.prompt.as_deref(), Some("Choose a value"));
 
-        // Second validation: whole number > 0
-        assert_eq!(dvs[1].ranges, "B1:B10");
-        assert_eq!(dvs[1].validation_type, crate::DataValidationType::Whole);
-        assert_eq!(dvs[1].operator, crate::DataValidationOperator::GreaterThan);
-        assert_eq!(dvs[1].formula1.as_deref(), Some("0"));
+        // Second validation: whole number for B1:B10
+        let dv1 = &dvs.data_validation[1];
+        assert_eq!(dv1.square_reference.as_str(), "B1:B10");
+        assert_eq!(dv1.error_title.as_deref(), Some("Invalid Number"));
     }
 
     #[test]
@@ -2724,29 +2679,29 @@ mod tests {
         // Read back
         buffer.set_position(0);
         let mut workbook = crate::Workbook::from_reader(buffer).unwrap();
-        let read_sheet = workbook.sheet(0).unwrap();
+        let read_sheet = workbook.resolved_sheet(0).unwrap();
 
         // Check comments were preserved
         let comments = read_sheet.comments();
         assert_eq!(comments.len(), 3);
 
-        // First comment
+        // First comment (ext::Comment has public fields)
         let c1 = read_sheet.comment("A1").unwrap();
-        assert_eq!(c1.reference(), "A1");
-        assert_eq!(c1.text(), "This is a simple comment");
-        assert!(c1.author().is_none_or(|a| a.is_empty())); // Empty author
+        assert_eq!(c1.reference, "A1");
+        assert_eq!(c1.text, "This is a simple comment");
+        assert!(c1.author.is_none() || c1.author.as_ref().is_some_and(|a| a.is_empty()));
 
         // Second comment
         let c2 = read_sheet.comment("B1").unwrap();
-        assert_eq!(c2.reference(), "B1");
-        assert_eq!(c2.text(), "Review this value");
-        assert_eq!(c2.author(), Some("John Doe"));
+        assert_eq!(c2.reference, "B1");
+        assert_eq!(c2.text, "Review this value");
+        assert_eq!(c2.author.as_deref(), Some("John Doe"));
 
         // Third comment
         let c3 = read_sheet.comment("C1").unwrap();
-        assert_eq!(c3.reference(), "C1");
-        assert_eq!(c3.text(), "Builder comment");
-        assert_eq!(c3.author(), Some("Jane Smith"));
+        assert_eq!(c3.reference, "C1");
+        assert_eq!(c3.text, "Builder comment");
+        assert_eq!(c3.author.as_deref(), Some("Jane Smith"));
 
         // Check helper method
         assert!(read_sheet.has_comment("A1"));

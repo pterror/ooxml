@@ -173,9 +173,7 @@ impl CellExt for Cell {
     }
 
     fn formula_text(&self) -> Option<&str> {
-        // TODO: CellFormula text content not yet captured by codegen
-        // For now, return None - formula presence can be checked with has_formula()
-        self.formula.as_ref().map(|_| "(formula)" as &str)
+        self.formula.as_ref().map(|f| f.text.as_str())
     }
 
     fn raw_value(&self) -> Option<&str> {
@@ -482,6 +480,325 @@ impl SheetDataExt for SheetData {
 }
 
 // =============================================================================
+// ResolvedSheet - High-level wrapper with automatic value resolution
+// =============================================================================
+
+/// A worksheet with bound resolution context for convenient value access.
+///
+/// This is the high-level API for reading worksheets. It wraps a generated
+/// `types::Worksheet` and provides methods that automatically resolve values
+/// using the shared string table.
+///
+/// # Example
+///
+/// ```ignore
+/// let sheet = ResolvedSheet::new(name, worksheet, shared_strings);
+///
+/// // Iterate rows and get resolved values
+/// for row in sheet.rows() {
+///     for cell in row.cells_iter() {
+///         println!("{}", sheet.cell_value_string(cell));
+///     }
+/// }
+///
+/// // Direct cell access
+/// if let Some(cell) = sheet.cell("A1") {
+///     println!("A1 = {}", sheet.cell_value_string(cell));
+/// }
+/// ```
+#[derive(Debug, Clone)]
+pub struct ResolvedSheet {
+    /// Sheet name
+    name: String,
+    /// The underlying worksheet data (generated type)
+    worksheet: Worksheet,
+    /// Resolution context for shared strings
+    context: ResolveContext,
+    /// Comments (loaded separately from comments.xml)
+    comments: Vec<Comment>,
+    /// Charts (loaded separately via drawing relationships)
+    charts: Vec<Chart>,
+}
+
+/// A comment on a cell.
+#[derive(Debug, Clone)]
+pub struct Comment {
+    /// Cell reference (e.g., "A1")
+    pub reference: String,
+    /// Comment author (if available)
+    pub author: Option<String>,
+    /// Comment text
+    pub text: String,
+}
+
+/// A chart embedded in the worksheet.
+#[derive(Debug, Clone)]
+pub struct Chart {
+    /// Chart title (if available)
+    pub title: Option<String>,
+    /// Chart type
+    pub chart_type: ChartType,
+}
+
+/// Chart type enumeration.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ChartType {
+    Bar,
+    Column,
+    Line,
+    Pie,
+    Area,
+    Scatter,
+    Doughnut,
+    Radar,
+    Surface,
+    Bubble,
+    Stock,
+    Unknown,
+}
+
+impl ResolvedSheet {
+    /// Create a new resolved sheet.
+    pub fn new(name: String, worksheet: Worksheet, shared_strings: Vec<String>) -> Self {
+        Self {
+            name,
+            worksheet,
+            context: ResolveContext::new(shared_strings),
+            comments: Vec::new(),
+            charts: Vec::new(),
+        }
+    }
+
+    /// Create a resolved sheet with comments and charts.
+    pub fn with_extras(
+        name: String,
+        worksheet: Worksheet,
+        shared_strings: Vec<String>,
+        comments: Vec<Comment>,
+        charts: Vec<Chart>,
+    ) -> Self {
+        Self {
+            name,
+            worksheet,
+            context: ResolveContext::new(shared_strings),
+            comments,
+            charts,
+        }
+    }
+
+    /// Get the sheet name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Get the underlying worksheet (generated type).
+    pub fn worksheet(&self) -> &Worksheet {
+        &self.worksheet
+    }
+
+    /// Get the resolution context.
+    pub fn context(&self) -> &ResolveContext {
+        &self.context
+    }
+
+    // -------------------------------------------------------------------------
+    // Row/Cell Access (delegating to WorksheetExt)
+    // -------------------------------------------------------------------------
+
+    /// Get the number of rows.
+    pub fn row_count(&self) -> usize {
+        self.worksheet.row_count()
+    }
+
+    /// Check if the sheet is empty.
+    pub fn is_empty(&self) -> bool {
+        self.worksheet.is_empty()
+    }
+
+    /// Get a row by 1-based row number.
+    pub fn row(&self, row_num: u32) -> Option<&Row> {
+        self.worksheet.row(row_num)
+    }
+
+    /// Iterate over all rows.
+    pub fn rows(&self) -> impl Iterator<Item = &Row> {
+        self.worksheet.rows()
+    }
+
+    /// Get a cell by reference (e.g., "A1").
+    pub fn cell(&self, reference: &str) -> Option<&Cell> {
+        self.worksheet.cell(reference)
+    }
+
+    // -------------------------------------------------------------------------
+    // Value Resolution (convenience methods)
+    // -------------------------------------------------------------------------
+
+    /// Get a cell's resolved value.
+    pub fn cell_value(&self, cell: &Cell) -> CellValue {
+        cell.resolved_value(&self.context)
+    }
+
+    /// Get a cell's value as a display string.
+    pub fn cell_value_string(&self, cell: &Cell) -> String {
+        cell.value_as_string(&self.context)
+    }
+
+    /// Get a cell's value as a number (if applicable).
+    pub fn cell_value_number(&self, cell: &Cell) -> Option<f64> {
+        cell.value_as_number(&self.context)
+    }
+
+    /// Get a cell's value as a boolean (if applicable).
+    pub fn cell_value_bool(&self, cell: &Cell) -> Option<bool> {
+        cell.value_as_bool(&self.context)
+    }
+
+    /// Get the value at a cell reference as a string.
+    pub fn value_at(&self, reference: &str) -> Option<String> {
+        self.cell(reference).map(|c| self.cell_value_string(c))
+    }
+
+    /// Get the value at a cell reference as a number.
+    pub fn number_at(&self, reference: &str) -> Option<f64> {
+        self.cell(reference).and_then(|c| self.cell_value_number(c))
+    }
+
+    // -------------------------------------------------------------------------
+    // Sheet Features
+    // -------------------------------------------------------------------------
+
+    /// Check if the sheet has an auto-filter.
+    pub fn has_auto_filter(&self) -> bool {
+        self.worksheet.has_auto_filter()
+    }
+
+    /// Check if the sheet has merged cells.
+    pub fn has_merged_cells(&self) -> bool {
+        self.worksheet.has_merged_cells()
+    }
+
+    /// Check if the sheet has conditional formatting.
+    pub fn has_conditional_formatting(&self) -> bool {
+        self.worksheet.has_conditional_formatting()
+    }
+
+    /// Check if the sheet has data validations.
+    pub fn has_data_validations(&self) -> bool {
+        self.worksheet.has_data_validations()
+    }
+
+    /// Check if the sheet has freeze panes.
+    pub fn has_freeze_panes(&self) -> bool {
+        self.worksheet.has_freeze_panes()
+    }
+
+    // -------------------------------------------------------------------------
+    // Comments
+    // -------------------------------------------------------------------------
+
+    /// Get all comments.
+    pub fn comments(&self) -> &[Comment] {
+        &self.comments
+    }
+
+    /// Get the comment for a specific cell.
+    pub fn comment(&self, reference: &str) -> Option<&Comment> {
+        self.comments.iter().find(|c| c.reference == reference)
+    }
+
+    /// Check if a cell has a comment.
+    pub fn has_comment(&self, reference: &str) -> bool {
+        self.comment(reference).is_some()
+    }
+
+    // -------------------------------------------------------------------------
+    // Charts
+    // -------------------------------------------------------------------------
+
+    /// Get all charts.
+    pub fn charts(&self) -> &[Chart] {
+        &self.charts
+    }
+
+    // -------------------------------------------------------------------------
+    // Dimensions & Structure
+    // -------------------------------------------------------------------------
+
+    /// Get the used range dimensions: (min_row, min_col, max_row, max_col).
+    ///
+    /// Returns None if the sheet is empty.
+    pub fn dimensions(&self) -> Option<(u32, u32, u32, u32)> {
+        if self.worksheet.sheet_data.row.is_empty() {
+            return None;
+        }
+
+        let mut min_row = u32::MAX;
+        let mut max_row = 0u32;
+        let mut min_col = u32::MAX;
+        let mut max_col = 0u32;
+
+        for row in &self.worksheet.sheet_data.row {
+            if let Some(row_num) = row.reference {
+                min_row = min_row.min(row_num);
+                max_row = max_row.max(row_num);
+            }
+            for cell in &row.cells {
+                if let Some(col) = cell.column_number() {
+                    min_col = min_col.min(col);
+                    max_col = max_col.max(col);
+                }
+            }
+        }
+
+        if min_row == u32::MAX {
+            None
+        } else {
+            Some((min_row, min_col, max_row, max_col))
+        }
+    }
+
+    /// Get merged cell ranges (raw data).
+    pub fn merged_cells(&self) -> Option<&crate::types::MergedCells> {
+        self.worksheet.merged_cells.as_deref()
+    }
+
+    /// Get conditional formatting rules (raw data).
+    pub fn conditional_formatting(&self) -> &[Box<crate::types::ConditionalFormatting>] {
+        &self.worksheet.conditional_formatting
+    }
+
+    /// Get data validations (raw data).
+    pub fn data_validations(&self) -> Option<&crate::types::DataValidations> {
+        self.worksheet.data_validations.as_deref()
+    }
+
+    /// Get the auto-filter configuration (raw data).
+    pub fn auto_filter(&self) -> Option<&crate::types::AutoFilter> {
+        self.worksheet.auto_filter.as_deref()
+    }
+
+    /// Get the sheet views (contains freeze pane info).
+    pub fn sheet_views(&self) -> Option<&crate::types::SheetViews> {
+        self.worksheet.sheet_views.as_deref()
+    }
+
+    /// Get the freeze pane configuration (if any).
+    pub fn freeze_pane(&self) -> Option<&crate::types::Pane> {
+        self.worksheet
+            .sheet_views
+            .as_ref()
+            .and_then(|views| views.sheet_view.first())
+            .and_then(|view| view.pane.as_deref())
+    }
+
+    /// Get column definitions.
+    pub fn columns(&self) -> &[Box<crate::types::Columns>] {
+        &self.worksheet.cols
+    }
+}
+
+// =============================================================================
 // Helpers
 // =============================================================================
 
@@ -675,5 +992,51 @@ mod tests {
 
         let cell_b1 = worksheet.cell("B1").expect("B1 should exist");
         assert_eq!(cell_b1.value_as_string(&ctx), "World");
+    }
+
+    #[test]
+    fn test_resolved_sheet() {
+        let xml = br#"<?xml version="1.0" encoding="UTF-8"?>
+        <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+            <sheetData>
+                <row r="1">
+                    <c r="A1" t="s"><v>0</v></c>
+                    <c r="B1"><v>42.5</v></c>
+                    <c r="C1" t="b"><v>1</v></c>
+                </row>
+                <row r="2">
+                    <c r="A2" t="s"><v>1</v></c>
+                    <c r="B2"><v>100</v></c>
+                </row>
+            </sheetData>
+        </worksheet>"#;
+
+        let worksheet = parse_worksheet(xml).expect("parse failed");
+        let shared_strings = vec!["Hello".to_string(), "World".to_string()];
+        let sheet = ResolvedSheet::new("Sheet1".to_string(), worksheet, shared_strings);
+
+        // Basic info
+        assert_eq!(sheet.name(), "Sheet1");
+        assert_eq!(sheet.row_count(), 2);
+        assert!(!sheet.is_empty());
+
+        // Cell access with auto-resolution
+        let cell_a1 = sheet.cell("A1").expect("A1");
+        assert_eq!(sheet.cell_value_string(cell_a1), "Hello");
+
+        let cell_b1 = sheet.cell("B1").expect("B1");
+        assert_eq!(sheet.cell_value_number(cell_b1), Some(42.5));
+
+        let cell_c1 = sheet.cell("C1").expect("C1");
+        assert_eq!(sheet.cell_value_bool(cell_c1), Some(true));
+
+        // Convenience methods
+        assert_eq!(sheet.value_at("A1"), Some("Hello".to_string()));
+        assert_eq!(sheet.value_at("A2"), Some("World".to_string()));
+        assert_eq!(sheet.number_at("B1"), Some(42.5));
+        assert_eq!(sheet.number_at("B2"), Some(100.0));
+
+        // Non-existent cell
+        assert!(sheet.value_at("Z99").is_none());
     }
 }
