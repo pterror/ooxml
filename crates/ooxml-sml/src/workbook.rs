@@ -546,6 +546,30 @@ impl ConditionalRuleType {
             _ => None,
         }
     }
+
+    /// Convert to XML attribute value.
+    pub fn to_xml_value(self) -> &'static str {
+        match self {
+            Self::Expression => "expression",
+            Self::CellIs => "cellIs",
+            Self::ColorScale => "colorScale",
+            Self::DataBar => "dataBar",
+            Self::IconSet => "iconSet",
+            Self::Top10 => "top10",
+            Self::UniqueValues => "uniqueValues",
+            Self::DuplicateValues => "duplicateValues",
+            Self::ContainsText => "containsText",
+            Self::NotContainsText => "notContainsText",
+            Self::BeginsWith => "beginsWith",
+            Self::EndsWith => "endsWith",
+            Self::ContainsBlanks => "containsBlanks",
+            Self::NotContainsBlanks => "notContainsBlanks",
+            Self::ContainsErrors => "containsErrors",
+            Self::NotContainsErrors => "notContainsErrors",
+            Self::TimePeriod => "timePeriod",
+            Self::AboveAverage => "aboveAverage",
+        }
+    }
 }
 
 /// Color scale for conditional formatting.
@@ -972,6 +996,20 @@ impl DataValidationType {
             _ => Self::None,
         }
     }
+
+    /// Convert to XML attribute value.
+    pub fn to_xml_value(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Whole => "whole",
+            Self::Decimal => "decimal",
+            Self::List => "list",
+            Self::Date => "date",
+            Self::Time => "time",
+            Self::TextLength => "textLength",
+            Self::Custom => "custom",
+        }
+    }
 }
 
 /// Comparison operator for data validation.
@@ -1013,6 +1051,20 @@ impl DataValidationOperator {
             _ => Self::Between,
         }
     }
+
+    /// Convert to XML attribute value.
+    pub fn to_xml_value(self) -> &'static str {
+        match self {
+            Self::Between => "between",
+            Self::NotBetween => "notBetween",
+            Self::Equal => "equal",
+            Self::NotEqual => "notEqual",
+            Self::LessThan => "lessThan",
+            Self::LessThanOrEqual => "lessThanOrEqual",
+            Self::GreaterThan => "greaterThan",
+            Self::GreaterThanOrEqual => "greaterThanOrEqual",
+        }
+    }
 }
 
 /// Error alert style for data validation.
@@ -1037,6 +1089,15 @@ impl DataValidationErrorStyle {
             "warning" => Self::Warning,
             "information" => Self::Information,
             _ => Self::Stop,
+        }
+    }
+
+    /// Convert to XML attribute value.
+    pub fn to_xml_value(self) -> &'static str {
+        match self {
+            Self::Stop => "stop",
+            Self::Warning => "warning",
+            Self::Information => "information",
         }
     }
 }
@@ -2749,6 +2810,74 @@ fn parse_sheet(
                         db.color = color;
                     }
                 }
+                // Handle self-closing cfRule element <cfRule type="duplicateValues" priority="1"/>
+                else if tag_ref == b"cfRule" && in_conditional_formatting {
+                    let mut rule = ConditionalRule {
+                        rule_type: ConditionalRuleType::Expression,
+                        priority: 0,
+                        dxf_id: None,
+                        operator: None,
+                        formulas: Vec::new(),
+                        stop_if_true: false,
+                        above_average: None,
+                        equal_average: None,
+                        rank: None,
+                        top: None,
+                        percent: None,
+                        text: None,
+                        time_period: None,
+                        color_scale: None,
+                        data_bar: None,
+                        icon_set: None,
+                    };
+
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"type" => {
+                                if let Some(rt) = ConditionalRuleType::parse(&val) {
+                                    rule.rule_type = rt;
+                                }
+                            }
+                            b"priority" => {
+                                rule.priority = val.parse().unwrap_or(0);
+                            }
+                            b"dxfId" => {
+                                rule.dxf_id = val.parse().ok();
+                            }
+                            b"operator" => {
+                                rule.operator = Some(val.into_owned());
+                            }
+                            b"stopIfTrue" => {
+                                rule.stop_if_true = val == "1" || val == "true";
+                            }
+                            b"aboveAverage" => {
+                                rule.above_average = Some(val != "0" && val != "false");
+                            }
+                            b"equalAverage" => {
+                                rule.equal_average = Some(val == "1" || val == "true");
+                            }
+                            b"rank" => {
+                                rule.rank = val.parse().ok();
+                            }
+                            b"top" => {
+                                rule.top = Some(val != "0" && val != "false");
+                            }
+                            b"percent" => {
+                                rule.percent = Some(val == "1" || val == "true");
+                            }
+                            b"text" => {
+                                rule.text = Some(val.into_owned());
+                            }
+                            b"timePeriod" => {
+                                rule.time_period = Some(val.into_owned());
+                            }
+                            _ => {}
+                        }
+                    }
+                    // For self-closing cfRule, immediately add to rules list
+                    current_cf_rules.push(rule);
+                }
             }
             Ok(Event::Text(e)) => {
                 if in_value {
@@ -2761,6 +2890,31 @@ fn parse_sheet(
                     current_dv_formula1.push_str(&e.decode().unwrap_or_default());
                 } else if in_dv_formula2 {
                     current_dv_formula2.push_str(&e.decode().unwrap_or_default());
+                }
+            }
+            Ok(Event::GeneralRef(e)) => {
+                // Handle XML entity references like &gt;, &lt;, &amp;, etc.
+                let entity = std::str::from_utf8(e.as_ref()).unwrap_or("");
+                let decoded = match entity {
+                    "gt" => ">",
+                    "lt" => "<",
+                    "amp" => "&",
+                    "quot" => "\"",
+                    "apos" => "'",
+                    _ => "", // Unknown entity, skip
+                };
+                if !decoded.is_empty() {
+                    if in_value {
+                        current_cell_value.push_str(decoded);
+                    } else if in_formula && let Some(ref mut f) = current_formula {
+                        f.push_str(decoded);
+                    } else if in_cf_formula {
+                        current_cf_formula.push_str(decoded);
+                    } else if in_dv_formula1 {
+                        current_dv_formula1.push_str(decoded);
+                    } else if in_dv_formula2 {
+                        current_dv_formula2.push_str(decoded);
+                    }
                 }
             }
             Ok(Event::End(e)) => {

@@ -2734,7 +2734,7 @@ mod tests {
         let c1 = read_sheet.comment("A1").unwrap();
         assert_eq!(c1.reference(), "A1");
         assert_eq!(c1.text(), "This is a simple comment");
-        assert!(c1.author().map_or(true, |a| a.is_empty())); // Empty author
+        assert!(c1.author().is_none_or(|a| a.is_empty())); // Empty author
 
         // Second comment
         let c2 = read_sheet.comment("B1").unwrap();
