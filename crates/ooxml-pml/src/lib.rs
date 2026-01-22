@@ -40,6 +40,6 @@ pub mod writer;
 pub use error::{Error, Result};
 pub use presentation::{
     Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,
-    SlideMaster, Transition, TransitionSpeed, TransitionType,
+    SlideMaster, Table, TableCell, TableRow, Transition, TransitionSpeed, TransitionType,
 };
-pub use writer::{PresentationBuilder, SlideBuilder};
+pub use writer::{ImageFormat, PresentationBuilder, SlideBuilder, TableBuilder, TextRun};

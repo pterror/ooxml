@@ -228,8 +228,8 @@ pub fn parse_text_body_from_reader<R: BufRead>(reader: &mut Reader<R>) -> Result
                             run.text = std::mem::take(&mut current_text);
                         }
                     }
-                    b"a:txBody" => {
-                        // End of text body
+                    b"a:txBody" | b"p:txBody" => {
+                        // End of text body (a:txBody in DrawingML, p:txBody in PresentationML)
                         break;
                     }
                     _ => {}

@@ -411,6 +411,8 @@ pub struct Slide {
     shapes: Vec<Shape>,
     /// Pictures on this slide.
     pictures: Vec<Picture>,
+    /// Tables on this slide.
+    tables: Vec<Table>,
     /// Path to this slide (for resolving image paths).
     slide_path: String,
     /// Speaker notes for this slide.
@@ -559,6 +561,26 @@ impl Slide {
     pub fn has_hyperlinks(&self) -> bool {
         self.shapes.iter().any(|s| s.has_hyperlinks())
     }
+
+    /// Get all tables on the slide.
+    pub fn tables(&self) -> &[Table] {
+        &self.tables
+    }
+
+    /// Check if this slide contains any tables.
+    pub fn has_tables(&self) -> bool {
+        !self.tables.is_empty()
+    }
+
+    /// Get the number of tables on this slide.
+    pub fn table_count(&self) -> usize {
+        self.tables.len()
+    }
+
+    /// Get a table by index (0-based).
+    pub fn table(&self, index: usize) -> Option<&Table> {
+        self.tables.get(index)
+    }
 }
 
 /// A shape on a slide.
@@ -658,6 +680,140 @@ impl Picture {
     }
 }
 
+/// A table on a slide.
+///
+/// Represents a table embedded via DrawingML `a:tbl` element inside a `p:graphicFrame`.
+#[derive(Debug, Clone)]
+pub struct Table {
+    /// Table name (from cNvPr).
+    name: Option<String>,
+    /// Table rows.
+    rows: Vec<TableRow>,
+}
+
+impl Table {
+    /// Get the table name.
+    pub fn name(&self) -> Option<&str> {
+        self.name.as_deref()
+    }
+
+    /// Get all rows in the table.
+    pub fn rows(&self) -> &[TableRow] {
+        &self.rows
+    }
+
+    /// Get the number of rows.
+    pub fn row_count(&self) -> usize {
+        self.rows.len()
+    }
+
+    /// Get the number of columns (from first row, or 0 if empty).
+    pub fn col_count(&self) -> usize {
+        self.rows.first().map(|r| r.cells.len()).unwrap_or(0)
+    }
+
+    /// Get a cell by row and column index (0-based).
+    pub fn cell(&self, row: usize, col: usize) -> Option<&TableCell> {
+        self.rows.get(row).and_then(|r| r.cells.get(col))
+    }
+
+    /// Get all cell text as a 2D vector.
+    pub fn to_text_grid(&self) -> Vec<Vec<String>> {
+        self.rows
+            .iter()
+            .map(|row| row.cells.iter().map(|c| c.text()).collect())
+            .collect()
+    }
+
+    /// Get plain text representation (tab-separated values).
+    pub fn text(&self) -> String {
+        self.rows
+            .iter()
+            .map(|row| {
+                row.cells
+                    .iter()
+                    .map(|c| c.text())
+                    .collect::<Vec<_>>()
+                    .join("\t")
+            })
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
+/// A row in a table.
+#[derive(Debug, Clone)]
+pub struct TableRow {
+    /// Cells in this row.
+    cells: Vec<TableCell>,
+    /// Row height in EMUs (if specified).
+    height: Option<i64>,
+}
+
+impl TableRow {
+    /// Get all cells in this row.
+    pub fn cells(&self) -> &[TableCell] {
+        &self.cells
+    }
+
+    /// Get a cell by column index (0-based).
+    pub fn cell(&self, col: usize) -> Option<&TableCell> {
+        self.cells.get(col)
+    }
+
+    /// Get the row height in EMUs (if specified).
+    pub fn height(&self) -> Option<i64> {
+        self.height
+    }
+}
+
+/// A cell in a table.
+#[derive(Debug, Clone)]
+pub struct TableCell {
+    /// Text paragraphs in the cell.
+    paragraphs: Vec<ooxml_dml::Paragraph>,
+    /// Row span (number of rows this cell spans).
+    row_span: u32,
+    /// Column span (number of columns this cell spans).
+    col_span: u32,
+}
+
+impl TableCell {
+    /// Get the text paragraphs.
+    pub fn paragraphs(&self) -> &[ooxml_dml::Paragraph] {
+        &self.paragraphs
+    }
+
+    /// Get the cell text (paragraphs joined with newlines).
+    pub fn text(&self) -> String {
+        self.paragraphs
+            .iter()
+            .map(|p| p.text())
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+
+    /// Get the row span.
+    pub fn row_span(&self) -> u32 {
+        self.row_span
+    }
+
+    /// Get the column span.
+    pub fn col_span(&self) -> u32 {
+        self.col_span
+    }
+
+    /// Check if this cell spans multiple rows.
+    pub fn has_row_span(&self) -> bool {
+        self.row_span > 1
+    }
+
+    /// Check if this cell spans multiple columns.
+    pub fn has_col_span(&self) -> bool {
+        self.col_span > 1
+    }
+}
+
 /// A hyperlink extracted from a text run.
 #[derive(Debug, Clone)]
 pub struct Hyperlink {
@@ -716,6 +872,7 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut buf = Vec::new();
     let mut shapes = Vec::new();
     let mut pictures = Vec::new();
+    let mut tables = Vec::new();
 
     let mut current_shape_name: Option<String> = None;
     let mut current_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
@@ -726,6 +883,19 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut current_pic_name: Option<String> = None;
     let mut current_pic_descr: Option<String> = None;
     let mut current_pic_rel_id: Option<String> = None;
+
+    // Table parsing state
+    let mut in_graphic_frame = false;
+    let mut current_table_name: Option<String> = None;
+    let mut in_tbl = false;
+    let mut current_table_rows: Vec<TableRow> = Vec::new();
+    let mut in_tr = false;
+    let mut current_row_cells: Vec<TableCell> = Vec::new();
+    let mut current_row_height: Option<i64> = None;
+    let mut in_tc = false;
+    let mut current_cell_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
+    let mut current_cell_row_span: u32 = 1;
+    let mut current_cell_col_span: u32 = 1;
 
     // Transition state
     let mut transition: Option<Transition> = None;
@@ -747,6 +917,50 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                         current_pic_name = None;
                         current_pic_descr = None;
                         current_pic_rel_id = None;
+                    }
+                    b"p:graphicFrame" => {
+                        in_graphic_frame = true;
+                        current_table_name = None;
+                    }
+                    b"a:tbl" if in_graphic_frame => {
+                        in_tbl = true;
+                        current_table_rows.clear();
+                    }
+                    b"a:tr" if in_tbl => {
+                        in_tr = true;
+                        current_row_cells.clear();
+                        current_row_height = None;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"h" {
+                                current_row_height =
+                                    String::from_utf8_lossy(&attr.value).parse().ok();
+                            }
+                        }
+                    }
+                    b"a:tc" if in_tr => {
+                        in_tc = true;
+                        current_cell_paragraphs.clear();
+                        current_cell_row_span = 1;
+                        current_cell_col_span = 1;
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            match attr.key.as_ref() {
+                                b"rowSpan" => {
+                                    current_cell_row_span =
+                                        String::from_utf8_lossy(&attr.value).parse().unwrap_or(1);
+                                }
+                                b"gridSpan" => {
+                                    current_cell_col_span =
+                                        String::from_utf8_lossy(&attr.value).parse().unwrap_or(1);
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    b"a:txBody" if in_tc => {
+                        // Parse text body for table cell
+                        if let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader) {
+                            current_cell_paragraphs = paras;
+                        }
                     }
                     b"p:transition" => {
                         in_transition = true;
@@ -773,6 +987,14 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                                             Some(String::from_utf8_lossy(&attr.value).into_owned());
                                     }
                                     _ => {}
+                                }
+                            }
+                        } else if in_graphic_frame && !in_tbl {
+                            // Get table name from graphicFrame's cNvPr before we enter the table
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"name" {
+                                    current_table_name =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
                                 }
                             }
                         }
@@ -821,6 +1043,14 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                                             Some(String::from_utf8_lossy(&attr.value).into_owned());
                                     }
                                     _ => {}
+                                }
+                            }
+                        } else if in_graphic_frame && !in_tbl {
+                            // Get table name from graphicFrame's cNvPr
+                            for attr in e.attributes().filter_map(|a| a.ok()) {
+                                if attr.key.as_ref() == b"name" {
+                                    current_table_name =
+                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
                                 }
                             }
                         }
@@ -874,6 +1104,34 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                         }
                         in_pic = false;
                     }
+                    b"a:tc" if in_tc => {
+                        // End of table cell
+                        current_row_cells.push(TableCell {
+                            paragraphs: std::mem::take(&mut current_cell_paragraphs),
+                            row_span: current_cell_row_span,
+                            col_span: current_cell_col_span,
+                        });
+                        in_tc = false;
+                    }
+                    b"a:tr" if in_tr => {
+                        // End of table row
+                        current_table_rows.push(TableRow {
+                            cells: std::mem::take(&mut current_row_cells),
+                            height: current_row_height.take(),
+                        });
+                        in_tr = false;
+                    }
+                    b"a:tbl" if in_tbl => {
+                        // End of table
+                        tables.push(Table {
+                            name: current_table_name.take(),
+                            rows: std::mem::take(&mut current_table_rows),
+                        });
+                        in_tbl = false;
+                    }
+                    b"p:graphicFrame" => {
+                        in_graphic_frame = false;
+                    }
                     b"p:transition" => {
                         in_transition = false;
                     }
@@ -891,6 +1149,7 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
         index,
         shapes,
         pictures,
+        tables,
         slide_path: slide_path.to_string(),
         notes: None,
         transition,

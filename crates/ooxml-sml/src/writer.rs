@@ -30,6 +30,7 @@ const CT_WORKSHEET: &str =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml";
 const CT_SHARED_STRINGS: &str =
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml";
+const CT_STYLES: &str = "application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml";
 const CT_RELATIONSHIPS: &str = "application/vnd.openxmlformats-package.relationships+xml";
 const CT_XML: &str = "application/xml";
 
@@ -40,6 +41,8 @@ const REL_WORKSHEET: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet";
 const REL_SHARED_STRINGS: &str =
     "http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings";
+const REL_STYLES: &str =
+    "http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles";
 
 // Namespaces
 const NS_SPREADSHEET: &str = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -97,10 +100,432 @@ impl From<bool> for WriteCellValue {
     }
 }
 
+/// A cell style for formatting.
+///
+/// Use `CellStyleBuilder` to create styles, then apply them with `set_cell_style`.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct CellStyle {
+    /// Font formatting.
+    pub font: Option<FontStyle>,
+    /// Fill (background) formatting.
+    pub fill: Option<FillStyle>,
+    /// Border formatting.
+    pub border: Option<BorderStyle>,
+    /// Number format code (e.g., "0.00", "#,##0", "yyyy-mm-dd").
+    pub number_format: Option<String>,
+    /// Horizontal alignment.
+    pub horizontal_alignment: Option<HorizontalAlignment>,
+    /// Vertical alignment.
+    pub vertical_alignment: Option<VerticalAlignment>,
+    /// Text wrap.
+    pub wrap_text: bool,
+}
+
+impl CellStyle {
+    /// Create a new empty cell style.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the font style.
+    pub fn with_font(mut self, font: FontStyle) -> Self {
+        self.font = Some(font);
+        self
+    }
+
+    /// Set the fill style.
+    pub fn with_fill(mut self, fill: FillStyle) -> Self {
+        self.fill = Some(fill);
+        self
+    }
+
+    /// Set the border style.
+    pub fn with_border(mut self, border: BorderStyle) -> Self {
+        self.border = Some(border);
+        self
+    }
+
+    /// Set the number format code.
+    pub fn with_number_format(mut self, format: impl Into<String>) -> Self {
+        self.number_format = Some(format.into());
+        self
+    }
+
+    /// Set horizontal alignment.
+    pub fn with_horizontal_alignment(mut self, align: HorizontalAlignment) -> Self {
+        self.horizontal_alignment = Some(align);
+        self
+    }
+
+    /// Set vertical alignment.
+    pub fn with_vertical_alignment(mut self, align: VerticalAlignment) -> Self {
+        self.vertical_alignment = Some(align);
+        self
+    }
+
+    /// Enable text wrapping.
+    pub fn with_wrap_text(mut self, wrap: bool) -> Self {
+        self.wrap_text = wrap;
+        self
+    }
+}
+
+/// Font style for cell formatting.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct FontStyle {
+    /// Font name (e.g., "Arial", "Calibri").
+    pub name: Option<String>,
+    /// Font size in points.
+    pub size: Option<f64>,
+    /// Bold text.
+    pub bold: bool,
+    /// Italic text.
+    pub italic: bool,
+    /// Underline style.
+    pub underline: Option<UnderlineStyle>,
+    /// Strikethrough.
+    pub strikethrough: bool,
+    /// Font color as RGB hex (e.g., "FF0000" for red).
+    pub color: Option<String>,
+}
+
+impl FontStyle {
+    /// Create a new empty font style.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Set the font name.
+    pub fn with_name(mut self, name: impl Into<String>) -> Self {
+        self.name = Some(name.into());
+        self
+    }
+
+    /// Set the font size.
+    pub fn with_size(mut self, size: f64) -> Self {
+        self.size = Some(size);
+        self
+    }
+
+    /// Set bold.
+    pub fn bold(mut self) -> Self {
+        self.bold = true;
+        self
+    }
+
+    /// Set italic.
+    pub fn italic(mut self) -> Self {
+        self.italic = true;
+        self
+    }
+
+    /// Set underline.
+    pub fn underline(mut self, style: UnderlineStyle) -> Self {
+        self.underline = Some(style);
+        self
+    }
+
+    /// Set strikethrough.
+    pub fn strikethrough(mut self) -> Self {
+        self.strikethrough = true;
+        self
+    }
+
+    /// Set the font color (RGB hex, e.g., "FF0000" for red).
+    pub fn with_color(mut self, color: impl Into<String>) -> Self {
+        self.color = Some(color.into());
+        self
+    }
+}
+
+/// Underline style for fonts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum UnderlineStyle {
+    #[default]
+    Single,
+    Double,
+    SingleAccounting,
+    DoubleAccounting,
+}
+
+impl UnderlineStyle {
+    fn to_xml_value(self) -> &'static str {
+        match self {
+            UnderlineStyle::Single => "single",
+            UnderlineStyle::Double => "double",
+            UnderlineStyle::SingleAccounting => "singleAccounting",
+            UnderlineStyle::DoubleAccounting => "doubleAccounting",
+        }
+    }
+}
+
+/// Fill style for cell background.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct FillStyle {
+    /// Fill pattern type.
+    pub pattern: FillPattern,
+    /// Foreground color (pattern color) as RGB hex.
+    pub fg_color: Option<String>,
+    /// Background color as RGB hex.
+    pub bg_color: Option<String>,
+}
+
+impl FillStyle {
+    /// Create a new empty fill style.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Create a solid fill with the given color.
+    pub fn solid(color: impl Into<String>) -> Self {
+        Self {
+            pattern: FillPattern::Solid,
+            fg_color: Some(color.into()),
+            bg_color: None,
+        }
+    }
+
+    /// Set the pattern type.
+    pub fn with_pattern(mut self, pattern: FillPattern) -> Self {
+        self.pattern = pattern;
+        self
+    }
+
+    /// Set the foreground color.
+    pub fn with_fg_color(mut self, color: impl Into<String>) -> Self {
+        self.fg_color = Some(color.into());
+        self
+    }
+
+    /// Set the background color.
+    pub fn with_bg_color(mut self, color: impl Into<String>) -> Self {
+        self.bg_color = Some(color.into());
+        self
+    }
+}
+
+/// Fill pattern types.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum FillPattern {
+    #[default]
+    None,
+    Solid,
+    MediumGray,
+    DarkGray,
+    LightGray,
+    DarkHorizontal,
+    DarkVertical,
+    DarkDown,
+    DarkUp,
+    DarkGrid,
+    DarkTrellis,
+    LightHorizontal,
+    LightVertical,
+    LightDown,
+    LightUp,
+    LightGrid,
+    LightTrellis,
+    Gray125,
+    Gray0625,
+}
+
+impl FillPattern {
+    fn to_xml_value(self) -> &'static str {
+        match self {
+            FillPattern::None => "none",
+            FillPattern::Solid => "solid",
+            FillPattern::MediumGray => "mediumGray",
+            FillPattern::DarkGray => "darkGray",
+            FillPattern::LightGray => "lightGray",
+            FillPattern::DarkHorizontal => "darkHorizontal",
+            FillPattern::DarkVertical => "darkVertical",
+            FillPattern::DarkDown => "darkDown",
+            FillPattern::DarkUp => "darkUp",
+            FillPattern::DarkGrid => "darkGrid",
+            FillPattern::DarkTrellis => "darkTrellis",
+            FillPattern::LightHorizontal => "lightHorizontal",
+            FillPattern::LightVertical => "lightVertical",
+            FillPattern::LightDown => "lightDown",
+            FillPattern::LightUp => "lightUp",
+            FillPattern::LightGrid => "lightGrid",
+            FillPattern::LightTrellis => "lightTrellis",
+            FillPattern::Gray125 => "gray125",
+            FillPattern::Gray0625 => "gray0625",
+        }
+    }
+}
+
+/// Border style for cells.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct BorderStyle {
+    /// Left border.
+    pub left: Option<BorderSideStyle>,
+    /// Right border.
+    pub right: Option<BorderSideStyle>,
+    /// Top border.
+    pub top: Option<BorderSideStyle>,
+    /// Bottom border.
+    pub bottom: Option<BorderSideStyle>,
+    /// Diagonal border.
+    pub diagonal: Option<BorderSideStyle>,
+    /// Diagonal up.
+    pub diagonal_up: bool,
+    /// Diagonal down.
+    pub diagonal_down: bool,
+}
+
+impl BorderStyle {
+    /// Create a new empty border style.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Create a border with all sides using the same style.
+    pub fn all(style: BorderLineStyle, color: Option<String>) -> Self {
+        let side = BorderSideStyle { style, color };
+        Self {
+            left: Some(side.clone()),
+            right: Some(side.clone()),
+            top: Some(side.clone()),
+            bottom: Some(side),
+            diagonal: None,
+            diagonal_up: false,
+            diagonal_down: false,
+        }
+    }
+
+    /// Set the left border.
+    pub fn with_left(mut self, style: BorderLineStyle, color: Option<String>) -> Self {
+        self.left = Some(BorderSideStyle { style, color });
+        self
+    }
+
+    /// Set the right border.
+    pub fn with_right(mut self, style: BorderLineStyle, color: Option<String>) -> Self {
+        self.right = Some(BorderSideStyle { style, color });
+        self
+    }
+
+    /// Set the top border.
+    pub fn with_top(mut self, style: BorderLineStyle, color: Option<String>) -> Self {
+        self.top = Some(BorderSideStyle { style, color });
+        self
+    }
+
+    /// Set the bottom border.
+    pub fn with_bottom(mut self, style: BorderLineStyle, color: Option<String>) -> Self {
+        self.bottom = Some(BorderSideStyle { style, color });
+        self
+    }
+}
+
+/// Style for a single border side.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct BorderSideStyle {
+    /// Line style.
+    pub style: BorderLineStyle,
+    /// Color as RGB hex.
+    pub color: Option<String>,
+}
+
+/// Border line styles.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum BorderLineStyle {
+    #[default]
+    None,
+    Thin,
+    Medium,
+    Dashed,
+    Dotted,
+    Thick,
+    Double,
+    Hair,
+    MediumDashed,
+    DashDot,
+    MediumDashDot,
+    DashDotDot,
+    MediumDashDotDot,
+    SlantDashDot,
+}
+
+impl BorderLineStyle {
+    fn to_xml_value(self) -> &'static str {
+        match self {
+            BorderLineStyle::None => "none",
+            BorderLineStyle::Thin => "thin",
+            BorderLineStyle::Medium => "medium",
+            BorderLineStyle::Dashed => "dashed",
+            BorderLineStyle::Dotted => "dotted",
+            BorderLineStyle::Thick => "thick",
+            BorderLineStyle::Double => "double",
+            BorderLineStyle::Hair => "hair",
+            BorderLineStyle::MediumDashed => "mediumDashed",
+            BorderLineStyle::DashDot => "dashDot",
+            BorderLineStyle::MediumDashDot => "mediumDashDot",
+            BorderLineStyle::DashDotDot => "dashDotDot",
+            BorderLineStyle::MediumDashDotDot => "mediumDashDotDot",
+            BorderLineStyle::SlantDashDot => "slantDashDot",
+        }
+    }
+}
+
+/// Horizontal alignment.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum HorizontalAlignment {
+    #[default]
+    General,
+    Left,
+    Center,
+    Right,
+    Fill,
+    Justify,
+    CenterContinuous,
+    Distributed,
+}
+
+impl HorizontalAlignment {
+    fn to_xml_value(self) -> &'static str {
+        match self {
+            HorizontalAlignment::General => "general",
+            HorizontalAlignment::Left => "left",
+            HorizontalAlignment::Center => "center",
+            HorizontalAlignment::Right => "right",
+            HorizontalAlignment::Fill => "fill",
+            HorizontalAlignment::Justify => "justify",
+            HorizontalAlignment::CenterContinuous => "centerContinuous",
+            HorizontalAlignment::Distributed => "distributed",
+        }
+    }
+}
+
+/// Vertical alignment.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum VerticalAlignment {
+    Top,
+    Center,
+    #[default]
+    Bottom,
+    Justify,
+    Distributed,
+}
+
+impl VerticalAlignment {
+    fn to_xml_value(self) -> &'static str {
+        match self {
+            VerticalAlignment::Top => "top",
+            VerticalAlignment::Center => "center",
+            VerticalAlignment::Bottom => "bottom",
+            VerticalAlignment::Justify => "justify",
+            VerticalAlignment::Distributed => "distributed",
+        }
+    }
+}
+
 /// A cell being built in a sheet.
 #[derive(Debug, Clone)]
 struct BuilderCell {
     value: WriteCellValue,
+    style: Option<CellStyle>,
 }
 
 /// Column width definition for writing.
@@ -146,6 +571,25 @@ impl SheetBuilder {
                 (row, col),
                 BuilderCell {
                     value: value.into(),
+                    style: None,
+                },
+            );
+        }
+    }
+
+    /// Set a cell value with a style by reference.
+    pub fn set_cell_styled(
+        &mut self,
+        reference: &str,
+        value: impl Into<WriteCellValue>,
+        style: CellStyle,
+    ) {
+        if let Some((row, col)) = parse_cell_reference(reference) {
+            self.cells.insert(
+                (row, col),
+                BuilderCell {
+                    value: value.into(),
+                    style: Some(style),
                 },
             );
         }
@@ -157,8 +601,35 @@ impl SheetBuilder {
             (row, col),
             BuilderCell {
                 value: value.into(),
+                style: None,
             },
         );
+    }
+
+    /// Set a cell value with a style by row and column.
+    pub fn set_cell_at_styled(
+        &mut self,
+        row: u32,
+        col: u32,
+        value: impl Into<WriteCellValue>,
+        style: CellStyle,
+    ) {
+        self.cells.insert(
+            (row, col),
+            BuilderCell {
+                value: value.into(),
+                style: Some(style),
+            },
+        );
+    }
+
+    /// Apply a style to an existing cell.
+    pub fn set_cell_style(&mut self, reference: &str, style: CellStyle) {
+        if let Some((row, col)) = parse_cell_reference(reference)
+            && let Some(cell) = self.cells.get_mut(&(row, col))
+        {
+            cell.style = Some(style);
+        }
     }
 
     /// Set a formula in a cell.
@@ -168,6 +639,25 @@ impl SheetBuilder {
                 (row, col),
                 BuilderCell {
                     value: WriteCellValue::Formula(formula.into()),
+                    style: None,
+                },
+            );
+        }
+    }
+
+    /// Set a formula with a style in a cell.
+    pub fn set_formula_styled(
+        &mut self,
+        reference: &str,
+        formula: impl Into<String>,
+        style: CellStyle,
+    ) {
+        if let Some((row, col)) = parse_cell_reference(reference) {
+            self.cells.insert(
+                (row, col),
+                BuilderCell {
+                    value: WriteCellValue::Formula(formula.into()),
+                    style: Some(style),
                 },
             );
         }
@@ -222,6 +712,113 @@ pub struct WorkbookBuilder {
     sheets: Vec<SheetBuilder>,
     shared_strings: Vec<String>,
     string_index: HashMap<String, usize>,
+    // Style collections (populated during write)
+    fonts: Vec<FontStyle>,
+    font_index: HashMap<FontStyleKey, usize>,
+    fills: Vec<FillStyle>,
+    fill_index: HashMap<FillStyleKey, usize>,
+    borders: Vec<BorderStyle>,
+    border_index: HashMap<BorderStyleKey, usize>,
+    number_formats: Vec<String>,
+    number_format_index: HashMap<String, u32>,
+    cell_formats: Vec<CellFormatRecord>,
+    cell_format_index: HashMap<CellFormatKey, usize>,
+}
+
+// Helper types for style deduplication
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct FontStyleKey {
+    name: Option<String>,
+    size_bits: Option<u64>, // f64 as bits for hashing
+    bold: bool,
+    italic: bool,
+    underline: Option<String>,
+    strikethrough: bool,
+    color: Option<String>,
+}
+
+impl From<&FontStyle> for FontStyleKey {
+    fn from(f: &FontStyle) -> Self {
+        Self {
+            name: f.name.clone(),
+            size_bits: f.size.map(|s| s.to_bits()),
+            bold: f.bold,
+            italic: f.italic,
+            underline: f.underline.map(|u| u.to_xml_value().to_string()),
+            strikethrough: f.strikethrough,
+            color: f.color.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct FillStyleKey {
+    pattern: String,
+    fg_color: Option<String>,
+    bg_color: Option<String>,
+}
+
+impl From<&FillStyle> for FillStyleKey {
+    fn from(f: &FillStyle) -> Self {
+        Self {
+            pattern: f.pattern.to_xml_value().to_string(),
+            fg_color: f.fg_color.clone(),
+            bg_color: f.bg_color.clone(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct BorderStyleKey {
+    left: Option<(String, Option<String>)>,
+    right: Option<(String, Option<String>)>,
+    top: Option<(String, Option<String>)>,
+    bottom: Option<(String, Option<String>)>,
+}
+
+impl From<&BorderStyle> for BorderStyleKey {
+    fn from(b: &BorderStyle) -> Self {
+        Self {
+            left: b
+                .left
+                .as_ref()
+                .map(|s| (s.style.to_xml_value().to_string(), s.color.clone())),
+            right: b
+                .right
+                .as_ref()
+                .map(|s| (s.style.to_xml_value().to_string(), s.color.clone())),
+            top: b
+                .top
+                .as_ref()
+                .map(|s| (s.style.to_xml_value().to_string(), s.color.clone())),
+            bottom: b
+                .bottom
+                .as_ref()
+                .map(|s| (s.style.to_xml_value().to_string(), s.color.clone())),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+struct CellFormatKey {
+    font_id: usize,
+    fill_id: usize,
+    border_id: usize,
+    num_fmt_id: u32,
+    horizontal: Option<String>,
+    vertical: Option<String>,
+    wrap_text: bool,
+}
+
+#[derive(Debug, Clone)]
+struct CellFormatRecord {
+    font_id: usize,
+    fill_id: usize,
+    border_id: usize,
+    num_fmt_id: u32,
+    horizontal: Option<HorizontalAlignment>,
+    vertical: Option<VerticalAlignment>,
+    wrap_text: bool,
 }
 
 impl Default for WorkbookBuilder {
@@ -237,6 +834,16 @@ impl WorkbookBuilder {
             sheets: Vec::new(),
             shared_strings: Vec::new(),
             string_index: HashMap::new(),
+            fonts: Vec::new(),
+            font_index: HashMap::new(),
+            fills: Vec::new(),
+            fill_index: HashMap::new(),
+            borders: Vec::new(),
+            border_index: HashMap::new(),
+            number_formats: Vec::new(),
+            number_format_index: HashMap::new(),
+            cell_formats: Vec::new(),
+            cell_format_index: HashMap::new(),
         }
     }
 
@@ -265,8 +872,11 @@ impl WorkbookBuilder {
 
     /// Write the workbook to a writer.
     pub fn write<W: Write + Seek>(mut self, writer: W) -> Result<()> {
-        // Collect all strings first to build shared string table
+        // Collect all strings and styles first
         self.collect_shared_strings();
+        self.collect_styles();
+
+        let has_styles = !self.cell_formats.is_empty();
 
         let mut pkg = PackageWriter::new(writer);
 
@@ -292,21 +902,33 @@ impl WorkbookBuilder {
         );
         wb_rels.push('\n');
 
+        let mut next_rel_id = 1;
         for (i, _sheet) in self.sheets.iter().enumerate() {
-            let rel_id = i + 1;
             wb_rels.push_str(&format!(
                 r#"  <Relationship Id="rId{}" Type="{}" Target="worksheets/sheet{}.xml"/>"#,
-                rel_id, REL_WORKSHEET, rel_id
+                next_rel_id,
+                REL_WORKSHEET,
+                i + 1
             ));
             wb_rels.push('\n');
+            next_rel_id += 1;
+        }
+
+        // Add styles relationship if we have styles
+        if has_styles {
+            wb_rels.push_str(&format!(
+                r#"  <Relationship Id="rId{}" Type="{}" Target="styles.xml"/>"#,
+                next_rel_id, REL_STYLES
+            ));
+            wb_rels.push('\n');
+            next_rel_id += 1;
         }
 
         // Add shared strings relationship if we have strings
         if !self.shared_strings.is_empty() {
-            let ss_rel_id = self.sheets.len() + 1;
             wb_rels.push_str(&format!(
                 r#"  <Relationship Id="rId{}" Type="{}" Target="sharedStrings.xml"/>"#,
-                ss_rel_id, REL_SHARED_STRINGS
+                next_rel_id, REL_SHARED_STRINGS
             ));
             wb_rels.push('\n');
         }
@@ -348,6 +970,12 @@ impl WorkbookBuilder {
         )?;
         pkg.add_part("xl/workbook.xml", CT_WORKBOOK, workbook_xml.as_bytes())?;
 
+        // Write styles if any
+        if has_styles {
+            let styles_xml = self.serialize_styles();
+            pkg.add_part("xl/styles.xml", CT_STYLES, styles_xml.as_bytes())?;
+        }
+
         // Write each sheet
         for (i, sheet) in self.sheets.iter().enumerate() {
             let sheet_num = i + 1;
@@ -378,6 +1006,361 @@ impl WorkbookBuilder {
                     self.string_index.insert(s.clone(), idx);
                 }
             }
+        }
+    }
+
+    /// Collect all styles from cells and build style indices.
+    fn collect_styles(&mut self) {
+        // Add default font (required by Excel)
+        let default_font = FontStyle::new().with_name("Calibri").with_size(11.0);
+        self.get_or_add_font(&default_font);
+
+        // Add required default fills (required by Excel: none and gray125)
+        let none_fill = FillStyle::new();
+        let gray_fill = FillStyle::new().with_pattern(FillPattern::Gray125);
+        self.get_or_add_fill(&none_fill);
+        self.get_or_add_fill(&gray_fill);
+
+        // Add default border (required by Excel)
+        let default_border = BorderStyle::new();
+        self.get_or_add_border(&default_border);
+
+        // First collect all styles into a Vec to avoid borrow issues
+        let styles: Vec<CellStyle> = self
+            .sheets
+            .iter()
+            .flat_map(|sheet| sheet.cells.values())
+            .filter_map(|cell| cell.style.clone())
+            .collect();
+
+        // Then add them to the style collections
+        for style in &styles {
+            self.get_or_add_cell_format(style);
+        }
+    }
+
+    /// Get or add a font, returning its index.
+    fn get_or_add_font(&mut self, font: &FontStyle) -> usize {
+        let key = FontStyleKey::from(font);
+        if let Some(&idx) = self.font_index.get(&key) {
+            return idx;
+        }
+        let idx = self.fonts.len();
+        self.fonts.push(font.clone());
+        self.font_index.insert(key, idx);
+        idx
+    }
+
+    /// Get or add a fill, returning its index.
+    fn get_or_add_fill(&mut self, fill: &FillStyle) -> usize {
+        let key = FillStyleKey::from(fill);
+        if let Some(&idx) = self.fill_index.get(&key) {
+            return idx;
+        }
+        let idx = self.fills.len();
+        self.fills.push(fill.clone());
+        self.fill_index.insert(key, idx);
+        idx
+    }
+
+    /// Get or add a border, returning its index.
+    fn get_or_add_border(&mut self, border: &BorderStyle) -> usize {
+        let key = BorderStyleKey::from(border);
+        if let Some(&idx) = self.border_index.get(&key) {
+            return idx;
+        }
+        let idx = self.borders.len();
+        self.borders.push(border.clone());
+        self.border_index.insert(key, idx);
+        idx
+    }
+
+    /// Get or add a number format, returning its ID.
+    fn get_or_add_number_format(&mut self, format: &str) -> u32 {
+        if let Some(&id) = self.number_format_index.get(format) {
+            return id;
+        }
+        // Custom number formats start at 164
+        let id = 164 + self.number_formats.len() as u32;
+        self.number_formats.push(format.to_string());
+        self.number_format_index.insert(format.to_string(), id);
+        id
+    }
+
+    /// Get or add a cell format, returning its index (xfId).
+    fn get_or_add_cell_format(&mut self, style: &CellStyle) -> usize {
+        let font_id = style.font.as_ref().map_or(0, |f| self.get_or_add_font(f));
+        let fill_id = style.fill.as_ref().map_or(0, |f| self.get_or_add_fill(f));
+        let border_id = style
+            .border
+            .as_ref()
+            .map_or(0, |b| self.get_or_add_border(b));
+        let num_fmt_id = style
+            .number_format
+            .as_ref()
+            .map_or(0, |f| self.get_or_add_number_format(f));
+
+        let key = CellFormatKey {
+            font_id,
+            fill_id,
+            border_id,
+            num_fmt_id,
+            horizontal: style
+                .horizontal_alignment
+                .map(|a| a.to_xml_value().to_string()),
+            vertical: style
+                .vertical_alignment
+                .map(|a| a.to_xml_value().to_string()),
+            wrap_text: style.wrap_text,
+        };
+
+        if let Some(&idx) = self.cell_format_index.get(&key) {
+            return idx;
+        }
+
+        let record = CellFormatRecord {
+            font_id,
+            fill_id,
+            border_id,
+            num_fmt_id,
+            horizontal: style.horizontal_alignment,
+            vertical: style.vertical_alignment,
+            wrap_text: style.wrap_text,
+        };
+
+        let idx = self.cell_formats.len();
+        self.cell_formats.push(record);
+        self.cell_format_index.insert(key, idx);
+        idx
+    }
+
+    /// Get the style index for a cell (returns 0 if no style, or actual index + 1).
+    fn get_cell_style_index(&self, style: &Option<CellStyle>) -> Option<usize> {
+        style.as_ref().map(|s| {
+            let font_id = s.font.as_ref().map_or(0, |f| {
+                let key = FontStyleKey::from(f);
+                *self.font_index.get(&key).unwrap_or(&0)
+            });
+            let fill_id = s.fill.as_ref().map_or(0, |f| {
+                let key = FillStyleKey::from(f);
+                *self.fill_index.get(&key).unwrap_or(&0)
+            });
+            let border_id = s.border.as_ref().map_or(0, |b| {
+                let key = BorderStyleKey::from(b);
+                *self.border_index.get(&key).unwrap_or(&0)
+            });
+            let num_fmt_id = s
+                .number_format
+                .as_ref()
+                .map_or(0, |f| *self.number_format_index.get(f).unwrap_or(&0));
+
+            let key = CellFormatKey {
+                font_id,
+                fill_id,
+                border_id,
+                num_fmt_id,
+                horizontal: s.horizontal_alignment.map(|a| a.to_xml_value().to_string()),
+                vertical: s.vertical_alignment.map(|a| a.to_xml_value().to_string()),
+                wrap_text: s.wrap_text,
+            };
+
+            // Return index + 1 because index 0 is reserved for default style
+            self.cell_format_index.get(&key).map_or(0, |&idx| idx + 1)
+        })
+    }
+
+    /// Serialize styles to XML.
+    fn serialize_styles(&self) -> String {
+        let mut xml = String::new();
+        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
+        xml.push('\n');
+        xml.push_str(&format!(r#"<styleSheet xmlns="{}">"#, NS_SPREADSHEET));
+        xml.push('\n');
+
+        // Number formats
+        if !self.number_formats.is_empty() {
+            xml.push_str(&format!(
+                "  <numFmts count=\"{}\">\n",
+                self.number_formats.len()
+            ));
+            for (i, fmt) in self.number_formats.iter().enumerate() {
+                let id = 164 + i as u32;
+                xml.push_str(&format!(
+                    r#"    <numFmt numFmtId="{}" formatCode="{}"/>"#,
+                    id,
+                    escape_xml(fmt)
+                ));
+                xml.push('\n');
+            }
+            xml.push_str("  </numFmts>\n");
+        }
+
+        // Fonts
+        xml.push_str(&format!("  <fonts count=\"{}\">\n", self.fonts.len()));
+        for font in &self.fonts {
+            xml.push_str("    <font>\n");
+            if font.bold {
+                xml.push_str("      <b/>\n");
+            }
+            if font.italic {
+                xml.push_str("      <i/>\n");
+            }
+            if font.strikethrough {
+                xml.push_str("      <strike/>\n");
+            }
+            if let Some(u) = &font.underline {
+                xml.push_str(&format!(r#"      <u val="{}"/>"#, u.to_xml_value()));
+                xml.push('\n');
+            }
+            if let Some(size) = font.size {
+                xml.push_str(&format!(r#"      <sz val="{}"/>"#, size));
+                xml.push('\n');
+            }
+            if let Some(color) = &font.color {
+                xml.push_str(&format!(r#"      <color rgb="FF{}"/>"#, color));
+                xml.push('\n');
+            }
+            if let Some(name) = &font.name {
+                xml.push_str(&format!(r#"      <name val="{}"/>"#, escape_xml(name)));
+                xml.push('\n');
+            }
+            xml.push_str("    </font>\n");
+        }
+        xml.push_str("  </fonts>\n");
+
+        // Fills
+        xml.push_str(&format!("  <fills count=\"{}\">\n", self.fills.len()));
+        for fill in &self.fills {
+            xml.push_str("    <fill>\n");
+            xml.push_str(&format!(
+                r#"      <patternFill patternType="{}">"#,
+                fill.pattern.to_xml_value()
+            ));
+            xml.push('\n');
+            if let Some(fg) = &fill.fg_color {
+                xml.push_str(&format!(r#"        <fgColor rgb="FF{}"/>"#, fg));
+                xml.push('\n');
+            }
+            if let Some(bg) = &fill.bg_color {
+                xml.push_str(&format!(r#"        <bgColor rgb="FF{}"/>"#, bg));
+                xml.push('\n');
+            }
+            xml.push_str("      </patternFill>\n");
+            xml.push_str("    </fill>\n");
+        }
+        xml.push_str("  </fills>\n");
+
+        // Borders
+        xml.push_str(&format!("  <borders count=\"{}\">\n", self.borders.len()));
+        for border in &self.borders {
+            let mut diagonal_attrs = String::new();
+            if border.diagonal_up {
+                diagonal_attrs.push_str(r#" diagonalUp="1""#);
+            }
+            if border.diagonal_down {
+                diagonal_attrs.push_str(r#" diagonalDown="1""#);
+            }
+            xml.push_str(&format!("    <border{}>\n", diagonal_attrs));
+
+            // Left
+            self.serialize_border_side(&mut xml, "left", &border.left);
+            // Right
+            self.serialize_border_side(&mut xml, "right", &border.right);
+            // Top
+            self.serialize_border_side(&mut xml, "top", &border.top);
+            // Bottom
+            self.serialize_border_side(&mut xml, "bottom", &border.bottom);
+            // Diagonal
+            self.serialize_border_side(&mut xml, "diagonal", &border.diagonal);
+
+            xml.push_str("    </border>\n");
+        }
+        xml.push_str("  </borders>\n");
+
+        // Cell style XFs (required, at least one default)
+        xml.push_str("  <cellStyleXfs count=\"1\">\n");
+        xml.push_str("    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n");
+        xml.push_str("  </cellStyleXfs>\n");
+
+        // Cell XFs
+        let xf_count = self.cell_formats.len() + 1; // +1 for default
+        xml.push_str(&format!("  <cellXfs count=\"{}\">\n", xf_count));
+        // Default format
+        xml.push_str(
+            "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/>\n",
+        );
+
+        for xf in &self.cell_formats {
+            let mut attrs = format!(
+                r#"numFmtId="{}" fontId="{}" fillId="{}" borderId="{}" xfId="0""#,
+                xf.num_fmt_id, xf.font_id, xf.fill_id, xf.border_id
+            );
+
+            if xf.font_id > 0 {
+                attrs.push_str(r#" applyFont="1""#);
+            }
+            if xf.fill_id > 0 {
+                attrs.push_str(r#" applyFill="1""#);
+            }
+            if xf.border_id > 0 {
+                attrs.push_str(r#" applyBorder="1""#);
+            }
+            if xf.num_fmt_id > 0 {
+                attrs.push_str(r#" applyNumberFormat="1""#);
+            }
+
+            let has_alignment = xf.horizontal.is_some() || xf.vertical.is_some() || xf.wrap_text;
+            if has_alignment {
+                attrs.push_str(r#" applyAlignment="1""#);
+                xml.push_str(&format!("    <xf {}>\n", attrs));
+
+                let mut align_attrs = Vec::new();
+                if let Some(h) = xf.horizontal {
+                    align_attrs.push(format!(r#"horizontal="{}""#, h.to_xml_value()));
+                }
+                if let Some(v) = xf.vertical {
+                    align_attrs.push(format!(r#"vertical="{}""#, v.to_xml_value()));
+                }
+                if xf.wrap_text {
+                    align_attrs.push(r#"wrapText="1""#.to_string());
+                }
+                xml.push_str(&format!("      <alignment {}/>\n", align_attrs.join(" ")));
+                xml.push_str("    </xf>\n");
+            } else {
+                xml.push_str(&format!("    <xf {}/>\n", attrs));
+            }
+        }
+        xml.push_str("  </cellXfs>\n");
+
+        // Cell styles (required)
+        xml.push_str("  <cellStyles count=\"1\">\n");
+        xml.push_str("    <cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/>\n");
+        xml.push_str("  </cellStyles>\n");
+
+        xml.push_str("</styleSheet>");
+        xml
+    }
+
+    /// Serialize a border side element.
+    fn serialize_border_side(&self, xml: &mut String, name: &str, side: &Option<BorderSideStyle>) {
+        if let Some(s) = side {
+            if s.style != BorderLineStyle::None {
+                xml.push_str(&format!(
+                    r#"      <{} style="{}">"#,
+                    name,
+                    s.style.to_xml_value()
+                ));
+                xml.push('\n');
+                if let Some(color) = &s.color {
+                    xml.push_str(&format!(r#"        <color rgb="FF{}"/>"#, color));
+                    xml.push('\n');
+                }
+                xml.push_str(&format!("      </{}>\n", name));
+            } else {
+                xml.push_str(&format!("      <{}/>\n", name));
+            }
+        } else {
+            xml.push_str(&format!("      <{}/>\n", name));
         }
     }
 
@@ -466,22 +1449,48 @@ impl WorkbookBuilder {
 
     /// Serialize a cell to XML.
     fn serialize_cell(&self, reference: &str, cell: &BuilderCell) -> String {
+        let style_attr = self
+            .get_cell_style_index(&cell.style)
+            .filter(|&s| s > 0)
+            .map(|s| format!(r#" s="{}""#, s))
+            .unwrap_or_default();
+
         match &cell.value {
             WriteCellValue::String(s) => {
                 let idx = self.string_index.get(s).unwrap_or(&0);
-                format!(r#"      <c r="{}" t="s"><v>{}</v></c>"#, reference, idx) + "\n"
+                format!(
+                    r#"      <c r="{}" t="s"{}><v>{}</v></c>"#,
+                    reference, style_attr, idx
+                ) + "\n"
             }
             WriteCellValue::Number(n) => {
-                format!(r#"      <c r="{}"><v>{}</v></c>"#, reference, n) + "\n"
+                format!(
+                    r#"      <c r="{}"{}><v>{}</v></c>"#,
+                    reference, style_attr, n
+                ) + "\n"
             }
             WriteCellValue::Boolean(b) => {
                 let val = if *b { "1" } else { "0" };
-                format!(r#"      <c r="{}" t="b"><v>{}</v></c>"#, reference, val) + "\n"
+                format!(
+                    r#"      <c r="{}" t="b"{}><v>{}</v></c>"#,
+                    reference, style_attr, val
+                ) + "\n"
             }
             WriteCellValue::Formula(f) => {
-                format!(r#"      <c r="{}"><f>{}</f></c>"#, reference, escape_xml(f)) + "\n"
+                format!(
+                    r#"      <c r="{}"{}><f>{}</f></c>"#,
+                    reference,
+                    style_attr,
+                    escape_xml(f)
+                ) + "\n"
             }
-            WriteCellValue::Empty => String::new(),
+            WriteCellValue::Empty => {
+                if !style_attr.is_empty() {
+                    format!(r#"      <c r="{}"{}></c>"#, reference, style_attr) + "\n"
+                } else {
+                    String::new()
+                }
+            }
         }
     }
 

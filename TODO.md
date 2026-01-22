@@ -55,6 +55,10 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Merged cells - MergedCell, Sheet.merged_cells(), merge_cells() in writer
 - [x] Column/row dimensions - ColumnInfo, Row.height(), set_column_width(), set_row_height() in writer
 - [x] Cell comments/notes - Comment type, Sheet.comments(), Sheet.comment(ref)
+- [x] Number format display - builtin_format_code(), date detection, Excel serial date conversion
+- [x] Named ranges - DefinedName with workbook/sheet scope, defined_names(), defined_name()
+- [x] Conditional formatting (read) - ConditionalFormatting, ConditionalRule, colorScale/dataBar/iconSet
+- [x] Data validation (read) - DataValidation, list/whole/decimal/date/time/textLength types
 
 ### PresentationML (PowerPoint) - ooxml-pml
 
@@ -66,6 +70,8 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] Basic transitions - Slide::transition(), Transition with type/speed/advance settings
 - [x] Write support - PresentationBuilder, SlideBuilder with add_title(), add_text(), save()
 - [x] Hyperlinks in shapes - Shape.hyperlinks(), Run.hyperlink_rel_id(), resolve_hyperlink()
+- [x] Slide layouts/masters (read) - SlideMaster, SlideLayout, SlideLayoutType, layout_by_name()
+- [x] Speaker notes in writer - SlideBuilder::set_notes(), notesSlide generation
 
 ### DrawingML - ooxml-dml
 

@@ -563,6 +563,189 @@ pub struct IconSetValue {
     pub value: Option<String>,
 }
 
+/// Frozen pane information.
+///
+/// ECMA-376 Part 1, Section 18.3.1.66 (pane).
+/// Describes frozen rows/columns in a worksheet view.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FreezePane {
+    /// Number of columns frozen (from left).
+    pub x_split: u32,
+    /// Number of rows frozen (from top).
+    pub y_split: u32,
+    /// Top-left cell in the bottom-right pane (e.g., "B2").
+    pub top_left_cell: String,
+    /// The active pane.
+    pub active_pane: PanePosition,
+}
+
+impl FreezePane {
+    /// Check if any columns are frozen.
+    pub fn has_frozen_columns(&self) -> bool {
+        self.x_split > 0
+    }
+
+    /// Check if any rows are frozen.
+    pub fn has_frozen_rows(&self) -> bool {
+        self.y_split > 0
+    }
+
+    /// Get the first unfrozen column (1-based).
+    pub fn first_unfrozen_column(&self) -> u32 {
+        self.x_split + 1
+    }
+
+    /// Get the first unfrozen row (1-based).
+    pub fn first_unfrozen_row(&self) -> u32 {
+        self.y_split + 1
+    }
+}
+
+/// Pane position in a split or frozen view.
+///
+/// ECMA-376 Part 1, Section 18.18.52 (ST_Pane).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum PanePosition {
+    /// Bottom-left pane.
+    BottomLeft,
+    /// Bottom-right pane.
+    #[default]
+    BottomRight,
+    /// Top-left pane.
+    TopLeft,
+    /// Top-right pane.
+    TopRight,
+}
+
+impl PanePosition {
+    /// Parse from the pane activePane attribute.
+    fn parse(s: &str) -> Self {
+        match s {
+            "bottomLeft" => Self::BottomLeft,
+            "bottomRight" => Self::BottomRight,
+            "topLeft" => Self::TopLeft,
+            "topRight" => Self::TopRight,
+            _ => Self::BottomRight,
+        }
+    }
+}
+
+/// Auto-filter definition for a range of cells.
+///
+/// ECMA-376 Part 1, Section 18.3.1.2 (autoFilter).
+#[derive(Debug, Clone)]
+pub struct AutoFilter {
+    /// The range reference (e.g., "A1:F100").
+    pub reference: String,
+    /// Column filters.
+    pub columns: Vec<FilterColumn>,
+}
+
+impl AutoFilter {
+    /// Get the filter reference range.
+    pub fn range(&self) -> &str {
+        &self.reference
+    }
+
+    /// Check if any column has an active filter.
+    pub fn has_active_filters(&self) -> bool {
+        !self.columns.is_empty()
+    }
+
+    /// Get filter for a specific column (0-based column id relative to the range).
+    pub fn column_filter(&self, col_id: u32) -> Option<&FilterColumn> {
+        self.columns.iter().find(|c| c.col_id == col_id)
+    }
+}
+
+/// Filter criteria for a single column.
+///
+/// ECMA-376 Part 1, Section 18.3.2.7 (filterColumn).
+#[derive(Debug, Clone)]
+pub struct FilterColumn {
+    /// Column ID (0-based, relative to the autoFilter range).
+    pub col_id: u32,
+    /// Whether a blank filter is applied.
+    pub show_button: bool,
+    /// Hidden rows match.
+    pub hidden_button: bool,
+    /// Custom filter criteria.
+    pub filters: Vec<String>,
+    /// Custom filter operators.
+    pub custom_filters: Vec<CustomFilter>,
+    /// Top/bottom N filter.
+    pub top10: Option<Top10Filter>,
+    /// Dynamic filter type.
+    pub dynamic_filter: Option<String>,
+    /// Color filter.
+    pub color_filter: Option<ColorFilter>,
+}
+
+/// Custom filter criteria.
+///
+/// ECMA-376 Part 1, Section 18.3.2.2 (customFilter).
+#[derive(Debug, Clone)]
+pub struct CustomFilter {
+    /// Filter operator.
+    pub operator: FilterOperator,
+    /// Filter value.
+    pub value: String,
+}
+
+/// Filter operator for custom filters.
+///
+/// ECMA-376 Part 1, Section 18.18.31 (ST_FilterOperator).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum FilterOperator {
+    #[default]
+    Equal,
+    LessThan,
+    LessThanOrEqual,
+    NotEqual,
+    GreaterThanOrEqual,
+    GreaterThan,
+}
+
+impl FilterOperator {
+    fn parse(s: &str) -> Self {
+        match s {
+            "equal" => Self::Equal,
+            "lessThan" => Self::LessThan,
+            "lessThanOrEqual" => Self::LessThanOrEqual,
+            "notEqual" => Self::NotEqual,
+            "greaterThanOrEqual" => Self::GreaterThanOrEqual,
+            "greaterThan" => Self::GreaterThan,
+            _ => Self::Equal,
+        }
+    }
+}
+
+/// Top 10 filter (top/bottom N values or percent).
+///
+/// ECMA-376 Part 1, Section 18.3.2.10 (top10).
+#[derive(Debug, Clone)]
+pub struct Top10Filter {
+    /// Whether to filter top (true) or bottom (false) values.
+    pub top: bool,
+    /// Whether the value is a percentage.
+    pub percent: bool,
+    /// The number of items or percentage.
+    pub value: f64,
+    /// Optional filter value for custom top/bottom.
+    pub filter_value: Option<f64>,
+}
+
+/// Color filter criteria.
+///
+/// ECMA-376 Part 1, Section 18.3.2.1 (colorFilter).
+#[derive(Debug, Clone)]
+pub struct ColorFilter {
+    /// Differential format ID.
+    pub dxf_id: Option<u32>,
+    /// Whether to filter by cell color (true) or font color (false).
+    pub cell_color: bool,
+}
+
 /// Data validation rule for a range of cells.
 ///
 /// ECMA-376 Part 1, Section 18.3.1.32 (dataValidation).
@@ -764,6 +947,8 @@ pub struct Sheet {
     comments: Vec<Comment>,
     conditional_formats: Vec<ConditionalFormatting>,
     data_validations: Vec<DataValidation>,
+    freeze_pane: Option<FreezePane>,
+    auto_filter: Option<AutoFilter>,
 }
 
 impl Sheet {
@@ -898,6 +1083,28 @@ impl Sheet {
     /// Check if a cell has data validation.
     pub fn has_data_validation(&self, reference: &str) -> bool {
         self.data_validation(reference).is_some()
+    }
+
+    /// Get the freeze pane configuration (if any).
+    ///
+    /// Returns `Some` if the sheet has frozen rows or columns.
+    pub fn freeze_pane(&self) -> Option<&FreezePane> {
+        self.freeze_pane.as_ref()
+    }
+
+    /// Check if the sheet has frozen panes.
+    pub fn has_freeze_pane(&self) -> bool {
+        self.freeze_pane.is_some()
+    }
+
+    /// Get the auto-filter configuration (if any).
+    pub fn auto_filter(&self) -> Option<&AutoFilter> {
+        self.auto_filter.as_ref()
+    }
+
+    /// Check if the sheet has an auto-filter.
+    pub fn has_auto_filter(&self) -> bool {
+        self.auto_filter.is_some()
     }
 }
 
@@ -1871,12 +2078,79 @@ fn parse_sheet(
     let mut current_dv_formula1 = String::new();
     let mut current_dv_formula2 = String::new();
 
+    // Freeze pane state
+    let mut freeze_pane: Option<FreezePane> = None;
+    let mut in_sheet_views = false;
+    let mut in_sheet_view = false;
+
+    // Auto-filter state
+    let mut auto_filter: Option<AutoFilter> = None;
+    let mut in_auto_filter = false;
+    let mut current_filter_ref = String::new();
+    let mut current_filter_columns: Vec<FilterColumn> = Vec::new();
+    let mut in_filter_column = false;
+    let mut current_filter_col: Option<FilterColumn> = None;
+    let mut in_filters = false;
+    let mut current_filters: Vec<String> = Vec::new();
+    let mut in_custom_filters = false;
+    let mut current_custom_filters: Vec<CustomFilter> = Vec::new();
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
                 let tag = e.name();
                 let tag = tag.as_ref();
                 match tag {
+                    b"sheetViews" => {
+                        in_sheet_views = true;
+                    }
+                    b"sheetView" if in_sheet_views => {
+                        in_sheet_view = true;
+                    }
+                    b"autoFilter" => {
+                        in_auto_filter = true;
+                        current_filter_ref.clear();
+                        current_filter_columns.clear();
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            if attr.key.as_ref() == b"ref" {
+                                current_filter_ref =
+                                    String::from_utf8_lossy(&attr.value).into_owned();
+                            }
+                        }
+                    }
+                    b"filterColumn" if in_auto_filter => {
+                        in_filter_column = true;
+                        let mut col = FilterColumn {
+                            col_id: 0,
+                            show_button: true,
+                            hidden_button: false,
+                            filters: Vec::new(),
+                            custom_filters: Vec::new(),
+                            top10: None,
+                            dynamic_filter: None,
+                            color_filter: None,
+                        };
+                        for attr in e.attributes().filter_map(|a| a.ok()) {
+                            let val = String::from_utf8_lossy(&attr.value);
+                            match attr.key.as_ref() {
+                                b"colId" => col.col_id = val.parse().unwrap_or(0),
+                                b"showButton" => col.show_button = val != "0" && val != "false",
+                                b"hiddenButton" => col.hidden_button = val == "1" || val == "true",
+                                _ => {}
+                            }
+                        }
+                        current_filter_col = Some(col);
+                        current_filters.clear();
+                        current_custom_filters.clear();
+                    }
+                    b"filters" if in_filter_column => {
+                        in_filters = true;
+                        current_filters.clear();
+                    }
+                    b"customFilters" if in_filter_column => {
+                        in_custom_filters = true;
+                        current_custom_filters.clear();
+                    }
                     b"cols" => {
                         in_cols = true;
                     }
@@ -2117,8 +2391,112 @@ fn parse_sheet(
                 let tag = e.name();
                 let tag_ref = tag.as_ref();
 
+                // Handle pane element for freeze panes <pane xSplit="1" ySplit="2" topLeftCell="B3" state="frozen"/>
+                if tag_ref == b"pane" && in_sheet_view {
+                    let mut x_split: u32 = 0;
+                    let mut y_split: u32 = 0;
+                    let mut top_left_cell = String::new();
+                    let mut active_pane = PanePosition::BottomRight;
+                    let mut state = String::new();
+
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"xSplit" => x_split = val.parse().unwrap_or(0),
+                            b"ySplit" => y_split = val.parse().unwrap_or(0),
+                            b"topLeftCell" => top_left_cell = val.into_owned(),
+                            b"activePane" => active_pane = PanePosition::parse(&val),
+                            b"state" => state = val.into_owned(),
+                            _ => {}
+                        }
+                    }
+
+                    // Only record if it's a frozen pane (not a split)
+                    if state == "frozen" || state == "frozenSplit" {
+                        freeze_pane = Some(FreezePane {
+                            x_split,
+                            y_split,
+                            top_left_cell,
+                            active_pane,
+                        });
+                    }
+                }
+                // Handle filter element <filter val="Value1"/>
+                else if tag_ref == b"filter" && in_filters {
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        if attr.key.as_ref() == b"val" {
+                            current_filters.push(String::from_utf8_lossy(&attr.value).into_owned());
+                        }
+                    }
+                }
+                // Handle customFilter element <customFilter operator="greaterThan" val="100"/>
+                else if tag_ref == b"customFilter" && in_custom_filters {
+                    let mut operator = FilterOperator::Equal;
+                    let mut value = String::new();
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"operator" => operator = FilterOperator::parse(&val),
+                            b"val" => value = val.into_owned(),
+                            _ => {}
+                        }
+                    }
+                    current_custom_filters.push(CustomFilter { operator, value });
+                }
+                // Handle top10 element <top10 top="1" percent="0" val="10"/>
+                else if tag_ref == b"top10" && in_filter_column {
+                    let mut top = true;
+                    let mut percent = false;
+                    let mut val: f64 = 10.0;
+                    let mut filter_val: Option<f64> = None;
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let attr_val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"top" => top = attr_val != "0" && attr_val != "false",
+                            b"percent" => percent = attr_val == "1" || attr_val == "true",
+                            b"val" => val = attr_val.parse().unwrap_or(10.0),
+                            b"filterVal" => filter_val = attr_val.parse().ok(),
+                            _ => {}
+                        }
+                    }
+                    if let Some(ref mut col) = current_filter_col {
+                        col.top10 = Some(Top10Filter {
+                            top,
+                            percent,
+                            value: val,
+                            filter_value: filter_val,
+                        });
+                    }
+                }
+                // Handle dynamicFilter element <dynamicFilter type="today"/>
+                else if tag_ref == b"dynamicFilter" && in_filter_column {
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        if attr.key.as_ref() == b"type"
+                            && let Some(ref mut col) = current_filter_col
+                        {
+                            col.dynamic_filter =
+                                Some(String::from_utf8_lossy(&attr.value).into_owned());
+                        }
+                    }
+                }
+                // Handle colorFilter element <colorFilter dxfId="0"/>
+                else if tag_ref == b"colorFilter" && in_filter_column {
+                    let mut dxf_id = None;
+                    let mut cell_color = true;
+                    for attr in e.attributes().filter_map(|a| a.ok()) {
+                        let val = String::from_utf8_lossy(&attr.value);
+                        match attr.key.as_ref() {
+                            b"dxfId" => dxf_id = val.parse().ok(),
+                            b"cellColor" => cell_color = val != "0" && val != "false",
+                            _ => {}
+                        }
+                    }
+                    if let Some(ref mut col) = current_filter_col {
+                        col.color_filter = Some(ColorFilter { dxf_id, cell_color });
+                    }
+                }
                 // Handle empty cells <c r="A1"/>
-                if tag_ref == b"c" {
+                else if tag_ref == b"c" {
                     let mut cell_ref = String::new();
                     let mut cell_style: Option<u32> = None;
                     for attr in e.attributes().filter_map(|a| a.ok()) {
@@ -2363,6 +2741,39 @@ fn parse_sheet(
                         }
                         in_data_validation = false;
                     }
+                    b"sheetViews" => {
+                        in_sheet_views = false;
+                    }
+                    b"sheetView" => {
+                        in_sheet_view = false;
+                    }
+                    b"filters" if in_filter_column => {
+                        if let Some(ref mut col) = current_filter_col {
+                            col.filters = std::mem::take(&mut current_filters);
+                        }
+                        in_filters = false;
+                    }
+                    b"customFilters" if in_filter_column => {
+                        if let Some(ref mut col) = current_filter_col {
+                            col.custom_filters = std::mem::take(&mut current_custom_filters);
+                        }
+                        in_custom_filters = false;
+                    }
+                    b"filterColumn" if in_auto_filter => {
+                        if let Some(col) = current_filter_col.take() {
+                            current_filter_columns.push(col);
+                        }
+                        in_filter_column = false;
+                    }
+                    b"autoFilter" => {
+                        if !current_filter_ref.is_empty() {
+                            auto_filter = Some(AutoFilter {
+                                reference: std::mem::take(&mut current_filter_ref),
+                                columns: std::mem::take(&mut current_filter_columns),
+                            });
+                        }
+                        in_auto_filter = false;
+                    }
                     _ => {}
                 }
             }
@@ -2398,6 +2809,8 @@ fn parse_sheet(
         comments: Vec::new(),
         conditional_formats,
         data_validations,
+        freeze_pane,
+        auto_filter,
     })
 }
 
