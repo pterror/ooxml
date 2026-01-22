@@ -1,0 +1,9743 @@
+// Generated from ECMA-376 RELAX NG schema.
+// Do not edit manually.
+
+use serde::{Deserialize, Serialize};
+
+/// XML namespace URIs used in this schema.
+pub mod ns {
+    /// Namespace prefix: o
+    pub const O: &str = "urn:schemas-microsoft-com:office:office";
+    /// Namespace prefix: s
+    pub const S: &str = "http://schemas.openxmlformats.org/officeDocument/2006/sharedTypes";
+    /// Namespace prefix: v
+    pub const V: &str = "urn:schemas-microsoft-com:vml";
+    /// Namespace prefix: w10
+    pub const W10: &str = "urn:schemas-microsoft-com:office:word";
+    /// Namespace prefix: x
+    pub const X: &str = "urn:schemas-microsoft-com:office:excel";
+    /// Namespace prefix: m
+    pub const M: &str = "http://schemas.openxmlformats.org/officeDocument/2006/math";
+    /// Namespace prefix: r
+    pub const R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    /// Namespace prefix: sl
+    pub const SL: &str = "http://schemas.openxmlformats.org/schemaLibrary/2006/main";
+    /// Default namespace (prefix: w)
+    pub const W: &str = "http://schemas.openxmlformats.org/wordprocessingml/2006/main";
+    /// Namespace prefix: wp
+    pub const WP: &str = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing";
+}
+
+pub type SSTLang = String;
+
+pub type SSTHexColorRGB = Vec<u8>;
+
+pub type SSTPanose = Vec<u8>;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTCalendarType {
+    #[serde(rename = "gregorian")]
+    Gregorian,
+    #[serde(rename = "gregorianUs")]
+    GregorianUs,
+    #[serde(rename = "gregorianMeFrench")]
+    GregorianMeFrench,
+    #[serde(rename = "gregorianArabic")]
+    GregorianArabic,
+    #[serde(rename = "hijri")]
+    Hijri,
+    #[serde(rename = "hebrew")]
+    Hebrew,
+    #[serde(rename = "taiwan")]
+    Taiwan,
+    #[serde(rename = "japan")]
+    Japan,
+    #[serde(rename = "thai")]
+    Thai,
+    #[serde(rename = "korea")]
+    Korea,
+    #[serde(rename = "saka")]
+    Saka,
+    #[serde(rename = "gregorianXlitEnglish")]
+    GregorianXlitEnglish,
+    #[serde(rename = "gregorianXlitFrench")]
+    GregorianXlitFrench,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for SSTCalendarType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Gregorian => write!(f, "gregorian"),
+            Self::GregorianUs => write!(f, "gregorianUs"),
+            Self::GregorianMeFrench => write!(f, "gregorianMeFrench"),
+            Self::GregorianArabic => write!(f, "gregorianArabic"),
+            Self::Hijri => write!(f, "hijri"),
+            Self::Hebrew => write!(f, "hebrew"),
+            Self::Taiwan => write!(f, "taiwan"),
+            Self::Japan => write!(f, "japan"),
+            Self::Thai => write!(f, "thai"),
+            Self::Korea => write!(f, "korea"),
+            Self::Saka => write!(f, "saka"),
+            Self::GregorianXlitEnglish => write!(f, "gregorianXlitEnglish"),
+            Self::GregorianXlitFrench => write!(f, "gregorianXlitFrench"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTCalendarType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "gregorian" => Ok(Self::Gregorian),
+            "gregorianUs" => Ok(Self::GregorianUs),
+            "gregorianMeFrench" => Ok(Self::GregorianMeFrench),
+            "gregorianArabic" => Ok(Self::GregorianArabic),
+            "hijri" => Ok(Self::Hijri),
+            "hebrew" => Ok(Self::Hebrew),
+            "taiwan" => Ok(Self::Taiwan),
+            "japan" => Ok(Self::Japan),
+            "thai" => Ok(Self::Thai),
+            "korea" => Ok(Self::Korea),
+            "saka" => Ok(Self::Saka),
+            "gregorianXlitEnglish" => Ok(Self::GregorianXlitEnglish),
+            "gregorianXlitFrench" => Ok(Self::GregorianXlitFrench),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown SSTCalendarType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTAlgClass {
+    #[serde(rename = "hash")]
+    Hash,
+    #[serde(rename = "custom")]
+    Custom,
+}
+
+impl std::fmt::Display for SSTAlgClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Hash => write!(f, "hash"),
+            Self::Custom => write!(f, "custom"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTAlgClass {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "hash" => Ok(Self::Hash),
+            "custom" => Ok(Self::Custom),
+            _ => Err(format!("unknown SSTAlgClass value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTCryptProv {
+    #[serde(rename = "rsaAES")]
+    RsaAES,
+    #[serde(rename = "rsaFull")]
+    RsaFull,
+    #[serde(rename = "custom")]
+    Custom,
+}
+
+impl std::fmt::Display for SSTCryptProv {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::RsaAES => write!(f, "rsaAES"),
+            Self::RsaFull => write!(f, "rsaFull"),
+            Self::Custom => write!(f, "custom"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTCryptProv {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "rsaAES" => Ok(Self::RsaAES),
+            "rsaFull" => Ok(Self::RsaFull),
+            "custom" => Ok(Self::Custom),
+            _ => Err(format!("unknown SSTCryptProv value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTAlgType {
+    #[serde(rename = "typeAny")]
+    TypeAny,
+    #[serde(rename = "custom")]
+    Custom,
+}
+
+impl std::fmt::Display for SSTAlgType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::TypeAny => write!(f, "typeAny"),
+            Self::Custom => write!(f, "custom"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTAlgType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "typeAny" => Ok(Self::TypeAny),
+            "custom" => Ok(Self::Custom),
+            _ => Err(format!("unknown SSTAlgType value: {}", s)),
+        }
+    }
+}
+
+pub type SSTColorType = String;
+
+pub type SSTGuid = String;
+
+pub type SSTOnOff = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTOnOff1 {
+    #[serde(rename = "on")]
+    On,
+    #[serde(rename = "off")]
+    Off,
+}
+
+impl std::fmt::Display for SSTOnOff1 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::On => write!(f, "on"),
+            Self::Off => write!(f, "off"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTOnOff1 {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "on" => Ok(Self::On),
+            "off" => Ok(Self::Off),
+            _ => Err(format!("unknown SSTOnOff1 value: {}", s)),
+        }
+    }
+}
+
+pub type SSTString = String;
+
+pub type SSTXmlName = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTTrueFalse {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "f")]
+    F,
+    #[serde(rename = "true")]
+    True,
+    #[serde(rename = "false")]
+    False,
+}
+
+impl std::fmt::Display for SSTTrueFalse {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::F => write!(f, "f"),
+            Self::True => write!(f, "true"),
+            Self::False => write!(f, "false"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTTrueFalse {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "f" => Ok(Self::F),
+            "true" => Ok(Self::True),
+            "false" => Ok(Self::False),
+            _ => Err(format!("unknown SSTTrueFalse value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTTrueFalseBlank {
+    #[serde(rename = "t")]
+    T,
+    #[serde(rename = "f")]
+    F,
+    #[serde(rename = "true")]
+    True,
+    #[serde(rename = "false")]
+    False,
+    #[serde(rename = "")]
+    Empty,
+}
+
+impl std::fmt::Display for SSTTrueFalseBlank {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::T => write!(f, "t"),
+            Self::F => write!(f, "f"),
+            Self::True => write!(f, "true"),
+            Self::False => write!(f, "false"),
+            Self::Empty => write!(f, ""),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTTrueFalseBlank {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "t" => Ok(Self::T),
+            "f" => Ok(Self::F),
+            "true" => Ok(Self::True),
+            "false" => Ok(Self::False),
+            "" => Ok(Self::Empty),
+            "True" => Ok(Self::True),
+            "False" => Ok(Self::False),
+            _ => Err(format!("unknown SSTTrueFalseBlank value: {}", s)),
+        }
+    }
+}
+
+pub type SSTUnsignedDecimalNumber = u64;
+
+pub type SSTTwipsMeasure = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTVerticalAlignRun {
+    #[serde(rename = "baseline")]
+    Baseline,
+    #[serde(rename = "superscript")]
+    Superscript,
+    #[serde(rename = "subscript")]
+    Subscript,
+}
+
+impl std::fmt::Display for SSTVerticalAlignRun {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Baseline => write!(f, "baseline"),
+            Self::Superscript => write!(f, "superscript"),
+            Self::Subscript => write!(f, "subscript"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTVerticalAlignRun {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "baseline" => Ok(Self::Baseline),
+            "superscript" => Ok(Self::Superscript),
+            "subscript" => Ok(Self::Subscript),
+            _ => Err(format!("unknown SSTVerticalAlignRun value: {}", s)),
+        }
+    }
+}
+
+pub type SSTXstring = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTXAlign {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "inside")]
+    Inside,
+    #[serde(rename = "outside")]
+    Outside,
+}
+
+impl std::fmt::Display for SSTXAlign {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Left => write!(f, "left"),
+            Self::Center => write!(f, "center"),
+            Self::Right => write!(f, "right"),
+            Self::Inside => write!(f, "inside"),
+            Self::Outside => write!(f, "outside"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTXAlign {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "left" => Ok(Self::Left),
+            "center" => Ok(Self::Center),
+            "right" => Ok(Self::Right),
+            "inside" => Ok(Self::Inside),
+            "outside" => Ok(Self::Outside),
+            _ => Err(format!("unknown SSTXAlign value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTYAlign {
+    #[serde(rename = "inline")]
+    Inline,
+    #[serde(rename = "top")]
+    Top,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "bottom")]
+    Bottom,
+    #[serde(rename = "inside")]
+    Inside,
+    #[serde(rename = "outside")]
+    Outside,
+}
+
+impl std::fmt::Display for SSTYAlign {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Inline => write!(f, "inline"),
+            Self::Top => write!(f, "top"),
+            Self::Center => write!(f, "center"),
+            Self::Bottom => write!(f, "bottom"),
+            Self::Inside => write!(f, "inside"),
+            Self::Outside => write!(f, "outside"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTYAlign {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "inline" => Ok(Self::Inline),
+            "top" => Ok(Self::Top),
+            "center" => Ok(Self::Center),
+            "bottom" => Ok(Self::Bottom),
+            "inside" => Ok(Self::Inside),
+            "outside" => Ok(Self::Outside),
+            _ => Err(format!("unknown SSTYAlign value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum SSTConformanceClass {
+    #[serde(rename = "strict")]
+    Strict,
+    #[serde(rename = "transitional")]
+    Transitional,
+}
+
+impl std::fmt::Display for SSTConformanceClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Strict => write!(f, "strict"),
+            Self::Transitional => write!(f, "transitional"),
+        }
+    }
+}
+
+impl std::str::FromStr for SSTConformanceClass {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "strict" => Ok(Self::Strict),
+            "transitional" => Ok(Self::Transitional),
+            _ => Err(format!("unknown SSTConformanceClass value: {}", s)),
+        }
+    }
+}
+
+pub type SSTUniversalMeasure = String;
+
+pub type SSTPositiveUniversalMeasure = String;
+
+pub type SSTPercentage = String;
+
+pub type SSTFixedPercentage = String;
+
+pub type SSTPositivePercentage = String;
+
+pub type SSTPositiveFixedPercentage = String;
+
+pub type STLongHexNumber = Vec<u8>;
+
+pub type STShortHexNumber = Vec<u8>;
+
+pub type STUcharHexNumber = Vec<u8>;
+
+pub type STDecimalNumberOrPercent = String;
+
+pub type STUnqualifiedPercentage = i64;
+
+pub type STDecimalNumber = i64;
+
+pub type STSignedTwipsMeasure = String;
+
+pub type STPixelsMeasure = SSTUnsignedDecimalNumber;
+
+pub type STHpsMeasure = String;
+
+pub type STSignedHpsMeasure = String;
+
+pub type STDateTime = String;
+
+pub type STMacroName = String;
+
+pub type STEighthPointMeasure = SSTUnsignedDecimalNumber;
+
+pub type STPointMeasure = SSTUnsignedDecimalNumber;
+
+pub type STTextScale = String;
+
+pub type STTextScalePercent = String;
+
+pub type STTextScaleDecimal = i64;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHighlightColor {
+    #[serde(rename = "black")]
+    Black,
+    #[serde(rename = "blue")]
+    Blue,
+    #[serde(rename = "cyan")]
+    Cyan,
+    #[serde(rename = "green")]
+    Green,
+    #[serde(rename = "magenta")]
+    Magenta,
+    #[serde(rename = "red")]
+    Red,
+    #[serde(rename = "yellow")]
+    Yellow,
+    #[serde(rename = "white")]
+    White,
+    #[serde(rename = "darkBlue")]
+    DarkBlue,
+    #[serde(rename = "darkCyan")]
+    DarkCyan,
+    #[serde(rename = "darkGreen")]
+    DarkGreen,
+    #[serde(rename = "darkMagenta")]
+    DarkMagenta,
+    #[serde(rename = "darkRed")]
+    DarkRed,
+    #[serde(rename = "darkYellow")]
+    DarkYellow,
+    #[serde(rename = "darkGray")]
+    DarkGray,
+    #[serde(rename = "lightGray")]
+    LightGray,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STHighlightColor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Black => write!(f, "black"),
+            Self::Blue => write!(f, "blue"),
+            Self::Cyan => write!(f, "cyan"),
+            Self::Green => write!(f, "green"),
+            Self::Magenta => write!(f, "magenta"),
+            Self::Red => write!(f, "red"),
+            Self::Yellow => write!(f, "yellow"),
+            Self::White => write!(f, "white"),
+            Self::DarkBlue => write!(f, "darkBlue"),
+            Self::DarkCyan => write!(f, "darkCyan"),
+            Self::DarkGreen => write!(f, "darkGreen"),
+            Self::DarkMagenta => write!(f, "darkMagenta"),
+            Self::DarkRed => write!(f, "darkRed"),
+            Self::DarkYellow => write!(f, "darkYellow"),
+            Self::DarkGray => write!(f, "darkGray"),
+            Self::LightGray => write!(f, "lightGray"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHighlightColor {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "black" => Ok(Self::Black),
+            "blue" => Ok(Self::Blue),
+            "cyan" => Ok(Self::Cyan),
+            "green" => Ok(Self::Green),
+            "magenta" => Ok(Self::Magenta),
+            "red" => Ok(Self::Red),
+            "yellow" => Ok(Self::Yellow),
+            "white" => Ok(Self::White),
+            "darkBlue" => Ok(Self::DarkBlue),
+            "darkCyan" => Ok(Self::DarkCyan),
+            "darkGreen" => Ok(Self::DarkGreen),
+            "darkMagenta" => Ok(Self::DarkMagenta),
+            "darkRed" => Ok(Self::DarkRed),
+            "darkYellow" => Ok(Self::DarkYellow),
+            "darkGray" => Ok(Self::DarkGray),
+            "lightGray" => Ok(Self::LightGray),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STHighlightColor value: {}", s)),
+        }
+    }
+}
+
+pub type STHexColor = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STUnderline {
+    #[serde(rename = "single")]
+    Single,
+    #[serde(rename = "words")]
+    Words,
+    #[serde(rename = "double")]
+    Double,
+    #[serde(rename = "thick")]
+    Thick,
+    #[serde(rename = "dotted")]
+    Dotted,
+    #[serde(rename = "dottedHeavy")]
+    DottedHeavy,
+    #[serde(rename = "dash")]
+    Dash,
+    #[serde(rename = "dashedHeavy")]
+    DashedHeavy,
+    #[serde(rename = "dashLong")]
+    DashLong,
+    #[serde(rename = "dashLongHeavy")]
+    DashLongHeavy,
+    #[serde(rename = "dotDash")]
+    DotDash,
+    #[serde(rename = "dashDotHeavy")]
+    DashDotHeavy,
+    #[serde(rename = "dotDotDash")]
+    DotDotDash,
+    #[serde(rename = "dashDotDotHeavy")]
+    DashDotDotHeavy,
+    #[serde(rename = "wave")]
+    Wave,
+    #[serde(rename = "wavyHeavy")]
+    WavyHeavy,
+    #[serde(rename = "wavyDouble")]
+    WavyDouble,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STUnderline {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Single => write!(f, "single"),
+            Self::Words => write!(f, "words"),
+            Self::Double => write!(f, "double"),
+            Self::Thick => write!(f, "thick"),
+            Self::Dotted => write!(f, "dotted"),
+            Self::DottedHeavy => write!(f, "dottedHeavy"),
+            Self::Dash => write!(f, "dash"),
+            Self::DashedHeavy => write!(f, "dashedHeavy"),
+            Self::DashLong => write!(f, "dashLong"),
+            Self::DashLongHeavy => write!(f, "dashLongHeavy"),
+            Self::DotDash => write!(f, "dotDash"),
+            Self::DashDotHeavy => write!(f, "dashDotHeavy"),
+            Self::DotDotDash => write!(f, "dotDotDash"),
+            Self::DashDotDotHeavy => write!(f, "dashDotDotHeavy"),
+            Self::Wave => write!(f, "wave"),
+            Self::WavyHeavy => write!(f, "wavyHeavy"),
+            Self::WavyDouble => write!(f, "wavyDouble"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STUnderline {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "single" => Ok(Self::Single),
+            "words" => Ok(Self::Words),
+            "double" => Ok(Self::Double),
+            "thick" => Ok(Self::Thick),
+            "dotted" => Ok(Self::Dotted),
+            "dottedHeavy" => Ok(Self::DottedHeavy),
+            "dash" => Ok(Self::Dash),
+            "dashedHeavy" => Ok(Self::DashedHeavy),
+            "dashLong" => Ok(Self::DashLong),
+            "dashLongHeavy" => Ok(Self::DashLongHeavy),
+            "dotDash" => Ok(Self::DotDash),
+            "dashDotHeavy" => Ok(Self::DashDotHeavy),
+            "dotDotDash" => Ok(Self::DotDotDash),
+            "dashDotDotHeavy" => Ok(Self::DashDotDotHeavy),
+            "wave" => Ok(Self::Wave),
+            "wavyHeavy" => Ok(Self::WavyHeavy),
+            "wavyDouble" => Ok(Self::WavyDouble),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STUnderline value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextEffect {
+    #[serde(rename = "blinkBackground")]
+    BlinkBackground,
+    #[serde(rename = "lights")]
+    Lights,
+    #[serde(rename = "antsBlack")]
+    AntsBlack,
+    #[serde(rename = "antsRed")]
+    AntsRed,
+    #[serde(rename = "shimmer")]
+    Shimmer,
+    #[serde(rename = "sparkle")]
+    Sparkle,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STTextEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::BlinkBackground => write!(f, "blinkBackground"),
+            Self::Lights => write!(f, "lights"),
+            Self::AntsBlack => write!(f, "antsBlack"),
+            Self::AntsRed => write!(f, "antsRed"),
+            Self::Shimmer => write!(f, "shimmer"),
+            Self::Sparkle => write!(f, "sparkle"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextEffect {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "blinkBackground" => Ok(Self::BlinkBackground),
+            "lights" => Ok(Self::Lights),
+            "antsBlack" => Ok(Self::AntsBlack),
+            "antsRed" => Ok(Self::AntsRed),
+            "shimmer" => Ok(Self::Shimmer),
+            "sparkle" => Ok(Self::Sparkle),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STTextEffect value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBorder {
+    #[serde(rename = "nil")]
+    Nil,
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "single")]
+    Single,
+    #[serde(rename = "thick")]
+    Thick,
+    #[serde(rename = "double")]
+    Double,
+    #[serde(rename = "dotted")]
+    Dotted,
+    #[serde(rename = "dashed")]
+    Dashed,
+    #[serde(rename = "dotDash")]
+    DotDash,
+    #[serde(rename = "dotDotDash")]
+    DotDotDash,
+    #[serde(rename = "triple")]
+    Triple,
+    #[serde(rename = "thinThickSmallGap")]
+    ThinThickSmallGap,
+    #[serde(rename = "thickThinSmallGap")]
+    ThickThinSmallGap,
+    #[serde(rename = "thinThickThinSmallGap")]
+    ThinThickThinSmallGap,
+    #[serde(rename = "thinThickMediumGap")]
+    ThinThickMediumGap,
+    #[serde(rename = "thickThinMediumGap")]
+    ThickThinMediumGap,
+    #[serde(rename = "thinThickThinMediumGap")]
+    ThinThickThinMediumGap,
+    #[serde(rename = "thinThickLargeGap")]
+    ThinThickLargeGap,
+    #[serde(rename = "thickThinLargeGap")]
+    ThickThinLargeGap,
+    #[serde(rename = "thinThickThinLargeGap")]
+    ThinThickThinLargeGap,
+    #[serde(rename = "wave")]
+    Wave,
+    #[serde(rename = "doubleWave")]
+    DoubleWave,
+    #[serde(rename = "dashSmallGap")]
+    DashSmallGap,
+    #[serde(rename = "dashDotStroked")]
+    DashDotStroked,
+    #[serde(rename = "threeDEmboss")]
+    ThreeDEmboss,
+    #[serde(rename = "threeDEngrave")]
+    ThreeDEngrave,
+    #[serde(rename = "outset")]
+    Outset,
+    #[serde(rename = "inset")]
+    Inset,
+    #[serde(rename = "apples")]
+    Apples,
+    #[serde(rename = "archedScallops")]
+    ArchedScallops,
+    #[serde(rename = "babyPacifier")]
+    BabyPacifier,
+    #[serde(rename = "babyRattle")]
+    BabyRattle,
+    #[serde(rename = "balloons3Colors")]
+    Balloons3Colors,
+    #[serde(rename = "balloonsHotAir")]
+    BalloonsHotAir,
+    #[serde(rename = "basicBlackDashes")]
+    BasicBlackDashes,
+    #[serde(rename = "basicBlackDots")]
+    BasicBlackDots,
+    #[serde(rename = "basicBlackSquares")]
+    BasicBlackSquares,
+    #[serde(rename = "basicThinLines")]
+    BasicThinLines,
+    #[serde(rename = "basicWhiteDashes")]
+    BasicWhiteDashes,
+    #[serde(rename = "basicWhiteDots")]
+    BasicWhiteDots,
+    #[serde(rename = "basicWhiteSquares")]
+    BasicWhiteSquares,
+    #[serde(rename = "basicWideInline")]
+    BasicWideInline,
+    #[serde(rename = "basicWideMidline")]
+    BasicWideMidline,
+    #[serde(rename = "basicWideOutline")]
+    BasicWideOutline,
+    #[serde(rename = "bats")]
+    Bats,
+    #[serde(rename = "birds")]
+    Birds,
+    #[serde(rename = "birdsFlight")]
+    BirdsFlight,
+    #[serde(rename = "cabins")]
+    Cabins,
+    #[serde(rename = "cakeSlice")]
+    CakeSlice,
+    #[serde(rename = "candyCorn")]
+    CandyCorn,
+    #[serde(rename = "celticKnotwork")]
+    CelticKnotwork,
+    #[serde(rename = "certificateBanner")]
+    CertificateBanner,
+    #[serde(rename = "chainLink")]
+    ChainLink,
+    #[serde(rename = "champagneBottle")]
+    ChampagneBottle,
+    #[serde(rename = "checkedBarBlack")]
+    CheckedBarBlack,
+    #[serde(rename = "checkedBarColor")]
+    CheckedBarColor,
+    #[serde(rename = "checkered")]
+    Checkered,
+    #[serde(rename = "christmasTree")]
+    ChristmasTree,
+    #[serde(rename = "circlesLines")]
+    CirclesLines,
+    #[serde(rename = "circlesRectangles")]
+    CirclesRectangles,
+    #[serde(rename = "classicalWave")]
+    ClassicalWave,
+    #[serde(rename = "clocks")]
+    Clocks,
+    #[serde(rename = "compass")]
+    Compass,
+    #[serde(rename = "confetti")]
+    Confetti,
+    #[serde(rename = "confettiGrays")]
+    ConfettiGrays,
+    #[serde(rename = "confettiOutline")]
+    ConfettiOutline,
+    #[serde(rename = "confettiStreamers")]
+    ConfettiStreamers,
+    #[serde(rename = "confettiWhite")]
+    ConfettiWhite,
+    #[serde(rename = "cornerTriangles")]
+    CornerTriangles,
+    #[serde(rename = "couponCutoutDashes")]
+    CouponCutoutDashes,
+    #[serde(rename = "couponCutoutDots")]
+    CouponCutoutDots,
+    #[serde(rename = "crazyMaze")]
+    CrazyMaze,
+    #[serde(rename = "creaturesButterfly")]
+    CreaturesButterfly,
+    #[serde(rename = "creaturesFish")]
+    CreaturesFish,
+    #[serde(rename = "creaturesInsects")]
+    CreaturesInsects,
+    #[serde(rename = "creaturesLadyBug")]
+    CreaturesLadyBug,
+    #[serde(rename = "crossStitch")]
+    CrossStitch,
+    #[serde(rename = "cup")]
+    Cup,
+    #[serde(rename = "decoArch")]
+    DecoArch,
+    #[serde(rename = "decoArchColor")]
+    DecoArchColor,
+    #[serde(rename = "decoBlocks")]
+    DecoBlocks,
+    #[serde(rename = "diamondsGray")]
+    DiamondsGray,
+    #[serde(rename = "doubleD")]
+    DoubleD,
+    #[serde(rename = "doubleDiamonds")]
+    DoubleDiamonds,
+    #[serde(rename = "earth1")]
+    Earth1,
+    #[serde(rename = "earth2")]
+    Earth2,
+    #[serde(rename = "earth3")]
+    Earth3,
+    #[serde(rename = "eclipsingSquares1")]
+    EclipsingSquares1,
+    #[serde(rename = "eclipsingSquares2")]
+    EclipsingSquares2,
+    #[serde(rename = "eggsBlack")]
+    EggsBlack,
+    #[serde(rename = "fans")]
+    Fans,
+    #[serde(rename = "film")]
+    Film,
+    #[serde(rename = "firecrackers")]
+    Firecrackers,
+    #[serde(rename = "flowersBlockPrint")]
+    FlowersBlockPrint,
+    #[serde(rename = "flowersDaisies")]
+    FlowersDaisies,
+    #[serde(rename = "flowersModern1")]
+    FlowersModern1,
+    #[serde(rename = "flowersModern2")]
+    FlowersModern2,
+    #[serde(rename = "flowersPansy")]
+    FlowersPansy,
+    #[serde(rename = "flowersRedRose")]
+    FlowersRedRose,
+    #[serde(rename = "flowersRoses")]
+    FlowersRoses,
+    #[serde(rename = "flowersTeacup")]
+    FlowersTeacup,
+    #[serde(rename = "flowersTiny")]
+    FlowersTiny,
+    #[serde(rename = "gems")]
+    Gems,
+    #[serde(rename = "gingerbreadMan")]
+    GingerbreadMan,
+    #[serde(rename = "gradient")]
+    Gradient,
+    #[serde(rename = "handmade1")]
+    Handmade1,
+    #[serde(rename = "handmade2")]
+    Handmade2,
+    #[serde(rename = "heartBalloon")]
+    HeartBalloon,
+    #[serde(rename = "heartGray")]
+    HeartGray,
+    #[serde(rename = "hearts")]
+    Hearts,
+    #[serde(rename = "heebieJeebies")]
+    HeebieJeebies,
+    #[serde(rename = "holly")]
+    Holly,
+    #[serde(rename = "houseFunky")]
+    HouseFunky,
+    #[serde(rename = "hypnotic")]
+    Hypnotic,
+    #[serde(rename = "iceCreamCones")]
+    IceCreamCones,
+    #[serde(rename = "lightBulb")]
+    LightBulb,
+    #[serde(rename = "lightning1")]
+    Lightning1,
+    #[serde(rename = "lightning2")]
+    Lightning2,
+    #[serde(rename = "mapPins")]
+    MapPins,
+    #[serde(rename = "mapleLeaf")]
+    MapleLeaf,
+    #[serde(rename = "mapleMuffins")]
+    MapleMuffins,
+    #[serde(rename = "marquee")]
+    Marquee,
+    #[serde(rename = "marqueeToothed")]
+    MarqueeToothed,
+    #[serde(rename = "moons")]
+    Moons,
+    #[serde(rename = "mosaic")]
+    Mosaic,
+    #[serde(rename = "musicNotes")]
+    MusicNotes,
+    #[serde(rename = "northwest")]
+    Northwest,
+    #[serde(rename = "ovals")]
+    Ovals,
+    #[serde(rename = "packages")]
+    Packages,
+    #[serde(rename = "palmsBlack")]
+    PalmsBlack,
+    #[serde(rename = "palmsColor")]
+    PalmsColor,
+    #[serde(rename = "paperClips")]
+    PaperClips,
+    #[serde(rename = "papyrus")]
+    Papyrus,
+    #[serde(rename = "partyFavor")]
+    PartyFavor,
+    #[serde(rename = "partyGlass")]
+    PartyGlass,
+    #[serde(rename = "pencils")]
+    Pencils,
+    #[serde(rename = "people")]
+    People,
+    #[serde(rename = "peopleWaving")]
+    PeopleWaving,
+    #[serde(rename = "peopleHats")]
+    PeopleHats,
+    #[serde(rename = "poinsettias")]
+    Poinsettias,
+    #[serde(rename = "postageStamp")]
+    PostageStamp,
+    #[serde(rename = "pumpkin1")]
+    Pumpkin1,
+    #[serde(rename = "pushPinNote2")]
+    PushPinNote2,
+    #[serde(rename = "pushPinNote1")]
+    PushPinNote1,
+    #[serde(rename = "pyramids")]
+    Pyramids,
+    #[serde(rename = "pyramidsAbove")]
+    PyramidsAbove,
+    #[serde(rename = "quadrants")]
+    Quadrants,
+    #[serde(rename = "rings")]
+    Rings,
+    #[serde(rename = "safari")]
+    Safari,
+    #[serde(rename = "sawtooth")]
+    Sawtooth,
+    #[serde(rename = "sawtoothGray")]
+    SawtoothGray,
+    #[serde(rename = "scaredCat")]
+    ScaredCat,
+    #[serde(rename = "seattle")]
+    Seattle,
+    #[serde(rename = "shadowedSquares")]
+    ShadowedSquares,
+    #[serde(rename = "sharksTeeth")]
+    SharksTeeth,
+    #[serde(rename = "shorebirdTracks")]
+    ShorebirdTracks,
+    #[serde(rename = "skyrocket")]
+    Skyrocket,
+    #[serde(rename = "snowflakeFancy")]
+    SnowflakeFancy,
+    #[serde(rename = "snowflakes")]
+    Snowflakes,
+    #[serde(rename = "sombrero")]
+    Sombrero,
+    #[serde(rename = "southwest")]
+    Southwest,
+    #[serde(rename = "stars")]
+    Stars,
+    #[serde(rename = "starsTop")]
+    StarsTop,
+    #[serde(rename = "stars3d")]
+    Stars3d,
+    #[serde(rename = "starsBlack")]
+    StarsBlack,
+    #[serde(rename = "starsShadowed")]
+    StarsShadowed,
+    #[serde(rename = "sun")]
+    Sun,
+    #[serde(rename = "swirligig")]
+    Swirligig,
+    #[serde(rename = "tornPaper")]
+    TornPaper,
+    #[serde(rename = "tornPaperBlack")]
+    TornPaperBlack,
+    #[serde(rename = "trees")]
+    Trees,
+    #[serde(rename = "triangleParty")]
+    TriangleParty,
+    #[serde(rename = "triangles")]
+    Triangles,
+    #[serde(rename = "triangle1")]
+    Triangle1,
+    #[serde(rename = "triangle2")]
+    Triangle2,
+    #[serde(rename = "triangleCircle1")]
+    TriangleCircle1,
+    #[serde(rename = "triangleCircle2")]
+    TriangleCircle2,
+    #[serde(rename = "shapes1")]
+    Shapes1,
+    #[serde(rename = "shapes2")]
+    Shapes2,
+    #[serde(rename = "twistedLines1")]
+    TwistedLines1,
+    #[serde(rename = "twistedLines2")]
+    TwistedLines2,
+    #[serde(rename = "vine")]
+    Vine,
+    #[serde(rename = "waveline")]
+    Waveline,
+    #[serde(rename = "weavingAngles")]
+    WeavingAngles,
+    #[serde(rename = "weavingBraid")]
+    WeavingBraid,
+    #[serde(rename = "weavingRibbon")]
+    WeavingRibbon,
+    #[serde(rename = "weavingStrips")]
+    WeavingStrips,
+    #[serde(rename = "whiteFlowers")]
+    WhiteFlowers,
+    #[serde(rename = "woodwork")]
+    Woodwork,
+    #[serde(rename = "xIllusions")]
+    XIllusions,
+    #[serde(rename = "zanyTriangles")]
+    ZanyTriangles,
+    #[serde(rename = "zigZag")]
+    ZigZag,
+    #[serde(rename = "zigZagStitch")]
+    ZigZagStitch,
+    #[serde(rename = "custom")]
+    Custom,
+}
+
+impl std::fmt::Display for STBorder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Nil => write!(f, "nil"),
+            Self::None => write!(f, "none"),
+            Self::Single => write!(f, "single"),
+            Self::Thick => write!(f, "thick"),
+            Self::Double => write!(f, "double"),
+            Self::Dotted => write!(f, "dotted"),
+            Self::Dashed => write!(f, "dashed"),
+            Self::DotDash => write!(f, "dotDash"),
+            Self::DotDotDash => write!(f, "dotDotDash"),
+            Self::Triple => write!(f, "triple"),
+            Self::ThinThickSmallGap => write!(f, "thinThickSmallGap"),
+            Self::ThickThinSmallGap => write!(f, "thickThinSmallGap"),
+            Self::ThinThickThinSmallGap => write!(f, "thinThickThinSmallGap"),
+            Self::ThinThickMediumGap => write!(f, "thinThickMediumGap"),
+            Self::ThickThinMediumGap => write!(f, "thickThinMediumGap"),
+            Self::ThinThickThinMediumGap => write!(f, "thinThickThinMediumGap"),
+            Self::ThinThickLargeGap => write!(f, "thinThickLargeGap"),
+            Self::ThickThinLargeGap => write!(f, "thickThinLargeGap"),
+            Self::ThinThickThinLargeGap => write!(f, "thinThickThinLargeGap"),
+            Self::Wave => write!(f, "wave"),
+            Self::DoubleWave => write!(f, "doubleWave"),
+            Self::DashSmallGap => write!(f, "dashSmallGap"),
+            Self::DashDotStroked => write!(f, "dashDotStroked"),
+            Self::ThreeDEmboss => write!(f, "threeDEmboss"),
+            Self::ThreeDEngrave => write!(f, "threeDEngrave"),
+            Self::Outset => write!(f, "outset"),
+            Self::Inset => write!(f, "inset"),
+            Self::Apples => write!(f, "apples"),
+            Self::ArchedScallops => write!(f, "archedScallops"),
+            Self::BabyPacifier => write!(f, "babyPacifier"),
+            Self::BabyRattle => write!(f, "babyRattle"),
+            Self::Balloons3Colors => write!(f, "balloons3Colors"),
+            Self::BalloonsHotAir => write!(f, "balloonsHotAir"),
+            Self::BasicBlackDashes => write!(f, "basicBlackDashes"),
+            Self::BasicBlackDots => write!(f, "basicBlackDots"),
+            Self::BasicBlackSquares => write!(f, "basicBlackSquares"),
+            Self::BasicThinLines => write!(f, "basicThinLines"),
+            Self::BasicWhiteDashes => write!(f, "basicWhiteDashes"),
+            Self::BasicWhiteDots => write!(f, "basicWhiteDots"),
+            Self::BasicWhiteSquares => write!(f, "basicWhiteSquares"),
+            Self::BasicWideInline => write!(f, "basicWideInline"),
+            Self::BasicWideMidline => write!(f, "basicWideMidline"),
+            Self::BasicWideOutline => write!(f, "basicWideOutline"),
+            Self::Bats => write!(f, "bats"),
+            Self::Birds => write!(f, "birds"),
+            Self::BirdsFlight => write!(f, "birdsFlight"),
+            Self::Cabins => write!(f, "cabins"),
+            Self::CakeSlice => write!(f, "cakeSlice"),
+            Self::CandyCorn => write!(f, "candyCorn"),
+            Self::CelticKnotwork => write!(f, "celticKnotwork"),
+            Self::CertificateBanner => write!(f, "certificateBanner"),
+            Self::ChainLink => write!(f, "chainLink"),
+            Self::ChampagneBottle => write!(f, "champagneBottle"),
+            Self::CheckedBarBlack => write!(f, "checkedBarBlack"),
+            Self::CheckedBarColor => write!(f, "checkedBarColor"),
+            Self::Checkered => write!(f, "checkered"),
+            Self::ChristmasTree => write!(f, "christmasTree"),
+            Self::CirclesLines => write!(f, "circlesLines"),
+            Self::CirclesRectangles => write!(f, "circlesRectangles"),
+            Self::ClassicalWave => write!(f, "classicalWave"),
+            Self::Clocks => write!(f, "clocks"),
+            Self::Compass => write!(f, "compass"),
+            Self::Confetti => write!(f, "confetti"),
+            Self::ConfettiGrays => write!(f, "confettiGrays"),
+            Self::ConfettiOutline => write!(f, "confettiOutline"),
+            Self::ConfettiStreamers => write!(f, "confettiStreamers"),
+            Self::ConfettiWhite => write!(f, "confettiWhite"),
+            Self::CornerTriangles => write!(f, "cornerTriangles"),
+            Self::CouponCutoutDashes => write!(f, "couponCutoutDashes"),
+            Self::CouponCutoutDots => write!(f, "couponCutoutDots"),
+            Self::CrazyMaze => write!(f, "crazyMaze"),
+            Self::CreaturesButterfly => write!(f, "creaturesButterfly"),
+            Self::CreaturesFish => write!(f, "creaturesFish"),
+            Self::CreaturesInsects => write!(f, "creaturesInsects"),
+            Self::CreaturesLadyBug => write!(f, "creaturesLadyBug"),
+            Self::CrossStitch => write!(f, "crossStitch"),
+            Self::Cup => write!(f, "cup"),
+            Self::DecoArch => write!(f, "decoArch"),
+            Self::DecoArchColor => write!(f, "decoArchColor"),
+            Self::DecoBlocks => write!(f, "decoBlocks"),
+            Self::DiamondsGray => write!(f, "diamondsGray"),
+            Self::DoubleD => write!(f, "doubleD"),
+            Self::DoubleDiamonds => write!(f, "doubleDiamonds"),
+            Self::Earth1 => write!(f, "earth1"),
+            Self::Earth2 => write!(f, "earth2"),
+            Self::Earth3 => write!(f, "earth3"),
+            Self::EclipsingSquares1 => write!(f, "eclipsingSquares1"),
+            Self::EclipsingSquares2 => write!(f, "eclipsingSquares2"),
+            Self::EggsBlack => write!(f, "eggsBlack"),
+            Self::Fans => write!(f, "fans"),
+            Self::Film => write!(f, "film"),
+            Self::Firecrackers => write!(f, "firecrackers"),
+            Self::FlowersBlockPrint => write!(f, "flowersBlockPrint"),
+            Self::FlowersDaisies => write!(f, "flowersDaisies"),
+            Self::FlowersModern1 => write!(f, "flowersModern1"),
+            Self::FlowersModern2 => write!(f, "flowersModern2"),
+            Self::FlowersPansy => write!(f, "flowersPansy"),
+            Self::FlowersRedRose => write!(f, "flowersRedRose"),
+            Self::FlowersRoses => write!(f, "flowersRoses"),
+            Self::FlowersTeacup => write!(f, "flowersTeacup"),
+            Self::FlowersTiny => write!(f, "flowersTiny"),
+            Self::Gems => write!(f, "gems"),
+            Self::GingerbreadMan => write!(f, "gingerbreadMan"),
+            Self::Gradient => write!(f, "gradient"),
+            Self::Handmade1 => write!(f, "handmade1"),
+            Self::Handmade2 => write!(f, "handmade2"),
+            Self::HeartBalloon => write!(f, "heartBalloon"),
+            Self::HeartGray => write!(f, "heartGray"),
+            Self::Hearts => write!(f, "hearts"),
+            Self::HeebieJeebies => write!(f, "heebieJeebies"),
+            Self::Holly => write!(f, "holly"),
+            Self::HouseFunky => write!(f, "houseFunky"),
+            Self::Hypnotic => write!(f, "hypnotic"),
+            Self::IceCreamCones => write!(f, "iceCreamCones"),
+            Self::LightBulb => write!(f, "lightBulb"),
+            Self::Lightning1 => write!(f, "lightning1"),
+            Self::Lightning2 => write!(f, "lightning2"),
+            Self::MapPins => write!(f, "mapPins"),
+            Self::MapleLeaf => write!(f, "mapleLeaf"),
+            Self::MapleMuffins => write!(f, "mapleMuffins"),
+            Self::Marquee => write!(f, "marquee"),
+            Self::MarqueeToothed => write!(f, "marqueeToothed"),
+            Self::Moons => write!(f, "moons"),
+            Self::Mosaic => write!(f, "mosaic"),
+            Self::MusicNotes => write!(f, "musicNotes"),
+            Self::Northwest => write!(f, "northwest"),
+            Self::Ovals => write!(f, "ovals"),
+            Self::Packages => write!(f, "packages"),
+            Self::PalmsBlack => write!(f, "palmsBlack"),
+            Self::PalmsColor => write!(f, "palmsColor"),
+            Self::PaperClips => write!(f, "paperClips"),
+            Self::Papyrus => write!(f, "papyrus"),
+            Self::PartyFavor => write!(f, "partyFavor"),
+            Self::PartyGlass => write!(f, "partyGlass"),
+            Self::Pencils => write!(f, "pencils"),
+            Self::People => write!(f, "people"),
+            Self::PeopleWaving => write!(f, "peopleWaving"),
+            Self::PeopleHats => write!(f, "peopleHats"),
+            Self::Poinsettias => write!(f, "poinsettias"),
+            Self::PostageStamp => write!(f, "postageStamp"),
+            Self::Pumpkin1 => write!(f, "pumpkin1"),
+            Self::PushPinNote2 => write!(f, "pushPinNote2"),
+            Self::PushPinNote1 => write!(f, "pushPinNote1"),
+            Self::Pyramids => write!(f, "pyramids"),
+            Self::PyramidsAbove => write!(f, "pyramidsAbove"),
+            Self::Quadrants => write!(f, "quadrants"),
+            Self::Rings => write!(f, "rings"),
+            Self::Safari => write!(f, "safari"),
+            Self::Sawtooth => write!(f, "sawtooth"),
+            Self::SawtoothGray => write!(f, "sawtoothGray"),
+            Self::ScaredCat => write!(f, "scaredCat"),
+            Self::Seattle => write!(f, "seattle"),
+            Self::ShadowedSquares => write!(f, "shadowedSquares"),
+            Self::SharksTeeth => write!(f, "sharksTeeth"),
+            Self::ShorebirdTracks => write!(f, "shorebirdTracks"),
+            Self::Skyrocket => write!(f, "skyrocket"),
+            Self::SnowflakeFancy => write!(f, "snowflakeFancy"),
+            Self::Snowflakes => write!(f, "snowflakes"),
+            Self::Sombrero => write!(f, "sombrero"),
+            Self::Southwest => write!(f, "southwest"),
+            Self::Stars => write!(f, "stars"),
+            Self::StarsTop => write!(f, "starsTop"),
+            Self::Stars3d => write!(f, "stars3d"),
+            Self::StarsBlack => write!(f, "starsBlack"),
+            Self::StarsShadowed => write!(f, "starsShadowed"),
+            Self::Sun => write!(f, "sun"),
+            Self::Swirligig => write!(f, "swirligig"),
+            Self::TornPaper => write!(f, "tornPaper"),
+            Self::TornPaperBlack => write!(f, "tornPaperBlack"),
+            Self::Trees => write!(f, "trees"),
+            Self::TriangleParty => write!(f, "triangleParty"),
+            Self::Triangles => write!(f, "triangles"),
+            Self::Triangle1 => write!(f, "triangle1"),
+            Self::Triangle2 => write!(f, "triangle2"),
+            Self::TriangleCircle1 => write!(f, "triangleCircle1"),
+            Self::TriangleCircle2 => write!(f, "triangleCircle2"),
+            Self::Shapes1 => write!(f, "shapes1"),
+            Self::Shapes2 => write!(f, "shapes2"),
+            Self::TwistedLines1 => write!(f, "twistedLines1"),
+            Self::TwistedLines2 => write!(f, "twistedLines2"),
+            Self::Vine => write!(f, "vine"),
+            Self::Waveline => write!(f, "waveline"),
+            Self::WeavingAngles => write!(f, "weavingAngles"),
+            Self::WeavingBraid => write!(f, "weavingBraid"),
+            Self::WeavingRibbon => write!(f, "weavingRibbon"),
+            Self::WeavingStrips => write!(f, "weavingStrips"),
+            Self::WhiteFlowers => write!(f, "whiteFlowers"),
+            Self::Woodwork => write!(f, "woodwork"),
+            Self::XIllusions => write!(f, "xIllusions"),
+            Self::ZanyTriangles => write!(f, "zanyTriangles"),
+            Self::ZigZag => write!(f, "zigZag"),
+            Self::ZigZagStitch => write!(f, "zigZagStitch"),
+            Self::Custom => write!(f, "custom"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBorder {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "nil" => Ok(Self::Nil),
+            "none" => Ok(Self::None),
+            "single" => Ok(Self::Single),
+            "thick" => Ok(Self::Thick),
+            "double" => Ok(Self::Double),
+            "dotted" => Ok(Self::Dotted),
+            "dashed" => Ok(Self::Dashed),
+            "dotDash" => Ok(Self::DotDash),
+            "dotDotDash" => Ok(Self::DotDotDash),
+            "triple" => Ok(Self::Triple),
+            "thinThickSmallGap" => Ok(Self::ThinThickSmallGap),
+            "thickThinSmallGap" => Ok(Self::ThickThinSmallGap),
+            "thinThickThinSmallGap" => Ok(Self::ThinThickThinSmallGap),
+            "thinThickMediumGap" => Ok(Self::ThinThickMediumGap),
+            "thickThinMediumGap" => Ok(Self::ThickThinMediumGap),
+            "thinThickThinMediumGap" => Ok(Self::ThinThickThinMediumGap),
+            "thinThickLargeGap" => Ok(Self::ThinThickLargeGap),
+            "thickThinLargeGap" => Ok(Self::ThickThinLargeGap),
+            "thinThickThinLargeGap" => Ok(Self::ThinThickThinLargeGap),
+            "wave" => Ok(Self::Wave),
+            "doubleWave" => Ok(Self::DoubleWave),
+            "dashSmallGap" => Ok(Self::DashSmallGap),
+            "dashDotStroked" => Ok(Self::DashDotStroked),
+            "threeDEmboss" => Ok(Self::ThreeDEmboss),
+            "threeDEngrave" => Ok(Self::ThreeDEngrave),
+            "outset" => Ok(Self::Outset),
+            "inset" => Ok(Self::Inset),
+            "apples" => Ok(Self::Apples),
+            "archedScallops" => Ok(Self::ArchedScallops),
+            "babyPacifier" => Ok(Self::BabyPacifier),
+            "babyRattle" => Ok(Self::BabyRattle),
+            "balloons3Colors" => Ok(Self::Balloons3Colors),
+            "balloonsHotAir" => Ok(Self::BalloonsHotAir),
+            "basicBlackDashes" => Ok(Self::BasicBlackDashes),
+            "basicBlackDots" => Ok(Self::BasicBlackDots),
+            "basicBlackSquares" => Ok(Self::BasicBlackSquares),
+            "basicThinLines" => Ok(Self::BasicThinLines),
+            "basicWhiteDashes" => Ok(Self::BasicWhiteDashes),
+            "basicWhiteDots" => Ok(Self::BasicWhiteDots),
+            "basicWhiteSquares" => Ok(Self::BasicWhiteSquares),
+            "basicWideInline" => Ok(Self::BasicWideInline),
+            "basicWideMidline" => Ok(Self::BasicWideMidline),
+            "basicWideOutline" => Ok(Self::BasicWideOutline),
+            "bats" => Ok(Self::Bats),
+            "birds" => Ok(Self::Birds),
+            "birdsFlight" => Ok(Self::BirdsFlight),
+            "cabins" => Ok(Self::Cabins),
+            "cakeSlice" => Ok(Self::CakeSlice),
+            "candyCorn" => Ok(Self::CandyCorn),
+            "celticKnotwork" => Ok(Self::CelticKnotwork),
+            "certificateBanner" => Ok(Self::CertificateBanner),
+            "chainLink" => Ok(Self::ChainLink),
+            "champagneBottle" => Ok(Self::ChampagneBottle),
+            "checkedBarBlack" => Ok(Self::CheckedBarBlack),
+            "checkedBarColor" => Ok(Self::CheckedBarColor),
+            "checkered" => Ok(Self::Checkered),
+            "christmasTree" => Ok(Self::ChristmasTree),
+            "circlesLines" => Ok(Self::CirclesLines),
+            "circlesRectangles" => Ok(Self::CirclesRectangles),
+            "classicalWave" => Ok(Self::ClassicalWave),
+            "clocks" => Ok(Self::Clocks),
+            "compass" => Ok(Self::Compass),
+            "confetti" => Ok(Self::Confetti),
+            "confettiGrays" => Ok(Self::ConfettiGrays),
+            "confettiOutline" => Ok(Self::ConfettiOutline),
+            "confettiStreamers" => Ok(Self::ConfettiStreamers),
+            "confettiWhite" => Ok(Self::ConfettiWhite),
+            "cornerTriangles" => Ok(Self::CornerTriangles),
+            "couponCutoutDashes" => Ok(Self::CouponCutoutDashes),
+            "couponCutoutDots" => Ok(Self::CouponCutoutDots),
+            "crazyMaze" => Ok(Self::CrazyMaze),
+            "creaturesButterfly" => Ok(Self::CreaturesButterfly),
+            "creaturesFish" => Ok(Self::CreaturesFish),
+            "creaturesInsects" => Ok(Self::CreaturesInsects),
+            "creaturesLadyBug" => Ok(Self::CreaturesLadyBug),
+            "crossStitch" => Ok(Self::CrossStitch),
+            "cup" => Ok(Self::Cup),
+            "decoArch" => Ok(Self::DecoArch),
+            "decoArchColor" => Ok(Self::DecoArchColor),
+            "decoBlocks" => Ok(Self::DecoBlocks),
+            "diamondsGray" => Ok(Self::DiamondsGray),
+            "doubleD" => Ok(Self::DoubleD),
+            "doubleDiamonds" => Ok(Self::DoubleDiamonds),
+            "earth1" => Ok(Self::Earth1),
+            "earth2" => Ok(Self::Earth2),
+            "earth3" => Ok(Self::Earth3),
+            "eclipsingSquares1" => Ok(Self::EclipsingSquares1),
+            "eclipsingSquares2" => Ok(Self::EclipsingSquares2),
+            "eggsBlack" => Ok(Self::EggsBlack),
+            "fans" => Ok(Self::Fans),
+            "film" => Ok(Self::Film),
+            "firecrackers" => Ok(Self::Firecrackers),
+            "flowersBlockPrint" => Ok(Self::FlowersBlockPrint),
+            "flowersDaisies" => Ok(Self::FlowersDaisies),
+            "flowersModern1" => Ok(Self::FlowersModern1),
+            "flowersModern2" => Ok(Self::FlowersModern2),
+            "flowersPansy" => Ok(Self::FlowersPansy),
+            "flowersRedRose" => Ok(Self::FlowersRedRose),
+            "flowersRoses" => Ok(Self::FlowersRoses),
+            "flowersTeacup" => Ok(Self::FlowersTeacup),
+            "flowersTiny" => Ok(Self::FlowersTiny),
+            "gems" => Ok(Self::Gems),
+            "gingerbreadMan" => Ok(Self::GingerbreadMan),
+            "gradient" => Ok(Self::Gradient),
+            "handmade1" => Ok(Self::Handmade1),
+            "handmade2" => Ok(Self::Handmade2),
+            "heartBalloon" => Ok(Self::HeartBalloon),
+            "heartGray" => Ok(Self::HeartGray),
+            "hearts" => Ok(Self::Hearts),
+            "heebieJeebies" => Ok(Self::HeebieJeebies),
+            "holly" => Ok(Self::Holly),
+            "houseFunky" => Ok(Self::HouseFunky),
+            "hypnotic" => Ok(Self::Hypnotic),
+            "iceCreamCones" => Ok(Self::IceCreamCones),
+            "lightBulb" => Ok(Self::LightBulb),
+            "lightning1" => Ok(Self::Lightning1),
+            "lightning2" => Ok(Self::Lightning2),
+            "mapPins" => Ok(Self::MapPins),
+            "mapleLeaf" => Ok(Self::MapleLeaf),
+            "mapleMuffins" => Ok(Self::MapleMuffins),
+            "marquee" => Ok(Self::Marquee),
+            "marqueeToothed" => Ok(Self::MarqueeToothed),
+            "moons" => Ok(Self::Moons),
+            "mosaic" => Ok(Self::Mosaic),
+            "musicNotes" => Ok(Self::MusicNotes),
+            "northwest" => Ok(Self::Northwest),
+            "ovals" => Ok(Self::Ovals),
+            "packages" => Ok(Self::Packages),
+            "palmsBlack" => Ok(Self::PalmsBlack),
+            "palmsColor" => Ok(Self::PalmsColor),
+            "paperClips" => Ok(Self::PaperClips),
+            "papyrus" => Ok(Self::Papyrus),
+            "partyFavor" => Ok(Self::PartyFavor),
+            "partyGlass" => Ok(Self::PartyGlass),
+            "pencils" => Ok(Self::Pencils),
+            "people" => Ok(Self::People),
+            "peopleWaving" => Ok(Self::PeopleWaving),
+            "peopleHats" => Ok(Self::PeopleHats),
+            "poinsettias" => Ok(Self::Poinsettias),
+            "postageStamp" => Ok(Self::PostageStamp),
+            "pumpkin1" => Ok(Self::Pumpkin1),
+            "pushPinNote2" => Ok(Self::PushPinNote2),
+            "pushPinNote1" => Ok(Self::PushPinNote1),
+            "pyramids" => Ok(Self::Pyramids),
+            "pyramidsAbove" => Ok(Self::PyramidsAbove),
+            "quadrants" => Ok(Self::Quadrants),
+            "rings" => Ok(Self::Rings),
+            "safari" => Ok(Self::Safari),
+            "sawtooth" => Ok(Self::Sawtooth),
+            "sawtoothGray" => Ok(Self::SawtoothGray),
+            "scaredCat" => Ok(Self::ScaredCat),
+            "seattle" => Ok(Self::Seattle),
+            "shadowedSquares" => Ok(Self::ShadowedSquares),
+            "sharksTeeth" => Ok(Self::SharksTeeth),
+            "shorebirdTracks" => Ok(Self::ShorebirdTracks),
+            "skyrocket" => Ok(Self::Skyrocket),
+            "snowflakeFancy" => Ok(Self::SnowflakeFancy),
+            "snowflakes" => Ok(Self::Snowflakes),
+            "sombrero" => Ok(Self::Sombrero),
+            "southwest" => Ok(Self::Southwest),
+            "stars" => Ok(Self::Stars),
+            "starsTop" => Ok(Self::StarsTop),
+            "stars3d" => Ok(Self::Stars3d),
+            "starsBlack" => Ok(Self::StarsBlack),
+            "starsShadowed" => Ok(Self::StarsShadowed),
+            "sun" => Ok(Self::Sun),
+            "swirligig" => Ok(Self::Swirligig),
+            "tornPaper" => Ok(Self::TornPaper),
+            "tornPaperBlack" => Ok(Self::TornPaperBlack),
+            "trees" => Ok(Self::Trees),
+            "triangleParty" => Ok(Self::TriangleParty),
+            "triangles" => Ok(Self::Triangles),
+            "triangle1" => Ok(Self::Triangle1),
+            "triangle2" => Ok(Self::Triangle2),
+            "triangleCircle1" => Ok(Self::TriangleCircle1),
+            "triangleCircle2" => Ok(Self::TriangleCircle2),
+            "shapes1" => Ok(Self::Shapes1),
+            "shapes2" => Ok(Self::Shapes2),
+            "twistedLines1" => Ok(Self::TwistedLines1),
+            "twistedLines2" => Ok(Self::TwistedLines2),
+            "vine" => Ok(Self::Vine),
+            "waveline" => Ok(Self::Waveline),
+            "weavingAngles" => Ok(Self::WeavingAngles),
+            "weavingBraid" => Ok(Self::WeavingBraid),
+            "weavingRibbon" => Ok(Self::WeavingRibbon),
+            "weavingStrips" => Ok(Self::WeavingStrips),
+            "whiteFlowers" => Ok(Self::WhiteFlowers),
+            "woodwork" => Ok(Self::Woodwork),
+            "xIllusions" => Ok(Self::XIllusions),
+            "zanyTriangles" => Ok(Self::ZanyTriangles),
+            "zigZag" => Ok(Self::ZigZag),
+            "zigZagStitch" => Ok(Self::ZigZagStitch),
+            "custom" => Ok(Self::Custom),
+            _ => Err(format!("unknown STBorder value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STShd {
+    #[serde(rename = "nil")]
+    Nil,
+    #[serde(rename = "clear")]
+    Clear,
+    #[serde(rename = "solid")]
+    Solid,
+    #[serde(rename = "horzStripe")]
+    HorzStripe,
+    #[serde(rename = "vertStripe")]
+    VertStripe,
+    #[serde(rename = "reverseDiagStripe")]
+    ReverseDiagStripe,
+    #[serde(rename = "diagStripe")]
+    DiagStripe,
+    #[serde(rename = "horzCross")]
+    HorzCross,
+    #[serde(rename = "diagCross")]
+    DiagCross,
+    #[serde(rename = "thinHorzStripe")]
+    ThinHorzStripe,
+    #[serde(rename = "thinVertStripe")]
+    ThinVertStripe,
+    #[serde(rename = "thinReverseDiagStripe")]
+    ThinReverseDiagStripe,
+    #[serde(rename = "thinDiagStripe")]
+    ThinDiagStripe,
+    #[serde(rename = "thinHorzCross")]
+    ThinHorzCross,
+    #[serde(rename = "thinDiagCross")]
+    ThinDiagCross,
+    #[serde(rename = "pct5")]
+    Pct5,
+    #[serde(rename = "pct10")]
+    Pct10,
+    #[serde(rename = "pct12")]
+    Pct12,
+    #[serde(rename = "pct15")]
+    Pct15,
+    #[serde(rename = "pct20")]
+    Pct20,
+    #[serde(rename = "pct25")]
+    Pct25,
+    #[serde(rename = "pct30")]
+    Pct30,
+    #[serde(rename = "pct35")]
+    Pct35,
+    #[serde(rename = "pct37")]
+    Pct37,
+    #[serde(rename = "pct40")]
+    Pct40,
+    #[serde(rename = "pct45")]
+    Pct45,
+    #[serde(rename = "pct50")]
+    Pct50,
+    #[serde(rename = "pct55")]
+    Pct55,
+    #[serde(rename = "pct60")]
+    Pct60,
+    #[serde(rename = "pct62")]
+    Pct62,
+    #[serde(rename = "pct65")]
+    Pct65,
+    #[serde(rename = "pct70")]
+    Pct70,
+    #[serde(rename = "pct75")]
+    Pct75,
+    #[serde(rename = "pct80")]
+    Pct80,
+    #[serde(rename = "pct85")]
+    Pct85,
+    #[serde(rename = "pct87")]
+    Pct87,
+    #[serde(rename = "pct90")]
+    Pct90,
+    #[serde(rename = "pct95")]
+    Pct95,
+}
+
+impl std::fmt::Display for STShd {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Nil => write!(f, "nil"),
+            Self::Clear => write!(f, "clear"),
+            Self::Solid => write!(f, "solid"),
+            Self::HorzStripe => write!(f, "horzStripe"),
+            Self::VertStripe => write!(f, "vertStripe"),
+            Self::ReverseDiagStripe => write!(f, "reverseDiagStripe"),
+            Self::DiagStripe => write!(f, "diagStripe"),
+            Self::HorzCross => write!(f, "horzCross"),
+            Self::DiagCross => write!(f, "diagCross"),
+            Self::ThinHorzStripe => write!(f, "thinHorzStripe"),
+            Self::ThinVertStripe => write!(f, "thinVertStripe"),
+            Self::ThinReverseDiagStripe => write!(f, "thinReverseDiagStripe"),
+            Self::ThinDiagStripe => write!(f, "thinDiagStripe"),
+            Self::ThinHorzCross => write!(f, "thinHorzCross"),
+            Self::ThinDiagCross => write!(f, "thinDiagCross"),
+            Self::Pct5 => write!(f, "pct5"),
+            Self::Pct10 => write!(f, "pct10"),
+            Self::Pct12 => write!(f, "pct12"),
+            Self::Pct15 => write!(f, "pct15"),
+            Self::Pct20 => write!(f, "pct20"),
+            Self::Pct25 => write!(f, "pct25"),
+            Self::Pct30 => write!(f, "pct30"),
+            Self::Pct35 => write!(f, "pct35"),
+            Self::Pct37 => write!(f, "pct37"),
+            Self::Pct40 => write!(f, "pct40"),
+            Self::Pct45 => write!(f, "pct45"),
+            Self::Pct50 => write!(f, "pct50"),
+            Self::Pct55 => write!(f, "pct55"),
+            Self::Pct60 => write!(f, "pct60"),
+            Self::Pct62 => write!(f, "pct62"),
+            Self::Pct65 => write!(f, "pct65"),
+            Self::Pct70 => write!(f, "pct70"),
+            Self::Pct75 => write!(f, "pct75"),
+            Self::Pct80 => write!(f, "pct80"),
+            Self::Pct85 => write!(f, "pct85"),
+            Self::Pct87 => write!(f, "pct87"),
+            Self::Pct90 => write!(f, "pct90"),
+            Self::Pct95 => write!(f, "pct95"),
+        }
+    }
+}
+
+impl std::str::FromStr for STShd {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "nil" => Ok(Self::Nil),
+            "clear" => Ok(Self::Clear),
+            "solid" => Ok(Self::Solid),
+            "horzStripe" => Ok(Self::HorzStripe),
+            "vertStripe" => Ok(Self::VertStripe),
+            "reverseDiagStripe" => Ok(Self::ReverseDiagStripe),
+            "diagStripe" => Ok(Self::DiagStripe),
+            "horzCross" => Ok(Self::HorzCross),
+            "diagCross" => Ok(Self::DiagCross),
+            "thinHorzStripe" => Ok(Self::ThinHorzStripe),
+            "thinVertStripe" => Ok(Self::ThinVertStripe),
+            "thinReverseDiagStripe" => Ok(Self::ThinReverseDiagStripe),
+            "thinDiagStripe" => Ok(Self::ThinDiagStripe),
+            "thinHorzCross" => Ok(Self::ThinHorzCross),
+            "thinDiagCross" => Ok(Self::ThinDiagCross),
+            "pct5" => Ok(Self::Pct5),
+            "pct10" => Ok(Self::Pct10),
+            "pct12" => Ok(Self::Pct12),
+            "pct15" => Ok(Self::Pct15),
+            "pct20" => Ok(Self::Pct20),
+            "pct25" => Ok(Self::Pct25),
+            "pct30" => Ok(Self::Pct30),
+            "pct35" => Ok(Self::Pct35),
+            "pct37" => Ok(Self::Pct37),
+            "pct40" => Ok(Self::Pct40),
+            "pct45" => Ok(Self::Pct45),
+            "pct50" => Ok(Self::Pct50),
+            "pct55" => Ok(Self::Pct55),
+            "pct60" => Ok(Self::Pct60),
+            "pct62" => Ok(Self::Pct62),
+            "pct65" => Ok(Self::Pct65),
+            "pct70" => Ok(Self::Pct70),
+            "pct75" => Ok(Self::Pct75),
+            "pct80" => Ok(Self::Pct80),
+            "pct85" => Ok(Self::Pct85),
+            "pct87" => Ok(Self::Pct87),
+            "pct90" => Ok(Self::Pct90),
+            "pct95" => Ok(Self::Pct95),
+            _ => Err(format!("unknown STShd value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STEm {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "dot")]
+    Dot,
+    #[serde(rename = "comma")]
+    Comma,
+    #[serde(rename = "circle")]
+    Circle,
+    #[serde(rename = "underDot")]
+    UnderDot,
+}
+
+impl std::fmt::Display for STEm {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Dot => write!(f, "dot"),
+            Self::Comma => write!(f, "comma"),
+            Self::Circle => write!(f, "circle"),
+            Self::UnderDot => write!(f, "underDot"),
+        }
+    }
+}
+
+impl std::str::FromStr for STEm {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "dot" => Ok(Self::Dot),
+            "comma" => Ok(Self::Comma),
+            "circle" => Ok(Self::Circle),
+            "underDot" => Ok(Self::UnderDot),
+            _ => Err(format!("unknown STEm value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STCombineBrackets {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "round")]
+    Round,
+    #[serde(rename = "square")]
+    Square,
+    #[serde(rename = "angle")]
+    Angle,
+    #[serde(rename = "curly")]
+    Curly,
+}
+
+impl std::fmt::Display for STCombineBrackets {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Round => write!(f, "round"),
+            Self::Square => write!(f, "square"),
+            Self::Angle => write!(f, "angle"),
+            Self::Curly => write!(f, "curly"),
+        }
+    }
+}
+
+impl std::str::FromStr for STCombineBrackets {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "round" => Ok(Self::Round),
+            "square" => Ok(Self::Square),
+            "angle" => Ok(Self::Angle),
+            "curly" => Ok(Self::Curly),
+            _ => Err(format!("unknown STCombineBrackets value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHeightRule {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "exact")]
+    Exact,
+    #[serde(rename = "atLeast")]
+    AtLeast,
+}
+
+impl std::fmt::Display for STHeightRule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::Exact => write!(f, "exact"),
+            Self::AtLeast => write!(f, "atLeast"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHeightRule {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "exact" => Ok(Self::Exact),
+            "atLeast" => Ok(Self::AtLeast),
+            _ => Err(format!("unknown STHeightRule value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STWrap {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "notBeside")]
+    NotBeside,
+    #[serde(rename = "around")]
+    Around,
+    #[serde(rename = "tight")]
+    Tight,
+    #[serde(rename = "through")]
+    Through,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STWrap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::NotBeside => write!(f, "notBeside"),
+            Self::Around => write!(f, "around"),
+            Self::Tight => write!(f, "tight"),
+            Self::Through => write!(f, "through"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STWrap {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "notBeside" => Ok(Self::NotBeside),
+            "around" => Ok(Self::Around),
+            "tight" => Ok(Self::Tight),
+            "through" => Ok(Self::Through),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STWrap value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STVAnchor {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "margin")]
+    Margin,
+    #[serde(rename = "page")]
+    Page,
+}
+
+impl std::fmt::Display for STVAnchor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Text => write!(f, "text"),
+            Self::Margin => write!(f, "margin"),
+            Self::Page => write!(f, "page"),
+        }
+    }
+}
+
+impl std::str::FromStr for STVAnchor {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "text" => Ok(Self::Text),
+            "margin" => Ok(Self::Margin),
+            "page" => Ok(Self::Page),
+            _ => Err(format!("unknown STVAnchor value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHAnchor {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "margin")]
+    Margin,
+    #[serde(rename = "page")]
+    Page,
+}
+
+impl std::fmt::Display for STHAnchor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Text => write!(f, "text"),
+            Self::Margin => write!(f, "margin"),
+            Self::Page => write!(f, "page"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHAnchor {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "text" => Ok(Self::Text),
+            "margin" => Ok(Self::Margin),
+            "page" => Ok(Self::Page),
+            _ => Err(format!("unknown STHAnchor value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDropCap {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "drop")]
+    Drop,
+    #[serde(rename = "margin")]
+    Margin,
+}
+
+impl std::fmt::Display for STDropCap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Drop => write!(f, "drop"),
+            Self::Margin => write!(f, "margin"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDropCap {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "drop" => Ok(Self::Drop),
+            "margin" => Ok(Self::Margin),
+            _ => Err(format!("unknown STDropCap value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTabJc {
+    #[serde(rename = "clear")]
+    Clear,
+    #[serde(rename = "start")]
+    Start,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "end")]
+    End,
+    #[serde(rename = "decimal")]
+    Decimal,
+    #[serde(rename = "bar")]
+    Bar,
+    #[serde(rename = "num")]
+    Num,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+}
+
+impl std::fmt::Display for STTabJc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Clear => write!(f, "clear"),
+            Self::Start => write!(f, "start"),
+            Self::Center => write!(f, "center"),
+            Self::End => write!(f, "end"),
+            Self::Decimal => write!(f, "decimal"),
+            Self::Bar => write!(f, "bar"),
+            Self::Num => write!(f, "num"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTabJc {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "clear" => Ok(Self::Clear),
+            "start" => Ok(Self::Start),
+            "center" => Ok(Self::Center),
+            "end" => Ok(Self::End),
+            "decimal" => Ok(Self::Decimal),
+            "bar" => Ok(Self::Bar),
+            "num" => Ok(Self::Num),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            _ => Err(format!("unknown STTabJc value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTabTlc {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "dot")]
+    Dot,
+    #[serde(rename = "hyphen")]
+    Hyphen,
+    #[serde(rename = "underscore")]
+    Underscore,
+    #[serde(rename = "heavy")]
+    Heavy,
+    #[serde(rename = "middleDot")]
+    MiddleDot,
+}
+
+impl std::fmt::Display for STTabTlc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Dot => write!(f, "dot"),
+            Self::Hyphen => write!(f, "hyphen"),
+            Self::Underscore => write!(f, "underscore"),
+            Self::Heavy => write!(f, "heavy"),
+            Self::MiddleDot => write!(f, "middleDot"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTabTlc {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "dot" => Ok(Self::Dot),
+            "hyphen" => Ok(Self::Hyphen),
+            "underscore" => Ok(Self::Underscore),
+            "heavy" => Ok(Self::Heavy),
+            "middleDot" => Ok(Self::MiddleDot),
+            _ => Err(format!("unknown STTabTlc value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STLineSpacingRule {
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "exact")]
+    Exact,
+    #[serde(rename = "atLeast")]
+    AtLeast,
+}
+
+impl std::fmt::Display for STLineSpacingRule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Auto => write!(f, "auto"),
+            Self::Exact => write!(f, "exact"),
+            Self::AtLeast => write!(f, "atLeast"),
+        }
+    }
+}
+
+impl std::str::FromStr for STLineSpacingRule {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "auto" => Ok(Self::Auto),
+            "exact" => Ok(Self::Exact),
+            "atLeast" => Ok(Self::AtLeast),
+            _ => Err(format!("unknown STLineSpacingRule value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STJc {
+    #[serde(rename = "start")]
+    Start,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "end")]
+    End,
+    #[serde(rename = "both")]
+    Both,
+    #[serde(rename = "mediumKashida")]
+    MediumKashida,
+    #[serde(rename = "distribute")]
+    Distribute,
+    #[serde(rename = "numTab")]
+    NumTab,
+    #[serde(rename = "highKashida")]
+    HighKashida,
+    #[serde(rename = "lowKashida")]
+    LowKashida,
+    #[serde(rename = "thaiDistribute")]
+    ThaiDistribute,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+}
+
+impl std::fmt::Display for STJc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Start => write!(f, "start"),
+            Self::Center => write!(f, "center"),
+            Self::End => write!(f, "end"),
+            Self::Both => write!(f, "both"),
+            Self::MediumKashida => write!(f, "mediumKashida"),
+            Self::Distribute => write!(f, "distribute"),
+            Self::NumTab => write!(f, "numTab"),
+            Self::HighKashida => write!(f, "highKashida"),
+            Self::LowKashida => write!(f, "lowKashida"),
+            Self::ThaiDistribute => write!(f, "thaiDistribute"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+        }
+    }
+}
+
+impl std::str::FromStr for STJc {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "start" => Ok(Self::Start),
+            "center" => Ok(Self::Center),
+            "end" => Ok(Self::End),
+            "both" => Ok(Self::Both),
+            "mediumKashida" => Ok(Self::MediumKashida),
+            "distribute" => Ok(Self::Distribute),
+            "numTab" => Ok(Self::NumTab),
+            "highKashida" => Ok(Self::HighKashida),
+            "lowKashida" => Ok(Self::LowKashida),
+            "thaiDistribute" => Ok(Self::ThaiDistribute),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            _ => Err(format!("unknown STJc value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STJcTable {
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "end")]
+    End,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "start")]
+    Start,
+}
+
+impl std::fmt::Display for STJcTable {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Center => write!(f, "center"),
+            Self::End => write!(f, "end"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+            Self::Start => write!(f, "start"),
+        }
+    }
+}
+
+impl std::str::FromStr for STJcTable {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "center" => Ok(Self::Center),
+            "end" => Ok(Self::End),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            "start" => Ok(Self::Start),
+            _ => Err(format!("unknown STJcTable value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STView {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "print")]
+    Print,
+    #[serde(rename = "outline")]
+    Outline,
+    #[serde(rename = "masterPages")]
+    MasterPages,
+    #[serde(rename = "normal")]
+    Normal,
+    #[serde(rename = "web")]
+    Web,
+}
+
+impl std::fmt::Display for STView {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Print => write!(f, "print"),
+            Self::Outline => write!(f, "outline"),
+            Self::MasterPages => write!(f, "masterPages"),
+            Self::Normal => write!(f, "normal"),
+            Self::Web => write!(f, "web"),
+        }
+    }
+}
+
+impl std::str::FromStr for STView {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "print" => Ok(Self::Print),
+            "outline" => Ok(Self::Outline),
+            "masterPages" => Ok(Self::MasterPages),
+            "normal" => Ok(Self::Normal),
+            "web" => Ok(Self::Web),
+            _ => Err(format!("unknown STView value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STZoom {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "fullPage")]
+    FullPage,
+    #[serde(rename = "bestFit")]
+    BestFit,
+    #[serde(rename = "textFit")]
+    TextFit,
+}
+
+impl std::fmt::Display for STZoom {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::FullPage => write!(f, "fullPage"),
+            Self::BestFit => write!(f, "bestFit"),
+            Self::TextFit => write!(f, "textFit"),
+        }
+    }
+}
+
+impl std::str::FromStr for STZoom {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "fullPage" => Ok(Self::FullPage),
+            "bestFit" => Ok(Self::BestFit),
+            "textFit" => Ok(Self::TextFit),
+            _ => Err(format!("unknown STZoom value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STProof {
+    #[serde(rename = "clean")]
+    Clean,
+    #[serde(rename = "dirty")]
+    Dirty,
+}
+
+impl std::fmt::Display for STProof {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Clean => write!(f, "clean"),
+            Self::Dirty => write!(f, "dirty"),
+        }
+    }
+}
+
+impl std::str::FromStr for STProof {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "clean" => Ok(Self::Clean),
+            "dirty" => Ok(Self::Dirty),
+            _ => Err(format!("unknown STProof value: {}", s)),
+        }
+    }
+}
+
+pub type STDocType = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDocProtect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "readOnly")]
+    ReadOnly,
+    #[serde(rename = "comments")]
+    Comments,
+    #[serde(rename = "trackedChanges")]
+    TrackedChanges,
+    #[serde(rename = "forms")]
+    Forms,
+}
+
+impl std::fmt::Display for STDocProtect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::ReadOnly => write!(f, "readOnly"),
+            Self::Comments => write!(f, "comments"),
+            Self::TrackedChanges => write!(f, "trackedChanges"),
+            Self::Forms => write!(f, "forms"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDocProtect {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "readOnly" => Ok(Self::ReadOnly),
+            "comments" => Ok(Self::Comments),
+            "trackedChanges" => Ok(Self::TrackedChanges),
+            "forms" => Ok(Self::Forms),
+            _ => Err(format!("unknown STDocProtect value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMailMergeDocType {
+    #[serde(rename = "catalog")]
+    Catalog,
+    #[serde(rename = "envelopes")]
+    Envelopes,
+    #[serde(rename = "mailingLabels")]
+    MailingLabels,
+    #[serde(rename = "formLetters")]
+    FormLetters,
+    #[serde(rename = "email")]
+    Email,
+    #[serde(rename = "fax")]
+    Fax,
+}
+
+impl std::fmt::Display for STMailMergeDocType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Catalog => write!(f, "catalog"),
+            Self::Envelopes => write!(f, "envelopes"),
+            Self::MailingLabels => write!(f, "mailingLabels"),
+            Self::FormLetters => write!(f, "formLetters"),
+            Self::Email => write!(f, "email"),
+            Self::Fax => write!(f, "fax"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMailMergeDocType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "catalog" => Ok(Self::Catalog),
+            "envelopes" => Ok(Self::Envelopes),
+            "mailingLabels" => Ok(Self::MailingLabels),
+            "formLetters" => Ok(Self::FormLetters),
+            "email" => Ok(Self::Email),
+            "fax" => Ok(Self::Fax),
+            _ => Err(format!("unknown STMailMergeDocType value: {}", s)),
+        }
+    }
+}
+
+pub type STMailMergeDataType = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMailMergeDest {
+    #[serde(rename = "newDocument")]
+    NewDocument,
+    #[serde(rename = "printer")]
+    Printer,
+    #[serde(rename = "email")]
+    Email,
+    #[serde(rename = "fax")]
+    Fax,
+}
+
+impl std::fmt::Display for STMailMergeDest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NewDocument => write!(f, "newDocument"),
+            Self::Printer => write!(f, "printer"),
+            Self::Email => write!(f, "email"),
+            Self::Fax => write!(f, "fax"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMailMergeDest {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "newDocument" => Ok(Self::NewDocument),
+            "printer" => Ok(Self::Printer),
+            "email" => Ok(Self::Email),
+            "fax" => Ok(Self::Fax),
+            _ => Err(format!("unknown STMailMergeDest value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMailMergeOdsoFMDFieldType {
+    #[serde(rename = "null")]
+    Null,
+    #[serde(rename = "dbColumn")]
+    DbColumn,
+}
+
+impl std::fmt::Display for STMailMergeOdsoFMDFieldType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Null => write!(f, "null"),
+            Self::DbColumn => write!(f, "dbColumn"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMailMergeOdsoFMDFieldType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "null" => Ok(Self::Null),
+            "dbColumn" => Ok(Self::DbColumn),
+            _ => Err(format!("unknown STMailMergeOdsoFMDFieldType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextDirection {
+    #[serde(rename = "tb")]
+    Tb,
+    #[serde(rename = "rl")]
+    Rl,
+    #[serde(rename = "lr")]
+    Lr,
+    #[serde(rename = "tbV")]
+    TbV,
+    #[serde(rename = "rlV")]
+    RlV,
+    #[serde(rename = "lrV")]
+    LrV,
+    #[serde(rename = "btLr")]
+    BtLr,
+    #[serde(rename = "lrTb")]
+    LrTb,
+    #[serde(rename = "lrTbV")]
+    LrTbV,
+    #[serde(rename = "tbLrV")]
+    TbLrV,
+    #[serde(rename = "tbRl")]
+    TbRl,
+    #[serde(rename = "tbRlV")]
+    TbRlV,
+}
+
+impl std::fmt::Display for STTextDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Tb => write!(f, "tb"),
+            Self::Rl => write!(f, "rl"),
+            Self::Lr => write!(f, "lr"),
+            Self::TbV => write!(f, "tbV"),
+            Self::RlV => write!(f, "rlV"),
+            Self::LrV => write!(f, "lrV"),
+            Self::BtLr => write!(f, "btLr"),
+            Self::LrTb => write!(f, "lrTb"),
+            Self::LrTbV => write!(f, "lrTbV"),
+            Self::TbLrV => write!(f, "tbLrV"),
+            Self::TbRl => write!(f, "tbRl"),
+            Self::TbRlV => write!(f, "tbRlV"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tb" => Ok(Self::Tb),
+            "rl" => Ok(Self::Rl),
+            "lr" => Ok(Self::Lr),
+            "tbV" => Ok(Self::TbV),
+            "rlV" => Ok(Self::RlV),
+            "lrV" => Ok(Self::LrV),
+            "btLr" => Ok(Self::BtLr),
+            "lrTb" => Ok(Self::LrTb),
+            "lrTbV" => Ok(Self::LrTbV),
+            "tbLrV" => Ok(Self::TbLrV),
+            "tbRl" => Ok(Self::TbRl),
+            "tbRlV" => Ok(Self::TbRlV),
+            _ => Err(format!("unknown STTextDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextAlignment {
+    #[serde(rename = "top")]
+    Top,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "baseline")]
+    Baseline,
+    #[serde(rename = "bottom")]
+    Bottom,
+    #[serde(rename = "auto")]
+    Auto,
+}
+
+impl std::fmt::Display for STTextAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Top => write!(f, "top"),
+            Self::Center => write!(f, "center"),
+            Self::Baseline => write!(f, "baseline"),
+            Self::Bottom => write!(f, "bottom"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "top" => Ok(Self::Top),
+            "center" => Ok(Self::Center),
+            "baseline" => Ok(Self::Baseline),
+            "bottom" => Ok(Self::Bottom),
+            "auto" => Ok(Self::Auto),
+            _ => Err(format!("unknown STTextAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDisplacedByCustomXml {
+    #[serde(rename = "next")]
+    Next,
+    #[serde(rename = "prev")]
+    Prev,
+}
+
+impl std::fmt::Display for STDisplacedByCustomXml {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Next => write!(f, "next"),
+            Self::Prev => write!(f, "prev"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDisplacedByCustomXml {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "next" => Ok(Self::Next),
+            "prev" => Ok(Self::Prev),
+            _ => Err(format!("unknown STDisplacedByCustomXml value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STAnnotationVMerge {
+    #[serde(rename = "cont")]
+    Cont,
+    #[serde(rename = "rest")]
+    Rest,
+}
+
+impl std::fmt::Display for STAnnotationVMerge {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Cont => write!(f, "cont"),
+            Self::Rest => write!(f, "rest"),
+        }
+    }
+}
+
+impl std::str::FromStr for STAnnotationVMerge {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "cont" => Ok(Self::Cont),
+            "rest" => Ok(Self::Rest),
+            _ => Err(format!("unknown STAnnotationVMerge value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTextboxTightWrap {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "allLines")]
+    AllLines,
+    #[serde(rename = "firstAndLastLine")]
+    FirstAndLastLine,
+    #[serde(rename = "firstLineOnly")]
+    FirstLineOnly,
+    #[serde(rename = "lastLineOnly")]
+    LastLineOnly,
+}
+
+impl std::fmt::Display for STTextboxTightWrap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::AllLines => write!(f, "allLines"),
+            Self::FirstAndLastLine => write!(f, "firstAndLastLine"),
+            Self::FirstLineOnly => write!(f, "firstLineOnly"),
+            Self::LastLineOnly => write!(f, "lastLineOnly"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTextboxTightWrap {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "allLines" => Ok(Self::AllLines),
+            "firstAndLastLine" => Ok(Self::FirstAndLastLine),
+            "firstLineOnly" => Ok(Self::FirstLineOnly),
+            "lastLineOnly" => Ok(Self::LastLineOnly),
+            _ => Err(format!("unknown STTextboxTightWrap value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STObjectDrawAspect {
+    #[serde(rename = "content")]
+    Content,
+    #[serde(rename = "icon")]
+    Icon,
+}
+
+impl std::fmt::Display for STObjectDrawAspect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Content => write!(f, "content"),
+            Self::Icon => write!(f, "icon"),
+        }
+    }
+}
+
+impl std::str::FromStr for STObjectDrawAspect {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "content" => Ok(Self::Content),
+            "icon" => Ok(Self::Icon),
+            _ => Err(format!("unknown STObjectDrawAspect value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STObjectUpdateMode {
+    #[serde(rename = "always")]
+    Always,
+    #[serde(rename = "onCall")]
+    OnCall,
+}
+
+impl std::fmt::Display for STObjectUpdateMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Always => write!(f, "always"),
+            Self::OnCall => write!(f, "onCall"),
+        }
+    }
+}
+
+impl std::str::FromStr for STObjectUpdateMode {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "always" => Ok(Self::Always),
+            "onCall" => Ok(Self::OnCall),
+            _ => Err(format!("unknown STObjectUpdateMode value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFldCharType {
+    #[serde(rename = "begin")]
+    Begin,
+    #[serde(rename = "separate")]
+    Separate,
+    #[serde(rename = "end")]
+    End,
+}
+
+impl std::fmt::Display for STFldCharType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Begin => write!(f, "begin"),
+            Self::Separate => write!(f, "separate"),
+            Self::End => write!(f, "end"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFldCharType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "begin" => Ok(Self::Begin),
+            "separate" => Ok(Self::Separate),
+            "end" => Ok(Self::End),
+            _ => Err(format!("unknown STFldCharType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STInfoTextType {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "autoText")]
+    AutoText,
+}
+
+impl std::fmt::Display for STInfoTextType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Text => write!(f, "text"),
+            Self::AutoText => write!(f, "autoText"),
+        }
+    }
+}
+
+impl std::str::FromStr for STInfoTextType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "text" => Ok(Self::Text),
+            "autoText" => Ok(Self::AutoText),
+            _ => Err(format!("unknown STInfoTextType value: {}", s)),
+        }
+    }
+}
+
+pub type STFFHelpTextVal = String;
+
+pub type STFFStatusTextVal = String;
+
+pub type STFFName = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFFTextType {
+    #[serde(rename = "regular")]
+    Regular,
+    #[serde(rename = "number")]
+    Number,
+    #[serde(rename = "date")]
+    Date,
+    #[serde(rename = "currentTime")]
+    CurrentTime,
+    #[serde(rename = "currentDate")]
+    CurrentDate,
+    #[serde(rename = "calculated")]
+    Calculated,
+}
+
+impl std::fmt::Display for STFFTextType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Regular => write!(f, "regular"),
+            Self::Number => write!(f, "number"),
+            Self::Date => write!(f, "date"),
+            Self::CurrentTime => write!(f, "currentTime"),
+            Self::CurrentDate => write!(f, "currentDate"),
+            Self::Calculated => write!(f, "calculated"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFFTextType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "regular" => Ok(Self::Regular),
+            "number" => Ok(Self::Number),
+            "date" => Ok(Self::Date),
+            "currentTime" => Ok(Self::CurrentTime),
+            "currentDate" => Ok(Self::CurrentDate),
+            "calculated" => Ok(Self::Calculated),
+            _ => Err(format!("unknown STFFTextType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STSectionMark {
+    #[serde(rename = "nextPage")]
+    NextPage,
+    #[serde(rename = "nextColumn")]
+    NextColumn,
+    #[serde(rename = "continuous")]
+    Continuous,
+    #[serde(rename = "evenPage")]
+    EvenPage,
+    #[serde(rename = "oddPage")]
+    OddPage,
+}
+
+impl std::fmt::Display for STSectionMark {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NextPage => write!(f, "nextPage"),
+            Self::NextColumn => write!(f, "nextColumn"),
+            Self::Continuous => write!(f, "continuous"),
+            Self::EvenPage => write!(f, "evenPage"),
+            Self::OddPage => write!(f, "oddPage"),
+        }
+    }
+}
+
+impl std::str::FromStr for STSectionMark {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "nextPage" => Ok(Self::NextPage),
+            "nextColumn" => Ok(Self::NextColumn),
+            "continuous" => Ok(Self::Continuous),
+            "evenPage" => Ok(Self::EvenPage),
+            "oddPage" => Ok(Self::OddPage),
+            _ => Err(format!("unknown STSectionMark value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STNumberFormat {
+    #[serde(rename = "decimal")]
+    Decimal,
+    #[serde(rename = "upperRoman")]
+    UpperRoman,
+    #[serde(rename = "lowerRoman")]
+    LowerRoman,
+    #[serde(rename = "upperLetter")]
+    UpperLetter,
+    #[serde(rename = "lowerLetter")]
+    LowerLetter,
+    #[serde(rename = "ordinal")]
+    Ordinal,
+    #[serde(rename = "cardinalText")]
+    CardinalText,
+    #[serde(rename = "ordinalText")]
+    OrdinalText,
+    #[serde(rename = "hex")]
+    Hex,
+    #[serde(rename = "chicago")]
+    Chicago,
+    #[serde(rename = "ideographDigital")]
+    IdeographDigital,
+    #[serde(rename = "japaneseCounting")]
+    JapaneseCounting,
+    #[serde(rename = "aiueo")]
+    Aiueo,
+    #[serde(rename = "iroha")]
+    Iroha,
+    #[serde(rename = "decimalFullWidth")]
+    DecimalFullWidth,
+    #[serde(rename = "decimalHalfWidth")]
+    DecimalHalfWidth,
+    #[serde(rename = "japaneseLegal")]
+    JapaneseLegal,
+    #[serde(rename = "japaneseDigitalTenThousand")]
+    JapaneseDigitalTenThousand,
+    #[serde(rename = "decimalEnclosedCircle")]
+    DecimalEnclosedCircle,
+    #[serde(rename = "decimalFullWidth2")]
+    DecimalFullWidth2,
+    #[serde(rename = "aiueoFullWidth")]
+    AiueoFullWidth,
+    #[serde(rename = "irohaFullWidth")]
+    IrohaFullWidth,
+    #[serde(rename = "decimalZero")]
+    DecimalZero,
+    #[serde(rename = "bullet")]
+    Bullet,
+    #[serde(rename = "ganada")]
+    Ganada,
+    #[serde(rename = "chosung")]
+    Chosung,
+    #[serde(rename = "decimalEnclosedFullstop")]
+    DecimalEnclosedFullstop,
+    #[serde(rename = "decimalEnclosedParen")]
+    DecimalEnclosedParen,
+    #[serde(rename = "decimalEnclosedCircleChinese")]
+    DecimalEnclosedCircleChinese,
+    #[serde(rename = "ideographEnclosedCircle")]
+    IdeographEnclosedCircle,
+    #[serde(rename = "ideographTraditional")]
+    IdeographTraditional,
+    #[serde(rename = "ideographZodiac")]
+    IdeographZodiac,
+    #[serde(rename = "ideographZodiacTraditional")]
+    IdeographZodiacTraditional,
+    #[serde(rename = "taiwaneseCounting")]
+    TaiwaneseCounting,
+    #[serde(rename = "ideographLegalTraditional")]
+    IdeographLegalTraditional,
+    #[serde(rename = "taiwaneseCountingThousand")]
+    TaiwaneseCountingThousand,
+    #[serde(rename = "taiwaneseDigital")]
+    TaiwaneseDigital,
+    #[serde(rename = "chineseCounting")]
+    ChineseCounting,
+    #[serde(rename = "chineseLegalSimplified")]
+    ChineseLegalSimplified,
+    #[serde(rename = "chineseCountingThousand")]
+    ChineseCountingThousand,
+    #[serde(rename = "koreanDigital")]
+    KoreanDigital,
+    #[serde(rename = "koreanCounting")]
+    KoreanCounting,
+    #[serde(rename = "koreanLegal")]
+    KoreanLegal,
+    #[serde(rename = "koreanDigital2")]
+    KoreanDigital2,
+    #[serde(rename = "vietnameseCounting")]
+    VietnameseCounting,
+    #[serde(rename = "russianLower")]
+    RussianLower,
+    #[serde(rename = "russianUpper")]
+    RussianUpper,
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "numberInDash")]
+    NumberInDash,
+    #[serde(rename = "hebrew1")]
+    Hebrew1,
+    #[serde(rename = "hebrew2")]
+    Hebrew2,
+    #[serde(rename = "arabicAlpha")]
+    ArabicAlpha,
+    #[serde(rename = "arabicAbjad")]
+    ArabicAbjad,
+    #[serde(rename = "hindiVowels")]
+    HindiVowels,
+    #[serde(rename = "hindiConsonants")]
+    HindiConsonants,
+    #[serde(rename = "hindiNumbers")]
+    HindiNumbers,
+    #[serde(rename = "hindiCounting")]
+    HindiCounting,
+    #[serde(rename = "thaiLetters")]
+    ThaiLetters,
+    #[serde(rename = "thaiNumbers")]
+    ThaiNumbers,
+    #[serde(rename = "thaiCounting")]
+    ThaiCounting,
+    #[serde(rename = "bahtText")]
+    BahtText,
+    #[serde(rename = "dollarText")]
+    DollarText,
+    #[serde(rename = "custom")]
+    Custom,
+}
+
+impl std::fmt::Display for STNumberFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Decimal => write!(f, "decimal"),
+            Self::UpperRoman => write!(f, "upperRoman"),
+            Self::LowerRoman => write!(f, "lowerRoman"),
+            Self::UpperLetter => write!(f, "upperLetter"),
+            Self::LowerLetter => write!(f, "lowerLetter"),
+            Self::Ordinal => write!(f, "ordinal"),
+            Self::CardinalText => write!(f, "cardinalText"),
+            Self::OrdinalText => write!(f, "ordinalText"),
+            Self::Hex => write!(f, "hex"),
+            Self::Chicago => write!(f, "chicago"),
+            Self::IdeographDigital => write!(f, "ideographDigital"),
+            Self::JapaneseCounting => write!(f, "japaneseCounting"),
+            Self::Aiueo => write!(f, "aiueo"),
+            Self::Iroha => write!(f, "iroha"),
+            Self::DecimalFullWidth => write!(f, "decimalFullWidth"),
+            Self::DecimalHalfWidth => write!(f, "decimalHalfWidth"),
+            Self::JapaneseLegal => write!(f, "japaneseLegal"),
+            Self::JapaneseDigitalTenThousand => write!(f, "japaneseDigitalTenThousand"),
+            Self::DecimalEnclosedCircle => write!(f, "decimalEnclosedCircle"),
+            Self::DecimalFullWidth2 => write!(f, "decimalFullWidth2"),
+            Self::AiueoFullWidth => write!(f, "aiueoFullWidth"),
+            Self::IrohaFullWidth => write!(f, "irohaFullWidth"),
+            Self::DecimalZero => write!(f, "decimalZero"),
+            Self::Bullet => write!(f, "bullet"),
+            Self::Ganada => write!(f, "ganada"),
+            Self::Chosung => write!(f, "chosung"),
+            Self::DecimalEnclosedFullstop => write!(f, "decimalEnclosedFullstop"),
+            Self::DecimalEnclosedParen => write!(f, "decimalEnclosedParen"),
+            Self::DecimalEnclosedCircleChinese => write!(f, "decimalEnclosedCircleChinese"),
+            Self::IdeographEnclosedCircle => write!(f, "ideographEnclosedCircle"),
+            Self::IdeographTraditional => write!(f, "ideographTraditional"),
+            Self::IdeographZodiac => write!(f, "ideographZodiac"),
+            Self::IdeographZodiacTraditional => write!(f, "ideographZodiacTraditional"),
+            Self::TaiwaneseCounting => write!(f, "taiwaneseCounting"),
+            Self::IdeographLegalTraditional => write!(f, "ideographLegalTraditional"),
+            Self::TaiwaneseCountingThousand => write!(f, "taiwaneseCountingThousand"),
+            Self::TaiwaneseDigital => write!(f, "taiwaneseDigital"),
+            Self::ChineseCounting => write!(f, "chineseCounting"),
+            Self::ChineseLegalSimplified => write!(f, "chineseLegalSimplified"),
+            Self::ChineseCountingThousand => write!(f, "chineseCountingThousand"),
+            Self::KoreanDigital => write!(f, "koreanDigital"),
+            Self::KoreanCounting => write!(f, "koreanCounting"),
+            Self::KoreanLegal => write!(f, "koreanLegal"),
+            Self::KoreanDigital2 => write!(f, "koreanDigital2"),
+            Self::VietnameseCounting => write!(f, "vietnameseCounting"),
+            Self::RussianLower => write!(f, "russianLower"),
+            Self::RussianUpper => write!(f, "russianUpper"),
+            Self::None => write!(f, "none"),
+            Self::NumberInDash => write!(f, "numberInDash"),
+            Self::Hebrew1 => write!(f, "hebrew1"),
+            Self::Hebrew2 => write!(f, "hebrew2"),
+            Self::ArabicAlpha => write!(f, "arabicAlpha"),
+            Self::ArabicAbjad => write!(f, "arabicAbjad"),
+            Self::HindiVowels => write!(f, "hindiVowels"),
+            Self::HindiConsonants => write!(f, "hindiConsonants"),
+            Self::HindiNumbers => write!(f, "hindiNumbers"),
+            Self::HindiCounting => write!(f, "hindiCounting"),
+            Self::ThaiLetters => write!(f, "thaiLetters"),
+            Self::ThaiNumbers => write!(f, "thaiNumbers"),
+            Self::ThaiCounting => write!(f, "thaiCounting"),
+            Self::BahtText => write!(f, "bahtText"),
+            Self::DollarText => write!(f, "dollarText"),
+            Self::Custom => write!(f, "custom"),
+        }
+    }
+}
+
+impl std::str::FromStr for STNumberFormat {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "decimal" => Ok(Self::Decimal),
+            "upperRoman" => Ok(Self::UpperRoman),
+            "lowerRoman" => Ok(Self::LowerRoman),
+            "upperLetter" => Ok(Self::UpperLetter),
+            "lowerLetter" => Ok(Self::LowerLetter),
+            "ordinal" => Ok(Self::Ordinal),
+            "cardinalText" => Ok(Self::CardinalText),
+            "ordinalText" => Ok(Self::OrdinalText),
+            "hex" => Ok(Self::Hex),
+            "chicago" => Ok(Self::Chicago),
+            "ideographDigital" => Ok(Self::IdeographDigital),
+            "japaneseCounting" => Ok(Self::JapaneseCounting),
+            "aiueo" => Ok(Self::Aiueo),
+            "iroha" => Ok(Self::Iroha),
+            "decimalFullWidth" => Ok(Self::DecimalFullWidth),
+            "decimalHalfWidth" => Ok(Self::DecimalHalfWidth),
+            "japaneseLegal" => Ok(Self::JapaneseLegal),
+            "japaneseDigitalTenThousand" => Ok(Self::JapaneseDigitalTenThousand),
+            "decimalEnclosedCircle" => Ok(Self::DecimalEnclosedCircle),
+            "decimalFullWidth2" => Ok(Self::DecimalFullWidth2),
+            "aiueoFullWidth" => Ok(Self::AiueoFullWidth),
+            "irohaFullWidth" => Ok(Self::IrohaFullWidth),
+            "decimalZero" => Ok(Self::DecimalZero),
+            "bullet" => Ok(Self::Bullet),
+            "ganada" => Ok(Self::Ganada),
+            "chosung" => Ok(Self::Chosung),
+            "decimalEnclosedFullstop" => Ok(Self::DecimalEnclosedFullstop),
+            "decimalEnclosedParen" => Ok(Self::DecimalEnclosedParen),
+            "decimalEnclosedCircleChinese" => Ok(Self::DecimalEnclosedCircleChinese),
+            "ideographEnclosedCircle" => Ok(Self::IdeographEnclosedCircle),
+            "ideographTraditional" => Ok(Self::IdeographTraditional),
+            "ideographZodiac" => Ok(Self::IdeographZodiac),
+            "ideographZodiacTraditional" => Ok(Self::IdeographZodiacTraditional),
+            "taiwaneseCounting" => Ok(Self::TaiwaneseCounting),
+            "ideographLegalTraditional" => Ok(Self::IdeographLegalTraditional),
+            "taiwaneseCountingThousand" => Ok(Self::TaiwaneseCountingThousand),
+            "taiwaneseDigital" => Ok(Self::TaiwaneseDigital),
+            "chineseCounting" => Ok(Self::ChineseCounting),
+            "chineseLegalSimplified" => Ok(Self::ChineseLegalSimplified),
+            "chineseCountingThousand" => Ok(Self::ChineseCountingThousand),
+            "koreanDigital" => Ok(Self::KoreanDigital),
+            "koreanCounting" => Ok(Self::KoreanCounting),
+            "koreanLegal" => Ok(Self::KoreanLegal),
+            "koreanDigital2" => Ok(Self::KoreanDigital2),
+            "vietnameseCounting" => Ok(Self::VietnameseCounting),
+            "russianLower" => Ok(Self::RussianLower),
+            "russianUpper" => Ok(Self::RussianUpper),
+            "none" => Ok(Self::None),
+            "numberInDash" => Ok(Self::NumberInDash),
+            "hebrew1" => Ok(Self::Hebrew1),
+            "hebrew2" => Ok(Self::Hebrew2),
+            "arabicAlpha" => Ok(Self::ArabicAlpha),
+            "arabicAbjad" => Ok(Self::ArabicAbjad),
+            "hindiVowels" => Ok(Self::HindiVowels),
+            "hindiConsonants" => Ok(Self::HindiConsonants),
+            "hindiNumbers" => Ok(Self::HindiNumbers),
+            "hindiCounting" => Ok(Self::HindiCounting),
+            "thaiLetters" => Ok(Self::ThaiLetters),
+            "thaiNumbers" => Ok(Self::ThaiNumbers),
+            "thaiCounting" => Ok(Self::ThaiCounting),
+            "bahtText" => Ok(Self::BahtText),
+            "dollarText" => Ok(Self::DollarText),
+            "custom" => Ok(Self::Custom),
+            _ => Err(format!("unknown STNumberFormat value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPageOrientation {
+    #[serde(rename = "portrait")]
+    Portrait,
+    #[serde(rename = "landscape")]
+    Landscape,
+}
+
+impl std::fmt::Display for STPageOrientation {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Portrait => write!(f, "portrait"),
+            Self::Landscape => write!(f, "landscape"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPageOrientation {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "portrait" => Ok(Self::Portrait),
+            "landscape" => Ok(Self::Landscape),
+            _ => Err(format!("unknown STPageOrientation value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPageBorderZOrder {
+    #[serde(rename = "front")]
+    Front,
+    #[serde(rename = "back")]
+    Back,
+}
+
+impl std::fmt::Display for STPageBorderZOrder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Front => write!(f, "front"),
+            Self::Back => write!(f, "back"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPageBorderZOrder {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "front" => Ok(Self::Front),
+            "back" => Ok(Self::Back),
+            _ => Err(format!("unknown STPageBorderZOrder value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPageBorderDisplay {
+    #[serde(rename = "allPages")]
+    AllPages,
+    #[serde(rename = "firstPage")]
+    FirstPage,
+    #[serde(rename = "notFirstPage")]
+    NotFirstPage,
+}
+
+impl std::fmt::Display for STPageBorderDisplay {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::AllPages => write!(f, "allPages"),
+            Self::FirstPage => write!(f, "firstPage"),
+            Self::NotFirstPage => write!(f, "notFirstPage"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPageBorderDisplay {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "allPages" => Ok(Self::AllPages),
+            "firstPage" => Ok(Self::FirstPage),
+            "notFirstPage" => Ok(Self::NotFirstPage),
+            _ => Err(format!("unknown STPageBorderDisplay value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPageBorderOffset {
+    #[serde(rename = "page")]
+    Page,
+    #[serde(rename = "text")]
+    Text,
+}
+
+impl std::fmt::Display for STPageBorderOffset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Page => write!(f, "page"),
+            Self::Text => write!(f, "text"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPageBorderOffset {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "page" => Ok(Self::Page),
+            "text" => Ok(Self::Text),
+            _ => Err(format!("unknown STPageBorderOffset value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STChapterSep {
+    #[serde(rename = "hyphen")]
+    Hyphen,
+    #[serde(rename = "period")]
+    Period,
+    #[serde(rename = "colon")]
+    Colon,
+    #[serde(rename = "emDash")]
+    EmDash,
+    #[serde(rename = "enDash")]
+    EnDash,
+}
+
+impl std::fmt::Display for STChapterSep {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Hyphen => write!(f, "hyphen"),
+            Self::Period => write!(f, "period"),
+            Self::Colon => write!(f, "colon"),
+            Self::EmDash => write!(f, "emDash"),
+            Self::EnDash => write!(f, "enDash"),
+        }
+    }
+}
+
+impl std::str::FromStr for STChapterSep {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "hyphen" => Ok(Self::Hyphen),
+            "period" => Ok(Self::Period),
+            "colon" => Ok(Self::Colon),
+            "emDash" => Ok(Self::EmDash),
+            "enDash" => Ok(Self::EnDash),
+            _ => Err(format!("unknown STChapterSep value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STLineNumberRestart {
+    #[serde(rename = "newPage")]
+    NewPage,
+    #[serde(rename = "newSection")]
+    NewSection,
+    #[serde(rename = "continuous")]
+    Continuous,
+}
+
+impl std::fmt::Display for STLineNumberRestart {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::NewPage => write!(f, "newPage"),
+            Self::NewSection => write!(f, "newSection"),
+            Self::Continuous => write!(f, "continuous"),
+        }
+    }
+}
+
+impl std::str::FromStr for STLineNumberRestart {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "newPage" => Ok(Self::NewPage),
+            "newSection" => Ok(Self::NewSection),
+            "continuous" => Ok(Self::Continuous),
+            _ => Err(format!("unknown STLineNumberRestart value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STVerticalJc {
+    #[serde(rename = "top")]
+    Top,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "both")]
+    Both,
+    #[serde(rename = "bottom")]
+    Bottom,
+}
+
+impl std::fmt::Display for STVerticalJc {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Top => write!(f, "top"),
+            Self::Center => write!(f, "center"),
+            Self::Both => write!(f, "both"),
+            Self::Bottom => write!(f, "bottom"),
+        }
+    }
+}
+
+impl std::str::FromStr for STVerticalJc {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "top" => Ok(Self::Top),
+            "center" => Ok(Self::Center),
+            "both" => Ok(Self::Both),
+            "bottom" => Ok(Self::Bottom),
+            _ => Err(format!("unknown STVerticalJc value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDocGrid {
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "lines")]
+    Lines,
+    #[serde(rename = "linesAndChars")]
+    LinesAndChars,
+    #[serde(rename = "snapToChars")]
+    SnapToChars,
+}
+
+impl std::fmt::Display for STDocGrid {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default => write!(f, "default"),
+            Self::Lines => write!(f, "lines"),
+            Self::LinesAndChars => write!(f, "linesAndChars"),
+            Self::SnapToChars => write!(f, "snapToChars"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDocGrid {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "default" => Ok(Self::Default),
+            "lines" => Ok(Self::Lines),
+            "linesAndChars" => Ok(Self::LinesAndChars),
+            "snapToChars" => Ok(Self::SnapToChars),
+            _ => Err(format!("unknown STDocGrid value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHdrFtr {
+    #[serde(rename = "even")]
+    Even,
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "first")]
+    First,
+}
+
+impl std::fmt::Display for STHdrFtr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Even => write!(f, "even"),
+            Self::Default => write!(f, "default"),
+            Self::First => write!(f, "first"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHdrFtr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "even" => Ok(Self::Even),
+            "default" => Ok(Self::Default),
+            "first" => Ok(Self::First),
+            _ => Err(format!("unknown STHdrFtr value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFtnEdn {
+    #[serde(rename = "normal")]
+    Normal,
+    #[serde(rename = "separator")]
+    Separator,
+    #[serde(rename = "continuationSeparator")]
+    ContinuationSeparator,
+    #[serde(rename = "continuationNotice")]
+    ContinuationNotice,
+}
+
+impl std::fmt::Display for STFtnEdn {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Normal => write!(f, "normal"),
+            Self::Separator => write!(f, "separator"),
+            Self::ContinuationSeparator => write!(f, "continuationSeparator"),
+            Self::ContinuationNotice => write!(f, "continuationNotice"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFtnEdn {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "normal" => Ok(Self::Normal),
+            "separator" => Ok(Self::Separator),
+            "continuationSeparator" => Ok(Self::ContinuationSeparator),
+            "continuationNotice" => Ok(Self::ContinuationNotice),
+            _ => Err(format!("unknown STFtnEdn value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBrType {
+    #[serde(rename = "page")]
+    Page,
+    #[serde(rename = "column")]
+    Column,
+    #[serde(rename = "textWrapping")]
+    TextWrapping,
+}
+
+impl std::fmt::Display for STBrType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Page => write!(f, "page"),
+            Self::Column => write!(f, "column"),
+            Self::TextWrapping => write!(f, "textWrapping"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBrType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "page" => Ok(Self::Page),
+            "column" => Ok(Self::Column),
+            "textWrapping" => Ok(Self::TextWrapping),
+            _ => Err(format!("unknown STBrType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STBrClear {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "all")]
+    All,
+}
+
+impl std::fmt::Display for STBrClear {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+            Self::All => write!(f, "all"),
+        }
+    }
+}
+
+impl std::str::FromStr for STBrClear {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            "all" => Ok(Self::All),
+            _ => Err(format!("unknown STBrClear value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPTabAlignment {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "right")]
+    Right,
+}
+
+impl std::fmt::Display for STPTabAlignment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Left => write!(f, "left"),
+            Self::Center => write!(f, "center"),
+            Self::Right => write!(f, "right"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPTabAlignment {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "left" => Ok(Self::Left),
+            "center" => Ok(Self::Center),
+            "right" => Ok(Self::Right),
+            _ => Err(format!("unknown STPTabAlignment value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPTabRelativeTo {
+    #[serde(rename = "margin")]
+    Margin,
+    #[serde(rename = "indent")]
+    Indent,
+}
+
+impl std::fmt::Display for STPTabRelativeTo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Margin => write!(f, "margin"),
+            Self::Indent => write!(f, "indent"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPTabRelativeTo {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "margin" => Ok(Self::Margin),
+            "indent" => Ok(Self::Indent),
+            _ => Err(format!("unknown STPTabRelativeTo value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPTabLeader {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "dot")]
+    Dot,
+    #[serde(rename = "hyphen")]
+    Hyphen,
+    #[serde(rename = "underscore")]
+    Underscore,
+    #[serde(rename = "middleDot")]
+    MiddleDot,
+}
+
+impl std::fmt::Display for STPTabLeader {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Dot => write!(f, "dot"),
+            Self::Hyphen => write!(f, "hyphen"),
+            Self::Underscore => write!(f, "underscore"),
+            Self::MiddleDot => write!(f, "middleDot"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPTabLeader {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "dot" => Ok(Self::Dot),
+            "hyphen" => Ok(Self::Hyphen),
+            "underscore" => Ok(Self::Underscore),
+            "middleDot" => Ok(Self::MiddleDot),
+            _ => Err(format!("unknown STPTabLeader value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STProofErr {
+    #[serde(rename = "spellStart")]
+    SpellStart,
+    #[serde(rename = "spellEnd")]
+    SpellEnd,
+    #[serde(rename = "gramStart")]
+    GramStart,
+    #[serde(rename = "gramEnd")]
+    GramEnd,
+}
+
+impl std::fmt::Display for STProofErr {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SpellStart => write!(f, "spellStart"),
+            Self::SpellEnd => write!(f, "spellEnd"),
+            Self::GramStart => write!(f, "gramStart"),
+            Self::GramEnd => write!(f, "gramEnd"),
+        }
+    }
+}
+
+impl std::str::FromStr for STProofErr {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "spellStart" => Ok(Self::SpellStart),
+            "spellEnd" => Ok(Self::SpellEnd),
+            "gramStart" => Ok(Self::GramStart),
+            "gramEnd" => Ok(Self::GramEnd),
+            _ => Err(format!("unknown STProofErr value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STEdGrp {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "everyone")]
+    Everyone,
+    #[serde(rename = "administrators")]
+    Administrators,
+    #[serde(rename = "contributors")]
+    Contributors,
+    #[serde(rename = "editors")]
+    Editors,
+    #[serde(rename = "owners")]
+    Owners,
+    #[serde(rename = "current")]
+    Current,
+}
+
+impl std::fmt::Display for STEdGrp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Everyone => write!(f, "everyone"),
+            Self::Administrators => write!(f, "administrators"),
+            Self::Contributors => write!(f, "contributors"),
+            Self::Editors => write!(f, "editors"),
+            Self::Owners => write!(f, "owners"),
+            Self::Current => write!(f, "current"),
+        }
+    }
+}
+
+impl std::str::FromStr for STEdGrp {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "everyone" => Ok(Self::Everyone),
+            "administrators" => Ok(Self::Administrators),
+            "contributors" => Ok(Self::Contributors),
+            "editors" => Ok(Self::Editors),
+            "owners" => Ok(Self::Owners),
+            "current" => Ok(Self::Current),
+            _ => Err(format!("unknown STEdGrp value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STHint {
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "eastAsia")]
+    EastAsia,
+}
+
+impl std::fmt::Display for STHint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Default => write!(f, "default"),
+            Self::EastAsia => write!(f, "eastAsia"),
+        }
+    }
+}
+
+impl std::str::FromStr for STHint {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "default" => Ok(Self::Default),
+            "eastAsia" => Ok(Self::EastAsia),
+            _ => Err(format!("unknown STHint value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTheme {
+    #[serde(rename = "majorEastAsia")]
+    MajorEastAsia,
+    #[serde(rename = "majorBidi")]
+    MajorBidi,
+    #[serde(rename = "majorAscii")]
+    MajorAscii,
+    #[serde(rename = "majorHAnsi")]
+    MajorHAnsi,
+    #[serde(rename = "minorEastAsia")]
+    MinorEastAsia,
+    #[serde(rename = "minorBidi")]
+    MinorBidi,
+    #[serde(rename = "minorAscii")]
+    MinorAscii,
+    #[serde(rename = "minorHAnsi")]
+    MinorHAnsi,
+}
+
+impl std::fmt::Display for STTheme {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::MajorEastAsia => write!(f, "majorEastAsia"),
+            Self::MajorBidi => write!(f, "majorBidi"),
+            Self::MajorAscii => write!(f, "majorAscii"),
+            Self::MajorHAnsi => write!(f, "majorHAnsi"),
+            Self::MinorEastAsia => write!(f, "minorEastAsia"),
+            Self::MinorBidi => write!(f, "minorBidi"),
+            Self::MinorAscii => write!(f, "minorAscii"),
+            Self::MinorHAnsi => write!(f, "minorHAnsi"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTheme {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "majorEastAsia" => Ok(Self::MajorEastAsia),
+            "majorBidi" => Ok(Self::MajorBidi),
+            "majorAscii" => Ok(Self::MajorAscii),
+            "majorHAnsi" => Ok(Self::MajorHAnsi),
+            "minorEastAsia" => Ok(Self::MinorEastAsia),
+            "minorBidi" => Ok(Self::MinorBidi),
+            "minorAscii" => Ok(Self::MinorAscii),
+            "minorHAnsi" => Ok(Self::MinorHAnsi),
+            _ => Err(format!("unknown STTheme value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STRubyAlign {
+    #[serde(rename = "center")]
+    Center,
+    #[serde(rename = "distributeLetter")]
+    DistributeLetter,
+    #[serde(rename = "distributeSpace")]
+    DistributeSpace,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "rightVertical")]
+    RightVertical,
+}
+
+impl std::fmt::Display for STRubyAlign {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Center => write!(f, "center"),
+            Self::DistributeLetter => write!(f, "distributeLetter"),
+            Self::DistributeSpace => write!(f, "distributeSpace"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+            Self::RightVertical => write!(f, "rightVertical"),
+        }
+    }
+}
+
+impl std::str::FromStr for STRubyAlign {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "center" => Ok(Self::Center),
+            "distributeLetter" => Ok(Self::DistributeLetter),
+            "distributeSpace" => Ok(Self::DistributeSpace),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            "rightVertical" => Ok(Self::RightVertical),
+            _ => Err(format!("unknown STRubyAlign value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STLock {
+    #[serde(rename = "sdtLocked")]
+    SdtLocked,
+    #[serde(rename = "contentLocked")]
+    ContentLocked,
+    #[serde(rename = "unlocked")]
+    Unlocked,
+    #[serde(rename = "sdtContentLocked")]
+    SdtContentLocked,
+}
+
+impl std::fmt::Display for STLock {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SdtLocked => write!(f, "sdtLocked"),
+            Self::ContentLocked => write!(f, "contentLocked"),
+            Self::Unlocked => write!(f, "unlocked"),
+            Self::SdtContentLocked => write!(f, "sdtContentLocked"),
+        }
+    }
+}
+
+impl std::str::FromStr for STLock {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "sdtLocked" => Ok(Self::SdtLocked),
+            "contentLocked" => Ok(Self::ContentLocked),
+            "unlocked" => Ok(Self::Unlocked),
+            "sdtContentLocked" => Ok(Self::SdtContentLocked),
+            _ => Err(format!("unknown STLock value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STSdtDateMappingType {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "date")]
+    Date,
+    #[serde(rename = "dateTime")]
+    DateTime,
+}
+
+impl std::fmt::Display for STSdtDateMappingType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Text => write!(f, "text"),
+            Self::Date => write!(f, "date"),
+            Self::DateTime => write!(f, "dateTime"),
+        }
+    }
+}
+
+impl std::str::FromStr for STSdtDateMappingType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "text" => Ok(Self::Text),
+            "date" => Ok(Self::Date),
+            "dateTime" => Ok(Self::DateTime),
+            _ => Err(format!("unknown STSdtDateMappingType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDirection {
+    #[serde(rename = "ltr")]
+    Ltr,
+    #[serde(rename = "rtl")]
+    Rtl,
+}
+
+impl std::fmt::Display for STDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Ltr => write!(f, "ltr"),
+            Self::Rtl => write!(f, "rtl"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDirection {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "ltr" => Ok(Self::Ltr),
+            "rtl" => Ok(Self::Rtl),
+            _ => Err(format!("unknown STDirection value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTblWidth {
+    #[serde(rename = "nil")]
+    Nil,
+    #[serde(rename = "pct")]
+    Pct,
+    #[serde(rename = "dxa")]
+    Dxa,
+    #[serde(rename = "auto")]
+    Auto,
+}
+
+impl std::fmt::Display for STTblWidth {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Nil => write!(f, "nil"),
+            Self::Pct => write!(f, "pct"),
+            Self::Dxa => write!(f, "dxa"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTblWidth {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "nil" => Ok(Self::Nil),
+            "pct" => Ok(Self::Pct),
+            "dxa" => Ok(Self::Dxa),
+            "auto" => Ok(Self::Auto),
+            _ => Err(format!("unknown STTblWidth value: {}", s)),
+        }
+    }
+}
+
+pub type STMeasurementOrPercent = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMerge {
+    #[serde(rename = "continue")]
+    Continue,
+    #[serde(rename = "restart")]
+    Restart,
+}
+
+impl std::fmt::Display for STMerge {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Continue => write!(f, "continue"),
+            Self::Restart => write!(f, "restart"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMerge {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "continue" => Ok(Self::Continue),
+            "restart" => Ok(Self::Restart),
+            _ => Err(format!("unknown STMerge value: {}", s)),
+        }
+    }
+}
+
+pub type STCnf = String;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTblLayoutType {
+    #[serde(rename = "fixed")]
+    Fixed,
+    #[serde(rename = "autofit")]
+    Autofit,
+}
+
+impl std::fmt::Display for STTblLayoutType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Fixed => write!(f, "fixed"),
+            Self::Autofit => write!(f, "autofit"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTblLayoutType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "fixed" => Ok(Self::Fixed),
+            "autofit" => Ok(Self::Autofit),
+            _ => Err(format!("unknown STTblLayoutType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTblOverlap {
+    #[serde(rename = "never")]
+    Never,
+    #[serde(rename = "overlap")]
+    Overlap,
+}
+
+impl std::fmt::Display for STTblOverlap {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Never => write!(f, "never"),
+            Self::Overlap => write!(f, "overlap"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTblOverlap {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "never" => Ok(Self::Never),
+            "overlap" => Ok(Self::Overlap),
+            _ => Err(format!("unknown STTblOverlap value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFtnPos {
+    #[serde(rename = "pageBottom")]
+    PageBottom,
+    #[serde(rename = "beneathText")]
+    BeneathText,
+    #[serde(rename = "sectEnd")]
+    SectEnd,
+    #[serde(rename = "docEnd")]
+    DocEnd,
+}
+
+impl std::fmt::Display for STFtnPos {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::PageBottom => write!(f, "pageBottom"),
+            Self::BeneathText => write!(f, "beneathText"),
+            Self::SectEnd => write!(f, "sectEnd"),
+            Self::DocEnd => write!(f, "docEnd"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFtnPos {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "pageBottom" => Ok(Self::PageBottom),
+            "beneathText" => Ok(Self::BeneathText),
+            "sectEnd" => Ok(Self::SectEnd),
+            "docEnd" => Ok(Self::DocEnd),
+            _ => Err(format!("unknown STFtnPos value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STEdnPos {
+    #[serde(rename = "sectEnd")]
+    SectEnd,
+    #[serde(rename = "docEnd")]
+    DocEnd,
+}
+
+impl std::fmt::Display for STEdnPos {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SectEnd => write!(f, "sectEnd"),
+            Self::DocEnd => write!(f, "docEnd"),
+        }
+    }
+}
+
+impl std::str::FromStr for STEdnPos {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "sectEnd" => Ok(Self::SectEnd),
+            "docEnd" => Ok(Self::DocEnd),
+            _ => Err(format!("unknown STEdnPos value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STRestartNumber {
+    #[serde(rename = "continuous")]
+    Continuous,
+    #[serde(rename = "eachSect")]
+    EachSect,
+    #[serde(rename = "eachPage")]
+    EachPage,
+}
+
+impl std::fmt::Display for STRestartNumber {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Continuous => write!(f, "continuous"),
+            Self::EachSect => write!(f, "eachSect"),
+            Self::EachPage => write!(f, "eachPage"),
+        }
+    }
+}
+
+impl std::str::FromStr for STRestartNumber {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "continuous" => Ok(Self::Continuous),
+            "eachSect" => Ok(Self::EachSect),
+            "eachPage" => Ok(Self::EachPage),
+            _ => Err(format!("unknown STRestartNumber value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMailMergeSourceType {
+    #[serde(rename = "database")]
+    Database,
+    #[serde(rename = "addressBook")]
+    AddressBook,
+    #[serde(rename = "document1")]
+    Document1,
+    #[serde(rename = "document2")]
+    Document2,
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "email")]
+    Email,
+    #[serde(rename = "native")]
+    Native,
+    #[serde(rename = "legacy")]
+    Legacy,
+    #[serde(rename = "master")]
+    Master,
+}
+
+impl std::fmt::Display for STMailMergeSourceType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Database => write!(f, "database"),
+            Self::AddressBook => write!(f, "addressBook"),
+            Self::Document1 => write!(f, "document1"),
+            Self::Document2 => write!(f, "document2"),
+            Self::Text => write!(f, "text"),
+            Self::Email => write!(f, "email"),
+            Self::Native => write!(f, "native"),
+            Self::Legacy => write!(f, "legacy"),
+            Self::Master => write!(f, "master"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMailMergeSourceType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "database" => Ok(Self::Database),
+            "addressBook" => Ok(Self::AddressBook),
+            "document1" => Ok(Self::Document1),
+            "document2" => Ok(Self::Document2),
+            "text" => Ok(Self::Text),
+            "email" => Ok(Self::Email),
+            "native" => Ok(Self::Native),
+            "legacy" => Ok(Self::Legacy),
+            "master" => Ok(Self::Master),
+            _ => Err(format!("unknown STMailMergeSourceType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTargetScreenSz {
+    #[serde(rename = "544x376")]
+    _544x376,
+    #[serde(rename = "640x480")]
+    _640x480,
+    #[serde(rename = "720x512")]
+    _720x512,
+    #[serde(rename = "800x600")]
+    _800x600,
+    #[serde(rename = "1024x768")]
+    _1024x768,
+    #[serde(rename = "1152x882")]
+    _1152x882,
+    #[serde(rename = "1152x900")]
+    _1152x900,
+    #[serde(rename = "1280x1024")]
+    _1280x1024,
+    #[serde(rename = "1600x1200")]
+    _1600x1200,
+    #[serde(rename = "1800x1440")]
+    _1800x1440,
+    #[serde(rename = "1920x1200")]
+    _1920x1200,
+}
+
+impl std::fmt::Display for STTargetScreenSz {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::_544x376 => write!(f, "544x376"),
+            Self::_640x480 => write!(f, "640x480"),
+            Self::_720x512 => write!(f, "720x512"),
+            Self::_800x600 => write!(f, "800x600"),
+            Self::_1024x768 => write!(f, "1024x768"),
+            Self::_1152x882 => write!(f, "1152x882"),
+            Self::_1152x900 => write!(f, "1152x900"),
+            Self::_1280x1024 => write!(f, "1280x1024"),
+            Self::_1600x1200 => write!(f, "1600x1200"),
+            Self::_1800x1440 => write!(f, "1800x1440"),
+            Self::_1920x1200 => write!(f, "1920x1200"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTargetScreenSz {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "544x376" => Ok(Self::_544x376),
+            "640x480" => Ok(Self::_640x480),
+            "720x512" => Ok(Self::_720x512),
+            "800x600" => Ok(Self::_800x600),
+            "1024x768" => Ok(Self::_1024x768),
+            "1152x882" => Ok(Self::_1152x882),
+            "1152x900" => Ok(Self::_1152x900),
+            "1280x1024" => Ok(Self::_1280x1024),
+            "1600x1200" => Ok(Self::_1600x1200),
+            "1800x1440" => Ok(Self::_1800x1440),
+            "1920x1200" => Ok(Self::_1920x1200),
+            _ => Err(format!("unknown STTargetScreenSz value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STCharacterSpacing {
+    #[serde(rename = "doNotCompress")]
+    DoNotCompress,
+    #[serde(rename = "compressPunctuation")]
+    CompressPunctuation,
+    #[serde(rename = "compressPunctuationAndJapaneseKana")]
+    CompressPunctuationAndJapaneseKana,
+}
+
+impl std::fmt::Display for STCharacterSpacing {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::DoNotCompress => write!(f, "doNotCompress"),
+            Self::CompressPunctuation => write!(f, "compressPunctuation"),
+            Self::CompressPunctuationAndJapaneseKana => {
+                write!(f, "compressPunctuationAndJapaneseKana")
+            }
+        }
+    }
+}
+
+impl std::str::FromStr for STCharacterSpacing {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "doNotCompress" => Ok(Self::DoNotCompress),
+            "compressPunctuation" => Ok(Self::CompressPunctuation),
+            "compressPunctuationAndJapaneseKana" => Ok(Self::CompressPunctuationAndJapaneseKana),
+            _ => Err(format!("unknown STCharacterSpacing value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STWmlColorSchemeIndex {
+    #[serde(rename = "dark1")]
+    Dark1,
+    #[serde(rename = "light1")]
+    Light1,
+    #[serde(rename = "dark2")]
+    Dark2,
+    #[serde(rename = "light2")]
+    Light2,
+    #[serde(rename = "accent1")]
+    Accent1,
+    #[serde(rename = "accent2")]
+    Accent2,
+    #[serde(rename = "accent3")]
+    Accent3,
+    #[serde(rename = "accent4")]
+    Accent4,
+    #[serde(rename = "accent5")]
+    Accent5,
+    #[serde(rename = "accent6")]
+    Accent6,
+    #[serde(rename = "hyperlink")]
+    Hyperlink,
+    #[serde(rename = "followedHyperlink")]
+    FollowedHyperlink,
+}
+
+impl std::fmt::Display for STWmlColorSchemeIndex {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Dark1 => write!(f, "dark1"),
+            Self::Light1 => write!(f, "light1"),
+            Self::Dark2 => write!(f, "dark2"),
+            Self::Light2 => write!(f, "light2"),
+            Self::Accent1 => write!(f, "accent1"),
+            Self::Accent2 => write!(f, "accent2"),
+            Self::Accent3 => write!(f, "accent3"),
+            Self::Accent4 => write!(f, "accent4"),
+            Self::Accent5 => write!(f, "accent5"),
+            Self::Accent6 => write!(f, "accent6"),
+            Self::Hyperlink => write!(f, "hyperlink"),
+            Self::FollowedHyperlink => write!(f, "followedHyperlink"),
+        }
+    }
+}
+
+impl std::str::FromStr for STWmlColorSchemeIndex {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "dark1" => Ok(Self::Dark1),
+            "light1" => Ok(Self::Light1),
+            "dark2" => Ok(Self::Dark2),
+            "light2" => Ok(Self::Light2),
+            "accent1" => Ok(Self::Accent1),
+            "accent2" => Ok(Self::Accent2),
+            "accent3" => Ok(Self::Accent3),
+            "accent4" => Ok(Self::Accent4),
+            "accent5" => Ok(Self::Accent5),
+            "accent6" => Ok(Self::Accent6),
+            "hyperlink" => Ok(Self::Hyperlink),
+            "followedHyperlink" => Ok(Self::FollowedHyperlink),
+            _ => Err(format!("unknown STWmlColorSchemeIndex value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STStyleSort {
+    #[serde(rename = "name")]
+    Name,
+    #[serde(rename = "priority")]
+    Priority,
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "font")]
+    Font,
+    #[serde(rename = "basedOn")]
+    BasedOn,
+    #[serde(rename = "type")]
+    Type,
+    #[serde(rename = "0000")]
+    _0000,
+    #[serde(rename = "0001")]
+    _0001,
+    #[serde(rename = "0002")]
+    _0002,
+    #[serde(rename = "0003")]
+    _0003,
+    #[serde(rename = "0004")]
+    _0004,
+    #[serde(rename = "0005")]
+    _0005,
+}
+
+impl std::fmt::Display for STStyleSort {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Name => write!(f, "name"),
+            Self::Priority => write!(f, "priority"),
+            Self::Default => write!(f, "default"),
+            Self::Font => write!(f, "font"),
+            Self::BasedOn => write!(f, "basedOn"),
+            Self::Type => write!(f, "type"),
+            Self::_0000 => write!(f, "0000"),
+            Self::_0001 => write!(f, "0001"),
+            Self::_0002 => write!(f, "0002"),
+            Self::_0003 => write!(f, "0003"),
+            Self::_0004 => write!(f, "0004"),
+            Self::_0005 => write!(f, "0005"),
+        }
+    }
+}
+
+impl std::str::FromStr for STStyleSort {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "name" => Ok(Self::Name),
+            "priority" => Ok(Self::Priority),
+            "default" => Ok(Self::Default),
+            "font" => Ok(Self::Font),
+            "basedOn" => Ok(Self::BasedOn),
+            "type" => Ok(Self::Type),
+            "0000" => Ok(Self::_0000),
+            "0001" => Ok(Self::_0001),
+            "0002" => Ok(Self::_0002),
+            "0003" => Ok(Self::_0003),
+            "0004" => Ok(Self::_0004),
+            "0005" => Ok(Self::_0005),
+            _ => Err(format!("unknown STStyleSort value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFrameScrollbar {
+    #[serde(rename = "on")]
+    On,
+    #[serde(rename = "off")]
+    Off,
+    #[serde(rename = "auto")]
+    Auto,
+}
+
+impl std::fmt::Display for STFrameScrollbar {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::On => write!(f, "on"),
+            Self::Off => write!(f, "off"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFrameScrollbar {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "on" => Ok(Self::On),
+            "off" => Ok(Self::Off),
+            "auto" => Ok(Self::Auto),
+            _ => Err(format!("unknown STFrameScrollbar value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFrameLayout {
+    #[serde(rename = "rows")]
+    Rows,
+    #[serde(rename = "cols")]
+    Cols,
+    #[serde(rename = "none")]
+    None,
+}
+
+impl std::fmt::Display for STFrameLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Rows => write!(f, "rows"),
+            Self::Cols => write!(f, "cols"),
+            Self::None => write!(f, "none"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFrameLayout {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "rows" => Ok(Self::Rows),
+            "cols" => Ok(Self::Cols),
+            "none" => Ok(Self::None),
+            _ => Err(format!("unknown STFrameLayout value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STLevelSuffix {
+    #[serde(rename = "tab")]
+    Tab,
+    #[serde(rename = "space")]
+    Space,
+    #[serde(rename = "nothing")]
+    Nothing,
+}
+
+impl std::fmt::Display for STLevelSuffix {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Tab => write!(f, "tab"),
+            Self::Space => write!(f, "space"),
+            Self::Nothing => write!(f, "nothing"),
+        }
+    }
+}
+
+impl std::str::FromStr for STLevelSuffix {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "tab" => Ok(Self::Tab),
+            "space" => Ok(Self::Space),
+            "nothing" => Ok(Self::Nothing),
+            _ => Err(format!("unknown STLevelSuffix value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STMultiLevelType {
+    #[serde(rename = "singleLevel")]
+    SingleLevel,
+    #[serde(rename = "multilevel")]
+    Multilevel,
+    #[serde(rename = "hybridMultilevel")]
+    HybridMultilevel,
+}
+
+impl std::fmt::Display for STMultiLevelType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::SingleLevel => write!(f, "singleLevel"),
+            Self::Multilevel => write!(f, "multilevel"),
+            Self::HybridMultilevel => write!(f, "hybridMultilevel"),
+        }
+    }
+}
+
+impl std::str::FromStr for STMultiLevelType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "singleLevel" => Ok(Self::SingleLevel),
+            "multilevel" => Ok(Self::Multilevel),
+            "hybridMultilevel" => Ok(Self::HybridMultilevel),
+            _ => Err(format!("unknown STMultiLevelType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STTblStyleOverrideType {
+    #[serde(rename = "wholeTable")]
+    WholeTable,
+    #[serde(rename = "firstRow")]
+    FirstRow,
+    #[serde(rename = "lastRow")]
+    LastRow,
+    #[serde(rename = "firstCol")]
+    FirstCol,
+    #[serde(rename = "lastCol")]
+    LastCol,
+    #[serde(rename = "band1Vert")]
+    Band1Vert,
+    #[serde(rename = "band2Vert")]
+    Band2Vert,
+    #[serde(rename = "band1Horz")]
+    Band1Horz,
+    #[serde(rename = "band2Horz")]
+    Band2Horz,
+    #[serde(rename = "neCell")]
+    NeCell,
+    #[serde(rename = "nwCell")]
+    NwCell,
+    #[serde(rename = "seCell")]
+    SeCell,
+    #[serde(rename = "swCell")]
+    SwCell,
+}
+
+impl std::fmt::Display for STTblStyleOverrideType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::WholeTable => write!(f, "wholeTable"),
+            Self::FirstRow => write!(f, "firstRow"),
+            Self::LastRow => write!(f, "lastRow"),
+            Self::FirstCol => write!(f, "firstCol"),
+            Self::LastCol => write!(f, "lastCol"),
+            Self::Band1Vert => write!(f, "band1Vert"),
+            Self::Band2Vert => write!(f, "band2Vert"),
+            Self::Band1Horz => write!(f, "band1Horz"),
+            Self::Band2Horz => write!(f, "band2Horz"),
+            Self::NeCell => write!(f, "neCell"),
+            Self::NwCell => write!(f, "nwCell"),
+            Self::SeCell => write!(f, "seCell"),
+            Self::SwCell => write!(f, "swCell"),
+        }
+    }
+}
+
+impl std::str::FromStr for STTblStyleOverrideType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "wholeTable" => Ok(Self::WholeTable),
+            "firstRow" => Ok(Self::FirstRow),
+            "lastRow" => Ok(Self::LastRow),
+            "firstCol" => Ok(Self::FirstCol),
+            "lastCol" => Ok(Self::LastCol),
+            "band1Vert" => Ok(Self::Band1Vert),
+            "band2Vert" => Ok(Self::Band2Vert),
+            "band1Horz" => Ok(Self::Band1Horz),
+            "band2Horz" => Ok(Self::Band2Horz),
+            "neCell" => Ok(Self::NeCell),
+            "nwCell" => Ok(Self::NwCell),
+            "seCell" => Ok(Self::SeCell),
+            "swCell" => Ok(Self::SwCell),
+            _ => Err(format!("unknown STTblStyleOverrideType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STStyleType {
+    #[serde(rename = "paragraph")]
+    Paragraph,
+    #[serde(rename = "character")]
+    Character,
+    #[serde(rename = "table")]
+    Table,
+    #[serde(rename = "numbering")]
+    Numbering,
+}
+
+impl std::fmt::Display for STStyleType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Paragraph => write!(f, "paragraph"),
+            Self::Character => write!(f, "character"),
+            Self::Table => write!(f, "table"),
+            Self::Numbering => write!(f, "numbering"),
+        }
+    }
+}
+
+impl std::str::FromStr for STStyleType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "paragraph" => Ok(Self::Paragraph),
+            "character" => Ok(Self::Character),
+            "table" => Ok(Self::Table),
+            "numbering" => Ok(Self::Numbering),
+            _ => Err(format!("unknown STStyleType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STFontFamily {
+    #[serde(rename = "decorative")]
+    Decorative,
+    #[serde(rename = "modern")]
+    Modern,
+    #[serde(rename = "roman")]
+    Roman,
+    #[serde(rename = "script")]
+    Script,
+    #[serde(rename = "swiss")]
+    Swiss,
+    #[serde(rename = "auto")]
+    Auto,
+}
+
+impl std::fmt::Display for STFontFamily {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Decorative => write!(f, "decorative"),
+            Self::Modern => write!(f, "modern"),
+            Self::Roman => write!(f, "roman"),
+            Self::Script => write!(f, "script"),
+            Self::Swiss => write!(f, "swiss"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+
+impl std::str::FromStr for STFontFamily {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "decorative" => Ok(Self::Decorative),
+            "modern" => Ok(Self::Modern),
+            "roman" => Ok(Self::Roman),
+            "script" => Ok(Self::Script),
+            "swiss" => Ok(Self::Swiss),
+            "auto" => Ok(Self::Auto),
+            _ => Err(format!("unknown STFontFamily value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STPitch {
+    #[serde(rename = "fixed")]
+    Fixed,
+    #[serde(rename = "variable")]
+    Variable,
+    #[serde(rename = "default")]
+    Default,
+}
+
+impl std::fmt::Display for STPitch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Fixed => write!(f, "fixed"),
+            Self::Variable => write!(f, "variable"),
+            Self::Default => write!(f, "default"),
+        }
+    }
+}
+
+impl std::str::FromStr for STPitch {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "fixed" => Ok(Self::Fixed),
+            "variable" => Ok(Self::Variable),
+            "default" => Ok(Self::Default),
+            _ => Err(format!("unknown STPitch value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STThemeColor {
+    #[serde(rename = "dark1")]
+    Dark1,
+    #[serde(rename = "light1")]
+    Light1,
+    #[serde(rename = "dark2")]
+    Dark2,
+    #[serde(rename = "light2")]
+    Light2,
+    #[serde(rename = "accent1")]
+    Accent1,
+    #[serde(rename = "accent2")]
+    Accent2,
+    #[serde(rename = "accent3")]
+    Accent3,
+    #[serde(rename = "accent4")]
+    Accent4,
+    #[serde(rename = "accent5")]
+    Accent5,
+    #[serde(rename = "accent6")]
+    Accent6,
+    #[serde(rename = "hyperlink")]
+    Hyperlink,
+    #[serde(rename = "followedHyperlink")]
+    FollowedHyperlink,
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "background1")]
+    Background1,
+    #[serde(rename = "text1")]
+    Text1,
+    #[serde(rename = "background2")]
+    Background2,
+    #[serde(rename = "text2")]
+    Text2,
+}
+
+impl std::fmt::Display for STThemeColor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Dark1 => write!(f, "dark1"),
+            Self::Light1 => write!(f, "light1"),
+            Self::Dark2 => write!(f, "dark2"),
+            Self::Light2 => write!(f, "light2"),
+            Self::Accent1 => write!(f, "accent1"),
+            Self::Accent2 => write!(f, "accent2"),
+            Self::Accent3 => write!(f, "accent3"),
+            Self::Accent4 => write!(f, "accent4"),
+            Self::Accent5 => write!(f, "accent5"),
+            Self::Accent6 => write!(f, "accent6"),
+            Self::Hyperlink => write!(f, "hyperlink"),
+            Self::FollowedHyperlink => write!(f, "followedHyperlink"),
+            Self::None => write!(f, "none"),
+            Self::Background1 => write!(f, "background1"),
+            Self::Text1 => write!(f, "text1"),
+            Self::Background2 => write!(f, "background2"),
+            Self::Text2 => write!(f, "text2"),
+        }
+    }
+}
+
+impl std::str::FromStr for STThemeColor {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "dark1" => Ok(Self::Dark1),
+            "light1" => Ok(Self::Light1),
+            "dark2" => Ok(Self::Dark2),
+            "light2" => Ok(Self::Light2),
+            "accent1" => Ok(Self::Accent1),
+            "accent2" => Ok(Self::Accent2),
+            "accent3" => Ok(Self::Accent3),
+            "accent4" => Ok(Self::Accent4),
+            "accent5" => Ok(Self::Accent5),
+            "accent6" => Ok(Self::Accent6),
+            "hyperlink" => Ok(Self::Hyperlink),
+            "followedHyperlink" => Ok(Self::FollowedHyperlink),
+            "none" => Ok(Self::None),
+            "background1" => Ok(Self::Background1),
+            "text1" => Ok(Self::Text1),
+            "background2" => Ok(Self::Background2),
+            "text2" => Ok(Self::Text2),
+            _ => Err(format!("unknown STThemeColor value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDocPartBehavior {
+    #[serde(rename = "content")]
+    Content,
+    #[serde(rename = "p")]
+    P,
+    #[serde(rename = "pg")]
+    Pg,
+}
+
+impl std::fmt::Display for STDocPartBehavior {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Content => write!(f, "content"),
+            Self::P => write!(f, "p"),
+            Self::Pg => write!(f, "pg"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDocPartBehavior {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "content" => Ok(Self::Content),
+            "p" => Ok(Self::P),
+            "pg" => Ok(Self::Pg),
+            _ => Err(format!("unknown STDocPartBehavior value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDocPartType {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "normal")]
+    Normal,
+    #[serde(rename = "autoExp")]
+    AutoExp,
+    #[serde(rename = "toolbar")]
+    Toolbar,
+    #[serde(rename = "speller")]
+    Speller,
+    #[serde(rename = "formFld")]
+    FormFld,
+    #[serde(rename = "bbPlcHdr")]
+    BbPlcHdr,
+}
+
+impl std::fmt::Display for STDocPartType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::None => write!(f, "none"),
+            Self::Normal => write!(f, "normal"),
+            Self::AutoExp => write!(f, "autoExp"),
+            Self::Toolbar => write!(f, "toolbar"),
+            Self::Speller => write!(f, "speller"),
+            Self::FormFld => write!(f, "formFld"),
+            Self::BbPlcHdr => write!(f, "bbPlcHdr"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDocPartType {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "none" => Ok(Self::None),
+            "normal" => Ok(Self::Normal),
+            "autoExp" => Ok(Self::AutoExp),
+            "toolbar" => Ok(Self::Toolbar),
+            "speller" => Ok(Self::Speller),
+            "formFld" => Ok(Self::FormFld),
+            "bbPlcHdr" => Ok(Self::BbPlcHdr),
+            _ => Err(format!("unknown STDocPartType value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STDocPartGallery {
+    #[serde(rename = "placeholder")]
+    Placeholder,
+    #[serde(rename = "any")]
+    Any,
+    #[serde(rename = "default")]
+    Default,
+    #[serde(rename = "docParts")]
+    DocParts,
+    #[serde(rename = "coverPg")]
+    CoverPg,
+    #[serde(rename = "eq")]
+    Eq,
+    #[serde(rename = "ftrs")]
+    Ftrs,
+    #[serde(rename = "hdrs")]
+    Hdrs,
+    #[serde(rename = "pgNum")]
+    PgNum,
+    #[serde(rename = "tbls")]
+    Tbls,
+    #[serde(rename = "watermarks")]
+    Watermarks,
+    #[serde(rename = "autoTxt")]
+    AutoTxt,
+    #[serde(rename = "txtBox")]
+    TxtBox,
+    #[serde(rename = "pgNumT")]
+    PgNumT,
+    #[serde(rename = "pgNumB")]
+    PgNumB,
+    #[serde(rename = "pgNumMargins")]
+    PgNumMargins,
+    #[serde(rename = "tblOfContents")]
+    TblOfContents,
+    #[serde(rename = "bib")]
+    Bib,
+    #[serde(rename = "custQuickParts")]
+    CustQuickParts,
+    #[serde(rename = "custCoverPg")]
+    CustCoverPg,
+    #[serde(rename = "custEq")]
+    CustEq,
+    #[serde(rename = "custFtrs")]
+    CustFtrs,
+    #[serde(rename = "custHdrs")]
+    CustHdrs,
+    #[serde(rename = "custPgNum")]
+    CustPgNum,
+    #[serde(rename = "custTbls")]
+    CustTbls,
+    #[serde(rename = "custWatermarks")]
+    CustWatermarks,
+    #[serde(rename = "custAutoTxt")]
+    CustAutoTxt,
+    #[serde(rename = "custTxtBox")]
+    CustTxtBox,
+    #[serde(rename = "custPgNumT")]
+    CustPgNumT,
+    #[serde(rename = "custPgNumB")]
+    CustPgNumB,
+    #[serde(rename = "custPgNumMargins")]
+    CustPgNumMargins,
+    #[serde(rename = "custTblOfContents")]
+    CustTblOfContents,
+    #[serde(rename = "custBib")]
+    CustBib,
+    #[serde(rename = "custom1")]
+    Custom1,
+    #[serde(rename = "custom2")]
+    Custom2,
+    #[serde(rename = "custom3")]
+    Custom3,
+    #[serde(rename = "custom4")]
+    Custom4,
+    #[serde(rename = "custom5")]
+    Custom5,
+}
+
+impl std::fmt::Display for STDocPartGallery {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Placeholder => write!(f, "placeholder"),
+            Self::Any => write!(f, "any"),
+            Self::Default => write!(f, "default"),
+            Self::DocParts => write!(f, "docParts"),
+            Self::CoverPg => write!(f, "coverPg"),
+            Self::Eq => write!(f, "eq"),
+            Self::Ftrs => write!(f, "ftrs"),
+            Self::Hdrs => write!(f, "hdrs"),
+            Self::PgNum => write!(f, "pgNum"),
+            Self::Tbls => write!(f, "tbls"),
+            Self::Watermarks => write!(f, "watermarks"),
+            Self::AutoTxt => write!(f, "autoTxt"),
+            Self::TxtBox => write!(f, "txtBox"),
+            Self::PgNumT => write!(f, "pgNumT"),
+            Self::PgNumB => write!(f, "pgNumB"),
+            Self::PgNumMargins => write!(f, "pgNumMargins"),
+            Self::TblOfContents => write!(f, "tblOfContents"),
+            Self::Bib => write!(f, "bib"),
+            Self::CustQuickParts => write!(f, "custQuickParts"),
+            Self::CustCoverPg => write!(f, "custCoverPg"),
+            Self::CustEq => write!(f, "custEq"),
+            Self::CustFtrs => write!(f, "custFtrs"),
+            Self::CustHdrs => write!(f, "custHdrs"),
+            Self::CustPgNum => write!(f, "custPgNum"),
+            Self::CustTbls => write!(f, "custTbls"),
+            Self::CustWatermarks => write!(f, "custWatermarks"),
+            Self::CustAutoTxt => write!(f, "custAutoTxt"),
+            Self::CustTxtBox => write!(f, "custTxtBox"),
+            Self::CustPgNumT => write!(f, "custPgNumT"),
+            Self::CustPgNumB => write!(f, "custPgNumB"),
+            Self::CustPgNumMargins => write!(f, "custPgNumMargins"),
+            Self::CustTblOfContents => write!(f, "custTblOfContents"),
+            Self::CustBib => write!(f, "custBib"),
+            Self::Custom1 => write!(f, "custom1"),
+            Self::Custom2 => write!(f, "custom2"),
+            Self::Custom3 => write!(f, "custom3"),
+            Self::Custom4 => write!(f, "custom4"),
+            Self::Custom5 => write!(f, "custom5"),
+        }
+    }
+}
+
+impl std::str::FromStr for STDocPartGallery {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "placeholder" => Ok(Self::Placeholder),
+            "any" => Ok(Self::Any),
+            "default" => Ok(Self::Default),
+            "docParts" => Ok(Self::DocParts),
+            "coverPg" => Ok(Self::CoverPg),
+            "eq" => Ok(Self::Eq),
+            "ftrs" => Ok(Self::Ftrs),
+            "hdrs" => Ok(Self::Hdrs),
+            "pgNum" => Ok(Self::PgNum),
+            "tbls" => Ok(Self::Tbls),
+            "watermarks" => Ok(Self::Watermarks),
+            "autoTxt" => Ok(Self::AutoTxt),
+            "txtBox" => Ok(Self::TxtBox),
+            "pgNumT" => Ok(Self::PgNumT),
+            "pgNumB" => Ok(Self::PgNumB),
+            "pgNumMargins" => Ok(Self::PgNumMargins),
+            "tblOfContents" => Ok(Self::TblOfContents),
+            "bib" => Ok(Self::Bib),
+            "custQuickParts" => Ok(Self::CustQuickParts),
+            "custCoverPg" => Ok(Self::CustCoverPg),
+            "custEq" => Ok(Self::CustEq),
+            "custFtrs" => Ok(Self::CustFtrs),
+            "custHdrs" => Ok(Self::CustHdrs),
+            "custPgNum" => Ok(Self::CustPgNum),
+            "custTbls" => Ok(Self::CustTbls),
+            "custWatermarks" => Ok(Self::CustWatermarks),
+            "custAutoTxt" => Ok(Self::CustAutoTxt),
+            "custTxtBox" => Ok(Self::CustTxtBox),
+            "custPgNumT" => Ok(Self::CustPgNumT),
+            "custPgNumB" => Ok(Self::CustPgNumB),
+            "custPgNumMargins" => Ok(Self::CustPgNumMargins),
+            "custTblOfContents" => Ok(Self::CustTblOfContents),
+            "custBib" => Ok(Self::CustBib),
+            "custom1" => Ok(Self::Custom1),
+            "custom2" => Ok(Self::Custom2),
+            "custom3" => Ok(Self::Custom3),
+            "custom4" => Ok(Self::Custom4),
+            "custom5" => Ok(Self::Custom5),
+            _ => Err(format!("unknown STDocPartGallery value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum STCaptionPos {
+    #[serde(rename = "above")]
+    Above,
+    #[serde(rename = "below")]
+    Below,
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+}
+
+impl std::fmt::Display for STCaptionPos {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Above => write!(f, "above"),
+            Self::Below => write!(f, "below"),
+            Self::Left => write!(f, "left"),
+            Self::Right => write!(f, "right"),
+        }
+    }
+}
+
+impl std::str::FromStr for STCaptionPos {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "above" => Ok(Self::Above),
+            "below" => Ok(Self::Below),
+            "left" => Ok(Self::Left),
+            "right" => Ok(Self::Right),
+            _ => Err(format!("unknown STCaptionPos value: {}", s)),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGPContentBase {
+    #[serde(rename = "customXml")]
+    CustomXml(Box<CTCustomXmlRun>),
+    #[serde(rename = "fldSimple")]
+    FldSimple(Box<CTSimpleField>),
+    #[serde(rename = "hyperlink")]
+    Hyperlink(Box<CTHyperlink>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGContentRunContentBase {
+    #[serde(rename = "smartTag")]
+    SmartTag(Box<CTSmartTagRun>),
+    #[serde(rename = "sdt")]
+    Sdt(Box<CTSdtRun>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGCellMarkupElements {
+    #[serde(rename = "cellIns")]
+    CellIns(Box<CTTrackChange>),
+    #[serde(rename = "cellDel")]
+    CellDel(Box<CTTrackChange>),
+    #[serde(rename = "cellMerge")]
+    CellMerge(Box<CTCellMergeTrackChange>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGRangeMarkupElements {
+    #[serde(rename = "bookmarkStart")]
+    BookmarkStart(Box<CTBookmark>),
+    #[serde(rename = "bookmarkEnd")]
+    BookmarkEnd(Box<CTMarkupRange>),
+    #[serde(rename = "moveFromRangeStart")]
+    MoveFromRangeStart(Box<CTMoveBookmark>),
+    #[serde(rename = "moveFromRangeEnd")]
+    MoveFromRangeEnd(Box<CTMarkupRange>),
+    #[serde(rename = "moveToRangeStart")]
+    MoveToRangeStart(Box<CTMoveBookmark>),
+    #[serde(rename = "moveToRangeEnd")]
+    MoveToRangeEnd(Box<CTMarkupRange>),
+    #[serde(rename = "commentRangeStart")]
+    CommentRangeStart(Box<CTMarkupRange>),
+    #[serde(rename = "commentRangeEnd")]
+    CommentRangeEnd(Box<CTMarkupRange>),
+    #[serde(rename = "customXmlInsRangeStart")]
+    CustomXmlInsRangeStart(Box<CTTrackChange>),
+    #[serde(rename = "customXmlInsRangeEnd")]
+    CustomXmlInsRangeEnd(Box<CTMarkup>),
+    #[serde(rename = "customXmlDelRangeStart")]
+    CustomXmlDelRangeStart(Box<CTTrackChange>),
+    #[serde(rename = "customXmlDelRangeEnd")]
+    CustomXmlDelRangeEnd(Box<CTMarkup>),
+    #[serde(rename = "customXmlMoveFromRangeStart")]
+    CustomXmlMoveFromRangeStart(Box<CTTrackChange>),
+    #[serde(rename = "customXmlMoveFromRangeEnd")]
+    CustomXmlMoveFromRangeEnd(Box<CTMarkup>),
+    #[serde(rename = "customXmlMoveToRangeStart")]
+    CustomXmlMoveToRangeStart(Box<CTTrackChange>),
+    #[serde(rename = "customXmlMoveToRangeEnd")]
+    CustomXmlMoveToRangeEnd(Box<CTMarkup>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGHdrFtrReferences {
+    #[serde(rename = "headerReference")]
+    HeaderReference(Box<CTHdrFtrRef>),
+    #[serde(rename = "footerReference")]
+    FooterReference(Box<CTHdrFtrRef>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGRunInnerContent {
+    #[serde(rename = "br")]
+    Br(Box<CTBr>),
+    #[serde(rename = "t")]
+    T(Box<CTText>),
+    #[serde(rename = "contentPart")]
+    ContentPart(Box<CTRel>),
+    #[serde(rename = "delText")]
+    DelText(Box<CTText>),
+    #[serde(rename = "instrText")]
+    InstrText(Box<CTText>),
+    #[serde(rename = "delInstrText")]
+    DelInstrText(Box<CTText>),
+    #[serde(rename = "noBreakHyphen")]
+    NoBreakHyphen(Box<CTEmpty>),
+    #[serde(rename = "softHyphen")]
+    SoftHyphen(Box<CTEmpty>),
+    #[serde(rename = "dayShort")]
+    DayShort(Box<CTEmpty>),
+    #[serde(rename = "monthShort")]
+    MonthShort(Box<CTEmpty>),
+    #[serde(rename = "yearShort")]
+    YearShort(Box<CTEmpty>),
+    #[serde(rename = "dayLong")]
+    DayLong(Box<CTEmpty>),
+    #[serde(rename = "monthLong")]
+    MonthLong(Box<CTEmpty>),
+    #[serde(rename = "yearLong")]
+    YearLong(Box<CTEmpty>),
+    #[serde(rename = "annotationRef")]
+    AnnotationRef(Box<CTEmpty>),
+    #[serde(rename = "footnoteRef")]
+    FootnoteRef(Box<CTEmpty>),
+    #[serde(rename = "endnoteRef")]
+    EndnoteRef(Box<CTEmpty>),
+    #[serde(rename = "separator")]
+    Separator(Box<CTEmpty>),
+    #[serde(rename = "continuationSeparator")]
+    ContinuationSeparator(Box<CTEmpty>),
+    #[serde(rename = "sym")]
+    Sym(Box<CTSym>),
+    #[serde(rename = "pgNum")]
+    PgNum(Box<CTEmpty>),
+    #[serde(rename = "cr")]
+    Cr(Box<CTEmpty>),
+    #[serde(rename = "tab")]
+    Tab(Box<CTEmpty>),
+    #[serde(rename = "object")]
+    Object(Box<CTObject>),
+    #[serde(rename = "pict")]
+    Pict(Box<CTPicture>),
+    #[serde(rename = "fldChar")]
+    FldChar(Box<CTFldChar>),
+    #[serde(rename = "ruby")]
+    Ruby(Box<CTRuby>),
+    #[serde(rename = "footnoteReference")]
+    FootnoteReference(Box<CTFtnEdnRef>),
+    #[serde(rename = "endnoteReference")]
+    EndnoteReference(Box<CTFtnEdnRef>),
+    #[serde(rename = "commentReference")]
+    CommentReference(Box<CTMarkup>),
+    #[serde(rename = "drawing")]
+    Drawing(Box<CTDrawing>),
+    #[serde(rename = "ptab")]
+    Ptab(Box<CTPTab>),
+    #[serde(rename = "lastRenderedPageBreak")]
+    LastRenderedPageBreak(Box<CTEmpty>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGRPrMath {
+    #[serde(rename = "ins")]
+    Ins(Box<CTMathCtrlIns>),
+    #[serde(rename = "del")]
+    Del(Box<CTMathCtrlDel>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGRubyContent {
+    #[serde(rename = "r")]
+    R(Box<CTR>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGContentRunContent {
+    #[serde(rename = "customXml")]
+    CustomXml(Box<CTCustomXmlRun>),
+    #[serde(rename = "smartTag")]
+    SmartTag(Box<CTSmartTagRun>),
+    #[serde(rename = "sdt")]
+    Sdt(Box<CTSdtRun>),
+    #[serde(rename = "dir")]
+    Dir(Box<CTDirContentRun>),
+    #[serde(rename = "bdo")]
+    Bdo(Box<CTBdoContentRun>),
+    #[serde(rename = "r")]
+    R(Box<CTR>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGContentBlockContent {
+    #[serde(rename = "customXml")]
+    CustomXml(Box<CTCustomXmlBlock>),
+    #[serde(rename = "sdt")]
+    Sdt(Box<CTSdtBlock>),
+    #[serde(rename = "p")]
+    P(Box<CTP>),
+    #[serde(rename = "tbl")]
+    Tbl(Box<CTTbl>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGContentRowContent {
+    #[serde(rename = "tr")]
+    Tr(Box<CTRow>),
+    #[serde(rename = "customXml")]
+    CustomXml(Box<CTCustomXmlRow>),
+    #[serde(rename = "sdt")]
+    Sdt(Box<CTSdtRow>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGContentCellContent {
+    #[serde(rename = "tc")]
+    Tc(Box<CTTc>),
+    #[serde(rename = "customXml")]
+    CustomXml(Box<CTCustomXmlCell>),
+    #[serde(rename = "sdt")]
+    Sdt(Box<CTSdtCell>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGPContent {
+    #[serde(rename = "fldSimple")]
+    FldSimple(Box<CTSimpleField>),
+    #[serde(rename = "hyperlink")]
+    Hyperlink(Box<CTHyperlink>),
+    #[serde(rename = "subDoc")]
+    SubDoc(Box<CTRel>),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum EGRunLevelElts {
+    #[serde(rename = "proofErr")]
+    ProofErr(Box<CTProofErr>),
+    #[serde(rename = "permStart")]
+    PermStart(Box<CTPermStart>),
+    #[serde(rename = "permEnd")]
+    PermEnd(Box<CTPerm>),
+    #[serde(rename = "ins")]
+    Ins(Box<CTRunTrackChange>),
+    #[serde(rename = "del")]
+    Del(Box<CTRunTrackChange>),
+    #[serde(rename = "moveFrom")]
+    MoveFrom(Box<CTRunTrackChange>),
+    #[serde(rename = "moveTo")]
+    MoveTo(Box<CTRunTrackChange>),
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTEmpty;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTOnOff {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLongHexNumber {
+    #[serde(rename = "@val")]
+    pub val: STLongHexNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCharset {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STUcharHexNumber>,
+    #[serde(rename = "@characterSet")]
+    #[serde(default)]
+    pub character_set: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDecimalNumber {
+    #[serde(rename = "@val")]
+    pub val: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTUnsignedDecimalNumber {
+    #[serde(rename = "@val")]
+    pub val: SSTUnsignedDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDecimalNumberOrPrecent {
+    #[serde(rename = "@val")]
+    pub val: STDecimalNumberOrPercent,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTwipsMeasure {
+    #[serde(rename = "@val")]
+    pub val: SSTTwipsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSignedTwipsMeasure {
+    #[serde(rename = "@val")]
+    pub val: STSignedTwipsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPixelsMeasure {
+    #[serde(rename = "@val")]
+    pub val: STPixelsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHpsMeasure {
+    #[serde(rename = "@val")]
+    pub val: STHpsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSignedHpsMeasure {
+    #[serde(rename = "@val")]
+    pub val: STSignedHpsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMacroName {
+    #[serde(rename = "@val")]
+    pub val: STMacroName,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTString {
+    #[serde(rename = "@val")]
+    pub val: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTextScale {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STTextScale>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHighlight {
+    #[serde(rename = "@val")]
+    pub val: STHighlightColor,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTColor {
+    #[serde(rename = "@val")]
+    pub val: STHexColor,
+    #[serde(rename = "@themeColor")]
+    #[serde(default)]
+    pub theme_color: Option<STThemeColor>,
+    #[serde(rename = "@themeTint")]
+    #[serde(default)]
+    pub theme_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeShade")]
+    #[serde(default)]
+    pub theme_shade: Option<STUcharHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLang {
+    #[serde(rename = "@val")]
+    pub val: SSTLang,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTGuid {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTGuid>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTUnderline {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STUnderline>,
+    #[serde(rename = "@color")]
+    #[serde(default)]
+    pub color: Option<STHexColor>,
+    #[serde(rename = "@themeColor")]
+    #[serde(default)]
+    pub theme_color: Option<STThemeColor>,
+    #[serde(rename = "@themeTint")]
+    #[serde(default)]
+    pub theme_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeShade")]
+    #[serde(default)]
+    pub theme_shade: Option<STUcharHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTextEffect {
+    #[serde(rename = "@val")]
+    pub val: STTextEffect,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBorder {
+    #[serde(rename = "@val")]
+    pub val: STBorder,
+    #[serde(rename = "@color")]
+    #[serde(default)]
+    pub color: Option<STHexColor>,
+    #[serde(rename = "@themeColor")]
+    #[serde(default)]
+    pub theme_color: Option<STThemeColor>,
+    #[serde(rename = "@themeTint")]
+    #[serde(default)]
+    pub theme_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeShade")]
+    #[serde(default)]
+    pub theme_shade: Option<STUcharHexNumber>,
+    #[serde(rename = "@sz")]
+    #[serde(default)]
+    pub sz: Option<STEighthPointMeasure>,
+    #[serde(rename = "@space")]
+    #[serde(default)]
+    pub space: Option<STPointMeasure>,
+    #[serde(rename = "@shadow")]
+    #[serde(default)]
+    pub shadow: Option<SSTOnOff>,
+    #[serde(rename = "@frame")]
+    #[serde(default)]
+    pub frame: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTShd {
+    #[serde(rename = "@val")]
+    pub val: STShd,
+    #[serde(rename = "@color")]
+    #[serde(default)]
+    pub color: Option<STHexColor>,
+    #[serde(rename = "@themeColor")]
+    #[serde(default)]
+    pub theme_color: Option<STThemeColor>,
+    #[serde(rename = "@themeTint")]
+    #[serde(default)]
+    pub theme_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeShade")]
+    #[serde(default)]
+    pub theme_shade: Option<STUcharHexNumber>,
+    #[serde(rename = "@fill")]
+    #[serde(default)]
+    pub fill: Option<STHexColor>,
+    #[serde(rename = "@themeFill")]
+    #[serde(default)]
+    pub theme_fill: Option<STThemeColor>,
+    #[serde(rename = "@themeFillTint")]
+    #[serde(default)]
+    pub theme_fill_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeFillShade")]
+    #[serde(default)]
+    pub theme_fill_shade: Option<STUcharHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTVerticalAlignRun {
+    #[serde(rename = "@val")]
+    pub val: SSTVerticalAlignRun,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFitText {
+    #[serde(rename = "@val")]
+    pub val: SSTTwipsMeasure,
+    #[serde(rename = "@id")]
+    #[serde(default)]
+    pub id: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEm {
+    #[serde(rename = "@val")]
+    pub val: STEm,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLanguage {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTLang>,
+    #[serde(rename = "@eastAsia")]
+    #[serde(default)]
+    pub east_asia: Option<SSTLang>,
+    #[serde(rename = "@bidi")]
+    #[serde(default)]
+    pub bidi: Option<SSTLang>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEastAsianLayout {
+    #[serde(rename = "@id")]
+    #[serde(default)]
+    pub id: Option<STDecimalNumber>,
+    #[serde(rename = "@combine")]
+    #[serde(default)]
+    pub combine: Option<SSTOnOff>,
+    #[serde(rename = "@combineBrackets")]
+    #[serde(default)]
+    pub combine_brackets: Option<STCombineBrackets>,
+    #[serde(rename = "@vert")]
+    #[serde(default)]
+    pub vert: Option<SSTOnOff>,
+    #[serde(rename = "@vertCompress")]
+    #[serde(default)]
+    pub vert_compress: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFramePr {
+    #[serde(rename = "@dropCap")]
+    #[serde(default)]
+    pub drop_cap: Option<STDropCap>,
+    #[serde(rename = "@lines")]
+    #[serde(default)]
+    pub lines: Option<STDecimalNumber>,
+    #[serde(rename = "@w")]
+    #[serde(default)]
+    pub w: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@h")]
+    #[serde(default)]
+    pub h: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@vSpace")]
+    #[serde(default)]
+    pub v_space: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@hSpace")]
+    #[serde(default)]
+    pub h_space: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@wrap")]
+    #[serde(default)]
+    pub wrap: Option<STWrap>,
+    #[serde(rename = "@hAnchor")]
+    #[serde(default)]
+    pub h_anchor: Option<STHAnchor>,
+    #[serde(rename = "@vAnchor")]
+    #[serde(default)]
+    pub v_anchor: Option<STVAnchor>,
+    #[serde(rename = "@x")]
+    #[serde(default)]
+    pub x: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@xAlign")]
+    #[serde(default)]
+    pub x_align: Option<SSTXAlign>,
+    #[serde(rename = "@y")]
+    #[serde(default)]
+    pub y: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@yAlign")]
+    #[serde(default)]
+    pub y_align: Option<SSTYAlign>,
+    #[serde(rename = "@hRule")]
+    #[serde(default)]
+    pub h_rule: Option<STHeightRule>,
+    #[serde(rename = "@anchorLock")]
+    #[serde(default)]
+    pub anchor_lock: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTabStop {
+    #[serde(rename = "@val")]
+    pub val: STTabJc,
+    #[serde(rename = "@leader")]
+    #[serde(default)]
+    pub leader: Option<STTabTlc>,
+    #[serde(rename = "@pos")]
+    pub pos: STSignedTwipsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSpacing {
+    #[serde(rename = "@before")]
+    #[serde(default)]
+    pub before: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@beforeLines")]
+    #[serde(default)]
+    pub before_lines: Option<STDecimalNumber>,
+    #[serde(rename = "@beforeAutospacing")]
+    #[serde(default)]
+    pub before_autospacing: Option<SSTOnOff>,
+    #[serde(rename = "@after")]
+    #[serde(default)]
+    pub after: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@afterLines")]
+    #[serde(default)]
+    pub after_lines: Option<STDecimalNumber>,
+    #[serde(rename = "@afterAutospacing")]
+    #[serde(default)]
+    pub after_autospacing: Option<SSTOnOff>,
+    #[serde(rename = "@line")]
+    #[serde(default)]
+    pub line: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@lineRule")]
+    #[serde(default)]
+    pub line_rule: Option<STLineSpacingRule>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTInd {
+    #[serde(rename = "@start")]
+    #[serde(default)]
+    pub start: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@startChars")]
+    #[serde(default)]
+    pub start_chars: Option<STDecimalNumber>,
+    #[serde(rename = "@end")]
+    #[serde(default)]
+    pub end: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@endChars")]
+    #[serde(default)]
+    pub end_chars: Option<STDecimalNumber>,
+    #[serde(rename = "@left")]
+    #[serde(default)]
+    pub left: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@leftChars")]
+    #[serde(default)]
+    pub left_chars: Option<STDecimalNumber>,
+    #[serde(rename = "@right")]
+    #[serde(default)]
+    pub right: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@rightChars")]
+    #[serde(default)]
+    pub right_chars: Option<STDecimalNumber>,
+    #[serde(rename = "@hanging")]
+    #[serde(default)]
+    pub hanging: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@hangingChars")]
+    #[serde(default)]
+    pub hanging_chars: Option<STDecimalNumber>,
+    #[serde(rename = "@firstLine")]
+    #[serde(default)]
+    pub first_line: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@firstLineChars")]
+    #[serde(default)]
+    pub first_line_chars: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTJc {
+    #[serde(rename = "@val")]
+    pub val: STJc,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTJcTable {
+    #[serde(rename = "@val")]
+    pub val: STJcTable,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTView {
+    #[serde(rename = "@val")]
+    pub val: STView,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTZoom {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STZoom>,
+    #[serde(rename = "@percent")]
+    pub percent: STDecimalNumberOrPercent,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTWritingStyle {
+    #[serde(rename = "@lang")]
+    pub lang: SSTLang,
+    #[serde(rename = "@vendorID")]
+    pub vendor_i_d: SSTString,
+    #[serde(rename = "@dllVersion")]
+    pub dll_version: SSTString,
+    #[serde(rename = "@nlCheck")]
+    #[serde(default)]
+    pub nl_check: Option<SSTOnOff>,
+    #[serde(rename = "@checkStyle")]
+    pub check_style: SSTOnOff,
+    #[serde(rename = "@appName")]
+    pub app_name: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTProof {
+    #[serde(rename = "@spelling")]
+    #[serde(default)]
+    pub spelling: Option<STProof>,
+    #[serde(rename = "@grammar")]
+    #[serde(default)]
+    pub grammar: Option<STProof>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocType {
+    #[serde(rename = "@val")]
+    pub val: STDocType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AGPassword {
+    #[serde(rename = "@algorithmName")]
+    #[serde(default)]
+    pub algorithm_name: Option<SSTString>,
+    #[serde(rename = "@hashValue")]
+    #[serde(default)]
+    pub hash_value: Option<Vec<u8>>,
+    #[serde(rename = "@saltValue")]
+    #[serde(default)]
+    pub salt_value: Option<Vec<u8>>,
+    #[serde(rename = "@spinCount")]
+    #[serde(default)]
+    pub spin_count: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AGTransitionalPassword {
+    #[serde(rename = "@cryptProviderType")]
+    #[serde(default)]
+    pub crypt_provider_type: Option<SSTCryptProv>,
+    #[serde(rename = "@cryptAlgorithmClass")]
+    #[serde(default)]
+    pub crypt_algorithm_class: Option<SSTAlgClass>,
+    #[serde(rename = "@cryptAlgorithmType")]
+    #[serde(default)]
+    pub crypt_algorithm_type: Option<SSTAlgType>,
+    #[serde(rename = "@cryptAlgorithmSid")]
+    #[serde(default)]
+    pub crypt_algorithm_sid: Option<STDecimalNumber>,
+    #[serde(rename = "@cryptSpinCount")]
+    #[serde(default)]
+    pub crypt_spin_count: Option<STDecimalNumber>,
+    #[serde(rename = "@cryptProvider")]
+    #[serde(default)]
+    pub crypt_provider: Option<SSTString>,
+    #[serde(rename = "@algIdExt")]
+    #[serde(default)]
+    pub alg_id_ext: Option<STLongHexNumber>,
+    #[serde(rename = "@algIdExtSource")]
+    #[serde(default)]
+    pub alg_id_ext_source: Option<SSTString>,
+    #[serde(rename = "@cryptProviderTypeExt")]
+    #[serde(default)]
+    pub crypt_provider_type_ext: Option<STLongHexNumber>,
+    #[serde(rename = "@cryptProviderTypeExtSource")]
+    #[serde(default)]
+    pub crypt_provider_type_ext_source: Option<SSTString>,
+    #[serde(rename = "@hash")]
+    #[serde(default)]
+    pub hash: Option<Vec<u8>>,
+    #[serde(rename = "@salt")]
+    #[serde(default)]
+    pub salt: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocProtect {
+    #[serde(rename = "@edit")]
+    #[serde(default)]
+    pub edit: Option<STDocProtect>,
+    #[serde(rename = "@formatting")]
+    #[serde(default)]
+    pub formatting: Option<SSTOnOff>,
+    #[serde(rename = "@enforcement")]
+    #[serde(default)]
+    pub enforcement: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMergeDocType {
+    #[serde(rename = "@val")]
+    pub val: STMailMergeDocType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMergeDataType {
+    #[serde(rename = "@val")]
+    pub val: STMailMergeDataType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMergeDest {
+    #[serde(rename = "@val")]
+    pub val: STMailMergeDest,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMergeOdsoFMDFieldType {
+    #[serde(rename = "@val")]
+    pub val: STMailMergeOdsoFMDFieldType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrackChangesView {
+    #[serde(rename = "@markup")]
+    #[serde(default)]
+    pub markup: Option<SSTOnOff>,
+    #[serde(rename = "@comments")]
+    #[serde(default)]
+    pub comments: Option<SSTOnOff>,
+    #[serde(rename = "@insDel")]
+    #[serde(default)]
+    pub ins_del: Option<SSTOnOff>,
+    #[serde(rename = "@formatting")]
+    #[serde(default)]
+    pub formatting: Option<SSTOnOff>,
+    #[serde(rename = "@inkAnnotations")]
+    #[serde(default)]
+    pub ink_annotations: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTKinsoku {
+    #[serde(rename = "@lang")]
+    pub lang: SSTLang,
+    #[serde(rename = "@val")]
+    pub val: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTextDirection {
+    #[serde(rename = "@val")]
+    pub val: STTextDirection,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTextAlignment {
+    #[serde(rename = "@val")]
+    pub val: STTextAlignment,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMarkup {
+    #[serde(rename = "@id")]
+    pub id: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrackChange {
+    #[serde(rename = "@author")]
+    pub author: SSTString,
+    #[serde(rename = "@date")]
+    #[serde(default)]
+    pub date: Option<STDateTime>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCellMergeTrackChange {
+    #[serde(rename = "@vMerge")]
+    #[serde(default)]
+    pub v_merge: Option<STAnnotationVMerge>,
+    #[serde(rename = "@vMergeOrig")]
+    #[serde(default)]
+    pub v_merge_orig: Option<STAnnotationVMerge>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrackChangeRange {
+    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(default)]
+    pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMarkupRange {
+    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(default)]
+    pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBookmarkRange {
+    #[serde(rename = "@colFirst")]
+    #[serde(default)]
+    pub col_first: Option<STDecimalNumber>,
+    #[serde(rename = "@colLast")]
+    #[serde(default)]
+    pub col_last: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBookmark {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMoveBookmark {
+    #[serde(rename = "@author")]
+    pub author: SSTString,
+    #[serde(rename = "@date")]
+    pub date: STDateTime,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTComment {
+    #[serde(rename = "@initials")]
+    #[serde(default)]
+    pub initials: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrackChangeNumbering {
+    #[serde(rename = "@original")]
+    #[serde(default)]
+    pub original: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPrExChange {
+    #[serde(rename = "tblPrEx")]
+    pub tbl_pr_ex: Box<CTTblPrExBase>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTcPrChange {
+    #[serde(rename = "tcPr")]
+    pub tc_pr: Box<CTTcPrInner>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrPrChange {
+    #[serde(rename = "trPr")]
+    pub tr_pr: Box<CTTrPrBase>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblGridChange {
+    #[serde(rename = "tblGrid")]
+    pub tbl_grid: Box<CTTblGridBase>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPrChange {
+    #[serde(rename = "tblPr")]
+    pub tbl_pr: Box<CTTblPrBase>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSectPrChange {
+    #[serde(rename = "sectPr")]
+    #[serde(default)]
+    pub sect_pr: Option<Box<CTSectPrBase>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPPrChange {
+    #[serde(rename = "pPr")]
+    pub p_pr: Box<CTPPrBase>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRPrChange {
+    #[serde(rename = "rPr")]
+    pub r_pr: Box<CTRPrOriginal>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTParaRPrChange {
+    #[serde(rename = "rPr")]
+    pub r_pr: Box<CTParaRPrOriginal>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTRunTrackChange;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGPContentMath;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumPr {
+    #[serde(rename = "ilvl")]
+    #[serde(default)]
+    pub ilvl: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "numId")]
+    #[serde(default)]
+    pub num_id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "numberingChange")]
+    #[serde(default)]
+    pub numbering_change: Option<Box<CTTrackChangeNumbering>>,
+    #[serde(rename = "ins")]
+    #[serde(default)]
+    pub ins: Option<Box<CTTrackChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPBdr {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTBorder>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTBorder>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTBorder>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTBorder>>,
+    #[serde(rename = "between")]
+    #[serde(default)]
+    pub between: Option<Box<CTBorder>>,
+    #[serde(rename = "bar")]
+    #[serde(default)]
+    pub bar: Option<Box<CTBorder>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTabs {
+    #[serde(rename = "tab")]
+    #[serde(default)]
+    pub tab: Vec<Box<CTTabStop>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTextboxTightWrap {
+    #[serde(rename = "@val")]
+    pub val: STTextboxTightWrap,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPPr {
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTParaRPr>>,
+    #[serde(rename = "sectPr")]
+    #[serde(default)]
+    pub sect_pr: Option<Box<CTSectPr>>,
+    #[serde(rename = "pPrChange")]
+    #[serde(default)]
+    pub p_pr_change: Option<Box<CTPPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPPrBase {
+    #[serde(rename = "pStyle")]
+    #[serde(default)]
+    pub p_style: Option<Box<CTString>>,
+    #[serde(rename = "keepNext")]
+    #[serde(default)]
+    pub keep_next: Option<Box<CTOnOff>>,
+    #[serde(rename = "keepLines")]
+    #[serde(default)]
+    pub keep_lines: Option<Box<CTOnOff>>,
+    #[serde(rename = "pageBreakBefore")]
+    #[serde(default)]
+    pub page_break_before: Option<Box<CTOnOff>>,
+    #[serde(rename = "framePr")]
+    #[serde(default)]
+    pub frame_pr: Option<Box<CTFramePr>>,
+    #[serde(rename = "widowControl")]
+    #[serde(default)]
+    pub widow_control: Option<Box<CTOnOff>>,
+    #[serde(rename = "numPr")]
+    #[serde(default)]
+    pub num_pr: Option<Box<CTNumPr>>,
+    #[serde(rename = "suppressLineNumbers")]
+    #[serde(default)]
+    pub suppress_line_numbers: Option<Box<CTOnOff>>,
+    #[serde(rename = "pBdr")]
+    #[serde(default)]
+    pub p_bdr: Option<Box<CTPBdr>>,
+    #[serde(rename = "shd")]
+    #[serde(default)]
+    pub shd: Option<Box<CTShd>>,
+    #[serde(rename = "tabs")]
+    #[serde(default)]
+    pub tabs: Option<Box<CTTabs>>,
+    #[serde(rename = "suppressAutoHyphens")]
+    #[serde(default)]
+    pub suppress_auto_hyphens: Option<Box<CTOnOff>>,
+    #[serde(rename = "kinsoku")]
+    #[serde(default)]
+    pub kinsoku: Option<Box<CTOnOff>>,
+    #[serde(rename = "wordWrap")]
+    #[serde(default)]
+    pub word_wrap: Option<Box<CTOnOff>>,
+    #[serde(rename = "overflowPunct")]
+    #[serde(default)]
+    pub overflow_punct: Option<Box<CTOnOff>>,
+    #[serde(rename = "topLinePunct")]
+    #[serde(default)]
+    pub top_line_punct: Option<Box<CTOnOff>>,
+    #[serde(rename = "autoSpaceDE")]
+    #[serde(default)]
+    pub auto_space_d_e: Option<Box<CTOnOff>>,
+    #[serde(rename = "autoSpaceDN")]
+    #[serde(default)]
+    pub auto_space_d_n: Option<Box<CTOnOff>>,
+    #[serde(rename = "bidi")]
+    #[serde(default)]
+    pub bidi: Option<Box<CTOnOff>>,
+    #[serde(rename = "adjustRightInd")]
+    #[serde(default)]
+    pub adjust_right_ind: Option<Box<CTOnOff>>,
+    #[serde(rename = "snapToGrid")]
+    #[serde(default)]
+    pub snap_to_grid: Option<Box<CTOnOff>>,
+    #[serde(rename = "spacing")]
+    #[serde(default)]
+    pub spacing: Option<Box<CTSpacing>>,
+    #[serde(rename = "ind")]
+    #[serde(default)]
+    pub ind: Option<Box<CTInd>>,
+    #[serde(rename = "contextualSpacing")]
+    #[serde(default)]
+    pub contextual_spacing: Option<Box<CTOnOff>>,
+    #[serde(rename = "mirrorIndents")]
+    #[serde(default)]
+    pub mirror_indents: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressOverlap")]
+    #[serde(default)]
+    pub suppress_overlap: Option<Box<CTOnOff>>,
+    #[serde(rename = "jc")]
+    #[serde(default)]
+    pub jc: Option<Box<CTJc>>,
+    #[serde(rename = "textDirection")]
+    #[serde(default)]
+    pub text_direction: Option<Box<CTTextDirection>>,
+    #[serde(rename = "textAlignment")]
+    #[serde(default)]
+    pub text_alignment: Option<Box<CTTextAlignment>>,
+    #[serde(rename = "textboxTightWrap")]
+    #[serde(default)]
+    pub textbox_tight_wrap: Option<Box<CTTextboxTightWrap>>,
+    #[serde(rename = "outlineLvl")]
+    #[serde(default)]
+    pub outline_lvl: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "divId")]
+    #[serde(default)]
+    pub div_id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "cnfStyle")]
+    #[serde(default)]
+    pub cnf_style: Option<Box<CTCnf>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPPrGeneral {
+    #[serde(rename = "pPrChange")]
+    #[serde(default)]
+    pub p_pr_change: Option<Box<CTPPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTControl {
+    #[serde(rename = "@name")]
+    #[serde(default)]
+    pub name: Option<SSTString>,
+    #[serde(rename = "@shapeid")]
+    #[serde(default)]
+    pub shapeid: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBackground {
+    #[serde(rename = "@color")]
+    #[serde(default)]
+    pub color: Option<STHexColor>,
+    #[serde(rename = "@themeColor")]
+    #[serde(default)]
+    pub theme_color: Option<STThemeColor>,
+    #[serde(rename = "@themeTint")]
+    #[serde(default)]
+    pub theme_tint: Option<STUcharHexNumber>,
+    #[serde(rename = "@themeShade")]
+    #[serde(default)]
+    pub theme_shade: Option<STUcharHexNumber>,
+    #[serde(rename = "drawing")]
+    #[serde(default)]
+    pub drawing: Option<Box<CTDrawing>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTRel;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTObject {
+    #[serde(rename = "@dxaOrig")]
+    #[serde(default)]
+    pub dxa_orig: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@dyaOrig")]
+    #[serde(default)]
+    pub dya_orig: Option<SSTTwipsMeasure>,
+    #[serde(rename = "drawing")]
+    #[serde(default)]
+    pub drawing: Option<Box<CTDrawing>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPicture {
+    #[serde(rename = "movie")]
+    #[serde(default)]
+    pub movie: Option<Box<CTRel>>,
+    #[serde(rename = "control")]
+    #[serde(default)]
+    pub control: Option<Box<CTControl>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTObjectEmbed {
+    #[serde(rename = "@drawAspect")]
+    #[serde(default)]
+    pub draw_aspect: Option<STObjectDrawAspect>,
+    #[serde(rename = "@progId")]
+    #[serde(default)]
+    pub prog_id: Option<SSTString>,
+    #[serde(rename = "@shapeId")]
+    #[serde(default)]
+    pub shape_id: Option<SSTString>,
+    #[serde(rename = "@fieldCodes")]
+    #[serde(default)]
+    pub field_codes: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTObjectLink {
+    #[serde(rename = "@updateMode")]
+    pub update_mode: STObjectUpdateMode,
+    #[serde(rename = "@lockedField")]
+    #[serde(default)]
+    pub locked_field: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTDrawing;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSimpleField {
+    #[serde(rename = "@instr")]
+    pub instr: SSTString,
+    #[serde(rename = "@fldLock")]
+    #[serde(default)]
+    pub fld_lock: Option<SSTOnOff>,
+    #[serde(rename = "@dirty")]
+    #[serde(default)]
+    pub dirty: Option<SSTOnOff>,
+    #[serde(rename = "fldData")]
+    #[serde(default)]
+    pub fld_data: Option<Box<CTText>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFTextType {
+    #[serde(rename = "@val")]
+    pub val: STFFTextType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFName {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STFFName>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFldChar {
+    #[serde(rename = "@fldCharType")]
+    pub fld_char_type: STFldCharType,
+    #[serde(rename = "@fldLock")]
+    #[serde(default)]
+    pub fld_lock: Option<SSTOnOff>,
+    #[serde(rename = "@dirty")]
+    #[serde(default)]
+    pub dirty: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHyperlink {
+    #[serde(rename = "@tgtFrame")]
+    #[serde(default)]
+    pub tgt_frame: Option<SSTString>,
+    #[serde(rename = "@tooltip")]
+    #[serde(default)]
+    pub tooltip: Option<SSTString>,
+    #[serde(rename = "@docLocation")]
+    #[serde(default)]
+    pub doc_location: Option<SSTString>,
+    #[serde(rename = "@history")]
+    #[serde(default)]
+    pub history: Option<SSTOnOff>,
+    #[serde(rename = "@anchor")]
+    #[serde(default)]
+    pub anchor: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTFFData;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFHelpText {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STInfoTextType>,
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STFFHelpTextVal>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFStatusText {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STInfoTextType>,
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STFFStatusTextVal>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFCheckBox {
+    #[serde(rename = "default")]
+    #[serde(default)]
+    pub default: Option<Box<CTOnOff>>,
+    #[serde(rename = "checked")]
+    #[serde(default)]
+    pub checked: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFDDList {
+    #[serde(rename = "result")]
+    #[serde(default)]
+    pub result: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "default")]
+    #[serde(default)]
+    pub default: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "listEntry")]
+    #[serde(default)]
+    pub list_entry: Vec<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFFTextInput {
+    #[serde(rename = "type")]
+    #[serde(default)]
+    pub r#type: Option<Box<CTFFTextType>>,
+    #[serde(rename = "default")]
+    #[serde(default)]
+    pub default: Option<Box<CTString>>,
+    #[serde(rename = "maxLength")]
+    #[serde(default)]
+    pub max_length: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "format")]
+    #[serde(default)]
+    pub format: Option<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSectType {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STSectionMark>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPaperSource {
+    #[serde(rename = "@first")]
+    #[serde(default)]
+    pub first: Option<STDecimalNumber>,
+    #[serde(rename = "@other")]
+    #[serde(default)]
+    pub other: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPageSz {
+    #[serde(rename = "@w")]
+    #[serde(default)]
+    pub w: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@h")]
+    #[serde(default)]
+    pub h: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@orient")]
+    #[serde(default)]
+    pub orient: Option<STPageOrientation>,
+    #[serde(rename = "@code")]
+    #[serde(default)]
+    pub code: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPageMar {
+    #[serde(rename = "@top")]
+    pub top: STSignedTwipsMeasure,
+    #[serde(rename = "@right")]
+    pub right: SSTTwipsMeasure,
+    #[serde(rename = "@bottom")]
+    pub bottom: STSignedTwipsMeasure,
+    #[serde(rename = "@left")]
+    pub left: SSTTwipsMeasure,
+    #[serde(rename = "@header")]
+    pub header: SSTTwipsMeasure,
+    #[serde(rename = "@footer")]
+    pub footer: SSTTwipsMeasure,
+    #[serde(rename = "@gutter")]
+    pub gutter: SSTTwipsMeasure,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPageBorders {
+    #[serde(rename = "@zOrder")]
+    #[serde(default)]
+    pub z_order: Option<STPageBorderZOrder>,
+    #[serde(rename = "@display")]
+    #[serde(default)]
+    pub display: Option<STPageBorderDisplay>,
+    #[serde(rename = "@offsetFrom")]
+    #[serde(default)]
+    pub offset_from: Option<STPageBorderOffset>,
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTTopPageBorder>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTPageBorder>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTBottomPageBorder>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTPageBorder>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTPageBorder;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTBottomPageBorder;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTTopPageBorder;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLineNumber {
+    #[serde(rename = "@countBy")]
+    #[serde(default)]
+    pub count_by: Option<STDecimalNumber>,
+    #[serde(rename = "@start")]
+    #[serde(default)]
+    pub start: Option<STDecimalNumber>,
+    #[serde(rename = "@distance")]
+    #[serde(default)]
+    pub distance: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@restart")]
+    #[serde(default)]
+    pub restart: Option<STLineNumberRestart>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPageNumber {
+    #[serde(rename = "@fmt")]
+    #[serde(default)]
+    pub fmt: Option<STNumberFormat>,
+    #[serde(rename = "@start")]
+    #[serde(default)]
+    pub start: Option<STDecimalNumber>,
+    #[serde(rename = "@chapStyle")]
+    #[serde(default)]
+    pub chap_style: Option<STDecimalNumber>,
+    #[serde(rename = "@chapSep")]
+    #[serde(default)]
+    pub chap_sep: Option<STChapterSep>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTColumn {
+    #[serde(rename = "@w")]
+    #[serde(default)]
+    pub w: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@space")]
+    #[serde(default)]
+    pub space: Option<SSTTwipsMeasure>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTColumns {
+    #[serde(rename = "@equalWidth")]
+    #[serde(default)]
+    pub equal_width: Option<SSTOnOff>,
+    #[serde(rename = "@space")]
+    #[serde(default)]
+    pub space: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@num")]
+    #[serde(default)]
+    pub num: Option<STDecimalNumber>,
+    #[serde(rename = "@sep")]
+    #[serde(default)]
+    pub sep: Option<SSTOnOff>,
+    #[serde(rename = "col")]
+    #[serde(default)]
+    pub col: Vec<Box<CTColumn>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTVerticalJc {
+    #[serde(rename = "@val")]
+    pub val: STVerticalJc,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocGrid {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STDocGrid>,
+    #[serde(rename = "@linePitch")]
+    #[serde(default)]
+    pub line_pitch: Option<STDecimalNumber>,
+    #[serde(rename = "@charSpace")]
+    #[serde(default)]
+    pub char_space: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHdrFtrRef {
+    #[serde(rename = "@type")]
+    pub r#type: STHdrFtr,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTHdrFtr;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGSectPrContents {
+    #[serde(rename = "footnotePr")]
+    #[serde(default)]
+    pub footnote_pr: Option<Box<CTFtnProps>>,
+    #[serde(rename = "endnotePr")]
+    #[serde(default)]
+    pub endnote_pr: Option<Box<CTEdnProps>>,
+    #[serde(rename = "type")]
+    #[serde(default)]
+    pub r#type: Option<Box<CTSectType>>,
+    #[serde(rename = "pgSz")]
+    #[serde(default)]
+    pub pg_sz: Option<Box<CTPageSz>>,
+    #[serde(rename = "pgMar")]
+    #[serde(default)]
+    pub pg_mar: Option<Box<CTPageMar>>,
+    #[serde(rename = "paperSrc")]
+    #[serde(default)]
+    pub paper_src: Option<Box<CTPaperSource>>,
+    #[serde(rename = "pgBorders")]
+    #[serde(default)]
+    pub pg_borders: Option<Box<CTPageBorders>>,
+    #[serde(rename = "lnNumType")]
+    #[serde(default)]
+    pub ln_num_type: Option<Box<CTLineNumber>>,
+    #[serde(rename = "pgNumType")]
+    #[serde(default)]
+    pub pg_num_type: Option<Box<CTPageNumber>>,
+    #[serde(rename = "cols")]
+    #[serde(default)]
+    pub cols: Option<Box<CTColumns>>,
+    #[serde(rename = "formProt")]
+    #[serde(default)]
+    pub form_prot: Option<Box<CTOnOff>>,
+    #[serde(rename = "vAlign")]
+    #[serde(default)]
+    pub v_align: Option<Box<CTVerticalJc>>,
+    #[serde(rename = "noEndnote")]
+    #[serde(default)]
+    pub no_endnote: Option<Box<CTOnOff>>,
+    #[serde(rename = "titlePg")]
+    #[serde(default)]
+    pub title_pg: Option<Box<CTOnOff>>,
+    #[serde(rename = "textDirection")]
+    #[serde(default)]
+    pub text_direction: Option<Box<CTTextDirection>>,
+    #[serde(rename = "bidi")]
+    #[serde(default)]
+    pub bidi: Option<Box<CTOnOff>>,
+    #[serde(rename = "rtlGutter")]
+    #[serde(default)]
+    pub rtl_gutter: Option<Box<CTOnOff>>,
+    #[serde(rename = "docGrid")]
+    #[serde(default)]
+    pub doc_grid: Option<Box<CTDocGrid>>,
+    #[serde(rename = "printerSettings")]
+    #[serde(default)]
+    pub printer_settings: Option<Box<CTRel>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AGSectPrAttributes {
+    #[serde(rename = "@rsidRPr")]
+    #[serde(default)]
+    pub rsid_r_pr: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidDel")]
+    #[serde(default)]
+    pub rsid_del: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidR")]
+    #[serde(default)]
+    pub rsid_r: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidSect")]
+    #[serde(default)]
+    pub rsid_sect: Option<STLongHexNumber>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSectPrBase;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSectPr {
+    #[serde(rename = "sectPrChange")]
+    #[serde(default)]
+    pub sect_pr_change: Option<Box<CTSectPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBr {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STBrType>,
+    #[serde(rename = "@clear")]
+    #[serde(default)]
+    pub clear: Option<STBrClear>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPTab {
+    #[serde(rename = "@alignment")]
+    pub alignment: STPTabAlignment,
+    #[serde(rename = "@relativeTo")]
+    pub relative_to: STPTabRelativeTo,
+    #[serde(rename = "@leader")]
+    pub leader: STPTabLeader,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSym {
+    #[serde(rename = "@font")]
+    #[serde(default)]
+    pub font: Option<SSTString>,
+    #[serde(rename = "@char")]
+    #[serde(default)]
+    pub char: Option<STShortHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTProofErr {
+    #[serde(rename = "@type")]
+    pub r#type: STProofErr,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPerm {
+    #[serde(rename = "@id")]
+    pub id: SSTString,
+    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(default)]
+    pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPermStart {
+    #[serde(rename = "@edGrp")]
+    #[serde(default)]
+    pub ed_grp: Option<STEdGrp>,
+    #[serde(rename = "@ed")]
+    #[serde(default)]
+    pub ed: Option<SSTString>,
+    #[serde(rename = "@colFirst")]
+    #[serde(default)]
+    pub col_first: Option<STDecimalNumber>,
+    #[serde(rename = "@colLast")]
+    #[serde(default)]
+    pub col_last: Option<STDecimalNumber>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTText;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTR {
+    #[serde(rename = "@rsidRPr")]
+    #[serde(default)]
+    pub rsid_r_pr: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidDel")]
+    #[serde(default)]
+    pub rsid_del: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidR")]
+    #[serde(default)]
+    pub rsid_r: Option<STLongHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFonts {
+    #[serde(rename = "@hint")]
+    #[serde(default)]
+    pub hint: Option<STHint>,
+    #[serde(rename = "@ascii")]
+    #[serde(default)]
+    pub ascii: Option<SSTString>,
+    #[serde(rename = "@hAnsi")]
+    #[serde(default)]
+    pub h_ansi: Option<SSTString>,
+    #[serde(rename = "@eastAsia")]
+    #[serde(default)]
+    pub east_asia: Option<SSTString>,
+    #[serde(rename = "@cs")]
+    #[serde(default)]
+    pub cs: Option<SSTString>,
+    #[serde(rename = "@asciiTheme")]
+    #[serde(default)]
+    pub ascii_theme: Option<STTheme>,
+    #[serde(rename = "@hAnsiTheme")]
+    #[serde(default)]
+    pub h_ansi_theme: Option<STTheme>,
+    #[serde(rename = "@eastAsiaTheme")]
+    #[serde(default)]
+    pub east_asia_theme: Option<STTheme>,
+    #[serde(rename = "@cstheme")]
+    #[serde(default)]
+    pub cstheme: Option<STTheme>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGRPrBase {
+    #[serde(rename = "rStyle")]
+    #[serde(default)]
+    pub r_style: Option<Box<CTString>>,
+    #[serde(rename = "rFonts")]
+    #[serde(default)]
+    pub r_fonts: Option<Box<CTFonts>>,
+    #[serde(rename = "b")]
+    #[serde(default)]
+    pub b: Option<Box<CTOnOff>>,
+    #[serde(rename = "bCs")]
+    #[serde(default)]
+    pub b_cs: Option<Box<CTOnOff>>,
+    #[serde(rename = "i")]
+    #[serde(default)]
+    pub i: Option<Box<CTOnOff>>,
+    #[serde(rename = "iCs")]
+    #[serde(default)]
+    pub i_cs: Option<Box<CTOnOff>>,
+    #[serde(rename = "caps")]
+    #[serde(default)]
+    pub caps: Option<Box<CTOnOff>>,
+    #[serde(rename = "smallCaps")]
+    #[serde(default)]
+    pub small_caps: Option<Box<CTOnOff>>,
+    #[serde(rename = "strike")]
+    #[serde(default)]
+    pub strike: Option<Box<CTOnOff>>,
+    #[serde(rename = "dstrike")]
+    #[serde(default)]
+    pub dstrike: Option<Box<CTOnOff>>,
+    #[serde(rename = "outline")]
+    #[serde(default)]
+    pub outline: Option<Box<CTOnOff>>,
+    #[serde(rename = "shadow")]
+    #[serde(default)]
+    pub shadow: Option<Box<CTOnOff>>,
+    #[serde(rename = "emboss")]
+    #[serde(default)]
+    pub emboss: Option<Box<CTOnOff>>,
+    #[serde(rename = "imprint")]
+    #[serde(default)]
+    pub imprint: Option<Box<CTOnOff>>,
+    #[serde(rename = "noProof")]
+    #[serde(default)]
+    pub no_proof: Option<Box<CTOnOff>>,
+    #[serde(rename = "snapToGrid")]
+    #[serde(default)]
+    pub snap_to_grid: Option<Box<CTOnOff>>,
+    #[serde(rename = "vanish")]
+    #[serde(default)]
+    pub vanish: Option<Box<CTOnOff>>,
+    #[serde(rename = "webHidden")]
+    #[serde(default)]
+    pub web_hidden: Option<Box<CTOnOff>>,
+    #[serde(rename = "color")]
+    #[serde(default)]
+    pub color: Option<Box<CTColor>>,
+    #[serde(rename = "spacing")]
+    #[serde(default)]
+    pub spacing: Option<Box<CTSignedTwipsMeasure>>,
+    #[serde(rename = "w")]
+    #[serde(default)]
+    pub w: Option<Box<CTTextScale>>,
+    #[serde(rename = "kern")]
+    #[serde(default)]
+    pub kern: Option<Box<CTHpsMeasure>>,
+    #[serde(rename = "position")]
+    #[serde(default)]
+    pub position: Option<Box<CTSignedHpsMeasure>>,
+    #[serde(rename = "sz")]
+    #[serde(default)]
+    pub sz: Option<Box<CTHpsMeasure>>,
+    #[serde(rename = "szCs")]
+    #[serde(default)]
+    pub sz_cs: Option<Box<CTHpsMeasure>>,
+    #[serde(rename = "highlight")]
+    #[serde(default)]
+    pub highlight: Option<Box<CTHighlight>>,
+    #[serde(rename = "u")]
+    #[serde(default)]
+    pub u: Option<Box<CTUnderline>>,
+    #[serde(rename = "effect")]
+    #[serde(default)]
+    pub effect: Option<Box<CTTextEffect>>,
+    #[serde(rename = "bdr")]
+    #[serde(default)]
+    pub bdr: Option<Box<CTBorder>>,
+    #[serde(rename = "shd")]
+    #[serde(default)]
+    pub shd: Option<Box<CTShd>>,
+    #[serde(rename = "fitText")]
+    #[serde(default)]
+    pub fit_text: Option<Box<CTFitText>>,
+    #[serde(rename = "vertAlign")]
+    #[serde(default)]
+    pub vert_align: Option<Box<CTVerticalAlignRun>>,
+    #[serde(rename = "rtl")]
+    #[serde(default)]
+    pub rtl: Option<Box<CTOnOff>>,
+    #[serde(rename = "cs")]
+    #[serde(default)]
+    pub cs: Option<Box<CTOnOff>>,
+    #[serde(rename = "em")]
+    #[serde(default)]
+    pub em: Option<Box<CTEm>>,
+    #[serde(rename = "lang")]
+    #[serde(default)]
+    pub lang: Option<Box<CTLanguage>>,
+    #[serde(rename = "eastAsianLayout")]
+    #[serde(default)]
+    pub east_asian_layout: Option<Box<CTEastAsianLayout>>,
+    #[serde(rename = "specVanish")]
+    #[serde(default)]
+    pub spec_vanish: Option<Box<CTOnOff>>,
+    #[serde(rename = "oMath")]
+    #[serde(default)]
+    pub o_math: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGRPrContent {
+    #[serde(rename = "rPrChange")]
+    #[serde(default)]
+    pub r_pr_change: Option<Box<CTRPrChange>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTRPr;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGRPr {
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTMathCtrlIns;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMathCtrlDel {
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTRPrOriginal;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTParaRPrOriginal;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTParaRPr {
+    #[serde(rename = "rPrChange")]
+    #[serde(default)]
+    pub r_pr_change: Option<Box<CTParaRPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGParaRPrTrackChanges {
+    #[serde(rename = "ins")]
+    #[serde(default)]
+    pub ins: Option<Box<CTTrackChange>>,
+    #[serde(rename = "del")]
+    #[serde(default)]
+    pub del: Option<Box<CTTrackChange>>,
+    #[serde(rename = "moveFrom")]
+    #[serde(default)]
+    pub move_from: Option<Box<CTTrackChange>>,
+    #[serde(rename = "moveTo")]
+    #[serde(default)]
+    pub move_to: Option<Box<CTTrackChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAltChunk {
+    #[serde(rename = "altChunkPr")]
+    #[serde(default)]
+    pub alt_chunk_pr: Option<Box<CTAltChunkPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAltChunkPr {
+    #[serde(rename = "matchSrc")]
+    #[serde(default)]
+    pub match_src: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRubyAlign {
+    #[serde(rename = "@val")]
+    pub val: STRubyAlign,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRubyPr {
+    #[serde(rename = "rubyAlign")]
+    pub ruby_align: Box<CTRubyAlign>,
+    #[serde(rename = "hps")]
+    pub hps: Box<CTHpsMeasure>,
+    #[serde(rename = "hpsRaise")]
+    pub hps_raise: Box<CTHpsMeasure>,
+    #[serde(rename = "hpsBaseText")]
+    pub hps_base_text: Box<CTHpsMeasure>,
+    #[serde(rename = "lid")]
+    pub lid: Box<CTLang>,
+    #[serde(rename = "dirty")]
+    #[serde(default)]
+    pub dirty: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTRubyContent;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRuby {
+    #[serde(rename = "rubyPr")]
+    pub ruby_pr: Box<CTRubyPr>,
+    #[serde(rename = "rt")]
+    pub rt: Box<CTRubyContent>,
+    #[serde(rename = "rubyBase")]
+    pub ruby_base: Box<CTRubyContent>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLock {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STLock>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtListItem {
+    #[serde(rename = "@displayText")]
+    #[serde(default)]
+    pub display_text: Option<SSTString>,
+    #[serde(rename = "@value")]
+    #[serde(default)]
+    pub value: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtDateMappingType {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STSdtDateMappingType>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCalendarType {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTCalendarType>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtDate {
+    #[serde(rename = "@fullDate")]
+    #[serde(default)]
+    pub full_date: Option<STDateTime>,
+    #[serde(rename = "dateFormat")]
+    #[serde(default)]
+    pub date_format: Option<Box<CTString>>,
+    #[serde(rename = "lid")]
+    #[serde(default)]
+    pub lid: Option<Box<CTLang>>,
+    #[serde(rename = "storeMappedDataAs")]
+    #[serde(default)]
+    pub store_mapped_data_as: Option<Box<CTSdtDateMappingType>>,
+    #[serde(rename = "calendar")]
+    #[serde(default)]
+    pub calendar: Option<Box<CTCalendarType>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtComboBox {
+    #[serde(rename = "@lastValue")]
+    #[serde(default)]
+    pub last_value: Option<SSTString>,
+    #[serde(rename = "listItem")]
+    #[serde(default)]
+    pub list_item: Vec<Box<CTSdtListItem>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtDocPart {
+    #[serde(rename = "docPartGallery")]
+    #[serde(default)]
+    pub doc_part_gallery: Option<Box<CTString>>,
+    #[serde(rename = "docPartCategory")]
+    #[serde(default)]
+    pub doc_part_category: Option<Box<CTString>>,
+    #[serde(rename = "docPartUnique")]
+    #[serde(default)]
+    pub doc_part_unique: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtDropDownList {
+    #[serde(rename = "@lastValue")]
+    #[serde(default)]
+    pub last_value: Option<SSTString>,
+    #[serde(rename = "listItem")]
+    #[serde(default)]
+    pub list_item: Vec<Box<CTSdtListItem>>,
+}
+
+pub type CTPlaceholder = Box<CTString>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtText {
+    #[serde(rename = "@multiLine")]
+    #[serde(default)]
+    pub multi_line: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDataBinding {
+    #[serde(rename = "@prefixMappings")]
+    #[serde(default)]
+    pub prefix_mappings: Option<SSTString>,
+    #[serde(rename = "@xpath")]
+    pub xpath: SSTString,
+    #[serde(rename = "@storeItemID")]
+    pub store_item_i_d: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtPr {
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+    #[serde(rename = "alias")]
+    #[serde(default)]
+    pub alias: Option<Box<CTString>>,
+    #[serde(rename = "tag")]
+    #[serde(default)]
+    pub tag: Option<Box<CTString>>,
+    #[serde(rename = "id")]
+    #[serde(default)]
+    pub id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "lock")]
+    #[serde(default)]
+    pub lock: Option<Box<CTLock>>,
+    #[serde(rename = "placeholder")]
+    #[serde(default)]
+    pub placeholder: Option<Box<CTPlaceholder>>,
+    #[serde(rename = "temporary")]
+    #[serde(default)]
+    pub temporary: Option<Box<CTOnOff>>,
+    #[serde(rename = "showingPlcHdr")]
+    #[serde(default)]
+    pub showing_plc_hdr: Option<Box<CTOnOff>>,
+    #[serde(rename = "dataBinding")]
+    #[serde(default)]
+    pub data_binding: Option<Box<CTDataBinding>>,
+    #[serde(rename = "label")]
+    #[serde(default)]
+    pub label: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "tabIndex")]
+    #[serde(default)]
+    pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSdtEndPr;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDirContentRun {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STDirection>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBdoContentRun {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STDirection>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSdtContentRun;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSdtContentBlock;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSdtContentRow;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTSdtContentCell;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtBlock {
+    #[serde(rename = "sdtPr")]
+    #[serde(default)]
+    pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[serde(rename = "sdtEndPr")]
+    #[serde(default)]
+    pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
+    #[serde(rename = "sdtContent")]
+    #[serde(default)]
+    pub sdt_content: Option<Box<CTSdtContentBlock>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtRun {
+    #[serde(rename = "sdtPr")]
+    #[serde(default)]
+    pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[serde(rename = "sdtEndPr")]
+    #[serde(default)]
+    pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
+    #[serde(rename = "sdtContent")]
+    #[serde(default)]
+    pub sdt_content: Option<Box<CTSdtContentRun>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtCell {
+    #[serde(rename = "sdtPr")]
+    #[serde(default)]
+    pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[serde(rename = "sdtEndPr")]
+    #[serde(default)]
+    pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
+    #[serde(rename = "sdtContent")]
+    #[serde(default)]
+    pub sdt_content: Option<Box<CTSdtContentCell>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSdtRow {
+    #[serde(rename = "sdtPr")]
+    #[serde(default)]
+    pub sdt_pr: Option<Box<CTSdtPr>>,
+    #[serde(rename = "sdtEndPr")]
+    #[serde(default)]
+    pub sdt_end_pr: Option<Box<CTSdtEndPr>>,
+    #[serde(rename = "sdtContent")]
+    #[serde(default)]
+    pub sdt_content: Option<Box<CTSdtContentRow>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAttr {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "@val")]
+    pub val: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCustomXmlRun {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@element")]
+    pub element: SSTXmlName,
+    #[serde(rename = "customXmlPr")]
+    #[serde(default)]
+    pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSmartTagRun {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@element")]
+    pub element: SSTXmlName,
+    #[serde(rename = "smartTagPr")]
+    #[serde(default)]
+    pub smart_tag_pr: Option<Box<CTSmartTagPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCustomXmlBlock {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@element")]
+    pub element: SSTXmlName,
+    #[serde(rename = "customXmlPr")]
+    #[serde(default)]
+    pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCustomXmlPr {
+    #[serde(rename = "placeholder")]
+    #[serde(default)]
+    pub placeholder: Option<Box<CTString>>,
+    #[serde(rename = "attr")]
+    #[serde(default)]
+    pub attr: Vec<Box<CTAttr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCustomXmlRow {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@element")]
+    pub element: SSTXmlName,
+    #[serde(rename = "customXmlPr")]
+    #[serde(default)]
+    pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCustomXmlCell {
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@element")]
+    pub element: SSTXmlName,
+    #[serde(rename = "customXmlPr")]
+    #[serde(default)]
+    pub custom_xml_pr: Option<Box<CTCustomXmlPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSmartTagPr {
+    #[serde(rename = "attr")]
+    #[serde(default)]
+    pub attr: Vec<Box<CTAttr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTP {
+    #[serde(rename = "@rsidRPr")]
+    #[serde(default)]
+    pub rsid_r_pr: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidR")]
+    #[serde(default)]
+    pub rsid_r: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidDel")]
+    #[serde(default)]
+    pub rsid_del: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidP")]
+    #[serde(default)]
+    pub rsid_p: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidRDefault")]
+    #[serde(default)]
+    pub rsid_r_default: Option<STLongHexNumber>,
+    #[serde(rename = "pPr")]
+    #[serde(default)]
+    pub p_pr: Option<Box<CTPPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHeight {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@hRule")]
+    #[serde(default)]
+    pub h_rule: Option<STHeightRule>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblWidth {
+    #[serde(rename = "@w")]
+    #[serde(default)]
+    pub w: Option<STMeasurementOrPercent>,
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STTblWidth>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblGridCol {
+    #[serde(rename = "@w")]
+    #[serde(default)]
+    pub w: Option<SSTTwipsMeasure>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblGridBase {
+    #[serde(rename = "gridCol")]
+    #[serde(default)]
+    pub grid_col: Vec<Box<CTTblGridCol>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblGrid {
+    #[serde(rename = "tblGridChange")]
+    #[serde(default)]
+    pub tbl_grid_change: Option<Box<CTTblGridChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTcBorders {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTBorder>>,
+    #[serde(rename = "start")]
+    #[serde(default)]
+    pub start: Option<Box<CTBorder>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTBorder>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTBorder>>,
+    #[serde(rename = "end")]
+    #[serde(default)]
+    pub end: Option<Box<CTBorder>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTBorder>>,
+    #[serde(rename = "insideH")]
+    #[serde(default)]
+    pub inside_h: Option<Box<CTBorder>>,
+    #[serde(rename = "insideV")]
+    #[serde(default)]
+    pub inside_v: Option<Box<CTBorder>>,
+    #[serde(rename = "tl2br")]
+    #[serde(default)]
+    pub tl2br: Option<Box<CTBorder>>,
+    #[serde(rename = "tr2bl")]
+    #[serde(default)]
+    pub tr2bl: Option<Box<CTBorder>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTcMar {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTTblWidth>>,
+    #[serde(rename = "start")]
+    #[serde(default)]
+    pub start: Option<Box<CTTblWidth>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTTblWidth>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTTblWidth>>,
+    #[serde(rename = "end")]
+    #[serde(default)]
+    pub end: Option<Box<CTTblWidth>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTTblWidth>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTVMerge {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STMerge>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHMerge {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STMerge>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTcPrBase {
+    #[serde(rename = "cnfStyle")]
+    #[serde(default)]
+    pub cnf_style: Option<Box<CTCnf>>,
+    #[serde(rename = "tcW")]
+    #[serde(default)]
+    pub tc_w: Option<Box<CTTblWidth>>,
+    #[serde(rename = "gridSpan")]
+    #[serde(default)]
+    pub grid_span: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "hMerge")]
+    #[serde(default)]
+    pub h_merge: Option<Box<CTHMerge>>,
+    #[serde(rename = "vMerge")]
+    #[serde(default)]
+    pub v_merge: Option<Box<CTVMerge>>,
+    #[serde(rename = "tcBorders")]
+    #[serde(default)]
+    pub tc_borders: Option<Box<CTTcBorders>>,
+    #[serde(rename = "shd")]
+    #[serde(default)]
+    pub shd: Option<Box<CTShd>>,
+    #[serde(rename = "noWrap")]
+    #[serde(default)]
+    pub no_wrap: Option<Box<CTOnOff>>,
+    #[serde(rename = "tcMar")]
+    #[serde(default)]
+    pub tc_mar: Option<Box<CTTcMar>>,
+    #[serde(rename = "textDirection")]
+    #[serde(default)]
+    pub text_direction: Option<Box<CTTextDirection>>,
+    #[serde(rename = "tcFitText")]
+    #[serde(default)]
+    pub tc_fit_text: Option<Box<CTOnOff>>,
+    #[serde(rename = "vAlign")]
+    #[serde(default)]
+    pub v_align: Option<Box<CTVerticalJc>>,
+    #[serde(rename = "hideMark")]
+    #[serde(default)]
+    pub hide_mark: Option<Box<CTOnOff>>,
+    #[serde(rename = "headers")]
+    #[serde(default)]
+    pub headers: Option<Box<CTHeaders>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTcPr {
+    #[serde(rename = "tcPrChange")]
+    #[serde(default)]
+    pub tc_pr_change: Option<Box<CTTcPrChange>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTTcPrInner;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTc {
+    #[serde(rename = "@id")]
+    #[serde(default)]
+    pub id: Option<SSTString>,
+    #[serde(rename = "tcPr")]
+    #[serde(default)]
+    pub tc_pr: Option<Box<CTTcPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCnf {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STCnf>,
+    #[serde(rename = "@firstRow")]
+    #[serde(default)]
+    pub first_row: Option<SSTOnOff>,
+    #[serde(rename = "@lastRow")]
+    #[serde(default)]
+    pub last_row: Option<SSTOnOff>,
+    #[serde(rename = "@firstColumn")]
+    #[serde(default)]
+    pub first_column: Option<SSTOnOff>,
+    #[serde(rename = "@lastColumn")]
+    #[serde(default)]
+    pub last_column: Option<SSTOnOff>,
+    #[serde(rename = "@oddVBand")]
+    #[serde(default)]
+    pub odd_v_band: Option<SSTOnOff>,
+    #[serde(rename = "@evenVBand")]
+    #[serde(default)]
+    pub even_v_band: Option<SSTOnOff>,
+    #[serde(rename = "@oddHBand")]
+    #[serde(default)]
+    pub odd_h_band: Option<SSTOnOff>,
+    #[serde(rename = "@evenHBand")]
+    #[serde(default)]
+    pub even_h_band: Option<SSTOnOff>,
+    #[serde(rename = "@firstRowFirstColumn")]
+    #[serde(default)]
+    pub first_row_first_column: Option<SSTOnOff>,
+    #[serde(rename = "@firstRowLastColumn")]
+    #[serde(default)]
+    pub first_row_last_column: Option<SSTOnOff>,
+    #[serde(rename = "@lastRowFirstColumn")]
+    #[serde(default)]
+    pub last_row_first_column: Option<SSTOnOff>,
+    #[serde(rename = "@lastRowLastColumn")]
+    #[serde(default)]
+    pub last_row_last_column: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTHeaders {
+    #[serde(rename = "header")]
+    #[serde(default)]
+    pub header: Vec<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTTrPrBase;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTrPr {
+    #[serde(rename = "ins")]
+    #[serde(default)]
+    pub ins: Option<Box<CTTrackChange>>,
+    #[serde(rename = "del")]
+    #[serde(default)]
+    pub del: Option<Box<CTTrackChange>>,
+    #[serde(rename = "trPrChange")]
+    #[serde(default)]
+    pub tr_pr_change: Option<Box<CTTrPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRow {
+    #[serde(rename = "@rsidRPr")]
+    #[serde(default)]
+    pub rsid_r_pr: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidR")]
+    #[serde(default)]
+    pub rsid_r: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidDel")]
+    #[serde(default)]
+    pub rsid_del: Option<STLongHexNumber>,
+    #[serde(rename = "@rsidTr")]
+    #[serde(default)]
+    pub rsid_tr: Option<STLongHexNumber>,
+    #[serde(rename = "tblPrEx")]
+    #[serde(default)]
+    pub tbl_pr_ex: Option<Box<CTTblPrEx>>,
+    #[serde(rename = "trPr")]
+    #[serde(default)]
+    pub tr_pr: Option<Box<CTTrPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblLayoutType {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STTblLayoutType>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblOverlap {
+    #[serde(rename = "@val")]
+    pub val: STTblOverlap,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPPr {
+    #[serde(rename = "@leftFromText")]
+    #[serde(default)]
+    pub left_from_text: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@rightFromText")]
+    #[serde(default)]
+    pub right_from_text: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@topFromText")]
+    #[serde(default)]
+    pub top_from_text: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@bottomFromText")]
+    #[serde(default)]
+    pub bottom_from_text: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@vertAnchor")]
+    #[serde(default)]
+    pub vert_anchor: Option<STVAnchor>,
+    #[serde(rename = "@horzAnchor")]
+    #[serde(default)]
+    pub horz_anchor: Option<STHAnchor>,
+    #[serde(rename = "@tblpXSpec")]
+    #[serde(default)]
+    pub tblp_x_spec: Option<SSTXAlign>,
+    #[serde(rename = "@tblpX")]
+    #[serde(default)]
+    pub tblp_x: Option<STSignedTwipsMeasure>,
+    #[serde(rename = "@tblpYSpec")]
+    #[serde(default)]
+    pub tblp_y_spec: Option<SSTYAlign>,
+    #[serde(rename = "@tblpY")]
+    #[serde(default)]
+    pub tblp_y: Option<STSignedTwipsMeasure>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblCellMar {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTTblWidth>>,
+    #[serde(rename = "start")]
+    #[serde(default)]
+    pub start: Option<Box<CTTblWidth>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTTblWidth>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTTblWidth>>,
+    #[serde(rename = "end")]
+    #[serde(default)]
+    pub end: Option<Box<CTTblWidth>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTTblWidth>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblBorders {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTBorder>>,
+    #[serde(rename = "start")]
+    #[serde(default)]
+    pub start: Option<Box<CTBorder>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTBorder>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTBorder>>,
+    #[serde(rename = "end")]
+    #[serde(default)]
+    pub end: Option<Box<CTBorder>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTBorder>>,
+    #[serde(rename = "insideH")]
+    #[serde(default)]
+    pub inside_h: Option<Box<CTBorder>>,
+    #[serde(rename = "insideV")]
+    #[serde(default)]
+    pub inside_v: Option<Box<CTBorder>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPrBase {
+    #[serde(rename = "tblStyle")]
+    #[serde(default)]
+    pub tbl_style: Option<Box<CTString>>,
+    #[serde(rename = "tblpPr")]
+    #[serde(default)]
+    pub tblp_pr: Option<Box<CTTblPPr>>,
+    #[serde(rename = "tblOverlap")]
+    #[serde(default)]
+    pub tbl_overlap: Option<Box<CTTblOverlap>>,
+    #[serde(rename = "bidiVisual")]
+    #[serde(default)]
+    pub bidi_visual: Option<Box<CTOnOff>>,
+    #[serde(rename = "tblStyleRowBandSize")]
+    #[serde(default)]
+    pub tbl_style_row_band_size: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "tblStyleColBandSize")]
+    #[serde(default)]
+    pub tbl_style_col_band_size: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "tblW")]
+    #[serde(default)]
+    pub tbl_w: Option<Box<CTTblWidth>>,
+    #[serde(rename = "jc")]
+    #[serde(default)]
+    pub jc: Option<Box<CTJcTable>>,
+    #[serde(rename = "tblCellSpacing")]
+    #[serde(default)]
+    pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[serde(rename = "tblInd")]
+    #[serde(default)]
+    pub tbl_ind: Option<Box<CTTblWidth>>,
+    #[serde(rename = "tblBorders")]
+    #[serde(default)]
+    pub tbl_borders: Option<Box<CTTblBorders>>,
+    #[serde(rename = "shd")]
+    #[serde(default)]
+    pub shd: Option<Box<CTShd>>,
+    #[serde(rename = "tblLayout")]
+    #[serde(default)]
+    pub tbl_layout: Option<Box<CTTblLayoutType>>,
+    #[serde(rename = "tblCellMar")]
+    #[serde(default)]
+    pub tbl_cell_mar: Option<Box<CTTblCellMar>>,
+    #[serde(rename = "tblLook")]
+    #[serde(default)]
+    pub tbl_look: Option<Box<CTTblLook>>,
+    #[serde(rename = "tblCaption")]
+    #[serde(default)]
+    pub tbl_caption: Option<Box<CTString>>,
+    #[serde(rename = "tblDescription")]
+    #[serde(default)]
+    pub tbl_description: Option<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPr {
+    #[serde(rename = "tblPrChange")]
+    #[serde(default)]
+    pub tbl_pr_change: Option<Box<CTTblPrChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPrExBase {
+    #[serde(rename = "tblW")]
+    #[serde(default)]
+    pub tbl_w: Option<Box<CTTblWidth>>,
+    #[serde(rename = "jc")]
+    #[serde(default)]
+    pub jc: Option<Box<CTJcTable>>,
+    #[serde(rename = "tblCellSpacing")]
+    #[serde(default)]
+    pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[serde(rename = "tblInd")]
+    #[serde(default)]
+    pub tbl_ind: Option<Box<CTTblWidth>>,
+    #[serde(rename = "tblBorders")]
+    #[serde(default)]
+    pub tbl_borders: Option<Box<CTTblBorders>>,
+    #[serde(rename = "shd")]
+    #[serde(default)]
+    pub shd: Option<Box<CTShd>>,
+    #[serde(rename = "tblLayout")]
+    #[serde(default)]
+    pub tbl_layout: Option<Box<CTTblLayoutType>>,
+    #[serde(rename = "tblCellMar")]
+    #[serde(default)]
+    pub tbl_cell_mar: Option<Box<CTTblCellMar>>,
+    #[serde(rename = "tblLook")]
+    #[serde(default)]
+    pub tbl_look: Option<Box<CTTblLook>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblPrEx {
+    #[serde(rename = "tblPrExChange")]
+    #[serde(default)]
+    pub tbl_pr_ex_change: Option<Box<CTTblPrExChange>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTbl {
+    #[serde(rename = "tblPr")]
+    pub tbl_pr: Box<CTTblPr>,
+    #[serde(rename = "tblGrid")]
+    pub tbl_grid: Box<CTTblGrid>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblLook {
+    #[serde(rename = "@firstRow")]
+    #[serde(default)]
+    pub first_row: Option<SSTOnOff>,
+    #[serde(rename = "@lastRow")]
+    #[serde(default)]
+    pub last_row: Option<SSTOnOff>,
+    #[serde(rename = "@firstColumn")]
+    #[serde(default)]
+    pub first_column: Option<SSTOnOff>,
+    #[serde(rename = "@lastColumn")]
+    #[serde(default)]
+    pub last_column: Option<SSTOnOff>,
+    #[serde(rename = "@noHBand")]
+    #[serde(default)]
+    pub no_h_band: Option<SSTOnOff>,
+    #[serde(rename = "@noVBand")]
+    #[serde(default)]
+    pub no_v_band: Option<SSTOnOff>,
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STShortHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnPos {
+    #[serde(rename = "@val")]
+    pub val: STFtnPos,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEdnPos {
+    #[serde(rename = "@val")]
+    pub val: STEdnPos,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumFmt {
+    #[serde(rename = "@val")]
+    pub val: STNumberFormat,
+    #[serde(rename = "@format")]
+    #[serde(default)]
+    pub format: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumRestart {
+    #[serde(rename = "@val")]
+    pub val: STRestartNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnEdnRef {
+    #[serde(rename = "@customMarkFollows")]
+    #[serde(default)]
+    pub custom_mark_follows: Option<SSTOnOff>,
+    #[serde(rename = "@id")]
+    pub id: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnEdnSepRef {
+    #[serde(rename = "@id")]
+    pub id: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnEdn {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STFtnEdn>,
+    #[serde(rename = "@id")]
+    pub id: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EGFtnEdnNumProps {
+    #[serde(rename = "numStart")]
+    #[serde(default)]
+    pub num_start: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "numRestart")]
+    #[serde(default)]
+    pub num_restart: Option<Box<CTNumRestart>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnProps {
+    #[serde(rename = "pos")]
+    #[serde(default)]
+    pub pos: Option<Box<CTFtnPos>>,
+    #[serde(rename = "numFmt")]
+    #[serde(default)]
+    pub num_fmt: Option<Box<CTNumFmt>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEdnProps {
+    #[serde(rename = "pos")]
+    #[serde(default)]
+    pub pos: Option<Box<CTEdnPos>>,
+    #[serde(rename = "numFmt")]
+    #[serde(default)]
+    pub num_fmt: Option<Box<CTNumFmt>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFtnDocProps {
+    #[serde(rename = "footnote")]
+    #[serde(default)]
+    pub footnote: Vec<Box<CTFtnEdnSepRef>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEdnDocProps {
+    #[serde(rename = "endnote")]
+    #[serde(default)]
+    pub endnote: Vec<Box<CTFtnEdnSepRef>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRecipientData {
+    #[serde(rename = "active")]
+    #[serde(default)]
+    pub active: Option<Box<CTOnOff>>,
+    #[serde(rename = "column")]
+    pub column: Box<CTDecimalNumber>,
+    #[serde(rename = "uniqueTag")]
+    pub unique_tag: Box<CTBase64Binary>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBase64Binary {
+    #[serde(rename = "@val")]
+    pub val: Vec<u8>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRecipients {
+    #[serde(rename = "recipientData")]
+    #[serde(default)]
+    pub recipient_data: Vec<Box<CTRecipientData>>,
+}
+
+pub type Recipients = Box<CTRecipients>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTOdsoFieldMapData {
+    #[serde(rename = "type")]
+    #[serde(default)]
+    pub r#type: Option<Box<CTMailMergeOdsoFMDFieldType>>,
+    #[serde(rename = "name")]
+    #[serde(default)]
+    pub name: Option<Box<CTString>>,
+    #[serde(rename = "mappedName")]
+    #[serde(default)]
+    pub mapped_name: Option<Box<CTString>>,
+    #[serde(rename = "column")]
+    #[serde(default)]
+    pub column: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "lid")]
+    #[serde(default)]
+    pub lid: Option<Box<CTLang>>,
+    #[serde(rename = "dynamicAddress")]
+    #[serde(default)]
+    pub dynamic_address: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMergeSourceType {
+    #[serde(rename = "@val")]
+    pub val: STMailMergeSourceType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTOdso {
+    #[serde(rename = "udl")]
+    #[serde(default)]
+    pub udl: Option<Box<CTString>>,
+    #[serde(rename = "table")]
+    #[serde(default)]
+    pub table: Option<Box<CTString>>,
+    #[serde(rename = "src")]
+    #[serde(default)]
+    pub src: Option<Box<CTRel>>,
+    #[serde(rename = "colDelim")]
+    #[serde(default)]
+    pub col_delim: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "type")]
+    #[serde(default)]
+    pub r#type: Option<Box<CTMailMergeSourceType>>,
+    #[serde(rename = "fHdr")]
+    #[serde(default)]
+    pub f_hdr: Option<Box<CTOnOff>>,
+    #[serde(rename = "fieldMapData")]
+    #[serde(default)]
+    pub field_map_data: Vec<Box<CTOdsoFieldMapData>>,
+    #[serde(rename = "recipientData")]
+    #[serde(default)]
+    pub recipient_data: Vec<Box<CTRel>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMailMerge {
+    #[serde(rename = "mainDocumentType")]
+    pub main_document_type: Box<CTMailMergeDocType>,
+    #[serde(rename = "linkToQuery")]
+    #[serde(default)]
+    pub link_to_query: Option<Box<CTOnOff>>,
+    #[serde(rename = "dataType")]
+    pub data_type: Box<CTMailMergeDataType>,
+    #[serde(rename = "connectString")]
+    #[serde(default)]
+    pub connect_string: Option<Box<CTString>>,
+    #[serde(rename = "query")]
+    #[serde(default)]
+    pub query: Option<Box<CTString>>,
+    #[serde(rename = "dataSource")]
+    #[serde(default)]
+    pub data_source: Option<Box<CTRel>>,
+    #[serde(rename = "headerSource")]
+    #[serde(default)]
+    pub header_source: Option<Box<CTRel>>,
+    #[serde(rename = "doNotSuppressBlankLines")]
+    #[serde(default)]
+    pub do_not_suppress_blank_lines: Option<Box<CTOnOff>>,
+    #[serde(rename = "destination")]
+    #[serde(default)]
+    pub destination: Option<Box<CTMailMergeDest>>,
+    #[serde(rename = "addressFieldName")]
+    #[serde(default)]
+    pub address_field_name: Option<Box<CTString>>,
+    #[serde(rename = "mailSubject")]
+    #[serde(default)]
+    pub mail_subject: Option<Box<CTString>>,
+    #[serde(rename = "mailAsAttachment")]
+    #[serde(default)]
+    pub mail_as_attachment: Option<Box<CTOnOff>>,
+    #[serde(rename = "viewMergedData")]
+    #[serde(default)]
+    pub view_merged_data: Option<Box<CTOnOff>>,
+    #[serde(rename = "activeRecord")]
+    #[serde(default)]
+    pub active_record: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "checkErrors")]
+    #[serde(default)]
+    pub check_errors: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "odso")]
+    #[serde(default)]
+    pub odso: Option<Box<CTOdso>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTargetScreenSz {
+    #[serde(rename = "@val")]
+    pub val: STTargetScreenSz,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCompat {
+    #[serde(rename = "useSingleBorderforContiguousCells")]
+    #[serde(default)]
+    pub use_single_borderfor_contiguous_cells: Option<Box<CTOnOff>>,
+    #[serde(rename = "wpJustification")]
+    #[serde(default)]
+    pub wp_justification: Option<Box<CTOnOff>>,
+    #[serde(rename = "noTabHangInd")]
+    #[serde(default)]
+    pub no_tab_hang_ind: Option<Box<CTOnOff>>,
+    #[serde(rename = "noLeading")]
+    #[serde(default)]
+    pub no_leading: Option<Box<CTOnOff>>,
+    #[serde(rename = "spaceForUL")]
+    #[serde(default)]
+    pub space_for_u_l: Option<Box<CTOnOff>>,
+    #[serde(rename = "noColumnBalance")]
+    #[serde(default)]
+    pub no_column_balance: Option<Box<CTOnOff>>,
+    #[serde(rename = "balanceSingleByteDoubleByteWidth")]
+    #[serde(default)]
+    pub balance_single_byte_double_byte_width: Option<Box<CTOnOff>>,
+    #[serde(rename = "noExtraLineSpacing")]
+    #[serde(default)]
+    pub no_extra_line_spacing: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotLeaveBackslashAlone")]
+    #[serde(default)]
+    pub do_not_leave_backslash_alone: Option<Box<CTOnOff>>,
+    #[serde(rename = "ulTrailSpace")]
+    #[serde(default)]
+    pub ul_trail_space: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotExpandShiftReturn")]
+    #[serde(default)]
+    pub do_not_expand_shift_return: Option<Box<CTOnOff>>,
+    #[serde(rename = "spacingInWholePoints")]
+    #[serde(default)]
+    pub spacing_in_whole_points: Option<Box<CTOnOff>>,
+    #[serde(rename = "lineWrapLikeWord6")]
+    #[serde(default)]
+    pub line_wrap_like_word6: Option<Box<CTOnOff>>,
+    #[serde(rename = "printBodyTextBeforeHeader")]
+    #[serde(default)]
+    pub print_body_text_before_header: Option<Box<CTOnOff>>,
+    #[serde(rename = "printColBlack")]
+    #[serde(default)]
+    pub print_col_black: Option<Box<CTOnOff>>,
+    #[serde(rename = "wpSpaceWidth")]
+    #[serde(default)]
+    pub wp_space_width: Option<Box<CTOnOff>>,
+    #[serde(rename = "showBreaksInFrames")]
+    #[serde(default)]
+    pub show_breaks_in_frames: Option<Box<CTOnOff>>,
+    #[serde(rename = "subFontBySize")]
+    #[serde(default)]
+    pub sub_font_by_size: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressBottomSpacing")]
+    #[serde(default)]
+    pub suppress_bottom_spacing: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressTopSpacing")]
+    #[serde(default)]
+    pub suppress_top_spacing: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressSpacingAtTopOfPage")]
+    #[serde(default)]
+    pub suppress_spacing_at_top_of_page: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressTopSpacingWP")]
+    #[serde(default)]
+    pub suppress_top_spacing_w_p: Option<Box<CTOnOff>>,
+    #[serde(rename = "suppressSpBfAfterPgBrk")]
+    #[serde(default)]
+    pub suppress_sp_bf_after_pg_brk: Option<Box<CTOnOff>>,
+    #[serde(rename = "swapBordersFacingPages")]
+    #[serde(default)]
+    pub swap_borders_facing_pages: Option<Box<CTOnOff>>,
+    #[serde(rename = "convMailMergeEsc")]
+    #[serde(default)]
+    pub conv_mail_merge_esc: Option<Box<CTOnOff>>,
+    #[serde(rename = "truncateFontHeightsLikeWP6")]
+    #[serde(default)]
+    pub truncate_font_heights_like_w_p6: Option<Box<CTOnOff>>,
+    #[serde(rename = "mwSmallCaps")]
+    #[serde(default)]
+    pub mw_small_caps: Option<Box<CTOnOff>>,
+    #[serde(rename = "usePrinterMetrics")]
+    #[serde(default)]
+    pub use_printer_metrics: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotSuppressParagraphBorders")]
+    #[serde(default)]
+    pub do_not_suppress_paragraph_borders: Option<Box<CTOnOff>>,
+    #[serde(rename = "wrapTrailSpaces")]
+    #[serde(default)]
+    pub wrap_trail_spaces: Option<Box<CTOnOff>>,
+    #[serde(rename = "footnoteLayoutLikeWW8")]
+    #[serde(default)]
+    pub footnote_layout_like_w_w8: Option<Box<CTOnOff>>,
+    #[serde(rename = "shapeLayoutLikeWW8")]
+    #[serde(default)]
+    pub shape_layout_like_w_w8: Option<Box<CTOnOff>>,
+    #[serde(rename = "alignTablesRowByRow")]
+    #[serde(default)]
+    pub align_tables_row_by_row: Option<Box<CTOnOff>>,
+    #[serde(rename = "forgetLastTabAlignment")]
+    #[serde(default)]
+    pub forget_last_tab_alignment: Option<Box<CTOnOff>>,
+    #[serde(rename = "adjustLineHeightInTable")]
+    #[serde(default)]
+    pub adjust_line_height_in_table: Option<Box<CTOnOff>>,
+    #[serde(rename = "autoSpaceLikeWord95")]
+    #[serde(default)]
+    pub auto_space_like_word95: Option<Box<CTOnOff>>,
+    #[serde(rename = "noSpaceRaiseLower")]
+    #[serde(default)]
+    pub no_space_raise_lower: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotUseHTMLParagraphAutoSpacing")]
+    #[serde(default)]
+    pub do_not_use_h_t_m_l_paragraph_auto_spacing: Option<Box<CTOnOff>>,
+    #[serde(rename = "layoutRawTableWidth")]
+    #[serde(default)]
+    pub layout_raw_table_width: Option<Box<CTOnOff>>,
+    #[serde(rename = "layoutTableRowsApart")]
+    #[serde(default)]
+    pub layout_table_rows_apart: Option<Box<CTOnOff>>,
+    #[serde(rename = "useWord97LineBreakRules")]
+    #[serde(default)]
+    pub use_word97_line_break_rules: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotBreakWrappedTables")]
+    #[serde(default)]
+    pub do_not_break_wrapped_tables: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotSnapToGridInCell")]
+    #[serde(default)]
+    pub do_not_snap_to_grid_in_cell: Option<Box<CTOnOff>>,
+    #[serde(rename = "selectFldWithFirstOrLastChar")]
+    #[serde(default)]
+    pub select_fld_with_first_or_last_char: Option<Box<CTOnOff>>,
+    #[serde(rename = "applyBreakingRules")]
+    #[serde(default)]
+    pub apply_breaking_rules: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotWrapTextWithPunct")]
+    #[serde(default)]
+    pub do_not_wrap_text_with_punct: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotUseEastAsianBreakRules")]
+    #[serde(default)]
+    pub do_not_use_east_asian_break_rules: Option<Box<CTOnOff>>,
+    #[serde(rename = "useWord2002TableStyleRules")]
+    #[serde(default)]
+    pub use_word2002_table_style_rules: Option<Box<CTOnOff>>,
+    #[serde(rename = "growAutofit")]
+    #[serde(default)]
+    pub grow_autofit: Option<Box<CTOnOff>>,
+    #[serde(rename = "useFELayout")]
+    #[serde(default)]
+    pub use_f_e_layout: Option<Box<CTOnOff>>,
+    #[serde(rename = "useNormalStyleForList")]
+    #[serde(default)]
+    pub use_normal_style_for_list: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotUseIndentAsNumberingTabStop")]
+    #[serde(default)]
+    pub do_not_use_indent_as_numbering_tab_stop: Option<Box<CTOnOff>>,
+    #[serde(rename = "useAltKinsokuLineBreakRules")]
+    #[serde(default)]
+    pub use_alt_kinsoku_line_break_rules: Option<Box<CTOnOff>>,
+    #[serde(rename = "allowSpaceOfSameStyleInTable")]
+    #[serde(default)]
+    pub allow_space_of_same_style_in_table: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotSuppressIndentation")]
+    #[serde(default)]
+    pub do_not_suppress_indentation: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotAutofitConstrainedTables")]
+    #[serde(default)]
+    pub do_not_autofit_constrained_tables: Option<Box<CTOnOff>>,
+    #[serde(rename = "autofitToFirstFixedWidthCell")]
+    #[serde(default)]
+    pub autofit_to_first_fixed_width_cell: Option<Box<CTOnOff>>,
+    #[serde(rename = "underlineTabInNumList")]
+    #[serde(default)]
+    pub underline_tab_in_num_list: Option<Box<CTOnOff>>,
+    #[serde(rename = "displayHangulFixedWidth")]
+    #[serde(default)]
+    pub display_hangul_fixed_width: Option<Box<CTOnOff>>,
+    #[serde(rename = "splitPgBreakAndParaMark")]
+    #[serde(default)]
+    pub split_pg_break_and_para_mark: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotVertAlignCellWithSp")]
+    #[serde(default)]
+    pub do_not_vert_align_cell_with_sp: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotBreakConstrainedForcedTable")]
+    #[serde(default)]
+    pub do_not_break_constrained_forced_table: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotVertAlignInTxbx")]
+    #[serde(default)]
+    pub do_not_vert_align_in_txbx: Option<Box<CTOnOff>>,
+    #[serde(rename = "useAnsiKerningPairs")]
+    #[serde(default)]
+    pub use_ansi_kerning_pairs: Option<Box<CTOnOff>>,
+    #[serde(rename = "cachedColBalance")]
+    #[serde(default)]
+    pub cached_col_balance: Option<Box<CTOnOff>>,
+    #[serde(rename = "compatSetting")]
+    #[serde(default)]
+    pub compat_setting: Vec<Box<CTCompatSetting>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCompatSetting {
+    #[serde(rename = "@name")]
+    #[serde(default)]
+    pub name: Option<SSTString>,
+    #[serde(rename = "@uri")]
+    #[serde(default)]
+    pub uri: Option<SSTString>,
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocVar {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "@val")]
+    pub val: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocVars {
+    #[serde(rename = "docVar")]
+    #[serde(default)]
+    pub doc_var: Vec<Box<CTDocVar>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocRsids {
+    #[serde(rename = "rsidRoot")]
+    #[serde(default)]
+    pub rsid_root: Option<Box<CTLongHexNumber>>,
+    #[serde(rename = "rsid")]
+    #[serde(default)]
+    pub rsid: Vec<Box<CTLongHexNumber>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCharacterSpacing {
+    #[serde(rename = "@val")]
+    pub val: STCharacterSpacing,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSaveThroughXslt {
+    #[serde(rename = "@solutionID")]
+    #[serde(default)]
+    pub solution_i_d: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTRPrDefault {
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPPrDefault {
+    #[serde(rename = "pPr")]
+    #[serde(default)]
+    pub p_pr: Option<Box<CTPPrGeneral>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocDefaults {
+    #[serde(rename = "rPrDefault")]
+    #[serde(default)]
+    pub r_pr_default: Option<Box<CTRPrDefault>>,
+    #[serde(rename = "pPrDefault")]
+    #[serde(default)]
+    pub p_pr_default: Option<Box<CTPPrDefault>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTColorSchemeMapping {
+    #[serde(rename = "@bg1")]
+    #[serde(default)]
+    pub bg1: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@t1")]
+    #[serde(default)]
+    pub t1: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@bg2")]
+    #[serde(default)]
+    pub bg2: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@t2")]
+    #[serde(default)]
+    pub t2: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent1")]
+    #[serde(default)]
+    pub accent1: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent2")]
+    #[serde(default)]
+    pub accent2: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent3")]
+    #[serde(default)]
+    pub accent3: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent4")]
+    #[serde(default)]
+    pub accent4: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent5")]
+    #[serde(default)]
+    pub accent5: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@accent6")]
+    #[serde(default)]
+    pub accent6: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@hyperlink")]
+    #[serde(default)]
+    pub hyperlink: Option<STWmlColorSchemeIndex>,
+    #[serde(rename = "@followedHyperlink")]
+    #[serde(default)]
+    pub followed_hyperlink: Option<STWmlColorSchemeIndex>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTReadingModeInkLockDown {
+    #[serde(rename = "@actualPg")]
+    pub actual_pg: SSTOnOff,
+    #[serde(rename = "@w")]
+    pub w: STPixelsMeasure,
+    #[serde(rename = "@h")]
+    pub h: STPixelsMeasure,
+    #[serde(rename = "@fontSz")]
+    pub font_sz: STDecimalNumberOrPercent,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTWriteProtection {
+    #[serde(rename = "@recommended")]
+    #[serde(default)]
+    pub recommended: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSettings {
+    #[serde(rename = "writeProtection")]
+    #[serde(default)]
+    pub write_protection: Option<Box<CTWriteProtection>>,
+    #[serde(rename = "view")]
+    #[serde(default)]
+    pub view: Option<Box<CTView>>,
+    #[serde(rename = "zoom")]
+    #[serde(default)]
+    pub zoom: Option<Box<CTZoom>>,
+    #[serde(rename = "removePersonalInformation")]
+    #[serde(default)]
+    pub remove_personal_information: Option<Box<CTOnOff>>,
+    #[serde(rename = "removeDateAndTime")]
+    #[serde(default)]
+    pub remove_date_and_time: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotDisplayPageBoundaries")]
+    #[serde(default)]
+    pub do_not_display_page_boundaries: Option<Box<CTOnOff>>,
+    #[serde(rename = "displayBackgroundShape")]
+    #[serde(default)]
+    pub display_background_shape: Option<Box<CTOnOff>>,
+    #[serde(rename = "printPostScriptOverText")]
+    #[serde(default)]
+    pub print_post_script_over_text: Option<Box<CTOnOff>>,
+    #[serde(rename = "printFractionalCharacterWidth")]
+    #[serde(default)]
+    pub print_fractional_character_width: Option<Box<CTOnOff>>,
+    #[serde(rename = "printFormsData")]
+    #[serde(default)]
+    pub print_forms_data: Option<Box<CTOnOff>>,
+    #[serde(rename = "embedTrueTypeFonts")]
+    #[serde(default)]
+    pub embed_true_type_fonts: Option<Box<CTOnOff>>,
+    #[serde(rename = "embedSystemFonts")]
+    #[serde(default)]
+    pub embed_system_fonts: Option<Box<CTOnOff>>,
+    #[serde(rename = "saveSubsetFonts")]
+    #[serde(default)]
+    pub save_subset_fonts: Option<Box<CTOnOff>>,
+    #[serde(rename = "saveFormsData")]
+    #[serde(default)]
+    pub save_forms_data: Option<Box<CTOnOff>>,
+    #[serde(rename = "mirrorMargins")]
+    #[serde(default)]
+    pub mirror_margins: Option<Box<CTOnOff>>,
+    #[serde(rename = "alignBordersAndEdges")]
+    #[serde(default)]
+    pub align_borders_and_edges: Option<Box<CTOnOff>>,
+    #[serde(rename = "bordersDoNotSurroundHeader")]
+    #[serde(default)]
+    pub borders_do_not_surround_header: Option<Box<CTOnOff>>,
+    #[serde(rename = "bordersDoNotSurroundFooter")]
+    #[serde(default)]
+    pub borders_do_not_surround_footer: Option<Box<CTOnOff>>,
+    #[serde(rename = "gutterAtTop")]
+    #[serde(default)]
+    pub gutter_at_top: Option<Box<CTOnOff>>,
+    #[serde(rename = "hideSpellingErrors")]
+    #[serde(default)]
+    pub hide_spelling_errors: Option<Box<CTOnOff>>,
+    #[serde(rename = "hideGrammaticalErrors")]
+    #[serde(default)]
+    pub hide_grammatical_errors: Option<Box<CTOnOff>>,
+    #[serde(rename = "activeWritingStyle")]
+    #[serde(default)]
+    pub active_writing_style: Vec<Box<CTWritingStyle>>,
+    #[serde(rename = "proofState")]
+    #[serde(default)]
+    pub proof_state: Option<Box<CTProof>>,
+    #[serde(rename = "formsDesign")]
+    #[serde(default)]
+    pub forms_design: Option<Box<CTOnOff>>,
+    #[serde(rename = "attachedTemplate")]
+    #[serde(default)]
+    pub attached_template: Option<Box<CTRel>>,
+    #[serde(rename = "linkStyles")]
+    #[serde(default)]
+    pub link_styles: Option<Box<CTOnOff>>,
+    #[serde(rename = "stylePaneFormatFilter")]
+    #[serde(default)]
+    pub style_pane_format_filter: Option<Box<CTStylePaneFilter>>,
+    #[serde(rename = "stylePaneSortMethod")]
+    #[serde(default)]
+    pub style_pane_sort_method: Option<Box<CTStyleSort>>,
+    #[serde(rename = "documentType")]
+    #[serde(default)]
+    pub document_type: Option<Box<CTDocType>>,
+    #[serde(rename = "mailMerge")]
+    #[serde(default)]
+    pub mail_merge: Option<Box<CTMailMerge>>,
+    #[serde(rename = "revisionView")]
+    #[serde(default)]
+    pub revision_view: Option<Box<CTTrackChangesView>>,
+    #[serde(rename = "trackRevisions")]
+    #[serde(default)]
+    pub track_revisions: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotTrackMoves")]
+    #[serde(default)]
+    pub do_not_track_moves: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotTrackFormatting")]
+    #[serde(default)]
+    pub do_not_track_formatting: Option<Box<CTOnOff>>,
+    #[serde(rename = "documentProtection")]
+    #[serde(default)]
+    pub document_protection: Option<Box<CTDocProtect>>,
+    #[serde(rename = "autoFormatOverride")]
+    #[serde(default)]
+    pub auto_format_override: Option<Box<CTOnOff>>,
+    #[serde(rename = "styleLockTheme")]
+    #[serde(default)]
+    pub style_lock_theme: Option<Box<CTOnOff>>,
+    #[serde(rename = "styleLockQFSet")]
+    #[serde(default)]
+    pub style_lock_q_f_set: Option<Box<CTOnOff>>,
+    #[serde(rename = "defaultTabStop")]
+    #[serde(default)]
+    pub default_tab_stop: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "autoHyphenation")]
+    #[serde(default)]
+    pub auto_hyphenation: Option<Box<CTOnOff>>,
+    #[serde(rename = "consecutiveHyphenLimit")]
+    #[serde(default)]
+    pub consecutive_hyphen_limit: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "hyphenationZone")]
+    #[serde(default)]
+    pub hyphenation_zone: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "doNotHyphenateCaps")]
+    #[serde(default)]
+    pub do_not_hyphenate_caps: Option<Box<CTOnOff>>,
+    #[serde(rename = "showEnvelope")]
+    #[serde(default)]
+    pub show_envelope: Option<Box<CTOnOff>>,
+    #[serde(rename = "summaryLength")]
+    #[serde(default)]
+    pub summary_length: Option<Box<CTDecimalNumberOrPrecent>>,
+    #[serde(rename = "clickAndTypeStyle")]
+    #[serde(default)]
+    pub click_and_type_style: Option<Box<CTString>>,
+    #[serde(rename = "defaultTableStyle")]
+    #[serde(default)]
+    pub default_table_style: Option<Box<CTString>>,
+    #[serde(rename = "evenAndOddHeaders")]
+    #[serde(default)]
+    pub even_and_odd_headers: Option<Box<CTOnOff>>,
+    #[serde(rename = "bookFoldRevPrinting")]
+    #[serde(default)]
+    pub book_fold_rev_printing: Option<Box<CTOnOff>>,
+    #[serde(rename = "bookFoldPrinting")]
+    #[serde(default)]
+    pub book_fold_printing: Option<Box<CTOnOff>>,
+    #[serde(rename = "bookFoldPrintingSheets")]
+    #[serde(default)]
+    pub book_fold_printing_sheets: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "drawingGridHorizontalSpacing")]
+    #[serde(default)]
+    pub drawing_grid_horizontal_spacing: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "drawingGridVerticalSpacing")]
+    #[serde(default)]
+    pub drawing_grid_vertical_spacing: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "displayHorizontalDrawingGridEvery")]
+    #[serde(default)]
+    pub display_horizontal_drawing_grid_every: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "displayVerticalDrawingGridEvery")]
+    #[serde(default)]
+    pub display_vertical_drawing_grid_every: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "doNotUseMarginsForDrawingGridOrigin")]
+    #[serde(default)]
+    pub do_not_use_margins_for_drawing_grid_origin: Option<Box<CTOnOff>>,
+    #[serde(rename = "drawingGridHorizontalOrigin")]
+    #[serde(default)]
+    pub drawing_grid_horizontal_origin: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "drawingGridVerticalOrigin")]
+    #[serde(default)]
+    pub drawing_grid_vertical_origin: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "doNotShadeFormData")]
+    #[serde(default)]
+    pub do_not_shade_form_data: Option<Box<CTOnOff>>,
+    #[serde(rename = "noPunctuationKerning")]
+    #[serde(default)]
+    pub no_punctuation_kerning: Option<Box<CTOnOff>>,
+    #[serde(rename = "characterSpacingControl")]
+    #[serde(default)]
+    pub character_spacing_control: Option<Box<CTCharacterSpacing>>,
+    #[serde(rename = "printTwoOnOne")]
+    #[serde(default)]
+    pub print_two_on_one: Option<Box<CTOnOff>>,
+    #[serde(rename = "strictFirstAndLastChars")]
+    #[serde(default)]
+    pub strict_first_and_last_chars: Option<Box<CTOnOff>>,
+    #[serde(rename = "noLineBreaksAfter")]
+    #[serde(default)]
+    pub no_line_breaks_after: Option<Box<CTKinsoku>>,
+    #[serde(rename = "noLineBreaksBefore")]
+    #[serde(default)]
+    pub no_line_breaks_before: Option<Box<CTKinsoku>>,
+    #[serde(rename = "savePreviewPicture")]
+    #[serde(default)]
+    pub save_preview_picture: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotValidateAgainstSchema")]
+    #[serde(default)]
+    pub do_not_validate_against_schema: Option<Box<CTOnOff>>,
+    #[serde(rename = "saveInvalidXml")]
+    #[serde(default)]
+    pub save_invalid_xml: Option<Box<CTOnOff>>,
+    #[serde(rename = "ignoreMixedContent")]
+    #[serde(default)]
+    pub ignore_mixed_content: Option<Box<CTOnOff>>,
+    #[serde(rename = "alwaysShowPlaceholderText")]
+    #[serde(default)]
+    pub always_show_placeholder_text: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotDemarcateInvalidXml")]
+    #[serde(default)]
+    pub do_not_demarcate_invalid_xml: Option<Box<CTOnOff>>,
+    #[serde(rename = "saveXmlDataOnly")]
+    #[serde(default)]
+    pub save_xml_data_only: Option<Box<CTOnOff>>,
+    #[serde(rename = "useXSLTWhenSaving")]
+    #[serde(default)]
+    pub use_x_s_l_t_when_saving: Option<Box<CTOnOff>>,
+    #[serde(rename = "saveThroughXslt")]
+    #[serde(default)]
+    pub save_through_xslt: Option<Box<CTSaveThroughXslt>>,
+    #[serde(rename = "showXMLTags")]
+    #[serde(default)]
+    pub show_x_m_l_tags: Option<Box<CTOnOff>>,
+    #[serde(rename = "alwaysMergeEmptyNamespace")]
+    #[serde(default)]
+    pub always_merge_empty_namespace: Option<Box<CTOnOff>>,
+    #[serde(rename = "updateFields")]
+    #[serde(default)]
+    pub update_fields: Option<Box<CTOnOff>>,
+    #[serde(rename = "hdrShapeDefaults")]
+    #[serde(default)]
+    pub hdr_shape_defaults: Option<Box<CTShapeDefaults>>,
+    #[serde(rename = "footnotePr")]
+    #[serde(default)]
+    pub footnote_pr: Option<Box<CTFtnDocProps>>,
+    #[serde(rename = "endnotePr")]
+    #[serde(default)]
+    pub endnote_pr: Option<Box<CTEdnDocProps>>,
+    #[serde(rename = "compat")]
+    #[serde(default)]
+    pub compat: Option<Box<CTCompat>>,
+    #[serde(rename = "docVars")]
+    #[serde(default)]
+    pub doc_vars: Option<Box<CTDocVars>>,
+    #[serde(rename = "rsids")]
+    #[serde(default)]
+    pub rsids: Option<Box<CTDocRsids>>,
+    #[serde(rename = "attachedSchema")]
+    #[serde(default)]
+    pub attached_schema: Vec<Box<CTString>>,
+    #[serde(rename = "themeFontLang")]
+    #[serde(default)]
+    pub theme_font_lang: Option<Box<CTLanguage>>,
+    #[serde(rename = "clrSchemeMapping")]
+    #[serde(default)]
+    pub clr_scheme_mapping: Option<Box<CTColorSchemeMapping>>,
+    #[serde(rename = "doNotIncludeSubdocsInStats")]
+    #[serde(default)]
+    pub do_not_include_subdocs_in_stats: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotAutoCompressPictures")]
+    #[serde(default)]
+    pub do_not_auto_compress_pictures: Option<Box<CTOnOff>>,
+    #[serde(rename = "forceUpgrade")]
+    #[serde(default)]
+    pub force_upgrade: Option<Box<CTEmpty>>,
+    #[serde(rename = "captions")]
+    #[serde(default)]
+    pub captions: Option<Box<CTCaptions>>,
+    #[serde(rename = "readModeInkLockDown")]
+    #[serde(default)]
+    pub read_mode_ink_lock_down: Option<Box<CTReadingModeInkLockDown>>,
+    #[serde(rename = "smartTagType")]
+    #[serde(default)]
+    pub smart_tag_type: Vec<Box<CTSmartTagType>>,
+    #[serde(rename = "shapeDefaults")]
+    #[serde(default)]
+    pub shape_defaults: Option<Box<CTShapeDefaults>>,
+    #[serde(rename = "doNotEmbedSmartTags")]
+    #[serde(default)]
+    pub do_not_embed_smart_tags: Option<Box<CTOnOff>>,
+    #[serde(rename = "decimalSymbol")]
+    #[serde(default)]
+    pub decimal_symbol: Option<Box<CTString>>,
+    #[serde(rename = "listSeparator")]
+    #[serde(default)]
+    pub list_separator: Option<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTStyleSort {
+    #[serde(rename = "@val")]
+    pub val: STStyleSort,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTStylePaneFilter {
+    #[serde(rename = "@allStyles")]
+    #[serde(default)]
+    pub all_styles: Option<SSTOnOff>,
+    #[serde(rename = "@customStyles")]
+    #[serde(default)]
+    pub custom_styles: Option<SSTOnOff>,
+    #[serde(rename = "@latentStyles")]
+    #[serde(default)]
+    pub latent_styles: Option<SSTOnOff>,
+    #[serde(rename = "@stylesInUse")]
+    #[serde(default)]
+    pub styles_in_use: Option<SSTOnOff>,
+    #[serde(rename = "@headingStyles")]
+    #[serde(default)]
+    pub heading_styles: Option<SSTOnOff>,
+    #[serde(rename = "@numberingStyles")]
+    #[serde(default)]
+    pub numbering_styles: Option<SSTOnOff>,
+    #[serde(rename = "@tableStyles")]
+    #[serde(default)]
+    pub table_styles: Option<SSTOnOff>,
+    #[serde(rename = "@directFormattingOnRuns")]
+    #[serde(default)]
+    pub direct_formatting_on_runs: Option<SSTOnOff>,
+    #[serde(rename = "@directFormattingOnParagraphs")]
+    #[serde(default)]
+    pub direct_formatting_on_paragraphs: Option<SSTOnOff>,
+    #[serde(rename = "@directFormattingOnNumbering")]
+    #[serde(default)]
+    pub direct_formatting_on_numbering: Option<SSTOnOff>,
+    #[serde(rename = "@directFormattingOnTables")]
+    #[serde(default)]
+    pub direct_formatting_on_tables: Option<SSTOnOff>,
+    #[serde(rename = "@clearFormatting")]
+    #[serde(default)]
+    pub clear_formatting: Option<SSTOnOff>,
+    #[serde(rename = "@top3HeadingStyles")]
+    #[serde(default)]
+    pub top3_heading_styles: Option<SSTOnOff>,
+    #[serde(rename = "@visibleStyles")]
+    #[serde(default)]
+    pub visible_styles: Option<SSTOnOff>,
+    #[serde(rename = "@alternateStyleNames")]
+    #[serde(default)]
+    pub alternate_style_names: Option<SSTOnOff>,
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<STShortHexNumber>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTWebSettings {
+    #[serde(rename = "frameset")]
+    #[serde(default)]
+    pub frameset: Option<Box<CTFrameset>>,
+    #[serde(rename = "divs")]
+    #[serde(default)]
+    pub divs: Option<Box<CTDivs>>,
+    #[serde(rename = "encoding")]
+    #[serde(default)]
+    pub encoding: Option<Box<CTString>>,
+    #[serde(rename = "optimizeForBrowser")]
+    #[serde(default)]
+    pub optimize_for_browser: Option<Box<CTOptimizeForBrowser>>,
+    #[serde(rename = "relyOnVML")]
+    #[serde(default)]
+    pub rely_on_v_m_l: Option<Box<CTOnOff>>,
+    #[serde(rename = "allowPNG")]
+    #[serde(default)]
+    pub allow_p_n_g: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotRelyOnCSS")]
+    #[serde(default)]
+    pub do_not_rely_on_c_s_s: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotSaveAsSingleFile")]
+    #[serde(default)]
+    pub do_not_save_as_single_file: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotOrganizeInFolder")]
+    #[serde(default)]
+    pub do_not_organize_in_folder: Option<Box<CTOnOff>>,
+    #[serde(rename = "doNotUseLongFileNames")]
+    #[serde(default)]
+    pub do_not_use_long_file_names: Option<Box<CTOnOff>>,
+    #[serde(rename = "pixelsPerInch")]
+    #[serde(default)]
+    pub pixels_per_inch: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "targetScreenSz")]
+    #[serde(default)]
+    pub target_screen_sz: Option<Box<CTTargetScreenSz>>,
+    #[serde(rename = "saveSmartTagsAsXml")]
+    #[serde(default)]
+    pub save_smart_tags_as_xml: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFrameScrollbar {
+    #[serde(rename = "@val")]
+    pub val: STFrameScrollbar,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTOptimizeForBrowser {
+    #[serde(rename = "@target")]
+    #[serde(default)]
+    pub target: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFrame {
+    #[serde(rename = "sz")]
+    #[serde(default)]
+    pub sz: Option<Box<CTString>>,
+    #[serde(rename = "name")]
+    #[serde(default)]
+    pub name: Option<Box<CTString>>,
+    #[serde(rename = "title")]
+    #[serde(default)]
+    pub title: Option<Box<CTString>>,
+    #[serde(rename = "longDesc")]
+    #[serde(default)]
+    pub long_desc: Option<Box<CTRel>>,
+    #[serde(rename = "sourceFileName")]
+    #[serde(default)]
+    pub source_file_name: Option<Box<CTRel>>,
+    #[serde(rename = "marW")]
+    #[serde(default)]
+    pub mar_w: Option<Box<CTPixelsMeasure>>,
+    #[serde(rename = "marH")]
+    #[serde(default)]
+    pub mar_h: Option<Box<CTPixelsMeasure>>,
+    #[serde(rename = "scrollbar")]
+    #[serde(default)]
+    pub scrollbar: Option<Box<CTFrameScrollbar>>,
+    #[serde(rename = "noResizeAllowed")]
+    #[serde(default)]
+    pub no_resize_allowed: Option<Box<CTOnOff>>,
+    #[serde(rename = "linkedToFile")]
+    #[serde(default)]
+    pub linked_to_file: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFrameLayout {
+    #[serde(rename = "@val")]
+    pub val: STFrameLayout,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFramesetSplitbar {
+    #[serde(rename = "w")]
+    #[serde(default)]
+    pub w: Option<Box<CTTwipsMeasure>>,
+    #[serde(rename = "color")]
+    #[serde(default)]
+    pub color: Option<Box<CTColor>>,
+    #[serde(rename = "noBorder")]
+    #[serde(default)]
+    pub no_border: Option<Box<CTOnOff>>,
+    #[serde(rename = "flatBorders")]
+    #[serde(default)]
+    pub flat_borders: Option<Box<CTOnOff>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFrameset {
+    #[serde(rename = "sz")]
+    #[serde(default)]
+    pub sz: Option<Box<CTString>>,
+    #[serde(rename = "framesetSplitbar")]
+    #[serde(default)]
+    pub frameset_splitbar: Option<Box<CTFramesetSplitbar>>,
+    #[serde(rename = "frameLayout")]
+    #[serde(default)]
+    pub frame_layout: Option<Box<CTFrameLayout>>,
+    #[serde(rename = "title")]
+    #[serde(default)]
+    pub title: Option<Box<CTString>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumPicBullet {
+    #[serde(rename = "@numPicBulletId")]
+    pub num_pic_bullet_id: STDecimalNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLevelSuffix {
+    #[serde(rename = "@val")]
+    pub val: STLevelSuffix,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLevelText {
+    #[serde(rename = "@val")]
+    #[serde(default)]
+    pub val: Option<SSTString>,
+    #[serde(rename = "@null")]
+    #[serde(default)]
+    pub null: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLvlLegacy {
+    #[serde(rename = "@legacy")]
+    #[serde(default)]
+    pub legacy: Option<SSTOnOff>,
+    #[serde(rename = "@legacySpace")]
+    #[serde(default)]
+    pub legacy_space: Option<SSTTwipsMeasure>,
+    #[serde(rename = "@legacyIndent")]
+    #[serde(default)]
+    pub legacy_indent: Option<STSignedTwipsMeasure>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLvl {
+    #[serde(rename = "@ilvl")]
+    pub ilvl: STDecimalNumber,
+    #[serde(rename = "@tplc")]
+    #[serde(default)]
+    pub tplc: Option<STLongHexNumber>,
+    #[serde(rename = "@tentative")]
+    #[serde(default)]
+    pub tentative: Option<SSTOnOff>,
+    #[serde(rename = "start")]
+    #[serde(default)]
+    pub start: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "numFmt")]
+    #[serde(default)]
+    pub num_fmt: Option<Box<CTNumFmt>>,
+    #[serde(rename = "lvlRestart")]
+    #[serde(default)]
+    pub lvl_restart: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "pStyle")]
+    #[serde(default)]
+    pub p_style: Option<Box<CTString>>,
+    #[serde(rename = "isLgl")]
+    #[serde(default)]
+    pub is_lgl: Option<Box<CTOnOff>>,
+    #[serde(rename = "suff")]
+    #[serde(default)]
+    pub suff: Option<Box<CTLevelSuffix>>,
+    #[serde(rename = "lvlText")]
+    #[serde(default)]
+    pub lvl_text: Option<Box<CTLevelText>>,
+    #[serde(rename = "lvlPicBulletId")]
+    #[serde(default)]
+    pub lvl_pic_bullet_id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "legacy")]
+    #[serde(default)]
+    pub legacy: Option<Box<CTLvlLegacy>>,
+    #[serde(rename = "lvlJc")]
+    #[serde(default)]
+    pub lvl_jc: Option<Box<CTJc>>,
+    #[serde(rename = "pPr")]
+    #[serde(default)]
+    pub p_pr: Option<Box<CTPPrGeneral>>,
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTMultiLevelType {
+    #[serde(rename = "@val")]
+    pub val: STMultiLevelType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAbstractNum {
+    #[serde(rename = "@abstractNumId")]
+    pub abstract_num_id: STDecimalNumber,
+    #[serde(rename = "nsid")]
+    #[serde(default)]
+    pub nsid: Option<Box<CTLongHexNumber>>,
+    #[serde(rename = "multiLevelType")]
+    #[serde(default)]
+    pub multi_level_type: Option<Box<CTMultiLevelType>>,
+    #[serde(rename = "tmpl")]
+    #[serde(default)]
+    pub tmpl: Option<Box<CTLongHexNumber>>,
+    #[serde(rename = "name")]
+    #[serde(default)]
+    pub name: Option<Box<CTString>>,
+    #[serde(rename = "styleLink")]
+    #[serde(default)]
+    pub style_link: Option<Box<CTString>>,
+    #[serde(rename = "numStyleLink")]
+    #[serde(default)]
+    pub num_style_link: Option<Box<CTString>>,
+    #[serde(rename = "lvl")]
+    #[serde(default)]
+    pub lvl: Vec<Box<CTLvl>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumLvl {
+    #[serde(rename = "@ilvl")]
+    pub ilvl: STDecimalNumber,
+    #[serde(rename = "startOverride")]
+    #[serde(default)]
+    pub start_override: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "lvl")]
+    #[serde(default)]
+    pub lvl: Option<Box<CTLvl>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNum {
+    #[serde(rename = "@numId")]
+    pub num_id: STDecimalNumber,
+    #[serde(rename = "abstractNumId")]
+    pub abstract_num_id: Box<CTDecimalNumber>,
+    #[serde(rename = "lvlOverride")]
+    #[serde(default)]
+    pub lvl_override: Vec<Box<CTNumLvl>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTNumbering {
+    #[serde(rename = "numPicBullet")]
+    #[serde(default)]
+    pub num_pic_bullet: Vec<Box<CTNumPicBullet>>,
+    #[serde(rename = "abstractNum")]
+    #[serde(default)]
+    pub abstract_num: Vec<Box<CTAbstractNum>>,
+    #[serde(rename = "num")]
+    #[serde(default)]
+    pub num: Vec<Box<CTNum>>,
+    #[serde(rename = "numIdMacAtCleanup")]
+    #[serde(default)]
+    pub num_id_mac_at_cleanup: Option<Box<CTDecimalNumber>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTblStylePr {
+    #[serde(rename = "@type")]
+    pub r#type: STTblStyleOverrideType,
+    #[serde(rename = "pPr")]
+    #[serde(default)]
+    pub p_pr: Option<Box<CTPPrGeneral>>,
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+    #[serde(rename = "tblPr")]
+    #[serde(default)]
+    pub tbl_pr: Option<Box<CTTblPrBase>>,
+    #[serde(rename = "trPr")]
+    #[serde(default)]
+    pub tr_pr: Option<Box<CTTrPr>>,
+    #[serde(rename = "tcPr")]
+    #[serde(default)]
+    pub tc_pr: Option<Box<CTTcPr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTStyle {
+    #[serde(rename = "@type")]
+    #[serde(default)]
+    pub r#type: Option<STStyleType>,
+    #[serde(rename = "@styleId")]
+    #[serde(default)]
+    pub style_id: Option<SSTString>,
+    #[serde(rename = "@default")]
+    #[serde(default)]
+    pub default: Option<SSTOnOff>,
+    #[serde(rename = "@customStyle")]
+    #[serde(default)]
+    pub custom_style: Option<SSTOnOff>,
+    #[serde(rename = "name")]
+    #[serde(default)]
+    pub name: Option<Box<CTString>>,
+    #[serde(rename = "aliases")]
+    #[serde(default)]
+    pub aliases: Option<Box<CTString>>,
+    #[serde(rename = "basedOn")]
+    #[serde(default)]
+    pub based_on: Option<Box<CTString>>,
+    #[serde(rename = "next")]
+    #[serde(default)]
+    pub next: Option<Box<CTString>>,
+    #[serde(rename = "link")]
+    #[serde(default)]
+    pub link: Option<Box<CTString>>,
+    #[serde(rename = "autoRedefine")]
+    #[serde(default)]
+    pub auto_redefine: Option<Box<CTOnOff>>,
+    #[serde(rename = "hidden")]
+    #[serde(default)]
+    pub hidden: Option<Box<CTOnOff>>,
+    #[serde(rename = "uiPriority")]
+    #[serde(default)]
+    pub ui_priority: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "semiHidden")]
+    #[serde(default)]
+    pub semi_hidden: Option<Box<CTOnOff>>,
+    #[serde(rename = "unhideWhenUsed")]
+    #[serde(default)]
+    pub unhide_when_used: Option<Box<CTOnOff>>,
+    #[serde(rename = "qFormat")]
+    #[serde(default)]
+    pub q_format: Option<Box<CTOnOff>>,
+    #[serde(rename = "locked")]
+    #[serde(default)]
+    pub locked: Option<Box<CTOnOff>>,
+    #[serde(rename = "personal")]
+    #[serde(default)]
+    pub personal: Option<Box<CTOnOff>>,
+    #[serde(rename = "personalCompose")]
+    #[serde(default)]
+    pub personal_compose: Option<Box<CTOnOff>>,
+    #[serde(rename = "personalReply")]
+    #[serde(default)]
+    pub personal_reply: Option<Box<CTOnOff>>,
+    #[serde(rename = "rsid")]
+    #[serde(default)]
+    pub rsid: Option<Box<CTLongHexNumber>>,
+    #[serde(rename = "pPr")]
+    #[serde(default)]
+    pub p_pr: Option<Box<CTPPrGeneral>>,
+    #[serde(rename = "rPr")]
+    #[serde(default)]
+    pub r_pr: Option<Box<CTRPr>>,
+    #[serde(rename = "tblPr")]
+    #[serde(default)]
+    pub tbl_pr: Option<Box<CTTblPrBase>>,
+    #[serde(rename = "trPr")]
+    #[serde(default)]
+    pub tr_pr: Option<Box<CTTrPr>>,
+    #[serde(rename = "tcPr")]
+    #[serde(default)]
+    pub tc_pr: Option<Box<CTTcPr>>,
+    #[serde(rename = "tblStylePr")]
+    #[serde(default)]
+    pub tbl_style_pr: Vec<Box<CTTblStylePr>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLsdException {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "@locked")]
+    #[serde(default)]
+    pub locked: Option<SSTOnOff>,
+    #[serde(rename = "@uiPriority")]
+    #[serde(default)]
+    pub ui_priority: Option<STDecimalNumber>,
+    #[serde(rename = "@semiHidden")]
+    #[serde(default)]
+    pub semi_hidden: Option<SSTOnOff>,
+    #[serde(rename = "@unhideWhenUsed")]
+    #[serde(default)]
+    pub unhide_when_used: Option<SSTOnOff>,
+    #[serde(rename = "@qFormat")]
+    #[serde(default)]
+    pub q_format: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTLatentStyles {
+    #[serde(rename = "@defLockedState")]
+    #[serde(default)]
+    pub def_locked_state: Option<SSTOnOff>,
+    #[serde(rename = "@defUIPriority")]
+    #[serde(default)]
+    pub def_u_i_priority: Option<STDecimalNumber>,
+    #[serde(rename = "@defSemiHidden")]
+    #[serde(default)]
+    pub def_semi_hidden: Option<SSTOnOff>,
+    #[serde(rename = "@defUnhideWhenUsed")]
+    #[serde(default)]
+    pub def_unhide_when_used: Option<SSTOnOff>,
+    #[serde(rename = "@defQFormat")]
+    #[serde(default)]
+    pub def_q_format: Option<SSTOnOff>,
+    #[serde(rename = "@count")]
+    #[serde(default)]
+    pub count: Option<STDecimalNumber>,
+    #[serde(rename = "lsdException")]
+    #[serde(default)]
+    pub lsd_exception: Vec<Box<CTLsdException>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTStyles {
+    #[serde(rename = "docDefaults")]
+    #[serde(default)]
+    pub doc_defaults: Option<Box<CTDocDefaults>>,
+    #[serde(rename = "latentStyles")]
+    #[serde(default)]
+    pub latent_styles: Option<Box<CTLatentStyles>>,
+    #[serde(rename = "style")]
+    #[serde(default)]
+    pub style: Vec<Box<CTStyle>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPanose {
+    #[serde(rename = "@val")]
+    pub val: SSTPanose,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFontFamily {
+    #[serde(rename = "@val")]
+    pub val: STFontFamily,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTPitch {
+    #[serde(rename = "@val")]
+    pub val: STPitch,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFontSig {
+    #[serde(rename = "@usb0")]
+    pub usb0: STLongHexNumber,
+    #[serde(rename = "@usb1")]
+    pub usb1: STLongHexNumber,
+    #[serde(rename = "@usb2")]
+    pub usb2: STLongHexNumber,
+    #[serde(rename = "@usb3")]
+    pub usb3: STLongHexNumber,
+    #[serde(rename = "@csb0")]
+    pub csb0: STLongHexNumber,
+    #[serde(rename = "@csb1")]
+    pub csb1: STLongHexNumber,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFontRel {
+    #[serde(rename = "@fontKey")]
+    #[serde(default)]
+    pub font_key: Option<SSTGuid>,
+    #[serde(rename = "@subsetted")]
+    #[serde(default)]
+    pub subsetted: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFont {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "altName")]
+    #[serde(default)]
+    pub alt_name: Option<Box<CTString>>,
+    #[serde(rename = "panose1")]
+    #[serde(default)]
+    pub panose1: Option<Box<CTPanose>>,
+    #[serde(rename = "charset")]
+    #[serde(default)]
+    pub charset: Option<Box<CTCharset>>,
+    #[serde(rename = "family")]
+    #[serde(default)]
+    pub family: Option<Box<CTFontFamily>>,
+    #[serde(rename = "notTrueType")]
+    #[serde(default)]
+    pub not_true_type: Option<Box<CTOnOff>>,
+    #[serde(rename = "pitch")]
+    #[serde(default)]
+    pub pitch: Option<Box<CTPitch>>,
+    #[serde(rename = "sig")]
+    #[serde(default)]
+    pub sig: Option<Box<CTFontSig>>,
+    #[serde(rename = "embedRegular")]
+    #[serde(default)]
+    pub embed_regular: Option<Box<CTFontRel>>,
+    #[serde(rename = "embedBold")]
+    #[serde(default)]
+    pub embed_bold: Option<Box<CTFontRel>>,
+    #[serde(rename = "embedItalic")]
+    #[serde(default)]
+    pub embed_italic: Option<Box<CTFontRel>>,
+    #[serde(rename = "embedBoldItalic")]
+    #[serde(default)]
+    pub embed_bold_italic: Option<Box<CTFontRel>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFontsList {
+    #[serde(rename = "font")]
+    #[serde(default)]
+    pub font: Vec<Box<CTFont>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDivBdr {
+    #[serde(rename = "top")]
+    #[serde(default)]
+    pub top: Option<Box<CTBorder>>,
+    #[serde(rename = "left")]
+    #[serde(default)]
+    pub left: Option<Box<CTBorder>>,
+    #[serde(rename = "bottom")]
+    #[serde(default)]
+    pub bottom: Option<Box<CTBorder>>,
+    #[serde(rename = "right")]
+    #[serde(default)]
+    pub right: Option<Box<CTBorder>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDiv {
+    #[serde(rename = "@id")]
+    pub id: STDecimalNumber,
+    #[serde(rename = "blockQuote")]
+    #[serde(default)]
+    pub block_quote: Option<Box<CTOnOff>>,
+    #[serde(rename = "bodyDiv")]
+    #[serde(default)]
+    pub body_div: Option<Box<CTOnOff>>,
+    #[serde(rename = "marLeft")]
+    pub mar_left: Box<CTSignedTwipsMeasure>,
+    #[serde(rename = "marRight")]
+    pub mar_right: Box<CTSignedTwipsMeasure>,
+    #[serde(rename = "marTop")]
+    pub mar_top: Box<CTSignedTwipsMeasure>,
+    #[serde(rename = "marBottom")]
+    pub mar_bottom: Box<CTSignedTwipsMeasure>,
+    #[serde(rename = "divBdr")]
+    #[serde(default)]
+    pub div_bdr: Option<Box<CTDivBdr>>,
+    #[serde(rename = "divsChild")]
+    #[serde(default)]
+    pub divs_child: Vec<Box<CTDivs>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDivs {
+    #[serde(rename = "div")]
+    #[serde(default)]
+    pub div: Vec<Box<CTDiv>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTTxbxContent;
+
+pub type TxbxContent = Box<CTTxbxContent>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGMathContent;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGBlockLevelChunkElts;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct EGBlockLevelElts;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTBody {
+    #[serde(rename = "sectPr")]
+    #[serde(default)]
+    pub sect_pr: Option<Box<CTSectPr>>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTShapeDefaults;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTComments {
+    #[serde(rename = "comment")]
+    #[serde(default)]
+    pub comment: Vec<Box<CTComment>>,
+}
+
+pub type Comments = Box<CTComments>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTFootnotes {
+    #[serde(rename = "footnote")]
+    #[serde(default)]
+    pub footnote: Vec<Box<CTFtnEdn>>,
+}
+
+pub type Footnotes = Box<CTFootnotes>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTEndnotes {
+    #[serde(rename = "endnote")]
+    #[serde(default)]
+    pub endnote: Vec<Box<CTFtnEdn>>,
+}
+
+pub type Endnotes = Box<CTEndnotes>;
+
+pub type Hdr = Box<CTHdrFtr>;
+
+pub type Ftr = Box<CTHdrFtr>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTSmartTagType {
+    #[serde(rename = "@namespaceuri")]
+    #[serde(default)]
+    pub namespaceuri: Option<SSTString>,
+    #[serde(rename = "@name")]
+    #[serde(default)]
+    pub name: Option<SSTString>,
+    #[serde(rename = "@url")]
+    #[serde(default)]
+    pub url: Option<SSTString>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartBehavior {
+    #[serde(rename = "@val")]
+    pub val: STDocPartBehavior,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartBehaviors {
+    #[serde(rename = "behavior")]
+    #[serde(default)]
+    pub behavior: Vec<Box<CTDocPartBehavior>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartType {
+    #[serde(rename = "@val")]
+    pub val: STDocPartType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartTypes {
+    #[serde(rename = "@all")]
+    #[serde(default)]
+    pub all: Option<SSTOnOff>,
+    #[serde(rename = "type")]
+    #[serde(default)]
+    pub r#type: Vec<Box<CTDocPartType>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartGallery {
+    #[serde(rename = "@val")]
+    pub val: STDocPartGallery,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartCategory {
+    #[serde(rename = "name")]
+    pub name: Box<CTString>,
+    #[serde(rename = "gallery")]
+    pub gallery: Box<CTDocPartGallery>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartName {
+    #[serde(rename = "@val")]
+    pub val: SSTString,
+    #[serde(rename = "@decorated")]
+    #[serde(default)]
+    pub decorated: Option<SSTOnOff>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPartPr {
+    #[serde(rename = "name")]
+    pub name: Box<CTDocPartName>,
+    #[serde(rename = "style")]
+    #[serde(default)]
+    pub style: Option<Box<CTString>>,
+    #[serde(rename = "category")]
+    #[serde(default)]
+    pub category: Option<Box<CTDocPartCategory>>,
+    #[serde(rename = "types")]
+    #[serde(default)]
+    pub types: Option<Box<CTDocPartTypes>>,
+    #[serde(rename = "behaviors")]
+    #[serde(default)]
+    pub behaviors: Option<Box<CTDocPartBehaviors>>,
+    #[serde(rename = "description")]
+    #[serde(default)]
+    pub description: Option<Box<CTString>>,
+    #[serde(rename = "guid")]
+    #[serde(default)]
+    pub guid: Option<Box<CTGuid>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocPart {
+    #[serde(rename = "docPartPr")]
+    #[serde(default)]
+    pub doc_part_pr: Option<Box<CTDocPartPr>>,
+    #[serde(rename = "docPartBody")]
+    #[serde(default)]
+    pub doc_part_body: Option<Box<CTBody>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocParts {
+    #[serde(rename = "docPart")]
+    #[serde(default)]
+    pub doc_part: Vec<Box<CTDocPart>>,
+}
+
+pub type Settings = Box<CTSettings>;
+
+pub type WebSettings = Box<CTWebSettings>;
+
+pub type Fonts = Box<CTFontsList>;
+
+pub type Numbering = Box<CTNumbering>;
+
+pub type Styles = Box<CTStyles>;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCaption {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "@pos")]
+    #[serde(default)]
+    pub pos: Option<STCaptionPos>,
+    #[serde(rename = "@chapNum")]
+    #[serde(default)]
+    pub chap_num: Option<SSTOnOff>,
+    #[serde(rename = "@heading")]
+    #[serde(default)]
+    pub heading: Option<STDecimalNumber>,
+    #[serde(rename = "@noLabel")]
+    #[serde(default)]
+    pub no_label: Option<SSTOnOff>,
+    #[serde(rename = "@numFmt")]
+    #[serde(default)]
+    pub num_fmt: Option<STNumberFormat>,
+    #[serde(rename = "@sep")]
+    #[serde(default)]
+    pub sep: Option<STChapterSep>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAutoCaption {
+    #[serde(rename = "@name")]
+    pub name: SSTString,
+    #[serde(rename = "@caption")]
+    pub caption: SSTString,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTAutoCaptions {
+    #[serde(rename = "autoCaption")]
+    #[serde(default)]
+    pub auto_caption: Vec<Box<CTAutoCaption>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTCaptions {
+    #[serde(rename = "caption")]
+    #[serde(default)]
+    pub caption: Vec<Box<CTCaption>>,
+    #[serde(rename = "autoCaptions")]
+    #[serde(default)]
+    pub auto_captions: Option<Box<CTAutoCaptions>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocumentBase {
+    #[serde(rename = "background")]
+    #[serde(default)]
+    pub background: Option<Box<CTBackground>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTDocument {
+    #[serde(rename = "body")]
+    #[serde(default)]
+    pub body: Option<Box<CTBody>>,
+    #[serde(rename = "@conformance")]
+    #[serde(default)]
+    pub conformance: Option<SSTConformanceClass>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTGlossaryDocument {
+    #[serde(rename = "docParts")]
+    #[serde(default)]
+    pub doc_parts: Option<Box<CTDocParts>>,
+}
+
+pub type Document = Box<CTDocument>;
+
+pub type GlossaryDocument = Box<CTGlossaryDocument>;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AnyVmlOffice;
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AnyVmlVml;

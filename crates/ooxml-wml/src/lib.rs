@@ -33,10 +33,11 @@ pub mod writer;
 
 // Generated types from ECMA-376 schema.
 // Access via `ooxml_wml::types::*` for generated structs/enums.
-pub mod types {
-    #![allow(dead_code)]
-    include!(concat!(env!("OUT_DIR"), "/wml_types.rs"));
-}
+// This file is pre-generated and committed to avoid requiring spec downloads.
+// To regenerate: cargo build -p ooxml-wml (with specs in /spec/)
+#[allow(dead_code)]
+pub mod generated;
+pub use generated as types;
 
 pub use document::{
     Alignment, AppProperties, BlockContent, Body, BookmarkEnd, BookmarkStart, Cell,

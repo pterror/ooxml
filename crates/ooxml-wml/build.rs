@@ -1,12 +1,8 @@
 use ooxml_codegen::{CodegenConfig, Schema, generate, parse_rnc};
-use std::env;
 use std::fs;
 use std::path::Path;
 
 fn main() {
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("wml_types.rs");
-
     let spec_dir = concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/../../spec/OfficeOpenXML-RELAXNG-Transitional"
@@ -21,15 +17,26 @@ fn main() {
     println!("cargo::rerun-if-changed={}", shared_path);
     println!("cargo::rerun-if-changed=build.rs");
 
-    // Check if schema exists (it might not be downloaded yet)
-    if !Path::new(&wml_path).exists() {
-        fs::write(
-            &dest_path,
-            "// Schema not found. Run scripts/download-spec.sh first.\n",
-        )
-        .expect("failed to write stub");
+    // The generated file is committed at src/generated.rs
+    // Only regenerate if OOXML_REGENERATE is set and specs exist
+    let should_regenerate = std::env::var("OOXML_REGENERATE").is_ok();
+    let dest_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/generated.rs");
+
+    if !should_regenerate {
+        // Use the committed generated.rs - nothing to do
         return;
     }
+
+    // Check if schema exists
+    if !Path::new(&wml_path).exists() {
+        eprintln!(
+            "Warning: Schema not found at {}. Run scripts/download-spec.sh first.",
+            wml_path
+        );
+        return;
+    }
+
+    eprintln!("Regenerating src/generated.rs from schemas...");
 
     // Parse the shared types schema first
     let mut combined_schema = if Path::new(&shared_path).exists() {
@@ -67,4 +74,8 @@ fn main() {
 
     // Write the generated code
     fs::write(&dest_path, code).expect("failed to write generated types");
+    eprintln!(
+        "Generated {} bytes to src/generated.rs",
+        dest_path.metadata().map(|m| m.len()).unwrap_or(0)
+    );
 }
