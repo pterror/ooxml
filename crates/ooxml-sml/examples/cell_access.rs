@@ -4,7 +4,7 @@
 //!
 //! Run with: cargo run --example cell_access -- path/to/spreadsheet.xlsx
 
-use ooxml_sml::{CellValue, Workbook};
+use ooxml_sml::{Workbook, WorkbookCellValue as CellValue};
 use std::env;
 
 fn main() -> ooxml_sml::Result<()> {

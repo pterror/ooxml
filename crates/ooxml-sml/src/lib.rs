@@ -50,15 +50,21 @@ pub use generated as types;
 pub mod generated_parsers;
 pub use generated_parsers as parsers;
 
+// Extension traits for generated types (see ADR-003)
+pub mod ext;
+pub use ext::{CellExt, CellResolveExt, CellValue, ResolveContext, RowExt};
+
 pub use error::{Error, Result};
+// Note: workbook::CellValue is aliased to avoid conflict with ext::CellValue
+// During migration (ADR-003), prefer ext::CellValue for generated types
 pub use workbook::{
-    AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue, Chart, ChartSeries, ChartType,
-    ColorFilter, ColorScale, ColorScaleValue, ColumnInfo, Comment, ConditionalFormatting,
-    ConditionalRule, ConditionalRuleType, CustomFilter, DataBar, DataValidation,
-    DataValidationErrorStyle, DataValidationOperator, DataValidationType, DefinedName,
-    DefinedNameScope, Fill, FilterColumn, FilterOperator, Font, FreezePane, IconSet, IconSetValue,
-    MergedCell, NumberFormat, PanePosition, Row, Sheet, Stylesheet, Top10Filter, Workbook,
-    builtin_format_code, excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date,
+    AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue as WorkbookCellValue, Chart,
+    ChartSeries, ChartType, ColorFilter, ColorScale, ColorScaleValue, ColumnInfo, Comment,
+    ConditionalFormatting, ConditionalRule, ConditionalRuleType, CustomFilter, DataBar,
+    DataValidation, DataValidationErrorStyle, DataValidationOperator, DataValidationType,
+    DefinedName, DefinedNameScope, Fill, FilterColumn, FilterOperator, Font, FreezePane, IconSet,
+    IconSetValue, MergedCell, NumberFormat, PanePosition, Row, Sheet, Stylesheet, Top10Filter,
+    Workbook, builtin_format_code, excel_date_to_ymd, excel_datetime_to_ymdhms, format_excel_date,
     format_excel_datetime,
 };
 pub use writer::{
