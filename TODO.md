@@ -40,6 +40,8 @@ DocumentBuilder handles common cases but doesn't expose:
 - [ ] Edge case handling from corpus analysis
 - [ ] More comprehensive tests against real-world documents
 - [ ] Fuzz testing for malformed input
+- [ ] Synthetic fixtures from corpus insights - analyze failures, create minimal repro cases
+- [ ] Auto-generated fixtures from ECMA-376 XSD schemas - ensure all element types are tested
 
 ## Other Formats
 
