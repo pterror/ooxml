@@ -46,6 +46,10 @@ pub mod writer;
 pub mod generated;
 pub use generated as types;
 
+#[allow(dead_code)]
+pub mod generated_parsers;
+pub use generated_parsers as parsers;
+
 pub use error::{Error, Result};
 pub use workbook::{
     AutoFilter, Border, BorderSide, Cell, CellFormat, CellValue, Chart, ChartSeries, ChartType,

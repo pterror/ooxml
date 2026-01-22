@@ -14,6 +14,19 @@ pub fn generate_parsers(schema: &Schema, config: &CodegenConfig) -> String {
     g.run()
 }
 
+/// How to parse a field value from XML.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum ParseStrategy {
+    /// Call from_xml on a complex type (CT_* or EG_*)
+    FromXml,
+    /// Read text content and use FromStr (enums, numbers)
+    TextFromStr,
+    /// Read text content as String directly
+    TextString,
+    /// Read text content and decode as hex (Vec<u8>)
+    TextHexBinary,
+}
+
 struct ParserGenerator<'a> {
     schema: &'a Schema,
     config: &'a CodegenConfig,
@@ -49,8 +62,8 @@ impl<'a> ParserGenerator<'a> {
                         self.output.push_str(&code);
                         self.output.push('\n');
                     }
-                } else if !matches!(&def.pattern, Pattern::Element { .. }) {
-                    // Complex type struct - generate struct parser
+                } else if !self.is_type_alias(&def.pattern) {
+                    // Complex type struct - generate struct parser (skip type aliases)
                     if let Some(code) = self.gen_struct_parser(def) {
                         self.output.push_str(&code);
                         self.output.push('\n');
@@ -62,6 +75,37 @@ impl<'a> ParserGenerator<'a> {
         std::mem::take(&mut self.output)
     }
 
+    /// Check if a pattern would generate a type alias rather than a struct.
+    /// Type aliases are generated for:
+    /// - Pattern::Element { pattern } (element-only definitions)
+    /// - Pattern::Datatype (XSD type alias)
+    /// - Pattern::Ref to a simple type, datatype, or unknown definition
+    ///
+    /// We DON'T skip Ref patterns that point to attribute definitions,
+    /// because those generate structs that need FromXml impls.
+    fn is_type_alias(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            // Element wrappers are always type aliases
+            Pattern::Element { .. } => true,
+            // Direct datatype references are type aliases
+            Pattern::Datatype { .. } => true,
+            // Refs need to be checked - only skip if they resolve to simple types
+            Pattern::Ref(name) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    // If it resolves to a simple type (choice of strings, datatype, etc.)
+                    self.is_simple_type(def_pattern)
+                        // Or to another type alias
+                        || self.is_type_alias(def_pattern)
+                } else {
+                    // Unknown ref (from another schema) - these generate empty structs
+                    // that still need FromXml impls
+                    false
+                }
+            }
+            _ => false,
+        }
+    }
+
     fn write_header(&mut self) {
         writeln!(self.output, "// Event-based parsers for generated types.").unwrap();
         writeln!(
@@ -71,6 +115,8 @@ impl<'a> ParserGenerator<'a> {
         .unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "#![allow(unused_variables)]").unwrap();
+        writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();
+        writeln!(self.output, "#![allow(clippy::manual_is_multiple_of)]").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "use super::generated::*;").unwrap();
         writeln!(self.output, "use quick_xml::Reader;").unwrap();
@@ -143,6 +189,55 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "    Ok(())").unwrap();
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
+        // Add read_text_content helper for reading element text
+        writeln!(
+            self.output,
+            "/// Read the text content of an element until its end tag."
+        )
+        .unwrap();
+        writeln!(self.output, "fn read_text_content<R: BufRead>(reader: &mut Reader<R>) -> Result<String, ParseError> {{").unwrap();
+        writeln!(self.output, "    let mut text = String::new();").unwrap();
+        writeln!(self.output, "    let mut buf = Vec::new();").unwrap();
+        writeln!(self.output, "    loop {{").unwrap();
+        writeln!(
+            self.output,
+            "        match reader.read_event_into(&mut buf)? {{"
+        )
+        .unwrap();
+        writeln!(
+            self.output,
+            "            Event::Text(e) => text.push_str(&e.decode().unwrap_or_default()),"
+        )
+        .unwrap();
+        writeln!(
+            self.output,
+            "            Event::CData(e) => text.push_str(&e.decode().unwrap_or_default()),"
+        )
+        .unwrap();
+        writeln!(self.output, "            Event::End(_) => break,").unwrap();
+        writeln!(self.output, "            Event::Eof => break,").unwrap();
+        writeln!(self.output, "            _ => {{}}").unwrap();
+        writeln!(self.output, "        }}").unwrap();
+        writeln!(self.output, "        buf.clear();").unwrap();
+        writeln!(self.output, "    }}").unwrap();
+        writeln!(self.output, "    Ok(text)").unwrap();
+        writeln!(self.output, "}}").unwrap();
+        writeln!(self.output).unwrap();
+        // Add decode_hex helper for hexBinary types
+        writeln!(self.output, "/// Decode a hex string to bytes.").unwrap();
+        writeln!(self.output, "fn decode_hex(s: &str) -> Option<Vec<u8>> {{").unwrap();
+        writeln!(self.output, "    let s = s.trim();").unwrap();
+        writeln!(self.output, "    if s.len() % 2 != 0 {{ return None; }}").unwrap();
+        writeln!(self.output, "    (0..s.len())").unwrap();
+        writeln!(self.output, "        .step_by(2)").unwrap();
+        writeln!(
+            self.output,
+            "        .map(|i| u8::from_str_radix(&s[i..i + 2], 16).ok())"
+        )
+        .unwrap();
+        writeln!(self.output, "        .collect()").unwrap();
+        writeln!(self.output, "}}").unwrap();
+        writeln!(self.output).unwrap();
     }
 
     fn is_simple_type(&self, pattern: &Pattern) -> bool {
@@ -197,10 +292,10 @@ impl<'a> ParserGenerator<'a> {
         writeln!(code, "impl FromXml for {} {{", rust_name).unwrap();
         writeln!(
             code,
-            "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
+            "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
         )
         .unwrap();
-        writeln!(code, "        let tag = start.name();").unwrap();
+        writeln!(code, "        let tag = start_tag.name();").unwrap();
         writeln!(code, "        match tag.as_ref() {{").unwrap();
 
         for (xml_name, inner_type, needs_box) in &element_variants {
@@ -209,7 +304,7 @@ impl<'a> ParserGenerator<'a> {
             if *needs_box {
                 writeln!(
                     code,
-                    "                let inner = {}::from_xml(reader, start, is_empty)?;",
+                    "                let inner = {}::from_xml(reader, start_tag, is_empty)?;",
                     inner_type
                 )
                 .unwrap();
@@ -222,7 +317,7 @@ impl<'a> ParserGenerator<'a> {
             } else {
                 writeln!(
                     code,
-                    "                let inner = {}::from_xml(reader, start, is_empty)?;",
+                    "                let inner = {}::from_xml(reader, start_tag, is_empty)?;",
                     inner_type
                 )
                 .unwrap();
@@ -298,16 +393,20 @@ impl<'a> ParserGenerator<'a> {
         writeln!(code, "impl FromXml for {} {{", rust_name).unwrap();
         writeln!(
             code,
-            "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
+            "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
         )
         .unwrap();
 
-        // Declare field variables
+        // Declare field variables with f_ prefix to avoid shadowing function parameters
         for field in &fields {
+            // Strip r# from raw identifiers and leading underscores before prefixing
+            let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+            let base_name = base_name.trim_start_matches('_');
+            let var_name = format!("f_{}", base_name);
             if field.is_vec {
-                writeln!(code, "        let mut {} = Vec::new();", field.name).unwrap();
+                writeln!(code, "        let mut {} = Vec::new();", var_name).unwrap();
             } else if field.is_optional {
-                writeln!(code, "        let mut {} = None;", field.name).unwrap();
+                writeln!(code, "        let mut {} = None;", var_name).unwrap();
             } else {
                 let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
                 let full_type = if needs_box {
@@ -318,7 +417,7 @@ impl<'a> ParserGenerator<'a> {
                 writeln!(
                     code,
                     "        let mut {}: Option<{}> = None;",
-                    field.name, full_type
+                    var_name, full_type
                 )
                 .unwrap();
             }
@@ -331,11 +430,14 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "        // Parse attributes").unwrap();
             writeln!(
                 code,
-                "        for attr in start.attributes().filter_map(|a| a.ok()) {{"
+                "        for attr in start_tag.attributes().filter_map(|a| a.ok()) {{"
             )
             .unwrap();
             writeln!(code, "            match attr.key.as_ref() {{").unwrap();
             for field in &attr_fields {
+                let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+                let base_name = base_name.trim_start_matches('_');
+                let var_name = format!("f_{}", base_name);
                 let parse_expr = self.gen_attr_parse_expr(&field.pattern);
                 writeln!(code, "                b\"{}\" => {{", field.xml_name).unwrap();
                 writeln!(
@@ -343,7 +445,7 @@ impl<'a> ParserGenerator<'a> {
                     "                    let val = String::from_utf8_lossy(&attr.value);"
                 )
                 .unwrap();
-                writeln!(code, "                    {} = {};", field.name, parse_expr).unwrap();
+                writeln!(code, "                    {} = {};", var_name, parse_expr).unwrap();
                 writeln!(code, "                }}").unwrap();
             }
             writeln!(code, "                _ => {{}}").unwrap();
@@ -368,7 +470,10 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                        match e.name().as_ref() {{").unwrap();
 
             for field in &elem_fields {
-                let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
+                let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+                let base_name = base_name.trim_start_matches('_');
+                let var_name = format!("f_{}", base_name);
+                let parse_expr = self.gen_element_parse_code(field, false);
                 writeln!(
                     code,
                     "                            b\"{}\" => {{",
@@ -376,33 +481,17 @@ impl<'a> ParserGenerator<'a> {
                 )
                 .unwrap();
                 if field.is_vec {
-                    if needs_box {
-                        writeln!(
-                            code,
-                            "                                {}.push(Box::new({}::from_xml(reader, &e, false)?));",
-                            field.name, rust_type
-                        )
-                        .unwrap();
-                    } else {
-                        writeln!(
-                            code,
-                            "                                {}.push({}::from_xml(reader, &e, false)?);",
-                            field.name, rust_type
-                        )
-                        .unwrap();
-                    }
-                } else if needs_box {
                     writeln!(
                         code,
-                        "                                {} = Some(Box::new({}::from_xml(reader, &e, false)?));",
-                        field.name, rust_type
+                        "                                {}.push({});",
+                        var_name, parse_expr
                     )
                     .unwrap();
                 } else {
                     writeln!(
                         code,
-                        "                                {} = Some({}::from_xml(reader, &e, false)?);",
-                        field.name, rust_type
+                        "                                {} = Some({});",
+                        var_name, parse_expr
                     )
                     .unwrap();
                 }
@@ -427,42 +516,28 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                        match e.name().as_ref() {{").unwrap();
 
             for field in &elem_fields {
-                let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
+                let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+                let base_name = base_name.trim_start_matches('_');
+                let var_name = format!("f_{}", base_name);
+                let parse_expr = self.gen_element_parse_code(field, true);
                 writeln!(
                     code,
                     "                            b\"{}\" => {{",
                     field.xml_name
                 )
                 .unwrap();
-                // For empty elements, pass is_empty=true
                 if field.is_vec {
-                    if needs_box {
-                        writeln!(
-                            code,
-                            "                                {}.push(Box::new({}::from_xml(reader, &e, true)?));",
-                            field.name, rust_type
-                        )
-                        .unwrap();
-                    } else {
-                        writeln!(
-                            code,
-                            "                                {}.push({}::from_xml(reader, &e, true)?);",
-                            field.name, rust_type
-                        )
-                        .unwrap();
-                    }
-                } else if needs_box {
                     writeln!(
                         code,
-                        "                                {} = Some(Box::new({}::from_xml(reader, &e, true)?));",
-                        field.name, rust_type
+                        "                                {}.push({});",
+                        var_name, parse_expr
                     )
                     .unwrap();
                 } else {
                     writeln!(
                         code,
-                        "                                {} = Some({}::from_xml(reader, &e, true)?);",
-                        field.name, rust_type
+                        "                                {} = Some({});",
+                        var_name, parse_expr
                     )
                     .unwrap();
                 }
@@ -499,18 +574,21 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "        }}").unwrap();
         }
 
-        // Build result struct
+        // Build result struct - use original field names
         writeln!(code).unwrap();
         writeln!(code, "        Ok(Self {{").unwrap();
         for field in &fields {
+            let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
+            let base_name = base_name.trim_start_matches('_');
+            let var_name = format!("f_{}", base_name);
             if field.is_optional || field.is_vec {
-                writeln!(code, "            {},", field.name).unwrap();
+                writeln!(code, "            {}: {},", field.name, var_name).unwrap();
             } else {
                 // Required field - unwrap with error
                 writeln!(
                     code,
                     "            {}: {}.ok_or_else(|| ParseError::MissingAttribute(\"{}\".to_string()))?,",
-                    field.name, field.name, field.xml_name
+                    field.name, var_name, field.xml_name
                 )
                 .unwrap();
             }
@@ -531,10 +609,27 @@ impl<'a> ParserGenerator<'a> {
                     "val.parse().ok()".to_string()
                 }
                 "double" | "float" | "decimal" => "val.parse().ok()".to_string(),
+                "hexBinary" | "base64Binary" => "decode_hex(&val)".to_string(),
                 _ => "Some(val.into_owned())".to_string(),
             },
-            Pattern::Ref(name) if name.contains("_ST_") => {
-                // Enum type - use FromStr
+            Pattern::Ref(name) => {
+                // First recurse to find what this ref resolves to
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    return self.gen_attr_parse_expr(def_pattern);
+                }
+                // Unknown ref - if it looks like an enum (ST_), use FromStr, otherwise string
+                if name.contains("_ST_") {
+                    "val.parse().ok()".to_string()
+                } else {
+                    "Some(val.into_owned())".to_string()
+                }
+            }
+            // String choice enums
+            Pattern::Choice(variants)
+                if variants
+                    .iter()
+                    .all(|v| matches!(v, Pattern::StringLiteral(_))) =>
+            {
                 "val.parse().ok()".to_string()
             }
             _ => "Some(val.into_owned())".to_string(),
@@ -662,6 +757,185 @@ impl<'a> ParserGenerator<'a> {
             _ => ("String".to_string(), false),
         }
     }
+
+    /// Generate code to parse a child element field.
+    /// Returns the expression that produces the parsed value.
+    fn gen_element_parse_code(&self, field: &Field, is_empty_element: bool) -> String {
+        let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
+        let strategy = self.get_parse_strategy(&field.pattern);
+
+        let parse_expr = match strategy {
+            ParseStrategy::FromXml => {
+                // For type aliases, we need to find the actual type that has FromXml impl
+                // and check if the type alias already includes a Box
+                let (actual_type, type_alias_has_box) =
+                    self.resolve_from_xml_type_with_box(&field.pattern);
+                let final_type = actual_type.unwrap_or(rust_type.clone());
+
+                let mut expr = format!(
+                    "{}::from_xml(reader, &e, {})?",
+                    final_type, is_empty_element
+                );
+
+                // If the type alias is like `type X = Box<Y>`, we need a Box for that
+                if type_alias_has_box {
+                    expr = format!("Box::new({})", expr);
+                }
+
+                // If the field type is `Box<X>`, we need another Box for the field
+                if needs_box {
+                    expr = format!("Box::new({})", expr);
+                }
+
+                return expr;
+            }
+            ParseStrategy::TextFromStr => {
+                if is_empty_element {
+                    // Empty element with FromStr - try to parse empty string or use default
+                    "Default::default()".to_string()
+                } else {
+                    "{ let text = read_text_content(reader)?; text.parse().map_err(|_| ParseError::InvalidValue(text))? }".to_string()
+                }
+            }
+            ParseStrategy::TextString => {
+                if is_empty_element {
+                    "String::new()".to_string()
+                } else {
+                    "read_text_content(reader)?".to_string()
+                }
+            }
+            ParseStrategy::TextHexBinary => {
+                if is_empty_element {
+                    "Vec::new()".to_string()
+                } else {
+                    "{ let text = read_text_content(reader)?; decode_hex(&text).unwrap_or_default() }".to_string()
+                }
+            }
+        };
+
+        // For non-FromXml strategies, handle boxing normally
+        if strategy != ParseStrategy::FromXml && needs_box {
+            format!("Box::new({})", parse_expr)
+        } else {
+            parse_expr
+        }
+    }
+
+    /// Resolve a pattern to the actual type that has a FromXml impl.
+    /// Returns (Option<type_name>, type_alias_already_has_box).
+    /// For type aliases (definitions that are just Pattern::Element wrapping a ref),
+    /// returns the underlying type's Rust name and indicates the alias includes a Box.
+    fn resolve_from_xml_type_with_box(&self, pattern: &Pattern) -> (Option<String>, bool) {
+        match pattern {
+            Pattern::Ref(name) => {
+                // Look up the definition
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    // If it's a type alias (Pattern::Element wrapping another ref),
+                    // the generated type will be `type X = Box<InnerType>`
+                    // So we resolve to the inner type and signal that boxing is already done
+                    if let Pattern::Element { pattern: inner, .. } = def_pattern
+                        && let Some(inner_type) = self.resolve_from_xml_type_simple(inner)
+                    {
+                        return (Some(inner_type), true);
+                    }
+                    // If it's a simple ref, just a type alias like `type X = Y`
+                    // Check if the inner ref is external (not in our definitions)
+                    if let Pattern::Ref(inner_name) = def_pattern
+                        && !self.definitions.contains_key(inner_name.as_str())
+                    {
+                        // External ref like r_id - don't try to resolve, use original type
+                        return (None, false);
+                    } else if let Pattern::Ref(inner_name) = def_pattern {
+                        return self
+                            .resolve_from_xml_type_with_box(&Pattern::Ref(inner_name.clone()));
+                    }
+                }
+                // Type in definitions - use its name
+                (Some(self.to_rust_type_name(name)), false)
+            }
+            _ => (None, false),
+        }
+    }
+
+    /// Simple resolver that just returns the type name without box tracking.
+    fn resolve_from_xml_type_simple(&self, pattern: &Pattern) -> Option<String> {
+        match pattern {
+            Pattern::Ref(name) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    if let Pattern::Element { pattern: inner, .. } = def_pattern {
+                        return self.resolve_from_xml_type_simple(inner);
+                    }
+                    if let Pattern::Ref(inner_name) = def_pattern {
+                        // Check if the inner ref is external
+                        if !self.definitions.contains_key(inner_name.as_str()) {
+                            // External ref - stop resolution
+                            return None;
+                        }
+                        return self
+                            .resolve_from_xml_type_simple(&Pattern::Ref(inner_name.clone()));
+                    }
+                }
+                Some(self.to_rust_type_name(name))
+            }
+            _ => None,
+        }
+    }
+
+    /// Determine how to parse a field's value from XML.
+    fn get_parse_strategy(&self, pattern: &Pattern) -> ParseStrategy {
+        match pattern {
+            Pattern::Ref(name) => {
+                // Check what this ref resolves to
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    // If it's a ref to another ref (like CT_Drawing = r_id),
+                    // and that ref is external (not in our definitions), treat as empty struct
+                    if let Pattern::Ref(inner_name) = def_pattern
+                        && !self.definitions.contains_key(inner_name.as_str())
+                    {
+                        // External ref (e.g., r_id from another schema)
+                        // These generate empty structs that need simple FromXml impls
+                        return ParseStrategy::FromXml;
+                    }
+                    return self.get_parse_strategy(def_pattern);
+                }
+
+                // Complex types (CT_*) and element groups (EG_*) need from_xml
+                if name.contains("_CT_") || name.contains("_EG_") {
+                    return ParseStrategy::FromXml;
+                }
+
+                // Unknown ref - treat as string
+                ParseStrategy::TextString
+            }
+            Pattern::Datatype { library, name, .. } => {
+                if library == "xsd" {
+                    match name.as_str() {
+                        "string" | "token" | "NCName" | "ID" | "IDREF" | "anyURI" | "dateTime"
+                        | "date" | "time" => ParseStrategy::TextString,
+                        "hexBinary" => ParseStrategy::TextHexBinary,
+                        "base64Binary" => ParseStrategy::TextHexBinary, // TODO: proper base64
+                        // Numbers and booleans use FromStr
+                        _ => ParseStrategy::TextFromStr,
+                    }
+                } else {
+                    ParseStrategy::TextString
+                }
+            }
+            // String enums use FromStr
+            Pattern::Choice(variants)
+                if variants
+                    .iter()
+                    .all(|v| matches!(v, Pattern::StringLiteral(_))) =>
+            {
+                ParseStrategy::TextFromStr
+            }
+            Pattern::StringLiteral(_) => ParseStrategy::TextString,
+            Pattern::Empty => ParseStrategy::TextString,
+            Pattern::List(_) => ParseStrategy::TextString,
+            // For complex patterns (Sequence, etc.), assume it needs from_xml
+            _ => ParseStrategy::FromXml,
+        }
+    }
 }
 
 struct Field {
@@ -709,6 +983,7 @@ fn to_snake_case(s: &str) -> String {
         result.extend(ch.to_lowercase());
     }
     match result.as_str() {
+        // Rust keywords
         "type" => "r#type".to_string(),
         "ref" => "r#ref".to_string(),
         "match" => "r#match".to_string(),
