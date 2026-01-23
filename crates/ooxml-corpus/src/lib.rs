@@ -18,6 +18,7 @@ pub mod error_analysis;
 pub mod feature;
 pub mod fixture;
 pub mod persistence;
+pub mod sml_attrs;
 pub mod validation;
 
 pub use coverage::{
@@ -34,6 +35,7 @@ pub use fixture::{
     determine_interest_reason, extract_fixture,
 };
 pub use persistence::{CorpusDatabase, CorpusStats, StoredDocument, StoredError};
+pub use sml_attrs::{SmlAttrStats, analyze_xlsx_directory, analyze_xlsx_file};
 pub use validation::{
     CorpusValidationStats, ErrorCode, ValidationError, ValidationResult, ValidationWarning,
     WarningCode, validate_document,

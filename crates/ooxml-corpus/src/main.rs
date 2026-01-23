@@ -150,6 +150,27 @@ fn main() {
             run_coverage(&args[2], limit, json_output);
             return;
         }
+        "sml-attrs" => {
+            if args.len() < 3 {
+                eprintln!("Usage: ooxml-corpus sml-attrs <path> [options]");
+                eprintln!();
+                eprintln!("Analyze SML (SpreadsheetML) attribute usage in XLSX files.");
+                eprintln!("Useful for determining which attributes are commonly vs rarely used.");
+                eprintln!();
+                eprintln!("Options:");
+                eprintln!("  --limit N    Only process first N files");
+                eprintln!("  --json       Output as JSON");
+                std::process::exit(1);
+            }
+            let limit = args
+                .iter()
+                .position(|a| a == "--limit")
+                .and_then(|i| args.get(i + 1))
+                .and_then(|s| s.parse().ok());
+            let json_output = args.iter().any(|a| a == "--json");
+            run_sml_attrs(&args[2], limit, json_output);
+            return;
+        }
         "--help" | "-h" | "help" => {
             print_usage();
             return;
@@ -828,6 +849,8 @@ fn print_usage() {
     eprintln!("  list <db>                 List all corpora in the database");
     eprintln!("  failures <db> <corpus>    List all failures for a corpus");
     eprintln!("  extract <src> <out> [opts] Extract test fixtures from documents");
+    eprintln!("  sml-attrs <path> [opts]   Analyze SML attribute usage in XLSX files");
+    eprintln!("  coverage <path> [opts]    Analyze WML element coverage in DOCX files");
     eprintln!();
     eprintln!("Analyze Mode:");
     eprintln!("  ooxml-corpus <path> [options]");
@@ -1180,6 +1203,35 @@ fn run_coverage(path_str: &str, limit: Option<usize>, json_output: bool) {
         println!("{}", serde_json::to_string_pretty(&report).unwrap());
     } else {
         print_coverage_report(&report, errors);
+    }
+}
+
+fn run_sml_attrs(path_str: &str, limit: Option<usize>, json_output: bool) {
+    let path = Path::new(path_str);
+
+    if !path.exists() {
+        eprintln!("Error: path does not exist: {}", path.display());
+        std::process::exit(1);
+    }
+
+    eprintln!("Analyzing SML attribute usage in: {}", path.display());
+
+    let stats = if path.is_dir() {
+        ooxml_corpus::analyze_xlsx_directory(path, limit)
+    } else {
+        match ooxml_corpus::analyze_xlsx_file(path) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("Error analyzing file: {}", e);
+                std::process::exit(1);
+            }
+        }
+    };
+
+    if json_output {
+        println!("{}", serde_json::to_string_pretty(&stats).unwrap());
+    } else {
+        stats.print_report();
     }
 }
 

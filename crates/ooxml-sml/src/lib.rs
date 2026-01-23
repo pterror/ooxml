@@ -42,11 +42,9 @@ pub mod writer;
 // Access via `ooxml_sml::types::*` for generated structs/enums.
 // This file is pre-generated and committed to avoid requiring spec downloads.
 // To regenerate: OOXML_REGENERATE=1 cargo build -p ooxml-sml (with specs in /spec/)
-#[allow(dead_code)]
 pub mod generated;
 pub use generated as types;
 
-#[allow(dead_code)]
 pub mod generated_parsers;
 pub use generated_parsers as parsers;
 
