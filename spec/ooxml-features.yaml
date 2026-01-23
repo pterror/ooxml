@@ -1,0 +1,570 @@
+# OOXML Feature Tags
+#
+# Maps every element + attribute to feature tags for conditional compilation.
+# Used by ooxml-codegen to generate #[cfg(feature = "...")] attributes.
+#
+# Schema:
+#   <module>:
+#     <ElementName>:
+#       <attribute_or_child>: [tag1, tag2, ...]
+#
+# Tags:
+#   core       - Essential for basic reading/writing (always included)
+#   styling    - Fonts, colors, formatting, appearance
+#   structure  - Grouping, hiding, outlines, freeze panes
+#   formulas   - Basic formula support (shared formulas, etc.)
+#   formulas-advanced - Array formulas, data tables, iteration
+#   layout     - Page setup, margins, print options
+#   protection - Sheet/cell protection, permissions
+#   filtering  - AutoFilter, sorting
+#   validation - Data validation, dropdowns
+#   comments   - Cell comments/notes
+#   charts     - Embedded charts
+#   drawings   - Images, shapes
+#   hyperlinks - Links to URLs, other sheets
+#   metadata   - Cell metadata, custom properties
+#   i18n       - Phonetic text, CJK support
+#   pivot      - Pivot tables and caches
+#   tables     - Structured tables
+#   extensions - Extension lists (extLst)
+#   revisions  - Track changes
+#   external   - External references, links
+
+# =============================================================================
+# SpreadsheetML (Excel)
+# =============================================================================
+sml:
+  # ---------------------------------------------------------------------------
+  # Core worksheet elements
+  # ---------------------------------------------------------------------------
+  Worksheet:
+    # Attributes (none commonly used)
+    # Children
+    sheetPr: [styling, structure]
+    dimension: [core]
+    sheetViews: [core]
+    sheetFormatPr: [styling]
+    cols: [styling]
+    sheetData: [core]
+    sheetCalcPr: [formulas]
+    sheetProtection: [protection]
+    protectedRanges: [protection]
+    scenarios: [formulas-advanced]
+    autoFilter: [filtering]
+    sortState: [filtering]
+    dataConsolidate: [formulas-advanced]
+    customSheetViews: [structure]
+    mergeCells: [core]
+    phoneticPr: [i18n]
+    conditionalFormatting: [styling]
+    dataValidations: [validation]
+    hyperlinks: [hyperlinks]
+    printOptions: [layout]
+    pageMargins: [layout]
+    pageSetup: [layout]
+    headerFooter: [layout]
+    rowBreaks: [layout]
+    colBreaks: [layout]
+    customProperties: [metadata]
+    cellWatches: [formulas-advanced]
+    ignoredErrors: [validation]
+    smartTags: [metadata]
+    drawing: [drawings]
+    drawingHF: [drawings, layout]
+    picture: [drawings]
+    oleObjects: [external]
+    controls: [external]
+    webPublishItems: [external]
+    tableParts: [tables]
+    extLst: [extensions]
+    legacyDrawing: [comments, drawings]
+    legacyDrawingHF: [layout, drawings]
+
+  SheetData:
+    row: [core]
+
+  # ---------------------------------------------------------------------------
+  # Row element
+  # ---------------------------------------------------------------------------
+  Row:
+    # Attributes
+    r: [core]                    # Row number (required)
+    spans: [core]                # Cell span hints for performance
+    s: [core, styling]           # Style index
+    customFormat: [styling]      # Custom format applied
+    ht: [styling]                # Row height
+    hidden: [structure]          # Row is hidden
+    customHeight: [styling]      # Height is custom (not auto)
+    outlineLevel: [structure]    # Outline grouping level
+    collapsed: [structure]       # Outline group collapsed
+    thickTop: [styling]          # Thick top border
+    thickBot: [styling]          # Thick bottom border
+    ph: [i18n]                   # Show phonetic
+    # Children
+    c: [core]                    # Cells
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Cell element
+  # ---------------------------------------------------------------------------
+  Cell:
+    # Attributes
+    r: [core]                    # Cell reference (e.g., "A1")
+    s: [core, styling]           # Style index
+    t: [core]                    # Cell type (s/n/b/e/str/inlineStr)
+    cm: [metadata]               # Cell metadata index
+    vm: [metadata]               # Value metadata index
+    ph: [i18n]                   # Show phonetic
+    # Children
+    f: [core, formulas]          # Formula
+    v: [core]                    # Value
+    is: [core]                   # Inline string (rich text)
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Formula element
+  # ---------------------------------------------------------------------------
+  CellFormula:
+    # Content
+    text: [core]                 # Formula text
+    # Attributes
+    t: [core]                    # Formula type (normal/shared/array/dataTable)
+    si: [core]                   # Shared formula index
+    ref: [core]                  # Reference for shared/array formula master
+    aca: [formulas-advanced]     # Always calculate array
+    dt2D: [formulas-advanced]    # 2D data table
+    dtr: [formulas-advanced]     # Data table row input
+    del1: [formulas-advanced]    # Data table input 1 deleted
+    del2: [formulas-advanced]    # Data table input 2 deleted
+    r1: [formulas-advanced]      # Data table row 1
+    r2: [formulas-advanced]      # Data table row 2
+    ca: [formulas-advanced]      # Calculate cell always (volatile)
+    bx: [formulas-advanced]      # Assigns value to name
+
+  # ---------------------------------------------------------------------------
+  # Column definitions
+  # ---------------------------------------------------------------------------
+  Column:
+    min: [styling]               # First column of range
+    max: [styling]               # Last column of range
+    width: [styling]             # Column width
+    style: [styling]             # Default style for column
+    hidden: [structure]          # Column is hidden
+    customWidth: [styling]       # Width is custom
+    outlineLevel: [structure]    # Outline level
+    collapsed: [structure]       # Collapsed
+    bestFit: [styling]           # Best fit width
+    phonetic: [i18n]             # Show phonetic
+
+  # ---------------------------------------------------------------------------
+  # Sheet views
+  # ---------------------------------------------------------------------------
+  SheetView:
+    windowProtection: [protection]
+    showFormulas: [formulas]
+    showGridLines: [styling]
+    showRowColHeaders: [styling]
+    showZeros: [styling]
+    rightToLeft: [i18n]
+    tabSelected: [core]
+    showRuler: [layout]
+    showOutlineSymbols: [structure]
+    defaultGridColor: [styling]
+    showWhiteSpace: [layout]
+    view: [core]
+    topLeftCell: [core]
+    colorId: [styling]
+    zoomScale: [core]
+    zoomScaleNormal: [core]
+    zoomScaleSheetLayoutView: [layout]
+    zoomScalePageLayoutView: [layout]
+    workbookViewId: [core]
+    # Children
+    pane: [structure]
+    selection: [core]
+    pivotSelection: [pivot]
+    extLst: [extensions]
+
+  Pane:
+    xSplit: [structure]          # Columns frozen/split
+    ySplit: [structure]          # Rows frozen/split
+    topLeftCell: [structure]     # Top-left cell of bottom-right pane
+    activePane: [structure]      # Active pane
+    state: [structure]           # frozen/frozenSplit/split
+
+  # ---------------------------------------------------------------------------
+  # Merged cells
+  # ---------------------------------------------------------------------------
+  MergedCell:
+    ref: [core]                  # Range reference (e.g., "A1:B2")
+
+  # ---------------------------------------------------------------------------
+  # Conditional formatting
+  # ---------------------------------------------------------------------------
+  ConditionalFormatting:
+    sqref: [styling]             # Cell ranges
+    pivot: [pivot, styling]      # Applies to pivot table
+    # Children
+    cfRule: [styling]
+    extLst: [extensions]
+
+  ConditionalRule:
+    type: [styling]              # Rule type
+    dxfId: [styling]             # Differential format ID
+    priority: [styling]          # Priority
+    stopIfTrue: [styling]        # Stop if true
+    aboveAverage: [styling]      # Above average params
+    percent: [styling]           # Percent params
+    bottom: [styling]            # Bottom N params
+    operator: [styling]          # Operator
+    text: [styling]              # Text for contains/etc
+    timePeriod: [styling]        # Time period
+    rank: [styling]              # Rank
+    stdDev: [styling]            # Std deviation
+    equalAverage: [styling]      # Equal average
+    # Children
+    formula: [styling]
+    colorScale: [styling]
+    dataBar: [styling]
+    iconSet: [styling]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Data validation
+  # ---------------------------------------------------------------------------
+  DataValidation:
+    type: [validation]           # Validation type
+    errorStyle: [validation]     # Error alert style
+    imeMode: [validation, i18n]  # IME mode
+    operator: [validation]       # Comparison operator
+    allowBlank: [validation]     # Allow blank
+    showDropDown: [validation]   # Show dropdown (inverted!)
+    showInputMessage: [validation]
+    showErrorMessage: [validation]
+    errorTitle: [validation]
+    error: [validation]
+    promptTitle: [validation]
+    prompt: [validation]
+    sqref: [validation]          # Cell ranges
+    # Children
+    formula1: [validation]
+    formula2: [validation]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # AutoFilter
+  # ---------------------------------------------------------------------------
+  AutoFilter:
+    ref: [filtering]             # Filter range
+    # Children
+    filterColumn: [filtering]
+    sortState: [filtering]
+    extLst: [extensions]
+
+  FilterColumn:
+    colId: [filtering]           # Column index
+    hiddenButton: [filtering]    # Hide dropdown button
+    showButton: [filtering]      # Show dropdown button
+    # Children
+    filters: [filtering]
+    top10: [filtering]
+    customFilters: [filtering]
+    dynamicFilter: [filtering]
+    colorFilter: [filtering]
+    iconFilter: [filtering]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Comments
+  # ---------------------------------------------------------------------------
+  Comment:
+    ref: [comments]              # Cell reference
+    authorId: [comments]         # Author index
+    guid: [comments]             # GUID
+    shapeId: [comments]          # Shape ID
+    # Children
+    text: [comments]             # Comment text (rich string)
+
+  # ---------------------------------------------------------------------------
+  # Hyperlinks
+  # ---------------------------------------------------------------------------
+  Hyperlink:
+    ref: [hyperlinks]            # Cell reference
+    location: [hyperlinks]       # Location within document
+    tooltip: [hyperlinks]        # Tooltip text
+    display: [hyperlinks]        # Display text
+    r_id: [hyperlinks]           # Relationship ID for external
+
+  # ---------------------------------------------------------------------------
+  # Page layout
+  # ---------------------------------------------------------------------------
+  PageMargins:
+    left: [layout]
+    right: [layout]
+    top: [layout]
+    bottom: [layout]
+    header: [layout]
+    footer: [layout]
+
+  PageSetup:
+    paperSize: [layout]
+    paperHeight: [layout]
+    paperWidth: [layout]
+    scale: [layout]
+    firstPageNumber: [layout]
+    fitToWidth: [layout]
+    fitToHeight: [layout]
+    pageOrder: [layout]
+    orientation: [layout]
+    usePrinterDefaults: [layout]
+    blackAndWhite: [layout]
+    draft: [layout]
+    cellComments: [layout, comments]
+    useFirstPageNumber: [layout]
+    errors: [layout]
+    horizontalDpi: [layout]
+    verticalDpi: [layout]
+    copies: [layout]
+    r_id: [layout]               # Relationship to printer settings
+
+  HeaderFooter:
+    differentOddEven: [layout]
+    differentFirst: [layout]
+    scaleWithDoc: [layout]
+    alignWithMargins: [layout]
+    # Children
+    oddHeader: [layout]
+    oddFooter: [layout]
+    evenHeader: [layout]
+    evenFooter: [layout]
+    firstHeader: [layout]
+    firstFooter: [layout]
+
+  # ---------------------------------------------------------------------------
+  # Styles (Stylesheet)
+  # ---------------------------------------------------------------------------
+  Stylesheet:
+    numFmts: [styling]
+    fonts: [styling]
+    fills: [styling]
+    borders: [styling]
+    cellStyleXfs: [styling]
+    cellXfs: [styling]
+    cellStyles: [styling]
+    dxfs: [styling]
+    tableStyles: [styling, tables]
+    colors: [styling]
+    extLst: [extensions]
+
+  Font:
+    name: [styling]
+    charset: [styling, i18n]
+    family: [styling]
+    b: [styling]                 # Bold
+    i: [styling]                 # Italic
+    strike: [styling]            # Strikethrough
+    outline: [styling]
+    shadow: [styling]
+    condense: [styling]
+    extend: [styling]
+    color: [styling]
+    sz: [styling]                # Size
+    u: [styling]                 # Underline
+    vertAlign: [styling]
+    scheme: [styling]
+
+  Fill:
+    patternFill: [styling]
+    gradientFill: [styling]
+
+  Border:
+    left: [styling]
+    right: [styling]
+    top: [styling]
+    bottom: [styling]
+    diagonal: [styling]
+    vertical: [styling]
+    horizontal: [styling]
+    diagonalUp: [styling]
+    diagonalDown: [styling]
+    outline: [styling]
+
+  Format:  # CT_Xf / CellFormat
+    numFmtId: [styling]
+    fontId: [styling]
+    fillId: [styling]
+    borderId: [styling]
+    xfId: [styling]
+    quotePrefix: [styling]
+    pivotButton: [pivot, styling]
+    applyNumberFormat: [styling]
+    applyFont: [styling]
+    applyFill: [styling]
+    applyBorder: [styling]
+    applyAlignment: [styling]
+    applyProtection: [styling, protection]
+    # Children
+    alignment: [styling]
+    protection: [protection]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Shared strings
+  # ---------------------------------------------------------------------------
+  SharedStrings:
+    count: [core]
+    uniqueCount: [core]
+    # Children
+    si: [core]                   # String items
+
+  StringItem:
+    t: [core]                    # Plain text
+    r: [core]                    # Rich text runs
+    rPh: [i18n]                  # Phonetic runs
+    phoneticPr: [i18n]           # Phonetic properties
+
+  # ---------------------------------------------------------------------------
+  # Workbook
+  # ---------------------------------------------------------------------------
+  Workbook:
+    fileVersion: [core]
+    fileSharing: [protection]
+    workbookPr: [core]
+    workbookProtection: [protection]
+    bookViews: [core]
+    sheets: [core]
+    functionGroups: [formulas-advanced]
+    externalReferences: [external]
+    definedNames: [core, formulas]
+    calcPr: [formulas]
+    oleSize: [external]
+    customWorkbookViews: [structure]
+    pivotCaches: [pivot]
+    smartTagPr: [metadata]
+    smartTagTypes: [metadata]
+    webPublishing: [external]
+    fileRecoveryPr: [core]
+    webPublishObjects: [external]
+    extLst: [extensions]
+
+  Sheet:  # Sheet reference in workbook
+    name: [core]
+    sheetId: [core]
+    state: [structure]           # visible/hidden/veryHidden
+    r_id: [core]                 # Relationship ID
+
+  DefinedName:
+    name: [core, formulas]
+    comment: [core]
+    customMenu: [formulas-advanced]
+    description: [core]
+    help: [formulas-advanced]
+    statusBar: [formulas-advanced]
+    localSheetId: [core, formulas]
+    hidden: [structure]
+    function: [formulas-advanced]
+    vbProcedure: [formulas-advanced]
+    xlm: [formulas-advanced]
+    functionGroupId: [formulas-advanced]
+    shortcutKey: [formulas-advanced]
+    publishToServer: [external]
+    workbookParameter: [formulas-advanced]
+    # Content
+    text: [core, formulas]       # The formula/reference
+
+  # ---------------------------------------------------------------------------
+  # Tables
+  # ---------------------------------------------------------------------------
+  Table:
+    id: [tables]
+    name: [tables]
+    displayName: [tables]
+    comment: [tables]
+    ref: [tables]
+    tableType: [tables]
+    headerRowCount: [tables]
+    insertRow: [tables]
+    insertRowShift: [tables]
+    totalsRowCount: [tables]
+    totalsRowShown: [tables]
+    published: [tables]
+    headerRowDxfId: [tables, styling]
+    dataDxfId: [tables, styling]
+    totalsRowDxfId: [tables, styling]
+    headerRowBorderDxfId: [tables, styling]
+    tableBorderDxfId: [tables, styling]
+    totalsRowBorderDxfId: [tables, styling]
+    headerRowCellStyle: [tables, styling]
+    dataCellStyle: [tables, styling]
+    totalsRowCellStyle: [tables, styling]
+    connectionId: [tables, external]
+    # Children
+    autoFilter: [tables, filtering]
+    sortState: [tables, filtering]
+    tableColumns: [tables]
+    tableStyleInfo: [tables, styling]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Charts (basic - full chart support is in DML)
+  # ---------------------------------------------------------------------------
+  ChartSheet:
+    sheetPr: [charts]
+    sheetViews: [charts]
+    sheetProtection: [charts, protection]
+    customSheetViews: [charts]
+    pageMargins: [charts, layout]
+    pageSetup: [charts, layout]
+    headerFooter: [charts, layout]
+    drawing: [charts]
+    drawingHF: [charts, layout]
+    picture: [charts, drawings]
+    webPublishItems: [charts, external]
+    extLst: [extensions]
+
+# =============================================================================
+# WordprocessingML (Word) - TODO: expand
+# =============================================================================
+wml:
+  Document:
+    body: [core]
+
+  Body:
+    p: [core]                    # Paragraphs
+    tbl: [tables]                # Tables
+    sectPr: [layout]             # Section properties
+
+  Paragraph:
+    pPr: [styling]               # Paragraph properties
+    r: [core]                    # Runs
+    hyperlink: [hyperlinks]
+    bookmarkStart: [core]
+    bookmarkEnd: [core]
+
+  Run:
+    rPr: [styling]               # Run properties
+    t: [core]                    # Text
+    br: [core]                   # Break
+    tab: [core]                  # Tab
+    drawing: [drawings]
+
+# =============================================================================
+# PresentationML (PowerPoint) - TODO: expand
+# =============================================================================
+pml:
+  Presentation:
+    sldMasterIdLst: [core]
+    sldIdLst: [core]
+    sldSz: [core]
+    notesSz: [core]
+
+  Slide:
+    cSld: [core]
+    transition: [transitions]
+    timing: [animations]
+
+# =============================================================================
+# DrawingML (shared) - TODO: expand
+# =============================================================================
+dml:
+  # Charts, shapes, etc.
