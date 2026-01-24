@@ -609,8 +609,11 @@ impl<'a> Generator<'a> {
                     "    /// Unknown attributes captured for roundtrip fidelity."
                 )
                 .unwrap();
+                writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
                 writeln!(code, "    #[serde(flatten)]").unwrap();
+                writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
                 writeln!(code, "    #[serde(default)]").unwrap();
+                writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
                 writeln!(
                     code,
                     "    pub extra_attrs: std::collections::HashMap<String, String>,"

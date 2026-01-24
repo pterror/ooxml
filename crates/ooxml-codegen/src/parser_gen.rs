@@ -431,7 +431,8 @@ impl<'a> ParserGenerator<'a> {
         let attr_fields: Vec<_> = fields.iter().filter(|f| f.is_attribute).collect();
         let has_attrs = !attr_fields.is_empty();
         if has_attrs {
-            // Declare extra_attrs for capturing unknown attributes
+            // Declare extra_attrs for capturing unknown attributes (feature-gated)
+            writeln!(code, "        #[cfg(feature = \"extra-attrs\")]").unwrap();
             writeln!(
                 code,
                 "        let mut extra_attrs = std::collections::HashMap::new();"
@@ -464,15 +465,26 @@ impl<'a> ParserGenerator<'a> {
                 writeln!(code, "                    {} = {};", var_name, parse_expr).unwrap();
                 writeln!(code, "                }}").unwrap();
             }
-            // Capture unknown attributes for roundtrip fidelity
-            writeln!(code, "                _ => {{").unwrap();
-            writeln!(code, "                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();").unwrap();
+            // Capture unknown attributes for roundtrip fidelity (feature-gated)
+            writeln!(code, "                #[cfg(feature = \"extra-attrs\")]").unwrap();
+            writeln!(code, "                unknown => {{").unwrap();
+            writeln!(
+                code,
+                "                    let key = String::from_utf8_lossy(unknown).into_owned();"
+            )
+            .unwrap();
             writeln!(
                 code,
                 "                    extra_attrs.insert(key, val.into_owned());"
             )
             .unwrap();
             writeln!(code, "                }}").unwrap();
+            writeln!(
+                code,
+                "                #[cfg(not(feature = \"extra-attrs\"))]"
+            )
+            .unwrap();
+            writeln!(code, "                _ => {{}}").unwrap();
             writeln!(code, "            }}").unwrap();
             writeln!(code, "        }}").unwrap();
         }
@@ -664,8 +676,9 @@ impl<'a> ParserGenerator<'a> {
                 .unwrap();
             }
         }
-        // Add extra_attrs if this struct has attributes
+        // Add extra_attrs if this struct has attributes (feature-gated)
         if has_attrs {
+            writeln!(code, "            #[cfg(feature = \"extra-attrs\")]").unwrap();
             writeln!(code, "            extra_attrs,").unwrap();
         }
         writeln!(code, "        }})").unwrap();

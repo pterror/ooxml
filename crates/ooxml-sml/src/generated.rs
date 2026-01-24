@@ -4411,8 +4411,11 @@ pub struct AutoFilter {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4430,8 +4433,11 @@ pub struct FilterColumn {
     #[serde(default)]
     pub show_button: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4450,8 +4456,11 @@ pub struct Filters {
     #[serde(default)]
     pub date_group_item: Vec<Box<DateGroupItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4461,8 +4470,11 @@ pub struct Filter {
     #[serde(default)]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4475,8 +4487,11 @@ pub struct CustomFilters {
     #[serde(default)]
     pub custom_filter: Vec<Box<CustomFilter>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4489,8 +4504,11 @@ pub struct CustomFilter {
     #[serde(default)]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4508,8 +4526,11 @@ pub struct Top10Filter {
     #[serde(default)]
     pub filter_val: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4522,8 +4543,11 @@ pub struct ColorFilter {
     #[serde(default)]
     pub cell_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4535,8 +4559,11 @@ pub struct IconFilter {
     #[serde(default)]
     pub icon_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4557,8 +4584,11 @@ pub struct DynamicFilter {
     #[serde(default)]
     pub max_val_iso: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4582,8 +4612,11 @@ pub struct SortState {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4610,8 +4643,11 @@ pub struct SortCondition {
     #[serde(default)]
     pub icon_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4637,8 +4673,11 @@ pub struct DateGroupItem {
     #[serde(rename = "@dateTimeGrouping")]
     pub date_time_grouping: STDateTimeGrouping,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4647,8 +4686,11 @@ pub struct CTXStringElement {
     #[serde(rename = "@v")]
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4658,8 +4700,11 @@ pub struct Extension {
     #[serde(default)]
     pub uri: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4674,8 +4719,11 @@ pub struct ObjectAnchor {
     #[serde(default)]
     pub size_with_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4721,8 +4769,11 @@ pub struct CalcCell {
     #[serde(default)]
     pub a: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4776,8 +4827,11 @@ pub struct Comment {
     #[serde(default)]
     pub comment_pr: Option<Box<CTCommentPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4822,8 +4876,11 @@ pub struct CTCommentPr {
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4840,8 +4897,11 @@ pub struct MapInfo {
     #[serde(default)]
     pub map: Vec<Box<XmlMap>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4874,8 +4934,11 @@ pub struct XmlMap {
     #[serde(default)]
     pub data_binding: Option<Box<DataBinding>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4896,8 +4959,11 @@ pub struct DataBinding {
     #[serde(rename = "@DataBindingLoadMode")]
     pub data_binding_load_mode: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -4991,8 +5057,11 @@ pub struct Connection {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5010,8 +5079,11 @@ pub struct DatabaseProperties {
     #[serde(default)]
     pub command_type: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5045,8 +5117,11 @@ pub struct OlapProperties {
     #[serde(default)]
     pub server_font_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5095,8 +5170,11 @@ pub struct WebQueryProperties {
     #[serde(default)]
     pub tables: Option<Box<DataTables>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5109,8 +5187,11 @@ pub struct Parameters {
     #[serde(default)]
     pub parameter: Vec<Box<Parameter>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5147,8 +5228,11 @@ pub struct Parameter {
     #[serde(default)]
     pub cell: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5158,8 +5242,11 @@ pub struct DataTables {
     #[serde(default)]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5220,8 +5307,11 @@ pub struct TextImportProperties {
     #[serde(default)]
     pub text_fields: Option<Box<TextFields>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5234,8 +5324,11 @@ pub struct TextFields {
     #[serde(default)]
     pub text_field: Vec<Box<TextField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5248,8 +5341,11 @@ pub struct TextField {
     #[serde(default)]
     pub position: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5344,8 +5440,11 @@ pub struct PivotCacheDefinition {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5358,8 +5457,11 @@ pub struct CacheFields {
     #[serde(default)]
     pub cache_field: Vec<Box<CacheField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5416,8 +5518,11 @@ pub struct CacheField {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5429,8 +5534,11 @@ pub struct CacheSource {
     #[serde(default)]
     pub connection_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5446,8 +5554,11 @@ pub struct WorksheetSource {
     #[serde(default)]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5462,8 +5573,11 @@ pub struct Consolidation {
     #[serde(rename = "rangeSets")]
     pub range_sets: Box<CTRangeSets>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5476,8 +5590,11 @@ pub struct CTPages {
     #[serde(default)]
     pub page: Vec<Box<CTPCDSCPage>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5490,8 +5607,11 @@ pub struct CTPCDSCPage {
     #[serde(default)]
     pub page_item: Vec<Box<CTPageItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5500,8 +5620,11 @@ pub struct CTPageItem {
     #[serde(rename = "@name")]
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5514,8 +5637,11 @@ pub struct CTRangeSets {
     #[serde(default)]
     pub range_set: Vec<Box<CTRangeSet>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5543,8 +5669,11 @@ pub struct CTRangeSet {
     #[serde(default)]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5593,8 +5722,11 @@ pub struct SharedItems {
     #[serde(default)]
     pub long_text: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5640,8 +5772,11 @@ pub struct CTMissing {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5689,8 +5824,11 @@ pub struct CTNumber {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5714,8 +5852,11 @@ pub struct CTBoolean {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5763,8 +5904,11 @@ pub struct CTError {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5812,8 +5956,11 @@ pub struct CTString {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5837,8 +5984,11 @@ pub struct CTDateTime {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5860,8 +6010,11 @@ pub struct FieldGroup {
     #[serde(default)]
     pub group_items: Option<Box<GroupItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5892,8 +6045,11 @@ pub struct CTRangePr {
     #[serde(default)]
     pub group_interval: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5906,8 +6062,11 @@ pub struct CTDiscretePr {
     #[serde(default)]
     pub x: Vec<Box<CTIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5917,8 +6076,11 @@ pub struct GroupItems {
     #[serde(default)]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5934,8 +6096,11 @@ pub struct PivotCacheRecords {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5951,8 +6116,11 @@ pub struct CTPCDKPIs {
     #[serde(default)]
     pub kpi: Vec<Box<CTPCDKPI>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -5990,8 +6158,11 @@ pub struct CTPCDKPI {
     #[serde(default)]
     pub time: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6004,8 +6175,11 @@ pub struct CTCacheHierarchies {
     #[serde(default)]
     pub cache_hierarchy: Vec<Box<CTCacheHierarchy>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6085,8 +6259,11 @@ pub struct CTCacheHierarchy {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6099,8 +6276,11 @@ pub struct CTFieldsUsage {
     #[serde(default)]
     pub field_usage: Vec<Box<CTFieldUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6109,8 +6289,11 @@ pub struct CTFieldUsage {
     #[serde(rename = "@x")]
     pub x: i32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6123,8 +6306,11 @@ pub struct CTGroupLevels {
     #[serde(default)]
     pub group_level: Vec<Box<CTGroupLevel>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6147,8 +6333,11 @@ pub struct CTGroupLevel {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6161,8 +6350,11 @@ pub struct CTGroups {
     #[serde(default)]
     pub group: Vec<Box<CTLevelGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6183,8 +6375,11 @@ pub struct CTLevelGroup {
     #[serde(rename = "groupMembers")]
     pub group_members: Box<CTGroupMembers>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6197,8 +6392,11 @@ pub struct CTGroupMembers {
     #[serde(default)]
     pub group_member: Vec<Box<CTGroupMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6210,8 +6408,11 @@ pub struct CTGroupMember {
     #[serde(default)]
     pub group: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6243,8 +6444,11 @@ pub struct CTServerFormat {
     #[serde(default)]
     pub format: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6257,8 +6461,11 @@ pub struct CTServerFormats {
     #[serde(default)]
     pub server_format: Vec<Box<CTServerFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6268,8 +6475,11 @@ pub struct CTPCDSDTCEntries {
     #[serde(default)]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6282,8 +6492,11 @@ pub struct CTTuples {
     #[serde(default)]
     pub tpl: Vec<Box<CTTuple>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6298,8 +6511,11 @@ pub struct CTTuple {
     #[serde(rename = "@item")]
     pub item: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6312,8 +6528,11 @@ pub struct CTSets {
     #[serde(default)]
     pub set: Vec<Box<CTSet>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6339,8 +6558,11 @@ pub struct CTSet {
     #[serde(default)]
     pub sort_by_tuple: Option<Box<CTTuples>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6353,8 +6575,11 @@ pub struct CTQueryCache {
     #[serde(default)]
     pub query: Vec<Box<CTQuery>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6366,8 +6591,11 @@ pub struct CTQuery {
     #[serde(default)]
     pub tpls: Option<Box<CTTuples>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6380,8 +6608,11 @@ pub struct CTCalculatedItems {
     #[serde(default)]
     pub calculated_item: Vec<Box<CTCalculatedItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6399,8 +6630,11 @@ pub struct CTCalculatedItem {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6413,8 +6647,11 @@ pub struct CTCalculatedMembers {
     #[serde(default)]
     pub calculated_member: Vec<Box<CTCalculatedMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6443,8 +6680,11 @@ pub struct CTCalculatedMember {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6681,8 +6921,11 @@ pub struct CTPivotTableDefinition {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6703,8 +6946,11 @@ pub struct PivotLocation {
     #[serde(default)]
     pub col_page_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6717,8 +6963,11 @@ pub struct PivotFields {
     #[serde(default)]
     pub pivot_field: Vec<Box<PivotField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6878,8 +7127,11 @@ pub struct PivotField {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6894,8 +7146,11 @@ pub struct PivotItems {
     #[serde(default)]
     pub item: Vec<Box<PivotItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6935,8 +7190,11 @@ pub struct PivotItem {
     #[serde(default)]
     pub e: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6949,8 +7207,11 @@ pub struct PageFields {
     #[serde(default)]
     pub page_field: Vec<Box<PageField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6974,8 +7235,11 @@ pub struct PageField {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -6988,8 +7252,11 @@ pub struct DataFields {
     #[serde(default)]
     pub data_field: Vec<Box<DataField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7019,8 +7286,11 @@ pub struct DataField {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7033,8 +7303,11 @@ pub struct CTRowItems {
     #[serde(default)]
     pub i: Vec<Box<CTI>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7047,8 +7320,11 @@ pub struct CTColItems {
     #[serde(default)]
     pub i: Vec<Box<CTI>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7067,8 +7343,11 @@ pub struct CTI {
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7078,8 +7357,11 @@ pub struct CTX {
     #[serde(default)]
     pub value: Option<i32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7092,8 +7374,11 @@ pub struct RowFields {
     #[serde(default)]
     pub field: Vec<Box<CTField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7106,8 +7391,11 @@ pub struct ColFields {
     #[serde(default)]
     pub field: Vec<Box<CTField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7116,8 +7404,11 @@ pub struct CTField {
     #[serde(rename = "@x")]
     pub x: i32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7130,8 +7421,11 @@ pub struct CTFormats {
     #[serde(default)]
     pub format: Vec<Box<CTFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7149,8 +7443,11 @@ pub struct CTFormat {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7163,8 +7460,11 @@ pub struct CTConditionalFormats {
     #[serde(default)]
     pub conditional_format: Vec<Box<CTConditionalFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7184,8 +7484,11 @@ pub struct CTConditionalFormat {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7198,8 +7501,11 @@ pub struct PivotAreas {
     #[serde(default)]
     pub pivot_area: Vec<Box<PivotArea>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7212,8 +7518,11 @@ pub struct CTChartFormats {
     #[serde(default)]
     pub chart_format: Vec<Box<CTChartFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7229,8 +7538,11 @@ pub struct CTChartFormat {
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7243,8 +7555,11 @@ pub struct CTPivotHierarchies {
     #[serde(default)]
     pub pivot_hierarchy: Vec<Box<CTPivotHierarchy>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7293,8 +7608,11 @@ pub struct CTPivotHierarchy {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7307,8 +7625,11 @@ pub struct CTRowHierarchiesUsage {
     #[serde(default)]
     pub row_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7321,8 +7642,11 @@ pub struct CTColHierarchiesUsage {
     #[serde(default)]
     pub col_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7331,8 +7655,11 @@ pub struct CTHierarchyUsage {
     #[serde(rename = "@hierarchyUsage")]
     pub hierarchy_usage: i32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7345,8 +7672,11 @@ pub struct CTMemberProperties {
     #[serde(default)]
     pub mp: Vec<Box<CTMemberProperty>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7379,8 +7709,11 @@ pub struct CTMemberProperty {
     #[serde(rename = "@field")]
     pub field: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7396,8 +7729,11 @@ pub struct CTMembers {
     #[serde(default)]
     pub member: Vec<Box<CTMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7406,8 +7742,11 @@ pub struct CTMember {
     #[serde(rename = "@name")]
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7420,8 +7759,11 @@ pub struct CTDimensions {
     #[serde(default)]
     pub dimension: Vec<Box<CTPivotDimension>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7437,8 +7779,11 @@ pub struct CTPivotDimension {
     #[serde(rename = "@caption")]
     pub caption: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7451,8 +7796,11 @@ pub struct CTMeasureGroups {
     #[serde(default)]
     pub measure_group: Vec<Box<CTMeasureGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7465,8 +7813,11 @@ pub struct CTMeasureDimensionMaps {
     #[serde(default)]
     pub map: Vec<Box<CTMeasureDimensionMap>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7477,8 +7828,11 @@ pub struct CTMeasureGroup {
     #[serde(rename = "@caption")]
     pub caption: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7491,8 +7845,11 @@ pub struct CTMeasureDimensionMap {
     #[serde(default)]
     pub dimension: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7517,8 +7874,11 @@ pub struct CTPivotTableStyle {
     #[serde(default)]
     pub show_last_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7531,8 +7891,11 @@ pub struct PivotFilters {
     #[serde(default)]
     pub filter: Vec<Box<PivotFilter>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7574,8 +7937,11 @@ pub struct PivotFilter {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7624,8 +7990,11 @@ pub struct PivotArea {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7638,8 +8007,11 @@ pub struct CTPivotAreaReferences {
     #[serde(default)]
     pub reference: Vec<Box<CTPivotAreaReference>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7703,8 +8075,11 @@ pub struct CTPivotAreaReference {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7713,8 +8088,11 @@ pub struct CTIndex {
     #[serde(rename = "@v")]
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7772,8 +8150,11 @@ pub struct QueryTable {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7812,8 +8193,11 @@ pub struct QueryTableRefresh {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7826,8 +8210,11 @@ pub struct QueryTableDeletedFields {
     #[serde(default)]
     pub deleted_field: Vec<Box<CTDeletedField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7836,8 +8223,11 @@ pub struct CTDeletedField {
     #[serde(rename = "@name")]
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7850,8 +8240,11 @@ pub struct QueryTableFields {
     #[serde(default)]
     pub query_table_field: Vec<Box<QueryTableField>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7881,8 +8274,11 @@ pub struct QueryTableField {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7903,8 +8299,11 @@ pub struct SharedStrings {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7917,8 +8316,11 @@ pub struct PhoneticRun {
     #[serde(rename = "t")]
     pub cell_type: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -7961,8 +8363,11 @@ pub struct PhoneticProperties {
     #[serde(default)]
     pub alignment: Option<STPhoneticAlignment>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8011,8 +8416,11 @@ pub struct RevisionHeaders {
     #[serde(default)]
     pub header: Vec<Box<RevisionHeader>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8030,8 +8438,11 @@ pub struct SmlAGRevData {
     #[serde(default)]
     pub ra: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8060,8 +8471,11 @@ pub struct RevisionHeader {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8074,8 +8488,11 @@ pub struct CTSheetIdMap {
     #[serde(default)]
     pub sheet_id: Vec<Box<CTSheetId>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8084,8 +8501,11 @@ pub struct CTSheetId {
     #[serde(rename = "@val")]
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8098,8 +8518,11 @@ pub struct ReviewedRevisions {
     #[serde(default)]
     pub reviewed: Vec<Box<Reviewed>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8108,8 +8531,11 @@ pub struct Reviewed {
     #[serde(rename = "@rId")]
     pub r_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8146,8 +8572,11 @@ pub struct UndoInfo {
     #[serde(default)]
     pub s_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8166,8 +8595,11 @@ pub struct RevisionRowColumn {
     #[serde(default)]
     pub edge: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8183,8 +8615,11 @@ pub struct RevisionMove {
     #[serde(default)]
     pub source_sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8195,8 +8630,11 @@ pub struct RevisionCustomView {
     #[serde(rename = "@action")]
     pub action: STRevisionAction,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8212,8 +8650,11 @@ pub struct RevisionSheetRename {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8226,8 +8667,11 @@ pub struct RevisionInsertSheet {
     #[serde(rename = "@sheetPosition")]
     pub sheet_position: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8277,8 +8721,11 @@ pub struct RevisionCellChange {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8307,8 +8754,11 @@ pub struct RevisionFormatting {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8319,8 +8769,11 @@ pub struct RevisionAutoFormatting {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8356,8 +8809,11 @@ pub struct RevisionComment {
     #[serde(default)]
     pub new_length: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8435,8 +8891,11 @@ pub struct RevisionDefinedName {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8446,8 +8905,11 @@ pub struct RevisionConflict {
     #[serde(default)]
     pub sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8460,8 +8922,11 @@ pub struct RevisionQueryTableField {
     #[serde(rename = "@fieldId")]
     pub field_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8476,8 +8941,11 @@ pub struct Users {
     #[serde(default)]
     pub user_info: Vec<Box<SharedUser>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8495,8 +8963,11 @@ pub struct SharedUser {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8810,8 +9281,11 @@ pub struct SheetCalcProperties {
     #[serde(default)]
     pub full_calc_on_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8844,8 +9318,11 @@ pub struct SheetFormat {
     #[serde(default)]
     pub outline_level_col: Option<u8>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8897,8 +9374,11 @@ pub struct Column {
     #[serde(default)]
     pub collapsed: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8957,8 +9437,11 @@ pub struct Row {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -8999,8 +9482,11 @@ pub struct Cell {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9043,8 +9529,11 @@ pub struct SheetProperties {
     #[serde(default)]
     pub page_set_up_pr: Option<Box<PageSetupProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9053,8 +9542,11 @@ pub struct SheetDimension {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9155,8 +9647,11 @@ pub struct SheetView {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9183,8 +9678,11 @@ pub struct Pane {
     #[serde(default)]
     pub state: Option<PaneState>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9241,8 +9739,11 @@ pub struct CTPivotSelection {
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9261,8 +9762,11 @@ pub struct Selection {
     #[serde(default)]
     pub square_reference: Option<SquareRef>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9278,8 +9782,11 @@ pub struct PageBreaks {
     #[serde(default)]
     pub brk: Vec<Box<PageBreak>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9301,8 +9808,11 @@ pub struct PageBreak {
     #[serde(default)]
     pub pt: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9321,8 +9831,11 @@ pub struct OutlineProperties {
     #[serde(default)]
     pub show_outline_symbols: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9335,8 +9848,11 @@ pub struct PageSetupProperties {
     #[serde(default)]
     pub fit_to_page: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9361,8 +9877,11 @@ pub struct CTDataConsolidate {
     #[serde(default)]
     pub data_refs: Option<Box<CTDataRefs>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9375,8 +9894,11 @@ pub struct CTDataRefs {
     #[serde(default)]
     pub data_ref: Vec<Box<CTDataRef>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9392,8 +9914,11 @@ pub struct CTDataRef {
     #[serde(default)]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9406,8 +9931,11 @@ pub struct MergedCells {
     #[serde(default)]
     pub merge_cell: Vec<Box<MergedCell>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9416,8 +9944,11 @@ pub struct MergedCell {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9436,8 +9967,11 @@ pub struct CellSmartTags {
     #[serde(default)]
     pub cell_smart_tag: Vec<Box<CellSmartTag>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9455,8 +9989,11 @@ pub struct CellSmartTag {
     #[serde(default)]
     pub cell_smart_tag_pr: Vec<Box<CTCellSmartTagPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9467,8 +10004,11 @@ pub struct CTCellSmartTagPr {
     #[serde(rename = "@val")]
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9535,8 +10075,11 @@ pub struct DrawingHeaderFooter {
     #[serde(default)]
     pub rff: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9639,8 +10182,11 @@ pub struct CustomSheetView {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9662,8 +10208,11 @@ pub struct DataValidations {
     #[serde(default)]
     pub data_validation: Vec<Box<DataValidation>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9729,8 +10278,11 @@ pub struct DataValidation {
     #[serde(default)]
     pub formula2: Option<STFormula>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9753,8 +10305,11 @@ pub struct ConditionalFormatting {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9832,8 +10387,11 @@ pub struct ConditionalRule {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9862,8 +10420,11 @@ pub struct Hyperlink {
     #[serde(default)]
     pub display: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9917,8 +10478,11 @@ pub struct CellFormula {
     #[serde(default)]
     pub bx: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9949,8 +10513,11 @@ pub struct DataBar {
     #[serde(rename = "color")]
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9972,8 +10539,11 @@ pub struct IconSet {
     #[serde(default)]
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -9991,8 +10561,11 @@ pub struct ConditionalFormatValue {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10017,8 +10590,11 @@ pub struct PageMargins {
     #[serde(rename = "@footer")]
     pub footer: f64,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10040,8 +10616,11 @@ pub struct PrintOptions {
     #[serde(default)]
     pub grid_lines_set: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10120,8 +10699,11 @@ pub struct PageSetup {
     #[serde(default)]
     pub copies: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10168,8 +10750,11 @@ pub struct HeaderFooter {
     #[serde(default)]
     pub first_footer: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10188,8 +10773,11 @@ pub struct Scenarios {
     #[serde(default)]
     pub scenario: Vec<Box<Scenario>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10259,8 +10847,11 @@ pub struct SheetProtection {
     #[serde(default)]
     pub select_unlocked_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10296,8 +10887,11 @@ pub struct ProtectedRange {
     #[serde(default)]
     pub spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10324,8 +10918,11 @@ pub struct Scenario {
     #[serde(default)]
     pub input_cells: Vec<Box<InputCells>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10345,8 +10942,11 @@ pub struct InputCells {
     #[serde(default)]
     pub number_format_id: Option<STNumFmtId>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10362,8 +10962,11 @@ pub struct CellWatch {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10423,8 +11026,11 @@ pub struct ChartsheetProperties {
     #[serde(default)]
     pub tab_color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10455,8 +11061,11 @@ pub struct ChartsheetView {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10484,8 +11093,11 @@ pub struct ChartsheetProtection {
     #[serde(default)]
     pub objects: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10528,8 +11140,11 @@ pub struct ChartsheetPageSetup {
     #[serde(default)]
     pub copies: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10563,8 +11178,11 @@ pub struct CustomChartsheetView {
     #[serde(default)]
     pub header_footer: Option<Box<HeaderFooter>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10580,8 +11198,11 @@ pub struct CTCustomProperty {
     #[serde(rename = "@name")]
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10615,8 +11236,11 @@ pub struct OleObject {
     #[serde(default)]
     pub object_pr: Option<Box<ObjectProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10658,8 +11282,11 @@ pub struct ObjectProperties {
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10672,8 +11299,11 @@ pub struct WebPublishItems {
     #[serde(default)]
     pub web_publish_item: Vec<Box<WebPublishItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10700,8 +11330,11 @@ pub struct WebPublishItem {
     #[serde(default)]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10723,8 +11356,11 @@ pub struct Control {
     #[serde(default)]
     pub control_pr: Option<Box<CTControlPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10775,8 +11411,11 @@ pub struct CTControlPr {
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10822,8 +11461,11 @@ pub struct IgnoredError {
     #[serde(default)]
     pub calculated_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10836,8 +11478,11 @@ pub struct TableParts {
     #[serde(default)]
     pub table_part: Vec<Box<TablePart>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10880,8 +11525,11 @@ pub struct MetadataTypes {
     #[serde(default)]
     pub metadata_type: Vec<Box<MetadataType>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10970,8 +11618,11 @@ pub struct MetadataType {
     #[serde(default)]
     pub cell_meta: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -10984,8 +11635,11 @@ pub struct MetadataBlocks {
     #[serde(default)]
     pub bk: Vec<Box<MetadataBlock>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11003,8 +11657,11 @@ pub struct MetadataRecord {
     #[serde(rename = "@v")]
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11022,8 +11679,11 @@ pub struct CTFutureMetadata {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11043,8 +11703,11 @@ pub struct CTMdxMetadata {
     #[serde(default)]
     pub mdx: Vec<Box<CTMdx>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11055,8 +11718,11 @@ pub struct CTMdx {
     #[serde(rename = "@f")]
     pub formula: STMdxFunctionType,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11096,8 +11762,11 @@ pub struct CTMdxTuple {
     #[serde(default)]
     pub n: Vec<Box<CTMetadataStringIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11115,8 +11784,11 @@ pub struct CTMdxSet {
     #[serde(default)]
     pub n: Vec<Box<CTMetadataStringIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11127,8 +11799,11 @@ pub struct CTMdxMemeberProp {
     #[serde(rename = "@np")]
     pub np: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11141,8 +11816,11 @@ pub struct CTMdxKPI {
     #[serde(rename = "@p")]
     pub p: STMdxKPIProperty,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11154,8 +11832,11 @@ pub struct CTMetadataStringIndex {
     #[serde(default)]
     pub style_index: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11168,8 +11849,11 @@ pub struct MetadataStrings {
     #[serde(default)]
     pub style_index: Vec<Box<CTXStringElement>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11196,8 +11880,11 @@ pub struct SingleXmlCell {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11214,8 +11901,11 @@ pub struct XmlCellProperties {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11231,8 +11921,11 @@ pub struct XmlProperties {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11316,8 +12009,11 @@ pub struct CellAlignment {
     #[serde(default)]
     pub reading_order: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11330,8 +12026,11 @@ pub struct Borders {
     #[serde(default)]
     pub border: Vec<Box<Border>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11384,8 +12083,11 @@ pub struct Border {
     #[serde(default)]
     pub horizontal: Option<Box<BorderProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11398,8 +12100,11 @@ pub struct BorderProperties {
     #[serde(default)]
     pub color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11412,8 +12117,11 @@ pub struct CellProtection {
     #[serde(default)]
     pub hidden: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11426,8 +12134,11 @@ pub struct Fonts {
     #[serde(default)]
     pub font: Vec<Box<Font>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11440,8 +12151,11 @@ pub struct Fills {
     #[serde(default)]
     pub fill: Vec<Box<Fill>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11460,8 +12174,11 @@ pub struct PatternFill {
     #[serde(default)]
     pub bg_color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11483,8 +12200,11 @@ pub struct Color {
     #[serde(default)]
     pub tint: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11512,8 +12232,11 @@ pub struct GradientFill {
     #[serde(default)]
     pub stop: Vec<Box<GradientStop>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11524,8 +12247,11 @@ pub struct GradientStop {
     #[serde(rename = "color")]
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11538,8 +12264,11 @@ pub struct NumberFormats {
     #[serde(default)]
     pub num_fmt: Vec<Box<NumberFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11550,8 +12279,11 @@ pub struct NumberFormat {
     #[serde(rename = "@formatCode")]
     pub format_code: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11564,8 +12296,11 @@ pub struct CellStyleFormats {
     #[serde(default)]
     pub xf: Vec<Box<Format>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11578,8 +12313,11 @@ pub struct CellFormats {
     #[serde(default)]
     pub xf: Vec<Box<Format>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11650,8 +12388,11 @@ pub struct Format {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11664,8 +12405,11 @@ pub struct CellStyles {
     #[serde(default)]
     pub cell_style: Vec<Box<CellStyle>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11692,8 +12436,11 @@ pub struct CellStyle {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11706,8 +12453,11 @@ pub struct DifferentialFormats {
     #[serde(default)]
     pub dxf: Vec<Box<DifferentialFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11766,8 +12516,11 @@ pub struct RgbColor {
     #[serde(default)]
     pub rgb: Option<STUnsignedIntHex>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11786,8 +12539,11 @@ pub struct TableStyles {
     #[serde(default)]
     pub table_style: Vec<Box<TableStyle>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11808,8 +12564,11 @@ pub struct TableStyle {
     #[serde(default)]
     pub table_style_element: Vec<Box<TableStyleElement>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11824,8 +12583,11 @@ pub struct TableStyleElement {
     #[serde(default)]
     pub dxf_id: Option<STDxfId>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11835,8 +12597,11 @@ pub struct BooleanProperty {
     #[serde(default)]
     pub value: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11845,8 +12610,11 @@ pub struct FontSize {
     #[serde(rename = "@val")]
     pub value: f64,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11855,8 +12623,11 @@ pub struct IntProperty {
     #[serde(rename = "@val")]
     pub value: i32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11865,8 +12636,11 @@ pub struct FontName {
     #[serde(rename = "@val")]
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11875,8 +12649,11 @@ pub struct VerticalAlignFontProperty {
     #[serde(rename = "@val")]
     pub value: VerticalAlignRun,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11885,8 +12662,11 @@ pub struct FontSchemeProperty {
     #[serde(rename = "@val")]
     pub value: FontScheme,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11896,8 +12676,11 @@ pub struct UnderlineProperty {
     #[serde(default)]
     pub value: Option<UnderlineStyle>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11909,8 +12692,11 @@ pub struct FontFamily {
     #[serde(rename = "@val")]
     pub value: STFontFamily,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11938,8 +12724,11 @@ pub struct SmlAGAutoFormat {
     #[serde(default)]
     pub apply_width_height_formats: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -11978,8 +12767,11 @@ pub struct CTExternalSheetName {
     #[serde(default)]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12001,8 +12793,11 @@ pub struct CTExternalDefinedName {
     #[serde(default)]
     pub sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12024,8 +12819,11 @@ pub struct ExternalSheetData {
     #[serde(default)]
     pub row: Vec<Box<ExternalRow>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12037,8 +12835,11 @@ pub struct ExternalRow {
     #[serde(default)]
     pub cell: Vec<Box<ExternalCell>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12057,8 +12858,11 @@ pub struct ExternalCell {
     #[serde(default)]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12072,8 +12876,11 @@ pub struct DdeLink {
     #[serde(default)]
     pub dde_items: Option<Box<DdeItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12102,8 +12909,11 @@ pub struct DdeItem {
     #[serde(default)]
     pub values: Option<Box<CTDdeValues>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12119,8 +12929,11 @@ pub struct CTDdeValues {
     #[serde(default)]
     pub value: Vec<Box<CTDdeValue>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12132,8 +12945,11 @@ pub struct CTDdeValue {
     #[serde(rename = "val")]
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12145,8 +12961,11 @@ pub struct OleLink {
     #[serde(default)]
     pub ole_items: Option<Box<OleItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12171,8 +12990,11 @@ pub struct OleItem {
     #[serde(default)]
     pub prefer_pic: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12285,8 +13107,11 @@ pub struct Table {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12308,8 +13133,11 @@ pub struct TableStyleInfo {
     #[serde(default)]
     pub show_column_stripes: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12322,8 +13150,11 @@ pub struct TableColumns {
     #[serde(default)]
     pub table_column: Vec<Box<TableColumn>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12376,8 +13207,11 @@ pub struct TableColumn {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12389,8 +13223,11 @@ pub struct TableFormula {
     #[serde(default)]
     pub array: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12409,8 +13246,11 @@ pub struct XmlColumnProperties {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12434,8 +13274,11 @@ pub struct CTVolType {
     #[serde(default)]
     pub main: Vec<Box<CTVolMain>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12447,8 +13290,11 @@ pub struct CTVolMain {
     #[serde(default)]
     pub tp: Vec<Box<CTVolTopic>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12466,8 +13312,11 @@ pub struct CTVolTopic {
     #[serde(default)]
     pub tr: Vec<Box<CTVolTopicRef>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12478,8 +13327,11 @@ pub struct CTVolTopicRef {
     #[serde(rename = "@s")]
     pub style_index: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12560,8 +13412,11 @@ pub struct Workbook {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12583,8 +13438,11 @@ pub struct FileVersion {
     #[serde(default)]
     pub code_name: Option<Guid>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12640,8 +13498,11 @@ pub struct BookView {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12725,8 +13586,11 @@ pub struct CustomWorkbookView {
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12748,8 +13612,11 @@ pub struct Sheet {
     #[serde(default)]
     pub state: Option<SheetState>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12810,8 +13677,11 @@ pub struct WorkbookProperties {
     #[serde(default)]
     pub default_theme_version: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12824,8 +13694,11 @@ pub struct CTSmartTagPr {
     #[serde(default)]
     pub show: Option<STSmartTagShow>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12848,8 +13721,11 @@ pub struct CTSmartTagType {
     #[serde(default)]
     pub url: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12868,8 +13744,11 @@ pub struct FileRecoveryProperties {
     #[serde(default)]
     pub repair_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12915,8 +13794,11 @@ pub struct CalculationProperties {
     #[serde(default)]
     pub force_full_calc: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -12987,8 +13869,11 @@ pub struct DefinedName {
     #[serde(default)]
     pub workbook_parameter: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13017,8 +13902,11 @@ pub struct CTPivotCache {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13046,8 +13934,11 @@ pub struct FileSharing {
     #[serde(default)]
     pub spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13056,8 +13947,11 @@ pub struct CTOleSize {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13109,8 +14003,11 @@ pub struct WorkbookProtection {
     #[serde(default)]
     pub workbook_spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13144,8 +14041,11 @@ pub struct WebPublishing {
     #[serde(default)]
     pub character_set: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13158,8 +14058,11 @@ pub struct CTFunctionGroups {
     #[serde(default)]
     pub function_group: Vec<Box<CTFunctionGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13169,8 +14072,11 @@ pub struct CTFunctionGroup {
     #[serde(default)]
     pub name: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13183,8 +14089,11 @@ pub struct CTWebPublishObjects {
     #[serde(default)]
     pub web_publish_object: Vec<Box<CTWebPublishObject>>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
@@ -13206,7 +14115,10 @@ pub struct CTWebPublishObject {
     #[serde(default)]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(flatten)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
 }

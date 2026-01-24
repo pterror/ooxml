@@ -857,6 +857,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
         };
 
@@ -880,6 +881,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
         };
 
@@ -902,6 +904,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
         };
 
@@ -926,6 +929,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
         };
 

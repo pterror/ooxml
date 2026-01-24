@@ -101,6 +101,7 @@ impl FromXml for AutoFilter {
         let mut f_sort_state = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -111,10 +112,13 @@ impl FromXml for AutoFilter {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -180,6 +184,7 @@ impl FromXml for AutoFilter {
             sort_state: f_sort_state,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -197,6 +202,7 @@ impl FromXml for FilterColumn {
         let mut f_hidden_button = None;
         #[cfg(feature = "sml-filtering")]
         let mut f_show_button = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -215,10 +221,13 @@ impl FromXml for FilterColumn {
                 b"showButton" => {
                     f_show_button = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -242,6 +251,7 @@ impl FromXml for FilterColumn {
             hidden_button: f_hidden_button,
             #[cfg(feature = "sml-filtering")]
             show_button: f_show_button,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -257,6 +267,7 @@ impl FromXml for Filters {
         let mut f_calendar_type = None;
         let mut f_filter = Vec::new();
         let mut f_date_group_item = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -269,10 +280,13 @@ impl FromXml for Filters {
                 b"calendarType" => {
                     f_calendar_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -319,6 +333,7 @@ impl FromXml for Filters {
             calendar_type: f_calendar_type,
             filter: f_filter,
             date_group_item: f_date_group_item,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -331,6 +346,7 @@ impl FromXml for Filter {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -340,10 +356,13 @@ impl FromXml for Filter {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -361,6 +380,7 @@ impl FromXml for Filter {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -374,6 +394,7 @@ impl FromXml for CustomFilters {
     ) -> Result<Self, ParseError> {
         let mut f_and = None;
         let mut f_custom_filter = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -383,10 +404,13 @@ impl FromXml for CustomFilters {
                 b"and" => {
                     f_and = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -425,6 +449,7 @@ impl FromXml for CustomFilters {
         Ok(Self {
             and: f_and,
             custom_filter: f_custom_filter,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -438,6 +463,7 @@ impl FromXml for CustomFilter {
     ) -> Result<Self, ParseError> {
         let mut f_operator = None;
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -450,10 +476,13 @@ impl FromXml for CustomFilter {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -472,6 +501,7 @@ impl FromXml for CustomFilter {
         Ok(Self {
             operator: f_operator,
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -487,6 +517,7 @@ impl FromXml for Top10Filter {
         let mut f_percent = None;
         let mut f_value: Option<f64> = None;
         let mut f_filter_val = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -505,10 +536,13 @@ impl FromXml for Top10Filter {
                 b"filterVal" => {
                     f_filter_val = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -529,6 +563,7 @@ impl FromXml for Top10Filter {
             percent: f_percent,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             filter_val: f_filter_val,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -542,6 +577,7 @@ impl FromXml for ColorFilter {
     ) -> Result<Self, ParseError> {
         let mut f_dxf_id = None;
         let mut f_cell_color = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -554,10 +590,13 @@ impl FromXml for ColorFilter {
                 b"cellColor" => {
                     f_cell_color = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -576,6 +615,7 @@ impl FromXml for ColorFilter {
         Ok(Self {
             dxf_id: f_dxf_id,
             cell_color: f_cell_color,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -589,6 +629,7 @@ impl FromXml for IconFilter {
     ) -> Result<Self, ParseError> {
         let mut f_icon_set: Option<IconSetType> = None;
         let mut f_icon_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -601,10 +642,13 @@ impl FromXml for IconFilter {
                 b"iconId" => {
                     f_icon_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -624,6 +668,7 @@ impl FromXml for IconFilter {
             icon_set: f_icon_set
                 .ok_or_else(|| ParseError::MissingAttribute("iconSet".to_string()))?,
             icon_id: f_icon_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -640,6 +685,7 @@ impl FromXml for DynamicFilter {
         let mut f_val_iso = None;
         let mut f_max_val = None;
         let mut f_max_val_iso = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -661,10 +707,13 @@ impl FromXml for DynamicFilter {
                 b"maxValIso" => {
                     f_max_val_iso = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -686,6 +735,7 @@ impl FromXml for DynamicFilter {
             val_iso: f_val_iso,
             max_val: f_max_val,
             max_val_iso: f_max_val_iso,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -703,6 +753,7 @@ impl FromXml for SortState {
         let mut f_reference: Option<Reference> = None;
         let mut f_sort_condition = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -721,10 +772,13 @@ impl FromXml for SortState {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -776,6 +830,7 @@ impl FromXml for SortState {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             sort_condition: f_sort_condition,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -794,6 +849,7 @@ impl FromXml for SortCondition {
         let mut f_dxf_id = None;
         let mut f_icon_set = None;
         let mut f_icon_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -821,10 +877,13 @@ impl FromXml for SortCondition {
                 b"iconId" => {
                     f_icon_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -849,6 +908,7 @@ impl FromXml for SortCondition {
             dxf_id: f_dxf_id,
             icon_set: f_icon_set,
             icon_id: f_icon_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -867,6 +927,7 @@ impl FromXml for DateGroupItem {
         let mut f_minute = None;
         let mut f_second = None;
         let mut f_date_time_grouping: Option<STDateTimeGrouping> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -894,10 +955,13 @@ impl FromXml for DateGroupItem {
                 b"dateTimeGrouping" => {
                     f_date_time_grouping = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -922,6 +986,7 @@ impl FromXml for DateGroupItem {
             second: f_second,
             date_time_grouping: f_date_time_grouping
                 .ok_or_else(|| ParseError::MissingAttribute("dateTimeGrouping".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -934,6 +999,7 @@ impl FromXml for CTXStringElement {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -943,10 +1009,13 @@ impl FromXml for CTXStringElement {
                 b"v" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -964,6 +1033,7 @@ impl FromXml for CTXStringElement {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -976,6 +1046,7 @@ impl FromXml for Extension {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_uri = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -985,10 +1056,13 @@ impl FromXml for Extension {
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1006,6 +1080,7 @@ impl FromXml for Extension {
 
         Ok(Self {
             uri: f_uri,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1019,6 +1094,7 @@ impl FromXml for ObjectAnchor {
     ) -> Result<Self, ParseError> {
         let mut f_move_with_cells = None;
         let mut f_size_with_cells = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1031,10 +1107,13 @@ impl FromXml for ObjectAnchor {
                 b"sizeWithCells" => {
                     f_size_with_cells = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1053,6 +1132,7 @@ impl FromXml for ObjectAnchor {
         Ok(Self {
             move_with_cells: f_move_with_cells,
             size_with_cells: f_size_with_cells,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1188,6 +1268,7 @@ impl FromXml for CalcCell {
         let mut f_l = None;
         let mut f_cell_type = None;
         let mut f_a = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1212,10 +1293,13 @@ impl FromXml for CalcCell {
                 b"a" => {
                     f_a = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1238,6 +1322,7 @@ impl FromXml for CalcCell {
             l: f_l,
             cell_type: f_cell_type,
             a: f_a,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1410,6 +1495,7 @@ impl FromXml for Comment {
         #[cfg(feature = "sml-comments")]
         let mut f_text: Option<Box<RichString>> = None;
         let mut f_comment_pr = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1432,10 +1518,13 @@ impl FromXml for Comment {
                 b"shapeId" => {
                     f_shape_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1492,6 +1581,7 @@ impl FromXml for Comment {
             #[cfg(feature = "sml-comments")]
             text: f_text.ok_or_else(|| ParseError::MissingAttribute("text".to_string()))?,
             comment_pr: f_comment_pr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1516,6 +1606,7 @@ impl FromXml for CTCommentPr {
         let mut f_just_last_x = None;
         let mut f_auto_scale = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1558,10 +1649,13 @@ impl FromXml for CTCommentPr {
                 b"autoScale" => {
                     f_auto_scale = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1610,6 +1704,7 @@ impl FromXml for CTCommentPr {
             just_last_x: f_just_last_x,
             auto_scale: f_auto_scale,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1624,6 +1719,7 @@ impl FromXml for MapInfo {
         let mut f_selection_namespaces: Option<String> = None;
         let mut f_schema = Vec::new();
         let mut f_map = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1633,10 +1729,13 @@ impl FromXml for MapInfo {
                 b"SelectionNamespaces" => {
                     f_selection_namespaces = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1681,6 +1780,7 @@ impl FromXml for MapInfo {
                 .ok_or_else(|| ParseError::MissingAttribute("SelectionNamespaces".to_string()))?,
             schema: f_schema,
             map: f_map,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1724,6 +1824,7 @@ impl FromXml for XmlMap {
         let mut f_preserve_sort_a_f_layout: Option<bool> = None;
         let mut f_preserve_format: Option<bool> = None;
         let mut f_data_binding = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1757,10 +1858,13 @@ impl FromXml for XmlMap {
                 b"PreserveFormat" => {
                     f_preserve_format = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1815,6 +1919,7 @@ impl FromXml for XmlMap {
             preserve_format: f_preserve_format
                 .ok_or_else(|| ParseError::MissingAttribute("PreserveFormat".to_string()))?,
             data_binding: f_data_binding,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1831,6 +1936,7 @@ impl FromXml for DataBinding {
         let mut f_connection_i_d = None;
         let mut f_file_binding_name = None;
         let mut f_data_binding_load_mode: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -1852,10 +1958,13 @@ impl FromXml for DataBinding {
                 b"DataBindingLoadMode" => {
                     f_data_binding_load_mode = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -1878,6 +1987,7 @@ impl FromXml for DataBinding {
             file_binding_name: f_file_binding_name,
             data_binding_load_mode: f_data_binding_load_mode
                 .ok_or_else(|| ParseError::MissingAttribute("DataBindingLoadMode".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -1960,6 +2070,7 @@ impl FromXml for Connection {
         let mut f_text_pr = None;
         let mut f_parameters = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2026,10 +2137,13 @@ impl FromXml for Connection {
                 b"singleSignOnId" => {
                     f_single_sign_on_id = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2134,6 +2248,7 @@ impl FromXml for Connection {
             text_pr: f_text_pr,
             parameters: f_parameters,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2149,6 +2264,7 @@ impl FromXml for DatabaseProperties {
         let mut f_command = None;
         let mut f_server_command = None;
         let mut f_command_type = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2167,10 +2283,13 @@ impl FromXml for DatabaseProperties {
                 b"commandType" => {
                     f_command_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2192,6 +2311,7 @@ impl FromXml for DatabaseProperties {
             command: f_command,
             server_command: f_server_command,
             command_type: f_command_type,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2212,6 +2332,7 @@ impl FromXml for OlapProperties {
         let mut f_server_number_format = None;
         let mut f_server_font = None;
         let mut f_server_font_color = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2245,10 +2366,13 @@ impl FromXml for OlapProperties {
                 b"serverFontColor" => {
                     f_server_font_color = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2274,6 +2398,7 @@ impl FromXml for OlapProperties {
             server_number_format: f_server_number_format,
             server_font: f_server_font,
             server_font_color: f_server_font_color,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2299,6 +2424,7 @@ impl FromXml for WebQueryProperties {
         let mut f_html_format = None;
         let mut f_edit_page = None;
         let mut f_tables = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2344,10 +2470,13 @@ impl FromXml for WebQueryProperties {
                 b"editPage" => {
                     f_edit_page = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2396,6 +2525,7 @@ impl FromXml for WebQueryProperties {
             html_format: f_html_format,
             edit_page: f_edit_page,
             tables: f_tables,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2409,6 +2539,7 @@ impl FromXml for Parameters {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_parameter = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2418,10 +2549,13 @@ impl FromXml for Parameters {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2458,6 +2592,7 @@ impl FromXml for Parameters {
         Ok(Self {
             count: f_count,
             parameter: f_parameter,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2479,6 +2614,7 @@ impl FromXml for Parameter {
         let mut f_integer = None;
         let mut f_string = None;
         let mut f_cell = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2515,10 +2651,13 @@ impl FromXml for Parameter {
                 b"cell" => {
                     f_cell = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2545,6 +2684,7 @@ impl FromXml for Parameter {
             integer: f_integer,
             string: f_string,
             cell: f_cell,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2557,6 +2697,7 @@ impl FromXml for DataTables {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2566,10 +2707,13 @@ impl FromXml for DataTables {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2587,6 +2731,7 @@ impl FromXml for DataTables {
 
         Ok(Self {
             count: f_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2637,6 +2782,7 @@ impl FromXml for TextImportProperties {
         let mut f_qualifier = None;
         let mut f_delimiter = None;
         let mut f_text_fields = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2691,10 +2837,13 @@ impl FromXml for TextImportProperties {
                 b"delimiter" => {
                     f_delimiter = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2747,6 +2896,7 @@ impl FromXml for TextImportProperties {
             qualifier: f_qualifier,
             delimiter: f_delimiter,
             text_fields: f_text_fields,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2760,6 +2910,7 @@ impl FromXml for TextFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_text_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2769,10 +2920,13 @@ impl FromXml for TextFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2810,6 +2964,7 @@ impl FromXml for TextFields {
         Ok(Self {
             count: f_count,
             text_field: f_text_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2823,6 +2978,7 @@ impl FromXml for TextField {
     ) -> Result<Self, ParseError> {
         let mut f_type = None;
         let mut f_position = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2835,10 +2991,13 @@ impl FromXml for TextField {
                 b"position" => {
                     f_position = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -2857,6 +3016,7 @@ impl FromXml for TextField {
         Ok(Self {
             r#type: f_type,
             position: f_position,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -2896,6 +3056,7 @@ impl FromXml for PivotCacheDefinition {
         let mut f_measure_groups = None;
         let mut f_maps = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -2956,10 +3117,13 @@ impl FromXml for PivotCacheDefinition {
                 b"supportAdvancedDrill" => {
                     f_support_advanced_drill = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3100,6 +3264,7 @@ impl FromXml for PivotCacheDefinition {
             measure_groups: f_measure_groups,
             maps: f_maps,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3113,6 +3278,7 @@ impl FromXml for CacheFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cache_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3122,10 +3288,13 @@ impl FromXml for CacheFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3163,6 +3332,7 @@ impl FromXml for CacheFields {
         Ok(Self {
             count: f_count,
             cache_field: f_cache_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3191,6 +3361,7 @@ impl FromXml for CacheField {
         let mut f_field_group = None;
         let mut f_mp_map = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3236,10 +3407,13 @@ impl FromXml for CacheField {
                 b"memberPropertyField" => {
                     f_member_property_field = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3314,6 +3488,7 @@ impl FromXml for CacheField {
             field_group: f_field_group,
             mp_map: f_mp_map,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3327,6 +3502,7 @@ impl FromXml for CacheSource {
     ) -> Result<Self, ParseError> {
         let mut f_type: Option<STSourceType> = None;
         let mut f_connection_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3339,10 +3515,13 @@ impl FromXml for CacheSource {
                 b"connectionId" => {
                     f_connection_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3361,6 +3540,7 @@ impl FromXml for CacheSource {
         Ok(Self {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             connection_id: f_connection_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3375,6 +3555,7 @@ impl FromXml for WorksheetSource {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3390,10 +3571,13 @@ impl FromXml for WorksheetSource {
                 b"sheet" => {
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3413,6 +3597,7 @@ impl FromXml for WorksheetSource {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3427,6 +3612,7 @@ impl FromXml for Consolidation {
         let mut f_auto_page = None;
         let mut f_pages = None;
         let mut f_range_sets: Option<Box<CTRangeSets>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3436,10 +3622,13 @@ impl FromXml for Consolidation {
                 b"autoPage" => {
                     f_auto_page = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3485,6 +3674,7 @@ impl FromXml for Consolidation {
             pages: f_pages,
             range_sets: f_range_sets
                 .ok_or_else(|| ParseError::MissingAttribute("rangeSets".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3498,6 +3688,7 @@ impl FromXml for CTPages {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3507,10 +3698,13 @@ impl FromXml for CTPages {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3547,6 +3741,7 @@ impl FromXml for CTPages {
         Ok(Self {
             count: f_count,
             page: f_page,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3560,6 +3755,7 @@ impl FromXml for CTPCDSCPage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page_item = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3569,10 +3765,13 @@ impl FromXml for CTPCDSCPage {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3610,6 +3809,7 @@ impl FromXml for CTPCDSCPage {
         Ok(Self {
             count: f_count,
             page_item: f_page_item,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3622,6 +3822,7 @@ impl FromXml for CTPageItem {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3631,10 +3832,13 @@ impl FromXml for CTPageItem {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3652,6 +3856,7 @@ impl FromXml for CTPageItem {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3665,6 +3870,7 @@ impl FromXml for CTRangeSets {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_range_set = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3674,10 +3880,13 @@ impl FromXml for CTRangeSets {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3715,6 +3924,7 @@ impl FromXml for CTRangeSets {
         Ok(Self {
             count: f_count,
             range_set: f_range_set,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3733,6 +3943,7 @@ impl FromXml for CTRangeSet {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3760,10 +3971,13 @@ impl FromXml for CTRangeSet {
                 b"sheet" => {
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3787,6 +4001,7 @@ impl FromXml for CTRangeSet {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3812,6 +4027,7 @@ impl FromXml for SharedItems {
         let mut f_max_date = None;
         let mut f_count = None;
         let mut f_long_text = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3860,10 +4076,13 @@ impl FromXml for SharedItems {
                 b"longText" => {
                     f_long_text = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -3894,6 +4113,7 @@ impl FromXml for SharedItems {
             max_date: f_max_date,
             count: f_count,
             long_text: f_long_text,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -3918,6 +4138,7 @@ impl FromXml for CTMissing {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -3957,10 +4178,13 @@ impl FromXml for CTMissing {
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4014,6 +4238,7 @@ impl FromXml for CTMissing {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4039,6 +4264,7 @@ impl FromXml for CTNumber {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4081,10 +4307,13 @@ impl FromXml for CTNumber {
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4139,6 +4368,7 @@ impl FromXml for CTNumber {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4156,6 +4386,7 @@ impl FromXml for CTBoolean {
         let mut f_cells = None;
         let mut f_cp = None;
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4177,10 +4408,13 @@ impl FromXml for CTBoolean {
                 b"cp" => {
                     f_cp = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4221,6 +4455,7 @@ impl FromXml for CTBoolean {
             cells: f_cells,
             cp: f_cp,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4246,6 +4481,7 @@ impl FromXml for CTError {
         let mut f_b = None;
         let mut f_tpls = None;
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4288,10 +4524,13 @@ impl FromXml for CTError {
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4346,6 +4585,7 @@ impl FromXml for CTError {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4371,6 +4611,7 @@ impl FromXml for CTString {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4413,10 +4654,13 @@ impl FromXml for CTString {
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4471,6 +4715,7 @@ impl FromXml for CTString {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4488,6 +4733,7 @@ impl FromXml for CTDateTime {
         let mut f_cells = None;
         let mut f_cp = None;
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4509,10 +4755,13 @@ impl FromXml for CTDateTime {
                 b"cp" => {
                     f_cp = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4553,6 +4802,7 @@ impl FromXml for CTDateTime {
             cells: f_cells,
             cp: f_cp,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4569,6 +4819,7 @@ impl FromXml for FieldGroup {
         let mut f_range_pr = None;
         let mut f_discrete_pr = None;
         let mut f_group_items = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4581,10 +4832,13 @@ impl FromXml for FieldGroup {
                 b"base" => {
                     f_base = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4640,6 +4894,7 @@ impl FromXml for FieldGroup {
             range_pr: f_range_pr,
             discrete_pr: f_discrete_pr,
             group_items: f_group_items,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4659,6 +4914,7 @@ impl FromXml for CTRangePr {
         let mut f_start_date = None;
         let mut f_end_date = None;
         let mut f_group_interval = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4689,10 +4945,13 @@ impl FromXml for CTRangePr {
                 b"groupInterval" => {
                     f_group_interval = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4717,6 +4976,7 @@ impl FromXml for CTRangePr {
             start_date: f_start_date,
             end_date: f_end_date,
             group_interval: f_group_interval,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4730,6 +4990,7 @@ impl FromXml for CTDiscretePr {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4739,10 +5000,13 @@ impl FromXml for CTDiscretePr {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4779,6 +5043,7 @@ impl FromXml for CTDiscretePr {
         Ok(Self {
             count: f_count,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4791,6 +5056,7 @@ impl FromXml for GroupItems {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4800,10 +5066,13 @@ impl FromXml for GroupItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4821,6 +5090,7 @@ impl FromXml for GroupItems {
 
         Ok(Self {
             count: f_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4835,6 +5105,7 @@ impl FromXml for PivotCacheRecords {
         let mut f_count = None;
         let mut f_reference = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4844,10 +5115,13 @@ impl FromXml for PivotCacheRecords {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4893,6 +5167,7 @@ impl FromXml for PivotCacheRecords {
             count: f_count,
             reference: f_reference,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4928,6 +5203,7 @@ impl FromXml for CTPCDKPIs {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_kpi = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -4937,10 +5213,13 @@ impl FromXml for CTPCDKPIs {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -4977,6 +5256,7 @@ impl FromXml for CTPCDKPIs {
         Ok(Self {
             count: f_count,
             kpi: f_kpi,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -4999,6 +5279,7 @@ impl FromXml for CTPCDKPI {
         let mut f_trend = None;
         let mut f_weight = None;
         let mut f_time = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5038,10 +5319,13 @@ impl FromXml for CTPCDKPI {
                 b"time" => {
                     f_time = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5070,6 +5354,7 @@ impl FromXml for CTPCDKPI {
             trend: f_trend,
             weight: f_weight,
             time: f_time,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5083,6 +5368,7 @@ impl FromXml for CTCacheHierarchies {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cache_hierarchy = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5092,10 +5378,13 @@ impl FromXml for CTCacheHierarchies {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5134,6 +5423,7 @@ impl FromXml for CTCacheHierarchies {
         Ok(Self {
             count: f_count,
             cache_hierarchy: f_cache_hierarchy,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5170,6 +5460,7 @@ impl FromXml for CTCacheHierarchy {
         let mut f_fields_usage = None;
         let mut f_group_levels = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5242,10 +5533,13 @@ impl FromXml for CTCacheHierarchy {
                 b"hidden" => {
                     f_hidden = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5324,6 +5618,7 @@ impl FromXml for CTCacheHierarchy {
             fields_usage: f_fields_usage,
             group_levels: f_group_levels,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5337,6 +5632,7 @@ impl FromXml for CTFieldsUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field_usage = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5346,10 +5642,13 @@ impl FromXml for CTFieldsUsage {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5387,6 +5686,7 @@ impl FromXml for CTFieldsUsage {
         Ok(Self {
             count: f_count,
             field_usage: f_field_usage,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5399,6 +5699,7 @@ impl FromXml for CTFieldUsage {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<i32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5408,10 +5709,13 @@ impl FromXml for CTFieldUsage {
                 b"x" => {
                     f_x = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5429,6 +5733,7 @@ impl FromXml for CTFieldUsage {
 
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5442,6 +5747,7 @@ impl FromXml for CTGroupLevels {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group_level = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5451,10 +5757,13 @@ impl FromXml for CTGroupLevels {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5492,6 +5801,7 @@ impl FromXml for CTGroupLevels {
         Ok(Self {
             count: f_count,
             group_level: f_group_level,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5509,6 +5819,7 @@ impl FromXml for CTGroupLevel {
         let mut f_custom_roll_up = None;
         let mut f_groups = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5527,10 +5838,13 @@ impl FromXml for CTGroupLevel {
                 b"customRollUp" => {
                     f_custom_roll_up = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5581,6 +5895,7 @@ impl FromXml for CTGroupLevel {
             custom_roll_up: f_custom_roll_up,
             groups: f_groups,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5594,6 +5909,7 @@ impl FromXml for CTGroups {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5603,10 +5919,13 @@ impl FromXml for CTGroups {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5643,6 +5962,7 @@ impl FromXml for CTGroups {
         Ok(Self {
             count: f_count,
             group: f_group,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5660,6 +5980,7 @@ impl FromXml for CTLevelGroup {
         let mut f_unique_parent = None;
         let mut f_id = None;
         let mut f_group_members: Option<Box<CTGroupMembers>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5681,10 +6002,13 @@ impl FromXml for CTLevelGroup {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5730,6 +6054,7 @@ impl FromXml for CTLevelGroup {
             id: f_id,
             group_members: f_group_members
                 .ok_or_else(|| ParseError::MissingAttribute("groupMembers".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5743,6 +6068,7 @@ impl FromXml for CTGroupMembers {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group_member = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5752,10 +6078,13 @@ impl FromXml for CTGroupMembers {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5794,6 +6123,7 @@ impl FromXml for CTGroupMembers {
         Ok(Self {
             count: f_count,
             group_member: f_group_member,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5807,6 +6137,7 @@ impl FromXml for CTGroupMember {
     ) -> Result<Self, ParseError> {
         let mut f_unique_name: Option<XmlString> = None;
         let mut f_group = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5819,10 +6150,13 @@ impl FromXml for CTGroupMember {
                 b"group" => {
                     f_group = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5842,6 +6176,7 @@ impl FromXml for CTGroupMember {
             unique_name: f_unique_name
                 .ok_or_else(|| ParseError::MissingAttribute("uniqueName".to_string()))?,
             group: f_group,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5939,6 +6274,7 @@ impl FromXml for CTServerFormat {
     ) -> Result<Self, ParseError> {
         let mut f_culture = None;
         let mut f_format = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5951,10 +6287,13 @@ impl FromXml for CTServerFormat {
                 b"format" => {
                     f_format = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -5973,6 +6312,7 @@ impl FromXml for CTServerFormat {
         Ok(Self {
             culture: f_culture,
             format: f_format,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -5986,6 +6326,7 @@ impl FromXml for CTServerFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_server_format = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -5995,10 +6336,13 @@ impl FromXml for CTServerFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6037,6 +6381,7 @@ impl FromXml for CTServerFormats {
         Ok(Self {
             count: f_count,
             server_format: f_server_format,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6049,6 +6394,7 @@ impl FromXml for CTPCDSDTCEntries {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6058,10 +6404,13 @@ impl FromXml for CTPCDSDTCEntries {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6079,6 +6428,7 @@ impl FromXml for CTPCDSDTCEntries {
 
         Ok(Self {
             count: f_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6092,6 +6442,7 @@ impl FromXml for CTTuples {
     ) -> Result<Self, ParseError> {
         let mut f_cells = None;
         let mut f_tpl = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6101,10 +6452,13 @@ impl FromXml for CTTuples {
                 b"c" => {
                     f_cells = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6141,6 +6495,7 @@ impl FromXml for CTTuples {
         Ok(Self {
             cells: f_cells,
             tpl: f_tpl,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6155,6 +6510,7 @@ impl FromXml for CTTuple {
         let mut f_fld = None;
         let mut f_hier = None;
         let mut f_item: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6170,10 +6526,13 @@ impl FromXml for CTTuple {
                 b"item" => {
                     f_item = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6193,6 +6552,7 @@ impl FromXml for CTTuple {
             fld: f_fld,
             hier: f_hier,
             item: f_item.ok_or_else(|| ParseError::MissingAttribute("item".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6206,6 +6566,7 @@ impl FromXml for CTSets {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_set = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6215,10 +6576,13 @@ impl FromXml for CTSets {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6255,6 +6619,7 @@ impl FromXml for CTSets {
         Ok(Self {
             count: f_count,
             set: f_set,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6273,6 +6638,7 @@ impl FromXml for CTSet {
         let mut f_query_failed = None;
         let mut f_tpls = Vec::new();
         let mut f_sort_by_tuple = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6294,10 +6660,13 @@ impl FromXml for CTSet {
                 b"queryFailed" => {
                     f_query_failed = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6348,6 +6717,7 @@ impl FromXml for CTSet {
             query_failed: f_query_failed,
             tpls: f_tpls,
             sort_by_tuple: f_sort_by_tuple,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6361,6 +6731,7 @@ impl FromXml for CTQueryCache {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_query = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6370,10 +6741,13 @@ impl FromXml for CTQueryCache {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6410,6 +6784,7 @@ impl FromXml for CTQueryCache {
         Ok(Self {
             count: f_count,
             query: f_query,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6423,6 +6798,7 @@ impl FromXml for CTQuery {
     ) -> Result<Self, ParseError> {
         let mut f_mdx: Option<XmlString> = None;
         let mut f_tpls = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6432,10 +6808,13 @@ impl FromXml for CTQuery {
                 b"mdx" => {
                     f_mdx = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6472,6 +6851,7 @@ impl FromXml for CTQuery {
         Ok(Self {
             mdx: f_mdx.ok_or_else(|| ParseError::MissingAttribute("mdx".to_string()))?,
             tpls: f_tpls,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6485,6 +6865,7 @@ impl FromXml for CTCalculatedItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_calculated_item = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6494,10 +6875,13 @@ impl FromXml for CTCalculatedItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6536,6 +6920,7 @@ impl FromXml for CTCalculatedItems {
         Ok(Self {
             count: f_count,
             calculated_item: f_calculated_item,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6551,6 +6936,7 @@ impl FromXml for CTCalculatedItem {
         let mut f_formula = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6563,10 +6949,13 @@ impl FromXml for CTCalculatedItem {
                 b"formula" => {
                     f_formula = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6615,6 +7004,7 @@ impl FromXml for CTCalculatedItem {
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6628,6 +7018,7 @@ impl FromXml for CTCalculatedMembers {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_calculated_member = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6637,10 +7028,13 @@ impl FromXml for CTCalculatedMembers {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6680,6 +7074,7 @@ impl FromXml for CTCalculatedMembers {
         Ok(Self {
             count: f_count,
             calculated_member: f_calculated_member,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6699,6 +7094,7 @@ impl FromXml for CTCalculatedMember {
         let mut f_solve_order = None;
         let mut f_set = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -6726,10 +7122,13 @@ impl FromXml for CTCalculatedMember {
                 b"set" => {
                     f_set = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -6774,6 +7173,7 @@ impl FromXml for CTCalculatedMember {
             solve_order: f_solve_order,
             set: f_set,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -6863,6 +7263,7 @@ impl FromXml for CTPivotTableDefinition {
         let mut f_row_hierarchies_usage = None;
         let mut f_col_hierarchies_usage = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7052,10 +7453,13 @@ impl FromXml for CTPivotTableDefinition {
                 b"customListSort" => {
                     f_custom_list_sort = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7295,6 +7699,7 @@ impl FromXml for CTPivotTableDefinition {
             row_hierarchies_usage: f_row_hierarchies_usage,
             col_hierarchies_usage: f_col_hierarchies_usage,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7312,6 +7717,7 @@ impl FromXml for PivotLocation {
         let mut f_first_data_col: Option<u32> = None;
         let mut f_row_page_count = None;
         let mut f_col_page_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7336,10 +7742,13 @@ impl FromXml for PivotLocation {
                 b"colPageCount" => {
                     f_col_page_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7366,6 +7775,7 @@ impl FromXml for PivotLocation {
                 .ok_or_else(|| ParseError::MissingAttribute("firstDataCol".to_string()))?,
             row_page_count: f_row_page_count,
             col_page_count: f_col_page_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7379,6 +7789,7 @@ impl FromXml for PivotFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7388,10 +7799,13 @@ impl FromXml for PivotFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7429,6 +7843,7 @@ impl FromXml for PivotFields {
         Ok(Self {
             count: f_count,
             pivot_field: f_pivot_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7491,6 +7906,7 @@ impl FromXml for PivotField {
         let mut f_items = None;
         let mut f_auto_sort_scope = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7641,10 +8057,13 @@ impl FromXml for PivotField {
                 b"defaultAttributeDrillState" => {
                     f_default_attribute_drill_state = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7747,6 +8166,7 @@ impl FromXml for PivotField {
             items: f_items,
             auto_sort_scope: f_auto_sort_scope,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7760,6 +8180,7 @@ impl FromXml for PivotItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_item = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7769,10 +8190,13 @@ impl FromXml for PivotItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7809,6 +8233,7 @@ impl FromXml for PivotItems {
         Ok(Self {
             count: f_count,
             item: f_item,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7831,6 +8256,7 @@ impl FromXml for PivotItem {
         let mut f_x = None;
         let mut f_d = None;
         let mut f_e = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7870,10 +8296,13 @@ impl FromXml for PivotItem {
                 b"e" => {
                     f_e = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7901,6 +8330,7 @@ impl FromXml for PivotItem {
             x: f_x,
             d: f_d,
             e: f_e,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7914,6 +8344,7 @@ impl FromXml for PageFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -7923,10 +8354,13 @@ impl FromXml for PageFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -7964,6 +8398,7 @@ impl FromXml for PageFields {
         Ok(Self {
             count: f_count,
             page_field: f_page_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -7981,6 +8416,7 @@ impl FromXml for PageField {
         let mut f_name = None;
         let mut f_cap = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8002,10 +8438,13 @@ impl FromXml for PageField {
                 b"cap" => {
                     f_cap = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8048,6 +8487,7 @@ impl FromXml for PageField {
             name: f_name,
             cap: f_cap,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8061,6 +8501,7 @@ impl FromXml for DataFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_data_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8070,10 +8511,13 @@ impl FromXml for DataFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8111,6 +8555,7 @@ impl FromXml for DataFields {
         Ok(Self {
             count: f_count,
             data_field: f_data_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8130,6 +8575,7 @@ impl FromXml for DataField {
         let mut f_base_item = None;
         let mut f_number_format_id = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8157,10 +8603,13 @@ impl FromXml for DataField {
                 b"numFmtId" => {
                     f_number_format_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8205,6 +8654,7 @@ impl FromXml for DataField {
             base_item: f_base_item,
             number_format_id: f_number_format_id,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8218,6 +8668,7 @@ impl FromXml for CTRowItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_i = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8227,10 +8678,13 @@ impl FromXml for CTRowItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8267,6 +8721,7 @@ impl FromXml for CTRowItems {
         Ok(Self {
             count: f_count,
             i: f_i,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8280,6 +8735,7 @@ impl FromXml for CTColItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_i = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8289,10 +8745,13 @@ impl FromXml for CTColItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8329,6 +8788,7 @@ impl FromXml for CTColItems {
         Ok(Self {
             count: f_count,
             i: f_i,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8344,6 +8804,7 @@ impl FromXml for CTI {
         let mut f_reference = None;
         let mut f_i = None;
         let mut f_x = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8359,10 +8820,13 @@ impl FromXml for CTI {
                 b"i" => {
                     f_i = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8401,6 +8865,7 @@ impl FromXml for CTI {
             reference: f_reference,
             i: f_i,
             x: f_x,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8413,6 +8878,7 @@ impl FromXml for CTX {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8422,10 +8888,13 @@ impl FromXml for CTX {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8443,6 +8912,7 @@ impl FromXml for CTX {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8456,6 +8926,7 @@ impl FromXml for RowFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8465,10 +8936,13 @@ impl FromXml for RowFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8505,6 +8979,7 @@ impl FromXml for RowFields {
         Ok(Self {
             count: f_count,
             field: f_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8518,6 +8993,7 @@ impl FromXml for ColFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8527,10 +9003,13 @@ impl FromXml for ColFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8567,6 +9046,7 @@ impl FromXml for ColFields {
         Ok(Self {
             count: f_count,
             field: f_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8579,6 +9059,7 @@ impl FromXml for CTField {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<i32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8588,10 +9069,13 @@ impl FromXml for CTField {
                 b"x" => {
                     f_x = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8609,6 +9093,7 @@ impl FromXml for CTField {
 
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8622,6 +9107,7 @@ impl FromXml for CTFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_format = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8631,10 +9117,13 @@ impl FromXml for CTFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8671,6 +9160,7 @@ impl FromXml for CTFormats {
         Ok(Self {
             count: f_count,
             format: f_format,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8686,6 +9176,7 @@ impl FromXml for CTFormat {
         let mut f_dxf_id = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8698,10 +9189,13 @@ impl FromXml for CTFormat {
                 b"dxfId" => {
                     f_dxf_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8750,6 +9244,7 @@ impl FromXml for CTFormat {
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8763,6 +9258,7 @@ impl FromXml for CTConditionalFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_conditional_format = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8772,10 +9268,13 @@ impl FromXml for CTConditionalFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8815,6 +9314,7 @@ impl FromXml for CTConditionalFormats {
         Ok(Self {
             count: f_count,
             conditional_format: f_conditional_format,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8831,6 +9331,7 @@ impl FromXml for CTConditionalFormat {
         let mut f_priority: Option<u32> = None;
         let mut f_pivot_areas: Option<Box<PivotAreas>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8846,10 +9347,13 @@ impl FromXml for CTConditionalFormat {
                 b"priority" => {
                     f_priority = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8900,6 +9404,7 @@ impl FromXml for CTConditionalFormat {
             pivot_areas: f_pivot_areas
                 .ok_or_else(|| ParseError::MissingAttribute("pivotAreas".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8913,6 +9418,7 @@ impl FromXml for PivotAreas {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_area = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8922,10 +9428,13 @@ impl FromXml for PivotAreas {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -8963,6 +9472,7 @@ impl FromXml for PivotAreas {
         Ok(Self {
             count: f_count,
             pivot_area: f_pivot_area,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -8976,6 +9486,7 @@ impl FromXml for CTChartFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_chart_format = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -8985,10 +9496,13 @@ impl FromXml for CTChartFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9027,6 +9541,7 @@ impl FromXml for CTChartFormats {
         Ok(Self {
             count: f_count,
             chart_format: f_chart_format,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9042,6 +9557,7 @@ impl FromXml for CTChartFormat {
         let mut f_format: Option<u32> = None;
         let mut f_series = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9057,10 +9573,13 @@ impl FromXml for CTChartFormat {
                 b"series" => {
                     f_series = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9101,6 +9620,7 @@ impl FromXml for CTChartFormat {
             series: f_series,
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9114,6 +9634,7 @@ impl FromXml for CTPivotHierarchies {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_hierarchy = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9123,10 +9644,13 @@ impl FromXml for CTPivotHierarchies {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9165,6 +9689,7 @@ impl FromXml for CTPivotHierarchies {
         Ok(Self {
             count: f_count,
             pivot_hierarchy: f_pivot_hierarchy,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9190,6 +9715,7 @@ impl FromXml for CTPivotHierarchy {
         let mut f_mps = None;
         let mut f_members = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9229,10 +9755,13 @@ impl FromXml for CTPivotHierarchy {
                 b"caption" => {
                     f_caption = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9297,6 +9826,7 @@ impl FromXml for CTPivotHierarchy {
             mps: f_mps,
             members: f_members,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9310,6 +9840,7 @@ impl FromXml for CTRowHierarchiesUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_row_hierarchy_usage = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9319,10 +9850,13 @@ impl FromXml for CTRowHierarchiesUsage {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9361,6 +9895,7 @@ impl FromXml for CTRowHierarchiesUsage {
         Ok(Self {
             count: f_count,
             row_hierarchy_usage: f_row_hierarchy_usage,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9374,6 +9909,7 @@ impl FromXml for CTColHierarchiesUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_col_hierarchy_usage = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9383,10 +9919,13 @@ impl FromXml for CTColHierarchiesUsage {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9425,6 +9964,7 @@ impl FromXml for CTColHierarchiesUsage {
         Ok(Self {
             count: f_count,
             col_hierarchy_usage: f_col_hierarchy_usage,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9437,6 +9977,7 @@ impl FromXml for CTHierarchyUsage {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_hierarchy_usage: Option<i32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9446,10 +9987,13 @@ impl FromXml for CTHierarchyUsage {
                 b"hierarchyUsage" => {
                     f_hierarchy_usage = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9468,6 +10012,7 @@ impl FromXml for CTHierarchyUsage {
         Ok(Self {
             hierarchy_usage: f_hierarchy_usage
                 .ok_or_else(|| ParseError::MissingAttribute("hierarchyUsage".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9481,6 +10026,7 @@ impl FromXml for CTMemberProperties {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_mp = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9490,10 +10036,13 @@ impl FromXml for CTMemberProperties {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9530,6 +10079,7 @@ impl FromXml for CTMemberProperties {
         Ok(Self {
             count: f_count,
             mp: f_mp,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9550,6 +10100,7 @@ impl FromXml for CTMemberProperty {
         let mut f_p_len = None;
         let mut f_level = None;
         let mut f_field: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9583,10 +10134,13 @@ impl FromXml for CTMemberProperty {
                 b"field" => {
                     f_field = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9612,6 +10166,7 @@ impl FromXml for CTMemberProperty {
             p_len: f_p_len,
             level: f_level,
             field: f_field.ok_or_else(|| ParseError::MissingAttribute("field".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9626,6 +10181,7 @@ impl FromXml for CTMembers {
         let mut f_count = None;
         let mut f_level = None;
         let mut f_member = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9638,10 +10194,13 @@ impl FromXml for CTMembers {
                 b"level" => {
                     f_level = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9679,6 +10238,7 @@ impl FromXml for CTMembers {
             count: f_count,
             level: f_level,
             member: f_member,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9691,6 +10251,7 @@ impl FromXml for CTMember {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9700,10 +10261,13 @@ impl FromXml for CTMember {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9721,6 +10285,7 @@ impl FromXml for CTMember {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9734,6 +10299,7 @@ impl FromXml for CTDimensions {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_dimension = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9743,10 +10309,13 @@ impl FromXml for CTDimensions {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9785,6 +10354,7 @@ impl FromXml for CTDimensions {
         Ok(Self {
             count: f_count,
             dimension: f_dimension,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9800,6 +10370,7 @@ impl FromXml for CTPivotDimension {
         let mut f_name: Option<XmlString> = None;
         let mut f_unique_name: Option<XmlString> = None;
         let mut f_caption: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9818,10 +10389,13 @@ impl FromXml for CTPivotDimension {
                 b"caption" => {
                     f_caption = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9844,6 +10418,7 @@ impl FromXml for CTPivotDimension {
                 .ok_or_else(|| ParseError::MissingAttribute("uniqueName".to_string()))?,
             caption: f_caption
                 .ok_or_else(|| ParseError::MissingAttribute("caption".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9857,6 +10432,7 @@ impl FromXml for CTMeasureGroups {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_measure_group = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9866,10 +10442,13 @@ impl FromXml for CTMeasureGroups {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9908,6 +10487,7 @@ impl FromXml for CTMeasureGroups {
         Ok(Self {
             count: f_count,
             measure_group: f_measure_group,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9921,6 +10501,7 @@ impl FromXml for CTMeasureDimensionMaps {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_map = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9930,10 +10511,13 @@ impl FromXml for CTMeasureDimensionMaps {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -9973,6 +10557,7 @@ impl FromXml for CTMeasureDimensionMaps {
         Ok(Self {
             count: f_count,
             map: f_map,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -9986,6 +10571,7 @@ impl FromXml for CTMeasureGroup {
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
         let mut f_caption: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -9998,10 +10584,13 @@ impl FromXml for CTMeasureGroup {
                 b"caption" => {
                     f_caption = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10021,6 +10610,7 @@ impl FromXml for CTMeasureGroup {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             caption: f_caption
                 .ok_or_else(|| ParseError::MissingAttribute("caption".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10034,6 +10624,7 @@ impl FromXml for CTMeasureDimensionMap {
     ) -> Result<Self, ParseError> {
         let mut f_measure_group = None;
         let mut f_dimension = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10046,10 +10637,13 @@ impl FromXml for CTMeasureDimensionMap {
                 b"dimension" => {
                     f_dimension = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10068,6 +10662,7 @@ impl FromXml for CTMeasureDimensionMap {
         Ok(Self {
             measure_group: f_measure_group,
             dimension: f_dimension,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10085,6 +10680,7 @@ impl FromXml for CTPivotTableStyle {
         let mut f_show_row_stripes = None;
         let mut f_show_col_stripes = None;
         let mut f_show_last_column = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10109,10 +10705,13 @@ impl FromXml for CTPivotTableStyle {
                 b"showLastColumn" => {
                     f_show_last_column = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10135,6 +10734,7 @@ impl FromXml for CTPivotTableStyle {
             show_row_stripes: f_show_row_stripes,
             show_col_stripes: f_show_col_stripes,
             show_last_column: f_show_last_column,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10148,6 +10748,7 @@ impl FromXml for PivotFilters {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_filter = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10157,10 +10758,13 @@ impl FromXml for PivotFilters {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10197,6 +10801,7 @@ impl FromXml for PivotFilters {
         Ok(Self {
             count: f_count,
             filter: f_filter,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10221,6 +10826,7 @@ impl FromXml for PivotFilter {
         let mut f_string_value2 = None;
         let mut f_auto_filter: Option<Box<AutoFilter>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10260,10 +10866,13 @@ impl FromXml for PivotFilter {
                 b"stringValue2" => {
                     f_string_value2 = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10321,6 +10930,7 @@ impl FromXml for PivotFilter {
             auto_filter: f_auto_filter
                 .ok_or_else(|| ParseError::MissingAttribute("autoFilter".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10346,6 +10956,7 @@ impl FromXml for PivotArea {
         let mut f_field_position = None;
         let mut f_references = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10388,10 +10999,13 @@ impl FromXml for PivotArea {
                 b"fieldPosition" => {
                     f_field_position = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10451,6 +11065,7 @@ impl FromXml for PivotArea {
             field_position: f_field_position,
             references: f_references,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10464,6 +11079,7 @@ impl FromXml for CTPivotAreaReferences {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_reference = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10473,10 +11089,13 @@ impl FromXml for CTPivotAreaReferences {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10516,6 +11135,7 @@ impl FromXml for CTPivotAreaReferences {
         Ok(Self {
             count: f_count,
             reference: f_reference,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10546,6 +11166,7 @@ impl FromXml for CTPivotAreaReference {
         let mut f_var_p_subtotal = None;
         let mut f_x = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10603,10 +11224,13 @@ impl FromXml for CTPivotAreaReference {
                 b"varPSubtotal" => {
                     f_var_p_subtotal = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10668,6 +11292,7 @@ impl FromXml for CTPivotAreaReference {
             var_p_subtotal: f_var_p_subtotal,
             x: f_x,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10680,6 +11305,7 @@ impl FromXml for CTIndex {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10689,10 +11315,13 @@ impl FromXml for CTIndex {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10710,6 +11339,7 @@ impl FromXml for CTIndex {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10738,6 +11368,7 @@ impl FromXml for QueryTable {
         let mut f_connection_id: Option<u32> = None;
         let mut f_query_table_refresh = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10789,10 +11420,13 @@ impl FromXml for QueryTable {
                 b"connectionId" => {
                     f_connection_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10855,6 +11489,7 @@ impl FromXml for QueryTable {
                 .ok_or_else(|| ParseError::MissingAttribute("connectionId".to_string()))?,
             query_table_refresh: f_query_table_refresh,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10877,6 +11512,7 @@ impl FromXml for QueryTableRefresh {
         let mut f_query_table_deleted_fields = None;
         let mut f_sort_state = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -10904,10 +11540,13 @@ impl FromXml for QueryTableRefresh {
                 b"unboundColumnsRight" => {
                     f_unbound_columns_right = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -10981,6 +11620,7 @@ impl FromXml for QueryTableRefresh {
             query_table_deleted_fields: f_query_table_deleted_fields,
             sort_state: f_sort_state,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -10994,6 +11634,7 @@ impl FromXml for QueryTableDeletedFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_deleted_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11003,10 +11644,13 @@ impl FromXml for QueryTableDeletedFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11045,6 +11689,7 @@ impl FromXml for QueryTableDeletedFields {
         Ok(Self {
             count: f_count,
             deleted_field: f_deleted_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11057,6 +11702,7 @@ impl FromXml for CTDeletedField {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11066,10 +11712,13 @@ impl FromXml for CTDeletedField {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11087,6 +11736,7 @@ impl FromXml for CTDeletedField {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11100,6 +11750,7 @@ impl FromXml for QueryTableFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_query_table_field = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11109,10 +11760,13 @@ impl FromXml for QueryTableFields {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11151,6 +11805,7 @@ impl FromXml for QueryTableFields {
         Ok(Self {
             count: f_count,
             query_table_field: f_query_table_field,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11170,6 +11825,7 @@ impl FromXml for QueryTableField {
         let mut f_clipped = None;
         let mut f_table_column_id = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11197,10 +11853,13 @@ impl FromXml for QueryTableField {
                 b"tableColumnId" => {
                     f_table_column_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11245,6 +11904,7 @@ impl FromXml for QueryTableField {
             clipped: f_clipped,
             table_column_id: f_table_column_id,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11260,6 +11920,7 @@ impl FromXml for SharedStrings {
         let mut f_unique_count = None;
         let mut f_si = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11272,10 +11933,13 @@ impl FromXml for SharedStrings {
                 b"uniqueCount" => {
                     f_unique_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11322,6 +11986,7 @@ impl FromXml for SharedStrings {
             unique_count: f_unique_count,
             si: f_si,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11336,6 +12001,7 @@ impl FromXml for PhoneticRun {
         let mut f_sb: Option<u32> = None;
         let mut f_eb: Option<u32> = None;
         let mut f_cell_type: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11348,10 +12014,13 @@ impl FromXml for PhoneticRun {
                 b"eb" => {
                     f_eb = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11389,6 +12058,7 @@ impl FromXml for PhoneticRun {
             sb: f_sb.ok_or_else(|| ParseError::MissingAttribute("sb".to_string()))?,
             eb: f_eb.ok_or_else(|| ParseError::MissingAttribute("eb".to_string()))?,
             cell_type: f_cell_type.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11553,6 +12223,7 @@ impl FromXml for PhoneticProperties {
         let mut f_font_id: Option<STFontId> = None;
         let mut f_type = None;
         let mut f_alignment = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11568,10 +12239,13 @@ impl FromXml for PhoneticProperties {
                 b"alignment" => {
                     f_alignment = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11591,6 +12265,7 @@ impl FromXml for PhoneticProperties {
             font_id: f_font_id.ok_or_else(|| ParseError::MissingAttribute("fontId".to_string()))?,
             r#type: f_type,
             alignment: f_alignment,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11615,6 +12290,7 @@ impl FromXml for RevisionHeaders {
         let mut f_protected = None;
         let mut f_preserve_history = None;
         let mut f_header = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11657,10 +12333,13 @@ impl FromXml for RevisionHeaders {
                 b"preserveHistory" => {
                     f_preserve_history = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11709,6 +12388,7 @@ impl FromXml for RevisionHeaders {
             protected: f_protected,
             preserve_history: f_preserve_history,
             header: f_header,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11745,6 +12425,7 @@ impl FromXml for SmlAGRevData {
         let mut f_r_id: Option<u32> = None;
         let mut f_ua = None;
         let mut f_ra = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11760,10 +12441,13 @@ impl FromXml for SmlAGRevData {
                 b"ra" => {
                     f_ra = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11783,6 +12467,7 @@ impl FromXml for SmlAGRevData {
             r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
             ua: f_ua,
             ra: f_ra,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11803,6 +12488,7 @@ impl FromXml for RevisionHeader {
         let mut f_sheet_id_map: Option<Box<CTSheetIdMap>> = None;
         let mut f_reviewed_list = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11827,10 +12513,13 @@ impl FromXml for RevisionHeader {
                 b"maxRId" => {
                     f_max_r_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11896,6 +12585,7 @@ impl FromXml for RevisionHeader {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetIdMap".to_string()))?,
             reviewed_list: f_reviewed_list,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11909,6 +12599,7 @@ impl FromXml for CTSheetIdMap {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_sheet_id = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11918,10 +12609,13 @@ impl FromXml for CTSheetIdMap {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -11958,6 +12652,7 @@ impl FromXml for CTSheetIdMap {
         Ok(Self {
             count: f_count,
             sheet_id: f_sheet_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -11970,6 +12665,7 @@ impl FromXml for CTSheetId {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -11979,10 +12675,13 @@ impl FromXml for CTSheetId {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12000,6 +12699,7 @@ impl FromXml for CTSheetId {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12013,6 +12713,7 @@ impl FromXml for ReviewedRevisions {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_reviewed = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12022,10 +12723,13 @@ impl FromXml for ReviewedRevisions {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12062,6 +12766,7 @@ impl FromXml for ReviewedRevisions {
         Ok(Self {
             count: f_count,
             reviewed: f_reviewed,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12074,6 +12779,7 @@ impl FromXml for Reviewed {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_r_id: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12083,10 +12789,13 @@ impl FromXml for Reviewed {
                 b"rId" => {
                     f_r_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12104,6 +12813,7 @@ impl FromXml for Reviewed {
 
         Ok(Self {
             r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12126,6 +12836,7 @@ impl FromXml for UndoInfo {
         let mut f_dn = None;
         let mut f_reference = None;
         let mut f_s_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12165,10 +12876,13 @@ impl FromXml for UndoInfo {
                 b"sId" => {
                     f_s_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12196,6 +12910,7 @@ impl FromXml for UndoInfo {
             dn: f_dn,
             reference: f_reference,
             s_id: f_s_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12212,6 +12927,7 @@ impl FromXml for RevisionRowColumn {
         let mut f_reference: Option<Reference> = None;
         let mut f_action: Option<STRwColActionType> = None;
         let mut f_edge = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12233,10 +12949,13 @@ impl FromXml for RevisionRowColumn {
                 b"edge" => {
                     f_edge = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12259,6 +12978,7 @@ impl FromXml for RevisionRowColumn {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             action: f_action.ok_or_else(|| ParseError::MissingAttribute("action".to_string()))?,
             edge: f_edge,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12274,6 +12994,7 @@ impl FromXml for RevisionMove {
         let mut f_source: Option<Reference> = None;
         let mut f_destination: Option<Reference> = None;
         let mut f_source_sheet_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12292,10 +13013,13 @@ impl FromXml for RevisionMove {
                 b"sourceSheetId" => {
                     f_source_sheet_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12318,6 +13042,7 @@ impl FromXml for RevisionMove {
             destination: f_destination
                 .ok_or_else(|| ParseError::MissingAttribute("destination".to_string()))?,
             source_sheet_id: f_source_sheet_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12331,6 +13056,7 @@ impl FromXml for RevisionCustomView {
     ) -> Result<Self, ParseError> {
         let mut f_guid: Option<Guid> = None;
         let mut f_action: Option<STRevisionAction> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12343,10 +13069,13 @@ impl FromXml for RevisionCustomView {
                 b"action" => {
                     f_action = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12365,6 +13094,7 @@ impl FromXml for RevisionCustomView {
         Ok(Self {
             guid: f_guid.ok_or_else(|| ParseError::MissingAttribute("guid".to_string()))?,
             action: f_action.ok_or_else(|| ParseError::MissingAttribute("action".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12380,6 +13110,7 @@ impl FromXml for RevisionSheetRename {
         let mut f_old_name: Option<XmlString> = None;
         let mut f_new_name: Option<XmlString> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12395,10 +13126,13 @@ impl FromXml for RevisionSheetRename {
                 b"newName" => {
                     f_new_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12442,6 +13176,7 @@ impl FromXml for RevisionSheetRename {
             new_name: f_new_name
                 .ok_or_else(|| ParseError::MissingAttribute("newName".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12456,6 +13191,7 @@ impl FromXml for RevisionInsertSheet {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_name: Option<XmlString> = None;
         let mut f_sheet_position: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12471,10 +13207,13 @@ impl FromXml for RevisionInsertSheet {
                 b"sheetPosition" => {
                     f_sheet_position = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12496,6 +13235,7 @@ impl FromXml for RevisionInsertSheet {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             sheet_position: f_sheet_position
                 .ok_or_else(|| ParseError::MissingAttribute("sheetPosition".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12522,6 +13262,7 @@ impl FromXml for RevisionCellChange {
         let mut f_nc: Option<Box<Cell>> = None;
         let mut f_ndxf = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12561,10 +13302,13 @@ impl FromXml for RevisionCellChange {
                 b"endOfListFormulaUpdate" => {
                     f_end_of_list_formula_update = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12637,6 +13381,7 @@ impl FromXml for RevisionCellChange {
             nc: f_nc.ok_or_else(|| ParseError::MissingAttribute("nc".to_string()))?,
             ndxf: f_ndxf,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12656,6 +13401,7 @@ impl FromXml for RevisionFormatting {
         let mut f_length = None;
         let mut f_dxf = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12680,10 +13426,13 @@ impl FromXml for RevisionFormatting {
                 b"length" => {
                     f_length = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12738,6 +13487,7 @@ impl FromXml for RevisionFormatting {
             length: f_length,
             dxf: f_dxf,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12751,6 +13501,7 @@ impl FromXml for RevisionAutoFormatting {
     ) -> Result<Self, ParseError> {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_reference: Option<Reference> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12763,10 +13514,13 @@ impl FromXml for RevisionAutoFormatting {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12787,6 +13541,7 @@ impl FromXml for RevisionAutoFormatting {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12809,6 +13564,7 @@ impl FromXml for RevisionComment {
         let mut f_author: Option<XmlString> = None;
         let mut f_old_length = None;
         let mut f_new_length = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12848,10 +13604,13 @@ impl FromXml for RevisionComment {
                 b"newLength" => {
                     f_new_length = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -12880,6 +13639,7 @@ impl FromXml for RevisionComment {
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             old_length: f_old_length,
             new_length: f_new_length,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -12915,6 +13675,7 @@ impl FromXml for RevisionDefinedName {
         let mut f_formula = None;
         let mut f_old_formula = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -12984,10 +13745,13 @@ impl FromXml for RevisionDefinedName {
                 b"oldComment" => {
                     f_old_comment = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -13060,6 +13824,7 @@ impl FromXml for RevisionDefinedName {
             formula: f_formula,
             old_formula: f_old_formula,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -13072,6 +13837,7 @@ impl FromXml for RevisionConflict {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_sheet_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -13081,10 +13847,13 @@ impl FromXml for RevisionConflict {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -13102,6 +13871,7 @@ impl FromXml for RevisionConflict {
 
         Ok(Self {
             sheet_id: f_sheet_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -13116,6 +13886,7 @@ impl FromXml for RevisionQueryTableField {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_reference: Option<Reference> = None;
         let mut f_field_id: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -13131,10 +13902,13 @@ impl FromXml for RevisionQueryTableField {
                 b"fieldId" => {
                     f_field_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -13157,6 +13931,7 @@ impl FromXml for RevisionQueryTableField {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             field_id: f_field_id
                 .ok_or_else(|| ParseError::MissingAttribute("fieldId".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -13170,6 +13945,7 @@ impl FromXml for Users {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_user_info = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -13179,10 +13955,13 @@ impl FromXml for Users {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -13220,6 +13999,7 @@ impl FromXml for Users {
         Ok(Self {
             count: f_count,
             user_info: f_user_info,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -13236,6 +14016,7 @@ impl FromXml for SharedUser {
         let mut f_id: Option<i32> = None;
         let mut f_date_time: Option<String> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -13254,10 +14035,13 @@ impl FromXml for SharedUser {
                 b"dateTime" => {
                     f_date_time = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -13300,6 +14084,7 @@ impl FromXml for SharedUser {
             date_time: f_date_time
                 .ok_or_else(|| ParseError::MissingAttribute("dateTime".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14401,6 +15186,7 @@ impl FromXml for SheetCalcProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_full_calc_on_load = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -14410,10 +15196,13 @@ impl FromXml for SheetCalcProperties {
                 b"fullCalcOnLoad" => {
                     f_full_calc_on_load = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -14431,6 +15220,7 @@ impl FromXml for SheetCalcProperties {
 
         Ok(Self {
             full_calc_on_load: f_full_calc_on_load,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14451,6 +15241,7 @@ impl FromXml for SheetFormat {
         let mut f_thick_bottom = None;
         let mut f_outline_level_row = None;
         let mut f_outline_level_col = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -14484,10 +15275,13 @@ impl FromXml for SheetFormat {
                 b"outlineLevelCol" => {
                     f_outline_level_col = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -14514,6 +15308,7 @@ impl FromXml for SheetFormat {
             thick_bottom: f_thick_bottom,
             outline_level_row: f_outline_level_row,
             outline_level_col: f_outline_level_col,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14587,6 +15382,7 @@ impl FromXml for Column {
         let mut f_outline_level = None;
         #[cfg(feature = "sml-structure")]
         let mut f_collapsed = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -14633,10 +15429,13 @@ impl FromXml for Column {
                 b"collapsed" => {
                     f_collapsed = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -14675,6 +15474,7 @@ impl FromXml for Column {
             outline_level: f_outline_level,
             #[cfg(feature = "sml-structure")]
             collapsed: f_collapsed,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14710,6 +15510,7 @@ impl FromXml for Row {
         let mut f_cells = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -14761,10 +15562,13 @@ impl FromXml for Row {
                 b"ph" => {
                     f_placeholder = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -14833,6 +15637,7 @@ impl FromXml for Row {
             cells: f_cells,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14858,6 +15663,7 @@ impl FromXml for Cell {
         let mut f_is = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -14885,10 +15691,13 @@ impl FromXml for Cell {
                 b"ph" => {
                     f_placeholder = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -14960,6 +15769,7 @@ impl FromXml for Cell {
             is: f_is,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -14983,6 +15793,7 @@ impl FromXml for SheetProperties {
         let mut f_tab_color = None;
         let mut f_outline_pr = None;
         let mut f_page_set_up_pr = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15016,10 +15827,13 @@ impl FromXml for SheetProperties {
                 b"enableFormatConditionsCalculation" => {
                     f_enable_format_conditions_calculation = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15083,6 +15897,7 @@ impl FromXml for SheetProperties {
             tab_color: f_tab_color,
             outline_pr: f_outline_pr,
             page_set_up_pr: f_page_set_up_pr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15095,6 +15910,7 @@ impl FromXml for SheetDimension {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15104,10 +15920,13 @@ impl FromXml for SheetDimension {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15126,6 +15945,7 @@ impl FromXml for SheetDimension {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15231,6 +16051,7 @@ impl FromXml for SheetView {
         let mut f_pivot_selection = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15307,10 +16128,13 @@ impl FromXml for SheetView {
                 b"workbookViewId" => {
                     f_workbook_view_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15413,6 +16237,7 @@ impl FromXml for SheetView {
             pivot_selection: f_pivot_selection,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15434,6 +16259,7 @@ impl FromXml for Pane {
         let mut f_active_pane = None;
         #[cfg(feature = "sml-structure")]
         let mut f_state = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15460,10 +16286,13 @@ impl FromXml for Pane {
                 b"state" => {
                     f_state = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15490,6 +16319,7 @@ impl FromXml for Pane {
             active_pane: f_active_pane,
             #[cfg(feature = "sml-structure")]
             state: f_state,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15518,6 +16348,7 @@ impl FromXml for CTPivotSelection {
         let mut f_previous_col = None;
         let mut f_click = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15572,10 +16403,13 @@ impl FromXml for CTPivotSelection {
                 b"click" => {
                     f_click = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15629,6 +16463,7 @@ impl FromXml for CTPivotSelection {
             click: f_click,
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15644,6 +16479,7 @@ impl FromXml for Selection {
         let mut f_active_cell = None;
         let mut f_active_cell_id = None;
         let mut f_square_reference = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15662,10 +16498,13 @@ impl FromXml for Selection {
                 b"sqref" => {
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15686,6 +16525,7 @@ impl FromXml for Selection {
             active_cell: f_active_cell,
             active_cell_id: f_active_cell_id,
             square_reference: f_square_reference,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15700,6 +16540,7 @@ impl FromXml for PageBreaks {
         let mut f_count = None;
         let mut f_manual_break_count = None;
         let mut f_brk = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15712,10 +16553,13 @@ impl FromXml for PageBreaks {
                 b"manualBreakCount" => {
                     f_manual_break_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15753,6 +16597,7 @@ impl FromXml for PageBreaks {
             count: f_count,
             manual_break_count: f_manual_break_count,
             brk: f_brk,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15769,6 +16614,7 @@ impl FromXml for PageBreak {
         let mut f_end_column = None;
         let mut f_man = None;
         let mut f_pt = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15790,10 +16636,13 @@ impl FromXml for PageBreak {
                 b"pt" => {
                     f_pt = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15815,6 +16664,7 @@ impl FromXml for PageBreak {
             end_column: f_end_column,
             man: f_man,
             pt: f_pt,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15830,6 +16680,7 @@ impl FromXml for OutlineProperties {
         let mut f_summary_below = None;
         let mut f_summary_right = None;
         let mut f_show_outline_symbols = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15848,10 +16699,13 @@ impl FromXml for OutlineProperties {
                 b"showOutlineSymbols" => {
                     f_show_outline_symbols = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15872,6 +16726,7 @@ impl FromXml for OutlineProperties {
             summary_below: f_summary_below,
             summary_right: f_summary_right,
             show_outline_symbols: f_show_outline_symbols,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15885,6 +16740,7 @@ impl FromXml for PageSetupProperties {
     ) -> Result<Self, ParseError> {
         let mut f_auto_page_breaks = None;
         let mut f_fit_to_page = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15897,10 +16753,13 @@ impl FromXml for PageSetupProperties {
                 b"fitToPage" => {
                     f_fit_to_page = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -15919,6 +16778,7 @@ impl FromXml for PageSetupProperties {
         Ok(Self {
             auto_page_breaks: f_auto_page_breaks,
             fit_to_page: f_fit_to_page,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -15936,6 +16796,7 @@ impl FromXml for CTDataConsolidate {
         let mut f_top_labels = None;
         let mut f_link = None;
         let mut f_data_refs = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -15957,10 +16818,13 @@ impl FromXml for CTDataConsolidate {
                 b"link" => {
                     f_link = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16002,6 +16866,7 @@ impl FromXml for CTDataConsolidate {
             top_labels: f_top_labels,
             link: f_link,
             data_refs: f_data_refs,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16015,6 +16880,7 @@ impl FromXml for CTDataRefs {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_data_ref = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16024,10 +16890,13 @@ impl FromXml for CTDataRefs {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16064,6 +16933,7 @@ impl FromXml for CTDataRefs {
         Ok(Self {
             count: f_count,
             data_ref: f_data_ref,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16078,6 +16948,7 @@ impl FromXml for CTDataRef {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16093,10 +16964,13 @@ impl FromXml for CTDataRef {
                 b"sheet" => {
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16116,6 +16990,7 @@ impl FromXml for CTDataRef {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16129,6 +17004,7 @@ impl FromXml for MergedCells {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_merge_cell = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16138,10 +17014,13 @@ impl FromXml for MergedCells {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16179,6 +17058,7 @@ impl FromXml for MergedCells {
         Ok(Self {
             count: f_count,
             merge_cell: f_merge_cell,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16191,6 +17071,7 @@ impl FromXml for MergedCell {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16200,10 +17081,13 @@ impl FromXml for MergedCell {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16222,6 +17106,7 @@ impl FromXml for MergedCell {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16281,6 +17166,7 @@ impl FromXml for CellSmartTags {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
         let mut f_cell_smart_tag = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16290,10 +17176,13 @@ impl FromXml for CellSmartTags {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16332,6 +17221,7 @@ impl FromXml for CellSmartTags {
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             cell_smart_tag: f_cell_smart_tag,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16347,6 +17237,7 @@ impl FromXml for CellSmartTag {
         let mut f_deleted = None;
         let mut f_xml_based = None;
         let mut f_cell_smart_tag_pr = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16362,10 +17253,13 @@ impl FromXml for CellSmartTag {
                 b"xmlBased" => {
                     f_xml_based = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16406,6 +17300,7 @@ impl FromXml for CellSmartTag {
             deleted: f_deleted,
             xml_based: f_xml_based,
             cell_smart_tag_pr: f_cell_smart_tag_pr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16419,6 +17314,7 @@ impl FromXml for CTCellSmartTagPr {
     ) -> Result<Self, ParseError> {
         let mut f_key: Option<XmlString> = None;
         let mut f_value: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16431,10 +17327,13 @@ impl FromXml for CTCellSmartTagPr {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16453,6 +17352,7 @@ impl FromXml for CTCellSmartTagPr {
         Ok(Self {
             key: f_key.ok_or_else(|| ParseError::MissingAttribute("key".to_string()))?,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16526,6 +17426,7 @@ impl FromXml for DrawingHeaderFooter {
         let mut f_rfo = None;
         let mut f_rfe = None;
         let mut f_rff = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16586,10 +17487,13 @@ impl FromXml for DrawingHeaderFooter {
                 b"rff" => {
                     f_rff = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16624,6 +17528,7 @@ impl FromXml for DrawingHeaderFooter {
             rfo: f_rfo,
             rfe: f_rfe,
             rff: f_rff,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16711,6 +17616,7 @@ impl FromXml for CustomSheetView {
         let mut f_header_footer = None;
         let mut f_auto_filter = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16777,10 +17683,13 @@ impl FromXml for CustomSheetView {
                 b"topLeftCell" => {
                     f_top_left_cell = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16912,6 +17821,7 @@ impl FromXml for CustomSheetView {
             header_footer: f_header_footer,
             auto_filter: f_auto_filter,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -16928,6 +17838,7 @@ impl FromXml for DataValidations {
         let mut f_y_window = None;
         let mut f_count = None;
         let mut f_data_validation = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -16946,10 +17857,13 @@ impl FromXml for DataValidations {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -16991,6 +17905,7 @@ impl FromXml for DataValidations {
             y_window: f_y_window,
             count: f_count,
             data_validation: f_data_validation,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17032,6 +17947,7 @@ impl FromXml for DataValidation {
         let mut f_formula1 = None;
         #[cfg(feature = "sml-validation")]
         let mut f_formula2 = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17090,10 +18006,13 @@ impl FromXml for DataValidation {
                 b"sqref" => {
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17169,6 +18088,7 @@ impl FromXml for DataValidation {
             formula1: f_formula1,
             #[cfg(feature = "sml-validation")]
             formula2: f_formula2,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17188,6 +18108,7 @@ impl FromXml for ConditionalFormatting {
         let mut f_cf_rule = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17202,10 +18123,13 @@ impl FromXml for ConditionalFormatting {
                 b"sqref" => {
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17261,6 +18185,7 @@ impl FromXml for ConditionalFormatting {
             cf_rule: f_cf_rule,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17308,6 +18233,7 @@ impl FromXml for ConditionalRule {
         let mut f_icon_set = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17366,10 +18292,13 @@ impl FromXml for ConditionalRule {
                 b"equalAverage" => {
                     f_equal_average = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17478,6 +18407,7 @@ impl FromXml for ConditionalRule {
             icon_set: f_icon_set,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17541,6 +18471,7 @@ impl FromXml for Hyperlink {
         let mut f_tooltip = None;
         #[cfg(feature = "sml-hyperlinks")]
         let mut f_display = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17563,10 +18494,13 @@ impl FromXml for Hyperlink {
                 b"display" => {
                     f_display = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17592,6 +18526,7 @@ impl FromXml for Hyperlink {
             tooltip: f_tooltip,
             #[cfg(feature = "sml-hyperlinks")]
             display: f_display,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17625,6 +18560,7 @@ impl FromXml for CellFormula {
         let mut f_si = None;
         #[cfg(feature = "sml-formulas-advanced")]
         let mut f_bx = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17676,10 +18612,13 @@ impl FromXml for CellFormula {
                 b"bx" => {
                     f_bx = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17733,6 +18672,7 @@ impl FromXml for CellFormula {
             si: f_si,
             #[cfg(feature = "sml-formulas-advanced")]
             bx: f_bx,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17805,6 +18745,7 @@ impl FromXml for DataBar {
         let mut f_show_value = None;
         let mut f_cfvo = Vec::new();
         let mut f_color: Option<Box<Color>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17820,10 +18761,13 @@ impl FromXml for DataBar {
                 b"showValue" => {
                     f_show_value = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17873,6 +18817,7 @@ impl FromXml for DataBar {
             show_value: f_show_value,
             cfvo: f_cfvo,
             color: f_color.ok_or_else(|| ParseError::MissingAttribute("color".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17889,6 +18834,7 @@ impl FromXml for IconSet {
         let mut f_percent = None;
         let mut f_reverse = None;
         let mut f_cfvo = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17907,10 +18853,13 @@ impl FromXml for IconSet {
                 b"reverse" => {
                     f_reverse = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -17954,6 +18903,7 @@ impl FromXml for IconSet {
             percent: f_percent,
             reverse: f_reverse,
             cfvo: f_cfvo,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -17969,6 +18919,7 @@ impl FromXml for ConditionalFormatValue {
         let mut f_value = None;
         let mut f_gte = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -17984,10 +18935,13 @@ impl FromXml for ConditionalFormatValue {
                 b"gte" => {
                     f_gte = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18028,6 +18982,7 @@ impl FromXml for ConditionalFormatValue {
             value: f_value,
             gte: f_gte,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18051,6 +19006,7 @@ impl FromXml for PageMargins {
         let mut f_header: Option<f64> = None;
         #[cfg(feature = "sml-layout")]
         let mut f_footer: Option<f64> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18081,10 +19037,13 @@ impl FromXml for PageMargins {
                 b"footer" => {
                     f_footer = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18113,6 +19072,7 @@ impl FromXml for PageMargins {
             header: f_header.ok_or_else(|| ParseError::MissingAttribute("header".to_string()))?,
             #[cfg(feature = "sml-layout")]
             footer: f_footer.ok_or_else(|| ParseError::MissingAttribute("footer".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18129,6 +19089,7 @@ impl FromXml for PrintOptions {
         let mut f_headings = None;
         let mut f_grid_lines = None;
         let mut f_grid_lines_set = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18150,10 +19111,13 @@ impl FromXml for PrintOptions {
                 b"gridLinesSet" => {
                     f_grid_lines_set = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18175,6 +19139,7 @@ impl FromXml for PrintOptions {
             headings: f_headings,
             grid_lines: f_grid_lines,
             grid_lines_set: f_grid_lines_set,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18222,6 +19187,7 @@ impl FromXml for PageSetup {
         let mut f_vertical_dpi = None;
         #[cfg(feature = "sml-layout")]
         let mut f_copies = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18300,10 +19266,13 @@ impl FromXml for PageSetup {
                 b"copies" => {
                     f_copies = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18356,6 +19325,7 @@ impl FromXml for PageSetup {
             vertical_dpi: f_vertical_dpi,
             #[cfg(feature = "sml-layout")]
             copies: f_copies,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18387,6 +19357,7 @@ impl FromXml for HeaderFooter {
         let mut f_first_header = None;
         #[cfg(feature = "sml-layout")]
         let mut f_first_footer = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18409,10 +19380,13 @@ impl FromXml for HeaderFooter {
                 b"alignWithMargins" => {
                     f_align_with_margins = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18509,6 +19483,7 @@ impl FromXml for HeaderFooter {
             first_header: f_first_header,
             #[cfg(feature = "sml-layout")]
             first_footer: f_first_footer,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18524,6 +19499,7 @@ impl FromXml for Scenarios {
         let mut f_show = None;
         let mut f_square_reference = None;
         let mut f_scenario = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18539,10 +19515,13 @@ impl FromXml for Scenarios {
                 b"sqref" => {
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18581,6 +19560,7 @@ impl FromXml for Scenarios {
             show: f_show,
             square_reference: f_square_reference,
             scenario: f_scenario,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18613,6 +19593,7 @@ impl FromXml for SheetProtection {
         let mut f_auto_filter = None;
         let mut f_pivot_tables = None;
         let mut f_select_unlocked_cells = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18682,10 +19663,13 @@ impl FromXml for SheetProtection {
                 b"selectUnlockedCells" => {
                     f_select_unlocked_cells = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18723,6 +19707,7 @@ impl FromXml for SheetProtection {
             auto_filter: f_auto_filter,
             pivot_tables: f_pivot_tables,
             select_unlocked_cells: f_select_unlocked_cells,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18788,6 +19773,7 @@ impl FromXml for ProtectedRange {
         let mut f_hash_value = None;
         let mut f_salt_value = None;
         let mut f_spin_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18818,10 +19804,13 @@ impl FromXml for ProtectedRange {
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18847,6 +19836,7 @@ impl FromXml for ProtectedRange {
             hash_value: f_hash_value,
             salt_value: f_salt_value,
             spin_count: f_spin_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18865,6 +19855,7 @@ impl FromXml for Scenario {
         let mut f_user = None;
         let mut f_comment = None;
         let mut f_input_cells = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18889,10 +19880,13 @@ impl FromXml for Scenario {
                 b"comment" => {
                     f_comment = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18935,6 +19929,7 @@ impl FromXml for Scenario {
             user: f_user,
             comment: f_comment,
             input_cells: f_input_cells,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -18951,6 +19946,7 @@ impl FromXml for InputCells {
         let mut f_undone = None;
         let mut f_value: Option<XmlString> = None;
         let mut f_number_format_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -18972,10 +19968,13 @@ impl FromXml for InputCells {
                 b"numFmtId" => {
                     f_number_format_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -18997,6 +19996,7 @@ impl FromXml for InputCells {
             undone: f_undone,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             number_format_id: f_number_format_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19054,6 +20054,7 @@ impl FromXml for CellWatch {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19063,10 +20064,13 @@ impl FromXml for CellWatch {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19084,6 +20088,7 @@ impl FromXml for CellWatch {
 
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19281,6 +20286,7 @@ impl FromXml for ChartsheetProperties {
         let mut f_published = None;
         let mut f_code_name = None;
         let mut f_tab_color = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19293,10 +20299,13 @@ impl FromXml for ChartsheetProperties {
                 b"codeName" => {
                     f_code_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19334,6 +20343,7 @@ impl FromXml for ChartsheetProperties {
             published: f_published,
             code_name: f_code_name,
             tab_color: f_tab_color,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19406,6 +20416,7 @@ impl FromXml for ChartsheetView {
         let mut f_workbook_view_id: Option<u32> = None;
         let mut f_zoom_to_fit = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19424,10 +20435,13 @@ impl FromXml for ChartsheetView {
                 b"zoomToFit" => {
                     f_zoom_to_fit = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19470,6 +20484,7 @@ impl FromXml for ChartsheetView {
                 .ok_or_else(|| ParseError::MissingAttribute("workbookViewId".to_string()))?,
             zoom_to_fit: f_zoom_to_fit,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19488,6 +20503,7 @@ impl FromXml for ChartsheetProtection {
         let mut f_spin_count = None;
         let mut f_content = None;
         let mut f_objects = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19515,10 +20531,13 @@ impl FromXml for ChartsheetProtection {
                 b"objects" => {
                     f_objects = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19542,6 +20561,7 @@ impl FromXml for ChartsheetProtection {
             spin_count: f_spin_count,
             content: f_content,
             objects: f_objects,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19565,6 +20585,7 @@ impl FromXml for ChartsheetPageSetup {
         let mut f_horizontal_dpi = None;
         let mut f_vertical_dpi = None;
         let mut f_copies = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19607,10 +20628,13 @@ impl FromXml for ChartsheetPageSetup {
                 b"copies" => {
                     f_copies = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19639,6 +20663,7 @@ impl FromXml for ChartsheetPageSetup {
             horizontal_dpi: f_horizontal_dpi,
             vertical_dpi: f_vertical_dpi,
             copies: f_copies,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19704,6 +20729,7 @@ impl FromXml for CustomChartsheetView {
         let mut f_page_margins = None;
         let mut f_page_setup = None;
         let mut f_header_footer = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19722,10 +20748,13 @@ impl FromXml for CustomChartsheetView {
                 b"zoomToFit" => {
                     f_zoom_to_fit = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19786,6 +20815,7 @@ impl FromXml for CustomChartsheetView {
             page_margins: f_page_margins,
             page_setup: f_page_setup,
             header_footer: f_header_footer,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19844,6 +20874,7 @@ impl FromXml for CTCustomProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19853,10 +20884,13 @@ impl FromXml for CTCustomProperty {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -19874,6 +20908,7 @@ impl FromXml for CTCustomProperty {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -19937,6 +20972,7 @@ impl FromXml for OleObject {
         let mut f_auto_load = None;
         let mut f_shape_id: Option<u32> = None;
         let mut f_object_pr = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -19961,10 +20997,13 @@ impl FromXml for OleObject {
                 b"shapeId" => {
                     f_shape_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20009,6 +21048,7 @@ impl FromXml for OleObject {
             shape_id: f_shape_id
                 .ok_or_else(|| ParseError::MissingAttribute("shapeId".to_string()))?,
             object_pr: f_object_pr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20032,6 +21072,7 @@ impl FromXml for ObjectProperties {
         let mut f_alt_text = None;
         let mut f_dde = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20071,10 +21112,13 @@ impl FromXml for ObjectProperties {
                 b"dde" => {
                     f_dde = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20122,6 +21166,7 @@ impl FromXml for ObjectProperties {
             alt_text: f_alt_text,
             dde: f_dde,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20135,6 +21180,7 @@ impl FromXml for WebPublishItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_web_publish_item = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20144,10 +21190,13 @@ impl FromXml for WebPublishItems {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20186,6 +21235,7 @@ impl FromXml for WebPublishItems {
         Ok(Self {
             count: f_count,
             web_publish_item: f_web_publish_item,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20205,6 +21255,7 @@ impl FromXml for WebPublishItem {
         let mut f_destination_file: Option<XmlString> = None;
         let mut f_title = None;
         let mut f_auto_republish = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20235,10 +21286,13 @@ impl FromXml for WebPublishItem {
                 b"autoRepublish" => {
                     f_auto_republish = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20265,6 +21319,7 @@ impl FromXml for WebPublishItem {
                 .ok_or_else(|| ParseError::MissingAttribute("destinationFile".to_string()))?,
             title: f_title,
             auto_republish: f_auto_republish,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20321,6 +21376,7 @@ impl FromXml for Control {
         let mut f_shape_id: Option<u32> = None;
         let mut f_name = None;
         let mut f_control_pr = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20333,10 +21389,13 @@ impl FromXml for Control {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20376,6 +21435,7 @@ impl FromXml for Control {
                 .ok_or_else(|| ParseError::MissingAttribute("shapeId".to_string()))?,
             name: f_name,
             control_pr: f_control_pr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20402,6 +21462,7 @@ impl FromXml for CTControlPr {
         let mut f_list_fill_range = None;
         let mut f_cf = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20450,10 +21511,13 @@ impl FromXml for CTControlPr {
                 b"cf" => {
                     f_cf = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20504,6 +21568,7 @@ impl FromXml for CTControlPr {
             list_fill_range: f_list_fill_range,
             cf: f_cf,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20581,6 +21646,7 @@ impl FromXml for IgnoredError {
         let mut f_empty_cell_reference = None;
         let mut f_list_data_validation = None;
         let mut f_calculated_column = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20617,10 +21683,13 @@ impl FromXml for IgnoredError {
                 b"calculatedColumn" => {
                     f_calculated_column = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20648,6 +21717,7 @@ impl FromXml for IgnoredError {
             empty_cell_reference: f_empty_cell_reference,
             list_data_validation: f_list_data_validation,
             calculated_column: f_calculated_column,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20661,6 +21731,7 @@ impl FromXml for TableParts {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_table_part = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20670,10 +21741,13 @@ impl FromXml for TableParts {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20711,6 +21785,7 @@ impl FromXml for TableParts {
         Ok(Self {
             count: f_count,
             table_part: f_table_part,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20852,6 +21927,7 @@ impl FromXml for MetadataTypes {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_metadata_type = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -20861,10 +21937,13 @@ impl FromXml for MetadataTypes {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -20903,6 +21982,7 @@ impl FromXml for MetadataTypes {
         Ok(Self {
             count: f_count,
             metadata_type: f_metadata_type,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -20942,6 +22022,7 @@ impl FromXml for MetadataType {
         let mut f_coerce = None;
         let mut f_adjust = None;
         let mut f_cell_meta = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21032,10 +22113,13 @@ impl FromXml for MetadataType {
                 b"cellMeta" => {
                     f_cell_meta = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21081,6 +22165,7 @@ impl FromXml for MetadataType {
             coerce: f_coerce,
             adjust: f_adjust,
             cell_meta: f_cell_meta,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21094,6 +22179,7 @@ impl FromXml for MetadataBlocks {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_bk = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21103,10 +22189,13 @@ impl FromXml for MetadataBlocks {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21143,6 +22232,7 @@ impl FromXml for MetadataBlocks {
         Ok(Self {
             count: f_count,
             bk: f_bk,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21198,6 +22288,7 @@ impl FromXml for MetadataRecord {
     ) -> Result<Self, ParseError> {
         let mut f_cell_type: Option<u32> = None;
         let mut f_value: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21210,10 +22301,13 @@ impl FromXml for MetadataRecord {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21232,6 +22326,7 @@ impl FromXml for MetadataRecord {
         Ok(Self {
             cell_type: f_cell_type.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21247,6 +22342,7 @@ impl FromXml for CTFutureMetadata {
         let mut f_count = None;
         let mut f_bk = Vec::new();
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21259,10 +22355,13 @@ impl FromXml for CTFutureMetadata {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21311,6 +22410,7 @@ impl FromXml for CTFutureMetadata {
             count: f_count,
             bk: f_bk,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21370,6 +22470,7 @@ impl FromXml for CTMdxMetadata {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_mdx = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21379,10 +22480,13 @@ impl FromXml for CTMdxMetadata {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21419,6 +22523,7 @@ impl FromXml for CTMdxMetadata {
         Ok(Self {
             count: f_count,
             mdx: f_mdx,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21432,6 +22537,7 @@ impl FromXml for CTMdx {
     ) -> Result<Self, ParseError> {
         let mut f_n: Option<u32> = None;
         let mut f_formula: Option<STMdxFunctionType> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21444,10 +22550,13 @@ impl FromXml for CTMdx {
                 b"f" => {
                     f_formula = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21466,6 +22575,7 @@ impl FromXml for CTMdx {
         Ok(Self {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             formula: f_formula.ok_or_else(|| ParseError::MissingAttribute("f".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21488,6 +22598,7 @@ impl FromXml for CTMdxTuple {
         let mut f_st = None;
         let mut f_b = None;
         let mut f_n = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21524,10 +22635,13 @@ impl FromXml for CTMdxTuple {
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21575,6 +22689,7 @@ impl FromXml for CTMdxTuple {
             st: f_st,
             b: f_b,
             n: f_n,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21590,6 +22705,7 @@ impl FromXml for CTMdxSet {
         let mut f_cells = None;
         let mut f_o = None;
         let mut f_n = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21605,10 +22721,13 @@ impl FromXml for CTMdxSet {
                 b"o" => {
                     f_o = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21649,6 +22768,7 @@ impl FromXml for CTMdxSet {
             cells: f_cells,
             o: f_o,
             n: f_n,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21662,6 +22782,7 @@ impl FromXml for CTMdxMemeberProp {
     ) -> Result<Self, ParseError> {
         let mut f_n: Option<u32> = None;
         let mut f_np: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21674,10 +22795,13 @@ impl FromXml for CTMdxMemeberProp {
                 b"np" => {
                     f_np = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21696,6 +22820,7 @@ impl FromXml for CTMdxMemeberProp {
         Ok(Self {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             np: f_np.ok_or_else(|| ParseError::MissingAttribute("np".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21710,6 +22835,7 @@ impl FromXml for CTMdxKPI {
         let mut f_n: Option<u32> = None;
         let mut f_np: Option<u32> = None;
         let mut f_p: Option<STMdxKPIProperty> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21725,10 +22851,13 @@ impl FromXml for CTMdxKPI {
                 b"p" => {
                     f_p = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21748,6 +22877,7 @@ impl FromXml for CTMdxKPI {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             np: f_np.ok_or_else(|| ParseError::MissingAttribute("np".to_string()))?,
             p: f_p.ok_or_else(|| ParseError::MissingAttribute("p".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21761,6 +22891,7 @@ impl FromXml for CTMetadataStringIndex {
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<u32> = None;
         let mut f_style_index = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21773,10 +22904,13 @@ impl FromXml for CTMetadataStringIndex {
                 b"s" => {
                     f_style_index = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21795,6 +22929,7 @@ impl FromXml for CTMetadataStringIndex {
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
             style_index: f_style_index,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21808,6 +22943,7 @@ impl FromXml for MetadataStrings {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_style_index = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21817,10 +22953,13 @@ impl FromXml for MetadataStrings {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21859,6 +22998,7 @@ impl FromXml for MetadataStrings {
         Ok(Self {
             count: f_count,
             style_index: f_style_index,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -21921,6 +23061,7 @@ impl FromXml for SingleXmlCell {
         let mut f_connection_id: Option<u32> = None;
         let mut f_xml_cell_pr: Option<Box<XmlCellProperties>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -21936,10 +23077,13 @@ impl FromXml for SingleXmlCell {
                 b"connectionId" => {
                     f_connection_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -21991,6 +23135,7 @@ impl FromXml for SingleXmlCell {
             xml_cell_pr: f_xml_cell_pr
                 .ok_or_else(|| ParseError::MissingAttribute("xmlCellPr".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22006,6 +23151,7 @@ impl FromXml for XmlCellProperties {
         let mut f_unique_name = None;
         let mut f_xml_pr: Option<Box<XmlProperties>> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22018,10 +23164,13 @@ impl FromXml for XmlCellProperties {
                 b"uniqueName" => {
                     f_unique_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22069,6 +23218,7 @@ impl FromXml for XmlCellProperties {
             unique_name: f_unique_name,
             xml_pr: f_xml_pr.ok_or_else(|| ParseError::MissingAttribute("xmlPr".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22084,6 +23234,7 @@ impl FromXml for XmlProperties {
         let mut f_xpath: Option<XmlString> = None;
         let mut f_xml_data_type: Option<STXmlDataType> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22099,10 +23250,13 @@ impl FromXml for XmlProperties {
                 b"xmlDataType" => {
                     f_xml_data_type = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22144,6 +23298,7 @@ impl FromXml for XmlProperties {
             xml_data_type: f_xml_data_type
                 .ok_or_else(|| ParseError::MissingAttribute("xmlDataType".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22344,6 +23499,7 @@ impl FromXml for CellAlignment {
         let mut f_justify_last_line = None;
         let mut f_shrink_to_fit = None;
         let mut f_reading_order = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22377,10 +23533,13 @@ impl FromXml for CellAlignment {
                 b"readingOrder" => {
                     f_reading_order = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22406,6 +23565,7 @@ impl FromXml for CellAlignment {
             justify_last_line: f_justify_last_line,
             shrink_to_fit: f_shrink_to_fit,
             reading_order: f_reading_order,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22419,6 +23579,7 @@ impl FromXml for Borders {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_border = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22428,10 +23589,13 @@ impl FromXml for Borders {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22468,6 +23632,7 @@ impl FromXml for Borders {
         Ok(Self {
             count: f_count,
             border: f_border,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22501,6 +23666,7 @@ impl FromXml for Border {
         let mut f_vertical = None;
         #[cfg(feature = "sml-styling")]
         let mut f_horizontal = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22519,10 +23685,13 @@ impl FromXml for Border {
                 b"outline" => {
                     f_outline = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22654,6 +23823,7 @@ impl FromXml for Border {
             vertical: f_vertical,
             #[cfg(feature = "sml-styling")]
             horizontal: f_horizontal,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22667,6 +23837,7 @@ impl FromXml for BorderProperties {
     ) -> Result<Self, ParseError> {
         let mut f_style = None;
         let mut f_color = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22676,10 +23847,13 @@ impl FromXml for BorderProperties {
                 b"style" => {
                     f_style = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22716,6 +23890,7 @@ impl FromXml for BorderProperties {
         Ok(Self {
             style: f_style,
             color: f_color,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22729,6 +23904,7 @@ impl FromXml for CellProtection {
     ) -> Result<Self, ParseError> {
         let mut f_locked = None;
         let mut f_hidden = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22741,10 +23917,13 @@ impl FromXml for CellProtection {
                 b"hidden" => {
                     f_hidden = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22763,6 +23942,7 @@ impl FromXml for CellProtection {
         Ok(Self {
             locked: f_locked,
             hidden: f_hidden,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22776,6 +23956,7 @@ impl FromXml for Fonts {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_font = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22785,10 +23966,13 @@ impl FromXml for Fonts {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22825,6 +24009,7 @@ impl FromXml for Fonts {
         Ok(Self {
             count: f_count,
             font: f_font,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22838,6 +24023,7 @@ impl FromXml for Fills {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_fill = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22847,10 +24033,13 @@ impl FromXml for Fills {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22887,6 +24076,7 @@ impl FromXml for Fills {
         Ok(Self {
             count: f_count,
             fill: f_fill,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22923,6 +24113,7 @@ impl FromXml for PatternFill {
         let mut f_pattern_type = None;
         let mut f_fg_color = None;
         let mut f_bg_color = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -22932,10 +24123,13 @@ impl FromXml for PatternFill {
                 b"patternType" => {
                     f_pattern_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -22979,6 +24173,7 @@ impl FromXml for PatternFill {
             pattern_type: f_pattern_type,
             fg_color: f_fg_color,
             bg_color: f_bg_color,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -22995,6 +24190,7 @@ impl FromXml for Color {
         let mut f_rgb = None;
         let mut f_theme = None;
         let mut f_tint = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23016,10 +24212,13 @@ impl FromXml for Color {
                 b"tint" => {
                     f_tint = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23041,6 +24240,7 @@ impl FromXml for Color {
             rgb: f_rgb,
             theme: f_theme,
             tint: f_tint,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23059,6 +24259,7 @@ impl FromXml for GradientFill {
         let mut f_top = None;
         let mut f_bottom = None;
         let mut f_stop = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23083,10 +24284,13 @@ impl FromXml for GradientFill {
                 b"bottom" => {
                     f_bottom = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23128,6 +24332,7 @@ impl FromXml for GradientFill {
             top: f_top,
             bottom: f_bottom,
             stop: f_stop,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23141,6 +24346,7 @@ impl FromXml for GradientStop {
     ) -> Result<Self, ParseError> {
         let mut f_position: Option<f64> = None;
         let mut f_color: Option<Box<Color>> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23150,10 +24356,13 @@ impl FromXml for GradientStop {
                 b"position" => {
                     f_position = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23191,6 +24400,7 @@ impl FromXml for GradientStop {
             position: f_position
                 .ok_or_else(|| ParseError::MissingAttribute("position".to_string()))?,
             color: f_color.ok_or_else(|| ParseError::MissingAttribute("color".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23204,6 +24414,7 @@ impl FromXml for NumberFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_num_fmt = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23213,10 +24424,13 @@ impl FromXml for NumberFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23254,6 +24468,7 @@ impl FromXml for NumberFormats {
         Ok(Self {
             count: f_count,
             num_fmt: f_num_fmt,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23267,6 +24482,7 @@ impl FromXml for NumberFormat {
     ) -> Result<Self, ParseError> {
         let mut f_number_format_id: Option<STNumFmtId> = None;
         let mut f_format_code: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23279,10 +24495,13 @@ impl FromXml for NumberFormat {
                 b"formatCode" => {
                     f_format_code = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23303,6 +24522,7 @@ impl FromXml for NumberFormat {
                 .ok_or_else(|| ParseError::MissingAttribute("numFmtId".to_string()))?,
             format_code: f_format_code
                 .ok_or_else(|| ParseError::MissingAttribute("formatCode".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23316,6 +24536,7 @@ impl FromXml for CellStyleFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_xf = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23325,10 +24546,13 @@ impl FromXml for CellStyleFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23365,6 +24589,7 @@ impl FromXml for CellStyleFormats {
         Ok(Self {
             count: f_count,
             xf: f_xf,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23378,6 +24603,7 @@ impl FromXml for CellFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_xf = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23387,10 +24613,13 @@ impl FromXml for CellFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23427,6 +24656,7 @@ impl FromXml for CellFormats {
         Ok(Self {
             count: f_count,
             xf: f_xf,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23470,6 +24700,7 @@ impl FromXml for Format {
         let mut f_protection = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23528,10 +24759,13 @@ impl FromXml for Format {
                 b"applyProtection" => {
                     f_apply_protection = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23622,6 +24856,7 @@ impl FromXml for Format {
             protection: f_protection,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23635,6 +24870,7 @@ impl FromXml for CellStyles {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cell_style = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23644,10 +24880,13 @@ impl FromXml for CellStyles {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23685,6 +24924,7 @@ impl FromXml for CellStyles {
         Ok(Self {
             count: f_count,
             cell_style: f_cell_style,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23703,6 +24943,7 @@ impl FromXml for CellStyle {
         let mut f_hidden = None;
         let mut f_custom_builtin = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23727,10 +24968,13 @@ impl FromXml for CellStyle {
                 b"customBuiltin" => {
                     f_custom_builtin = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23775,6 +25019,7 @@ impl FromXml for CellStyle {
             hidden: f_hidden,
             custom_builtin: f_custom_builtin,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -23788,6 +25033,7 @@ impl FromXml for DifferentialFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_dxf = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -23797,10 +25043,13 @@ impl FromXml for DifferentialFormats {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -23839,6 +25088,7 @@ impl FromXml for DifferentialFormats {
         Ok(Self {
             count: f_count,
             dxf: f_dxf,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24092,6 +25342,7 @@ impl FromXml for RgbColor {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_rgb = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24101,10 +25352,13 @@ impl FromXml for RgbColor {
                 b"rgb" => {
                     f_rgb = decode_hex(&val);
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24122,6 +25376,7 @@ impl FromXml for RgbColor {
 
         Ok(Self {
             rgb: f_rgb,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24137,6 +25392,7 @@ impl FromXml for TableStyles {
         let mut f_default_table_style = None;
         let mut f_default_pivot_style = None;
         let mut f_table_style = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24152,10 +25408,13 @@ impl FromXml for TableStyles {
                 b"defaultPivotStyle" => {
                     f_default_pivot_style = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24195,6 +25454,7 @@ impl FromXml for TableStyles {
             default_table_style: f_default_table_style,
             default_pivot_style: f_default_pivot_style,
             table_style: f_table_style,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24211,6 +25471,7 @@ impl FromXml for TableStyle {
         let mut f_table = None;
         let mut f_count = None;
         let mut f_table_style_element = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24229,10 +25490,13 @@ impl FromXml for TableStyle {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24275,6 +25539,7 @@ impl FromXml for TableStyle {
             table: f_table,
             count: f_count,
             table_style_element: f_table_style_element,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24289,6 +25554,7 @@ impl FromXml for TableStyleElement {
         let mut f_type: Option<STTableStyleType> = None;
         let mut f_size = None;
         let mut f_dxf_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24304,10 +25570,13 @@ impl FromXml for TableStyleElement {
                 b"dxfId" => {
                     f_dxf_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24327,6 +25596,7 @@ impl FromXml for TableStyleElement {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             size: f_size,
             dxf_id: f_dxf_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24339,6 +25609,7 @@ impl FromXml for BooleanProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24348,10 +25619,13 @@ impl FromXml for BooleanProperty {
                 b"val" => {
                     f_value = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24369,6 +25643,7 @@ impl FromXml for BooleanProperty {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24381,6 +25656,7 @@ impl FromXml for FontSize {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<f64> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24390,10 +25666,13 @@ impl FromXml for FontSize {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24411,6 +25690,7 @@ impl FromXml for FontSize {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24423,6 +25703,7 @@ impl FromXml for IntProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<i32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24432,10 +25713,13 @@ impl FromXml for IntProperty {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24453,6 +25737,7 @@ impl FromXml for IntProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24465,6 +25750,7 @@ impl FromXml for FontName {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24474,10 +25760,13 @@ impl FromXml for FontName {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24495,6 +25784,7 @@ impl FromXml for FontName {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24507,6 +25797,7 @@ impl FromXml for VerticalAlignFontProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<VerticalAlignRun> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24516,10 +25807,13 @@ impl FromXml for VerticalAlignFontProperty {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24537,6 +25831,7 @@ impl FromXml for VerticalAlignFontProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24549,6 +25844,7 @@ impl FromXml for FontSchemeProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<FontScheme> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24558,10 +25854,13 @@ impl FromXml for FontSchemeProperty {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24579,6 +25878,7 @@ impl FromXml for FontSchemeProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24591,6 +25891,7 @@ impl FromXml for UnderlineProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24600,10 +25901,13 @@ impl FromXml for UnderlineProperty {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24621,6 +25925,7 @@ impl FromXml for UnderlineProperty {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24655,6 +25960,7 @@ impl FromXml for FontFamily {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STFontFamily> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24664,10 +25970,13 @@ impl FromXml for FontFamily {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24685,6 +25994,7 @@ impl FromXml for FontFamily {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24703,6 +26013,7 @@ impl FromXml for SmlAGAutoFormat {
         let mut f_apply_pattern_formats = None;
         let mut f_apply_alignment_formats = None;
         let mut f_apply_width_height_formats = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24730,10 +26041,13 @@ impl FromXml for SmlAGAutoFormat {
                 b"applyWidthHeightFormats" => {
                     f_apply_width_height_formats = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24757,6 +26071,7 @@ impl FromXml for SmlAGAutoFormat {
             apply_pattern_formats: f_apply_pattern_formats,
             apply_alignment_formats: f_apply_alignment_formats,
             apply_width_height_formats: f_apply_width_height_formats,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -24932,6 +26247,7 @@ impl FromXml for CTExternalSheetName {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -24941,10 +26257,13 @@ impl FromXml for CTExternalSheetName {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -24962,6 +26281,7 @@ impl FromXml for CTExternalSheetName {
 
         Ok(Self {
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25023,6 +26343,7 @@ impl FromXml for CTExternalDefinedName {
         let mut f_name: Option<XmlString> = None;
         let mut f_refers_to = None;
         let mut f_sheet_id = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25038,10 +26359,13 @@ impl FromXml for CTExternalDefinedName {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25061,6 +26385,7 @@ impl FromXml for CTExternalDefinedName {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             refers_to: f_refers_to,
             sheet_id: f_sheet_id,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25122,6 +26447,7 @@ impl FromXml for ExternalSheetData {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_refresh_error = None;
         let mut f_row = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25134,10 +26460,13 @@ impl FromXml for ExternalSheetData {
                 b"refreshError" => {
                     f_refresh_error = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25176,6 +26505,7 @@ impl FromXml for ExternalSheetData {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             refresh_error: f_refresh_error,
             row: f_row,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25189,6 +26519,7 @@ impl FromXml for ExternalRow {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<u32> = None;
         let mut f_cell = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25198,10 +26529,13 @@ impl FromXml for ExternalRow {
                 b"r" => {
                     f_reference = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25238,6 +26572,7 @@ impl FromXml for ExternalRow {
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             cell: f_cell,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25253,6 +26588,7 @@ impl FromXml for ExternalCell {
         let mut f_cell_type = None;
         let mut f_vm = None;
         let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25268,10 +26604,13 @@ impl FromXml for ExternalCell {
                 b"vm" => {
                     f_vm = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25310,6 +26649,7 @@ impl FromXml for ExternalCell {
             cell_type: f_cell_type,
             vm: f_vm,
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25324,6 +26664,7 @@ impl FromXml for DdeLink {
         let mut f_dde_service: Option<XmlString> = None;
         let mut f_dde_topic: Option<XmlString> = None;
         let mut f_dde_items = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25336,10 +26677,13 @@ impl FromXml for DdeLink {
                 b"ddeTopic" => {
                     f_dde_topic = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25380,6 +26724,7 @@ impl FromXml for DdeLink {
             dde_topic: f_dde_topic
                 .ok_or_else(|| ParseError::MissingAttribute("ddeTopic".to_string()))?,
             dde_items: f_dde_items,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25440,6 +26785,7 @@ impl FromXml for DdeItem {
         let mut f_advise = None;
         let mut f_prefer_pic = None;
         let mut f_values = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25458,10 +26804,13 @@ impl FromXml for DdeItem {
                 b"preferPic" => {
                     f_prefer_pic = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25502,6 +26851,7 @@ impl FromXml for DdeItem {
             advise: f_advise,
             prefer_pic: f_prefer_pic,
             values: f_values,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25516,6 +26866,7 @@ impl FromXml for CTDdeValues {
         let mut f_rows = None;
         let mut f_cols = None;
         let mut f_value = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25528,10 +26879,13 @@ impl FromXml for CTDdeValues {
                 b"cols" => {
                     f_cols = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25569,6 +26923,7 @@ impl FromXml for CTDdeValues {
             rows: f_rows,
             cols: f_cols,
             value: f_value,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25582,6 +26937,7 @@ impl FromXml for CTDdeValue {
     ) -> Result<Self, ParseError> {
         let mut f_cell_type = None;
         let mut f_value: Option<XmlString> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25591,10 +26947,13 @@ impl FromXml for CTDdeValue {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25631,6 +26990,7 @@ impl FromXml for CTDdeValue {
         Ok(Self {
             cell_type: f_cell_type,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25644,6 +27004,7 @@ impl FromXml for OleLink {
     ) -> Result<Self, ParseError> {
         let mut f_prog_id: Option<XmlString> = None;
         let mut f_ole_items = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25653,10 +27014,13 @@ impl FromXml for OleLink {
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25694,6 +27058,7 @@ impl FromXml for OleLink {
         Ok(Self {
             prog_id: f_prog_id.ok_or_else(|| ParseError::MissingAttribute("progId".to_string()))?,
             ole_items: f_ole_items,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25753,6 +27118,7 @@ impl FromXml for OleItem {
         let mut f_icon = None;
         let mut f_advise = None;
         let mut f_prefer_pic = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25771,10 +27137,13 @@ impl FromXml for OleItem {
                 b"preferPic" => {
                     f_prefer_pic = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -25795,6 +27164,7 @@ impl FromXml for OleItem {
             icon: f_icon,
             advise: f_advise,
             prefer_pic: f_prefer_pic,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -25860,6 +27230,7 @@ impl FromXml for Table {
         let mut f_table_style_info = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -25954,10 +27325,13 @@ impl FromXml for Table {
                 b"connectionId" => {
                     f_connection_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26091,6 +27465,7 @@ impl FromXml for Table {
             table_style_info: f_table_style_info,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26107,6 +27482,7 @@ impl FromXml for TableStyleInfo {
         let mut f_show_last_column = None;
         let mut f_show_row_stripes = None;
         let mut f_show_column_stripes = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26128,10 +27504,13 @@ impl FromXml for TableStyleInfo {
                 b"showColumnStripes" => {
                     f_show_column_stripes = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26153,6 +27532,7 @@ impl FromXml for TableStyleInfo {
             show_last_column: f_show_last_column,
             show_row_stripes: f_show_row_stripes,
             show_column_stripes: f_show_column_stripes,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26166,6 +27546,7 @@ impl FromXml for TableColumns {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_table_column = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26175,10 +27556,13 @@ impl FromXml for TableColumns {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26216,6 +27600,7 @@ impl FromXml for TableColumns {
         Ok(Self {
             count: f_count,
             table_column: f_table_column,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26243,6 +27628,7 @@ impl FromXml for TableColumn {
         let mut f_totals_row_formula = None;
         let mut f_xml_column_pr = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26285,10 +27671,13 @@ impl FromXml for TableColumn {
                 b"totalsRowCellStyle" => {
                     f_totals_row_cell_style = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26366,6 +27755,7 @@ impl FromXml for TableColumn {
             totals_row_formula: f_totals_row_formula,
             xml_column_pr: f_xml_column_pr,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26379,6 +27769,7 @@ impl FromXml for TableFormula {
     ) -> Result<Self, ParseError> {
         let mut f_text: Option<String> = None;
         let mut f_array = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26388,10 +27779,13 @@ impl FromXml for TableFormula {
                 b"array" => {
                     f_array = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26425,6 +27819,7 @@ impl FromXml for TableFormula {
         Ok(Self {
             text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
             array: f_array,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26441,6 +27836,7 @@ impl FromXml for XmlColumnProperties {
         let mut f_denormalized = None;
         let mut f_xml_data_type: Option<STXmlDataType> = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26459,10 +27855,13 @@ impl FromXml for XmlColumnProperties {
                 b"xmlDataType" => {
                     f_xml_data_type = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26505,6 +27904,7 @@ impl FromXml for XmlColumnProperties {
             xml_data_type: f_xml_data_type
                 .ok_or_else(|| ParseError::MissingAttribute("xmlDataType".to_string()))?,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26572,6 +27972,7 @@ impl FromXml for CTVolType {
     ) -> Result<Self, ParseError> {
         let mut f_type: Option<STVolDepType> = None;
         let mut f_main = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26581,10 +27982,13 @@ impl FromXml for CTVolType {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26621,6 +28025,7 @@ impl FromXml for CTVolType {
         Ok(Self {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             main: f_main,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26634,6 +28039,7 @@ impl FromXml for CTVolMain {
     ) -> Result<Self, ParseError> {
         let mut f_first: Option<XmlString> = None;
         let mut f_tp = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26643,10 +28049,13 @@ impl FromXml for CTVolMain {
                 b"first" => {
                     f_first = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26683,6 +28092,7 @@ impl FromXml for CTVolMain {
         Ok(Self {
             first: f_first.ok_or_else(|| ParseError::MissingAttribute("first".to_string()))?,
             tp: f_tp,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26698,6 +28108,7 @@ impl FromXml for CTVolTopic {
         let mut f_value: Option<XmlString> = None;
         let mut f_stp = Vec::new();
         let mut f_tr = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26707,10 +28118,13 @@ impl FromXml for CTVolTopic {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26761,6 +28175,7 @@ impl FromXml for CTVolTopic {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
             stp: f_stp,
             tr: f_tr,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26774,6 +28189,7 @@ impl FromXml for CTVolTopicRef {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
         let mut f_style_index: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26786,10 +28202,13 @@ impl FromXml for CTVolTopicRef {
                 b"s" => {
                     f_style_index = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -26809,6 +28228,7 @@ impl FromXml for CTVolTopicRef {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             style_index: f_style_index
                 .ok_or_else(|| ParseError::MissingAttribute("s".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -26853,6 +28273,7 @@ impl FromXml for Workbook {
         let mut f_web_publish_objects = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -26862,10 +28283,13 @@ impl FromXml for Workbook {
                 b"conformance" => {
                     f_conformance = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27109,6 +28533,7 @@ impl FromXml for Workbook {
             web_publish_objects: f_web_publish_objects,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27125,6 +28550,7 @@ impl FromXml for FileVersion {
         let mut f_lowest_edited = None;
         let mut f_rup_build = None;
         let mut f_code_name = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27146,10 +28572,13 @@ impl FromXml for FileVersion {
                 b"codeName" => {
                     f_code_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27171,6 +28600,7 @@ impl FromXml for FileVersion {
             lowest_edited: f_lowest_edited,
             rup_build: f_rup_build,
             code_name: f_code_name,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27241,6 +28671,7 @@ impl FromXml for BookView {
         let mut f_active_tab = None;
         let mut f_auto_filter_date_grouping = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27286,10 +28717,13 @@ impl FromXml for BookView {
                 b"autoFilterDateGrouping" => {
                     f_auto_filter_date_grouping = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27340,6 +28774,7 @@ impl FromXml for BookView {
             active_tab: f_active_tab,
             auto_filter_date_grouping: f_auto_filter_date_grouping,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27423,6 +28858,7 @@ impl FromXml for CustomWorkbookView {
         let mut f_show_comments = None;
         let mut f_show_objects = None;
         let mut f_extension_list = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27501,10 +28937,13 @@ impl FromXml for CustomWorkbookView {
                 b"showObjects" => {
                     f_show_objects = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27569,6 +29008,7 @@ impl FromXml for CustomWorkbookView {
             show_comments: f_show_comments,
             show_objects: f_show_objects,
             extension_list: f_extension_list,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27626,6 +29066,7 @@ impl FromXml for Sheet {
         let mut f_sheet_id: Option<u32> = None;
         #[cfg(feature = "sml-structure")]
         let mut f_state = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27642,10 +29083,13 @@ impl FromXml for Sheet {
                 b"state" => {
                     f_state = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27667,6 +29111,7 @@ impl FromXml for Sheet {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             #[cfg(feature = "sml-structure")]
             state: f_state,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27696,6 +29141,7 @@ impl FromXml for WorkbookProperties {
         let mut f_auto_compress_pictures = None;
         let mut f_refresh_all_connections = None;
         let mut f_default_theme_version = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27756,10 +29202,13 @@ impl FromXml for WorkbookProperties {
                 b"defaultThemeVersion" => {
                     f_default_theme_version = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27794,6 +29243,7 @@ impl FromXml for WorkbookProperties {
             auto_compress_pictures: f_auto_compress_pictures,
             refresh_all_connections: f_refresh_all_connections,
             default_theme_version: f_default_theme_version,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27807,6 +29257,7 @@ impl FromXml for CTSmartTagPr {
     ) -> Result<Self, ParseError> {
         let mut f_embed = None;
         let mut f_show = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27819,10 +29270,13 @@ impl FromXml for CTSmartTagPr {
                 b"show" => {
                     f_show = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27841,6 +29295,7 @@ impl FromXml for CTSmartTagPr {
         Ok(Self {
             embed: f_embed,
             show: f_show,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27901,6 +29356,7 @@ impl FromXml for CTSmartTagType {
         let mut f_namespace_uri = None;
         let mut f_name = None;
         let mut f_url = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27916,10 +29372,13 @@ impl FromXml for CTSmartTagType {
                 b"url" => {
                     f_url = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27939,6 +29398,7 @@ impl FromXml for CTSmartTagType {
             namespace_uri: f_namespace_uri,
             name: f_name,
             url: f_url,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -27954,6 +29414,7 @@ impl FromXml for FileRecoveryProperties {
         let mut f_crash_save = None;
         let mut f_data_extract_load = None;
         let mut f_repair_load = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -27972,10 +29433,13 @@ impl FromXml for FileRecoveryProperties {
                 b"repairLoad" => {
                     f_repair_load = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -27996,6 +29460,7 @@ impl FromXml for FileRecoveryProperties {
             crash_save: f_crash_save,
             data_extract_load: f_data_extract_load,
             repair_load: f_repair_load,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28020,6 +29485,7 @@ impl FromXml for CalculationProperties {
         let mut f_concurrent_calc = None;
         let mut f_concurrent_manual_count = None;
         let mut f_force_full_calc = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28065,10 +29531,13 @@ impl FromXml for CalculationProperties {
                 b"forceFullCalc" => {
                     f_force_full_calc = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28098,6 +29567,7 @@ impl FromXml for CalculationProperties {
             concurrent_calc: f_concurrent_calc,
             concurrent_manual_count: f_concurrent_manual_count,
             force_full_calc: f_force_full_calc,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28181,6 +29651,7 @@ impl FromXml for DefinedName {
         let mut f_publish_to_server = None;
         #[cfg(feature = "sml-formulas-advanced")]
         let mut f_workbook_parameter = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28243,10 +29714,13 @@ impl FromXml for DefinedName {
                 b"workbookParameter" => {
                     f_workbook_parameter = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28305,6 +29779,7 @@ impl FromXml for DefinedName {
             publish_to_server: f_publish_to_server,
             #[cfg(feature = "sml-formulas-advanced")]
             workbook_parameter: f_workbook_parameter,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28453,6 +29928,7 @@ impl FromXml for CTPivotCache {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_cache_id: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28462,10 +29938,13 @@ impl FromXml for CTPivotCache {
                 b"cacheId" => {
                     f_cache_id = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28484,6 +29963,7 @@ impl FromXml for CTPivotCache {
         Ok(Self {
             cache_id: f_cache_id
                 .ok_or_else(|| ParseError::MissingAttribute("cacheId".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28502,6 +29982,7 @@ impl FromXml for FileSharing {
         let mut f_hash_value = None;
         let mut f_salt_value = None;
         let mut f_spin_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28529,10 +30010,13 @@ impl FromXml for FileSharing {
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28556,6 +30040,7 @@ impl FromXml for FileSharing {
             hash_value: f_hash_value,
             salt_value: f_salt_value,
             spin_count: f_spin_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28568,6 +30053,7 @@ impl FromXml for CTOleSize {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28577,10 +30063,13 @@ impl FromXml for CTOleSize {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28599,6 +30088,7 @@ impl FromXml for CTOleSize {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28625,6 +30115,7 @@ impl FromXml for WorkbookProtection {
         let mut f_workbook_hash_value = None;
         let mut f_workbook_salt_value = None;
         let mut f_workbook_spin_count = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28676,10 +30167,13 @@ impl FromXml for WorkbookProtection {
                 b"workbookSpinCount" => {
                     f_workbook_spin_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28711,6 +30205,7 @@ impl FromXml for WorkbookProtection {
             workbook_hash_value: f_workbook_hash_value,
             workbook_salt_value: f_workbook_salt_value,
             workbook_spin_count: f_workbook_spin_count,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28731,6 +30226,7 @@ impl FromXml for WebPublishing {
         let mut f_dpi = None;
         let mut f_code_page = None;
         let mut f_character_set = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28764,10 +30260,13 @@ impl FromXml for WebPublishing {
                 b"characterSet" => {
                     f_character_set = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28793,6 +30292,7 @@ impl FromXml for WebPublishing {
             dpi: f_dpi,
             code_page: f_code_page,
             character_set: f_character_set,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28806,6 +30306,7 @@ impl FromXml for CTFunctionGroups {
     ) -> Result<Self, ParseError> {
         let mut f_built_in_group_count = None;
         let mut f_function_group = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28815,10 +30316,13 @@ impl FromXml for CTFunctionGroups {
                 b"builtInGroupCount" => {
                     f_built_in_group_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28857,6 +30361,7 @@ impl FromXml for CTFunctionGroups {
         Ok(Self {
             built_in_group_count: f_built_in_group_count,
             function_group: f_function_group,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28869,6 +30374,7 @@ impl FromXml for CTFunctionGroup {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28878,10 +30384,13 @@ impl FromXml for CTFunctionGroup {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28899,6 +30408,7 @@ impl FromXml for CTFunctionGroup {
 
         Ok(Self {
             name: f_name,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28912,6 +30422,7 @@ impl FromXml for CTWebPublishObjects {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_web_publish_object = Vec::new();
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -28921,10 +30432,13 @@ impl FromXml for CTWebPublishObjects {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -28964,6 +30478,7 @@ impl FromXml for CTWebPublishObjects {
         Ok(Self {
             count: f_count,
             web_publish_object: f_web_publish_object,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }
@@ -28981,6 +30496,7 @@ impl FromXml for CTWebPublishObject {
         let mut f_destination_file: Option<XmlString> = None;
         let mut f_title = None;
         let mut f_auto_republish = None;
+        #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
@@ -29005,10 +30521,13 @@ impl FromXml for CTWebPublishObject {
                 b"autoRepublish" => {
                     f_auto_republish = Some(val == "true" || val == "1");
                 }
-                _ => {
-                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(unknown).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
             }
         }
 
@@ -29032,6 +30551,7 @@ impl FromXml for CTWebPublishObject {
                 .ok_or_else(|| ParseError::MissingAttribute("destinationFile".to_string()))?,
             title: f_title,
             auto_republish: f_auto_republish,
+            #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
     }

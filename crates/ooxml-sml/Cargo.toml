@@ -14,8 +14,11 @@ full = [
     "sml-layout", "sml-protection", "sml-filtering", "sml-validation",
     "sml-comments", "sml-charts", "sml-drawings", "sml-hyperlinks",
     "sml-metadata", "sml-i18n", "sml-pivot", "sml-tables", "sml-extensions",
-    "sml-revisions", "sml-external"
+    "sml-revisions", "sml-external",
+    "extra-attrs"
 ]
+# Roundtrip fidelity features
+extra-attrs = []              # Capture unknown attributes for roundtrip
 # Individual feature flags (see spec/ooxml-features.yaml for field mappings)
 sml-styling = []              # Fonts, colors, formatting
 sml-structure = []            # Grouping, hiding, outlines, freeze panes
