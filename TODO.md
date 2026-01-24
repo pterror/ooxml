@@ -44,9 +44,36 @@ DocumentBuilder handles common cases but doesn't expose:
 
 - [ ] **Lazy/cursor API** - Alternate API that avoids struct materialization for high-performance streaming use cases. Iterator-based access to rows/cells without allocating intermediate structs.
 - [x] **Feature-gated extra_attrs** - `extra-attrs` feature captures unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Enabled by default.
-- [ ] **Feature-gated unknown children** - Add `extra-children` feature to capture unknown child elements in `extra_children: Vec<RawXmlElement>`. Requires porting WML's `raw_xml.rs` to generated code or a shared crate.
+- [x] **Feature-gated unknown children** - `extra-children` feature captures unknown child elements in `extra_children: Vec<ooxml_xml::RawXmlNode>`. Uses shared `ooxml-xml` crate.
 - [x] **Per-field feature gating** - Uses `spec/ooxml-features.yaml` to gate non-core fields behind features (sml-styling, sml-formulas, etc.). 265 fields gated, 893 parser locations.
-- [ ] **Extension trait cfg attrs** - Add cfg attrs to ext.rs and workbook.rs for `--no-default-features` to compile.
+- [x] **Extension trait cfg attrs** - Feature-gated WorksheetExt and ResolvedSheet methods for `--no-default-features` support.
+
+## Codegen Migration
+
+Replace handwritten types with generated equivalents. **Requires extensive test fixtures first** to ensure no regressions.
+
+### Prerequisites
+- [ ] **Comprehensive roundtrip test suite** - Parse real documents, serialize, compare output. Cover all element types.
+- [ ] **Fixture corpus** - Curated set of DOCX/XLSX/PPTX files exercising edge cases (from corpus analysis + synthetic).
+- [ ] **Parity tests** - For each handwritten type, verify generated equivalent produces identical XML output.
+
+### WML (Word)
+- [ ] **Port feature flags to WML** - Add ooxml-features.yaml mappings for WML elements, feature-gate non-core fields.
+- [ ] **Port extra-attrs/extra-children to WML** - Already has `unknown_children`, unify with codegen approach.
+- [ ] **Replace handwritten WML types** - Swap document.rs/paragraph.rs/etc with generated types, update ext traits.
+- [ ] **Delete handwritten WML code** - Remove old implementations once tests pass.
+
+### PML (PowerPoint)
+- [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
+- [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
+- [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
+- [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
+
+### DML (Drawing)
+- [ ] **Port feature flags to DML** - Add ooxml-features.yaml mappings for DML elements.
+- [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
+- [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.
+- [ ] **Delete handwritten DML code** - Remove old implementations once tests pass.
 
 ## Robustness
 
