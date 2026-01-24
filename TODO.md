@@ -43,9 +43,10 @@ DocumentBuilder handles common cases but doesn't expose:
 ## Codegen Performance
 
 - [ ] **Lazy/cursor API** - Alternate API that avoids struct materialization for high-performance streaming use cases. Iterator-based access to rows/cells without allocating intermediate structs.
-- [ ] **Feature-gated extra_attrs** - Capture unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Gate behind a feature flag (e.g., `roundtrip`) to avoid overhead when not needed.
-- [ ] **Feature-gated unknown children** - Capture unknown child elements in `extra_children: Vec<RawXml>` for full roundtrip support. Separate feature flag (e.g., `roundtrip-children`) since this has higher overhead than attrs.
-- [ ] **Per-field feature gating** - Use `spec/ooxml-features.yaml` to gate non-core fields behind features (styling, formulas, etc.). Non-featured fields go to extra_attrs when the feature is disabled.
+- [x] **Feature-gated extra_attrs** - `extra-attrs` feature captures unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Enabled by default.
+- [ ] **Feature-gated unknown children** - Add `extra-children` feature to capture unknown child elements in `extra_children: Vec<RawXmlElement>`. Requires porting WML's `raw_xml.rs` to generated code or a shared crate.
+- [x] **Per-field feature gating** - Uses `spec/ooxml-features.yaml` to gate non-core fields behind features (sml-styling, sml-formulas, etc.). 265 fields gated, 893 parser locations.
+- [ ] **Extension trait cfg attrs** - Add cfg attrs to ext.rs and workbook.rs for `--no-default-features` to compile.
 
 ## Robustness
 
