@@ -1302,11 +1302,18 @@ impl FromXml for ExtensionList {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -2054,11 +2061,18 @@ impl FromXml for XmlSchema {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -3109,11 +3123,18 @@ impl FromXml for TableMissing {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -5911,11 +5932,18 @@ impl FromXml for CTRecord {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -14126,11 +14154,18 @@ impl FromXml for RichTextRunProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -14442,11 +14477,18 @@ impl FromXml for Revisions {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -19985,11 +20027,18 @@ impl FromXml for Drawing {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -20007,11 +20056,18 @@ impl FromXml for LegacyDrawing {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -25098,11 +25154,18 @@ impl FromXml for TablePart {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -27807,11 +27870,18 @@ impl FromXml for Fill {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -29982,11 +30052,18 @@ impl FromXml for Font {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -34580,11 +34657,18 @@ impl FromXml for ExternalReference {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }
@@ -34602,11 +34686,18 @@ impl FromXml for SheetBackgroundPicture {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to end tag
+            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
+            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::End(_) => break,
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => {
+                        depth -= 1;
+                        if depth == 0 {
+                            break;
+                        }
+                    }
                     Event::Eof => break,
                     _ => {}
                 }

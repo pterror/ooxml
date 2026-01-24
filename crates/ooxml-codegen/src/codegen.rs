@@ -17,6 +17,10 @@ pub struct ModuleMappings {
     /// Enum variant mappings: `customXml` → `CustomXmlContent`
     #[serde(default)]
     pub variants: HashMap<String, String>,
+    /// XML element name mappings: `Worksheet` → `worksheet`
+    /// Maps Rust type names to their XML element names for serde serialization.
+    #[serde(default)]
+    pub elements: HashMap<String, String>,
 }
 
 /// Complete name mappings file structure.
@@ -86,6 +90,16 @@ impl NameMappings {
             .variants
             .get(spec_name)
             .or_else(|| self.shared.variants.get(spec_name))
+            .map(|s| s.as_str())
+    }
+
+    /// Resolve an XML element name for a Rust type name.
+    /// Used for serde rename on structs.
+    pub fn resolve_element(&self, module: &str, rust_type_name: &str) -> Option<&str> {
+        self.for_module(module)
+            .elements
+            .get(rust_type_name)
+            .or_else(|| self.shared.elements.get(rust_type_name))
             .map(|s| s.as_str())
     }
 }
@@ -559,6 +573,9 @@ impl<'a> Generator<'a> {
         // Collect fields from the pattern
         let fields = self.extract_fields(&def.pattern);
 
+        // Check for XML element name mapping
+        let element_rename = self.get_element_name(&rust_name);
+
         if fields.is_empty() {
             // Empty struct
             writeln!(
@@ -566,9 +583,15 @@ impl<'a> Generator<'a> {
                 "#[derive(Debug, Clone, Default, Serialize, Deserialize)]"
             )
             .unwrap();
+            if let Some(xml_name) = &element_rename {
+                writeln!(code, "#[serde(rename = \"{}\")]", xml_name).unwrap();
+            }
             writeln!(code, "pub struct {};", rust_name).unwrap();
         } else {
             writeln!(code, "#[derive(Debug, Clone, Serialize, Deserialize)]").unwrap();
+            if let Some(xml_name) = &element_rename {
+                writeln!(code, "#[serde(rename = \"{}\")]", xml_name).unwrap();
+            }
             writeln!(code, "pub struct {} {{", rust_name).unwrap();
 
             for field in &fields {
@@ -595,8 +618,18 @@ impl<'a> Generator<'a> {
                 } else {
                     writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
                 }
-                if field.is_optional || field.is_vec {
-                    writeln!(code, "    #[serde(default)]").unwrap();
+                if field.is_optional {
+                    writeln!(
+                        code,
+                        "    #[serde(default, skip_serializing_if = \"Option::is_none\")]"
+                    )
+                    .unwrap();
+                } else if field.is_vec {
+                    writeln!(
+                        code,
+                        "    #[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+                    )
+                    .unwrap();
                 }
                 writeln!(code, "    pub {}: {},", field.name, field_type).unwrap();
             }
@@ -610,7 +643,8 @@ impl<'a> Generator<'a> {
                 )
                 .unwrap();
                 writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
-                writeln!(code, "    #[serde(flatten)]").unwrap();
+                // Use skip instead of flatten - flatten doesn't work well with quick-xml
+                writeln!(code, "    #[serde(skip)]").unwrap();
                 writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
                 writeln!(code, "    #[serde(default)]").unwrap();
                 writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
@@ -799,6 +833,15 @@ impl<'a> Generator<'a> {
 
         // Fall back to snake_case conversion
         to_snake_case(&qname.local)
+    }
+
+    /// Get the XML element name for a Rust type, if mapped.
+    fn get_element_name(&self, rust_type_name: &str) -> Option<String> {
+        self.config
+            .name_mappings
+            .as_ref()
+            .and_then(|m| m.resolve_element(&self.config.module_name, rust_type_name))
+            .map(|s| s.to_string())
     }
 
     /// Get the feature name for a field if it requires feature gating.

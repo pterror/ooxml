@@ -517,6 +517,137 @@ sml:
     hidden: Hidden
     veryHidden: VeryHidden
 
+  # XML element names for serde serialization
+  # Maps Rust type name → XML element name
+  elements:
+    # Root elements
+    Worksheet: worksheet
+    Workbook: workbook
+    SharedStrings: sst
+    Stylesheet: styleSheet
+    Comments: comments
+    CalcChain: calcChain
+
+    # Major structural elements
+    SheetData: sheetData
+    Row: row
+    Cell: c
+    SheetViews: sheetViews
+    SheetView: sheetView
+    SheetFormat: sheetFormatPr
+    SheetProperties: sheetPr
+    SheetDimension: dimension
+    Columns: cols
+    Column: col
+    MergedCells: mergeCells
+    MergedCell: mergeCell
+
+    # Pane and selection
+    Pane: pane
+    Selection: selection
+
+    # Filtering
+    AutoFilter: autoFilter
+    FilterColumn: filterColumn
+    Filters: filters
+    Filter: filter
+    SortState: sortState
+    SortCondition: sortCondition
+
+    # Data validation
+    DataValidations: dataValidations
+    DataValidation: dataValidation
+
+    # Conditional formatting
+    ConditionalFormatting: conditionalFormatting
+    ConditionalRule: cfRule
+    ColorScale: colorScale
+    DataBar: dataBar
+    IconSet: iconSet
+    ConditionalFormatValue: cfvo
+
+    # Hyperlinks
+    Hyperlinks: hyperlinks
+    Hyperlink: hyperlink
+
+    # Page layout
+    PageMargins: pageMargins
+    PageSetup: pageSetup
+    PrintOptions: printOptions
+    HeaderFooter: headerFooter
+    PageBreaks: rowBreaks
+
+    # Formulas and values
+    CellFormula: f
+    CellValue: v
+    RichString: is
+    StringItem: si
+
+    # Fonts and styling
+    Fonts: fonts
+    Font: font
+    Fills: fills
+    Fill: fill
+    Borders: borders
+    Border: border
+    BorderProperties: left
+    CellFormats: cellXfs
+    CellStyleFormats: cellStyleXfs
+    Format: xf
+    CellAlignment: alignment
+    CellProtection: protection
+    NumberFormats: numFmts
+    NumberFormat: numFmt
+    CellStyles: cellStyles
+    CellStyle: cellStyle
+    DifferentialFormats: dxfs
+    DifferentialFormat: dxf
+
+    # Colors
+    Color: color
+    Colors: colors
+
+    # Fill types
+    PatternFill: patternFill
+    GradientFill: gradientFill
+    GradientStop: stop
+
+    # Rich text
+    RichTextElement: r
+    RichTextRunProperties: rPr
+
+    # Workbook elements
+    Sheets: sheets
+    Sheet: sheet
+    DefinedNames: definedNames
+    DefinedName: definedName
+    BookViews: bookViews
+    BookView: workbookView
+    WorkbookProperties: workbookPr
+    CalculationProperties: calcPr
+
+    # Protection
+    SheetProtection: sheetProtection
+    WorkbookProtection: workbookProtection
+    ProtectedRanges: protectedRanges
+    ProtectedRange: protectedRange
+
+    # Tables
+    Table: table
+    TableColumns: tableColumns
+    TableColumn: tableColumn
+    TableParts: tableParts
+    TablePart: tablePart
+
+    # Extension list
+    ExtensionList: extLst
+    Extension: ext
+
+    # Comments
+    CommentList: commentList
+    Comment: comment
+    Authors: authors
+
 # WordprocessingML (Word)
 wml:
   types:

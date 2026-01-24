@@ -4393,26 +4393,27 @@ impl std::str::FromStr for STTargetScreenSize {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "autoFilter")]
 pub struct AutoFilter {
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@ref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "filterColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub filter_column: Vec<Box<FilterColumn>>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "sortState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_state: Option<Box<SortState>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4425,21 +4426,22 @@ pub struct AutoFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "filterColumn")]
 pub struct FilterColumn {
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@colId")]
     pub column_id: u32,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@hiddenButton")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_button: Option<bool>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@showButton")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_button: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4447,22 +4449,23 @@ pub struct FilterColumn {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "filters")]
 pub struct Filters {
     #[serde(rename = "@blank")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blank: Option<bool>,
     #[serde(rename = "@calendarType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calendar_type: Option<CalendarType>,
     #[serde(rename = "filter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub filter: Vec<Box<Filter>>,
     #[serde(rename = "dateGroupItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub date_group_item: Vec<Box<DateGroupItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4475,13 +4478,14 @@ pub struct Filters {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "filter")]
 pub struct Filter {
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4491,14 +4495,14 @@ pub struct Filter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomFilters {
     #[serde(rename = "@and")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub and: Option<bool>,
     #[serde(rename = "customFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub custom_filter: Vec<Box<CustomFilter>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4513,14 +4517,14 @@ pub struct CustomFilters {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomFilter {
     #[serde(rename = "@operator")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub operator: Option<FilterOperator>,
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4530,19 +4534,19 @@ pub struct CustomFilter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Top10Filter {
     #[serde(rename = "@top")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<bool>,
     #[serde(rename = "@percent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub percent: Option<bool>,
     #[serde(rename = "@val")]
     pub value: f64,
     #[serde(rename = "@filterVal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filter_val: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4552,14 +4556,14 @@ pub struct Top10Filter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColorFilter {
     #[serde(rename = "@dxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@cellColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4571,11 +4575,11 @@ pub struct IconFilter {
     #[serde(rename = "@iconSet")]
     pub icon_set: IconSetType,
     #[serde(rename = "@iconId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4587,20 +4591,20 @@ pub struct DynamicFilter {
     #[serde(rename = "@type")]
     pub r#type: DynamicFilterType,
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<f64>,
     #[serde(rename = "@valIso")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub val_iso: Option<String>,
     #[serde(rename = "@maxVal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_val: Option<f64>,
     #[serde(rename = "@maxValIso")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_val_iso: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4608,27 +4612,28 @@ pub struct DynamicFilter {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sortState")]
 pub struct SortState {
     #[serde(rename = "@columnSort")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub column_sort: Option<bool>,
     #[serde(rename = "@caseSensitive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub case_sensitive: Option<bool>,
     #[serde(rename = "@sortMethod")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_method: Option<SortMethod>,
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[serde(rename = "sortCondition")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sort_condition: Vec<Box<SortCondition>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4641,30 +4646,31 @@ pub struct SortState {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sortCondition")]
 pub struct SortCondition {
     #[serde(rename = "@descending")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub descending: Option<bool>,
     #[serde(rename = "@sortBy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_by: Option<SortBy>,
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[serde(rename = "@customList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_list: Option<XmlString>,
     #[serde(rename = "@dxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@iconSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<IconSetType>,
     #[serde(rename = "@iconId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4676,25 +4682,25 @@ pub struct DateGroupItem {
     #[serde(rename = "@year")]
     pub year: u16,
     #[serde(rename = "@month")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub month: Option<u16>,
     #[serde(rename = "@day")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub day: Option<u16>,
     #[serde(rename = "@hour")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hour: Option<u16>,
     #[serde(rename = "@minute")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minute: Option<u16>,
     #[serde(rename = "@second")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub second: Option<u16>,
     #[serde(rename = "@dateTimeGrouping")]
     pub date_time_grouping: STDateTimeGrouping,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4707,7 +4713,7 @@ pub struct CTXStringElement {
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4715,13 +4721,14 @@ pub struct CTXStringElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "ext")]
 pub struct Extension {
     #[serde(rename = "@uri")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4733,14 +4740,14 @@ pub type CTExtensionAny = String;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ObjectAnchor {
     #[serde(rename = "@moveWithCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub move_with_cells: Option<bool>,
     #[serde(rename = "@sizeWithCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size_with_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4750,7 +4757,7 @@ pub struct ObjectAnchor {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ext: Vec<Box<Extension>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -4760,17 +4767,19 @@ pub struct EGExtensionList {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "extLst")]
 pub struct ExtensionList;
 
 pub type SmlCalcChain = Box<CalcChain>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "calcChain")]
 pub struct CalcChain {
     #[serde(rename = "c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cells: Vec<Box<CalcCell>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -4784,23 +4793,23 @@ pub struct CalcCell {
     #[serde(rename = "@_any")]
     pub _any: CellRef,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<i32>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<bool>,
     #[serde(rename = "@l")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub l: Option<bool>,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<bool>,
     #[serde(rename = "@a")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub a: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4810,13 +4819,14 @@ pub struct CalcCell {
 pub type SmlComments = Box<Comments>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "comments")]
 pub struct Comments {
     #[serde(rename = "authors")]
     pub authors: Box<Authors>,
     #[serde(rename = "commentList")]
     pub comment_list: Box<CommentList>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -4826,9 +4836,10 @@ pub struct Comments {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "authors")]
 pub struct Authors {
     #[serde(rename = "author")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub author: Vec<XmlString>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -4838,9 +4849,10 @@ pub struct Authors {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "commentList")]
 pub struct CommentList {
     #[serde(rename = "comment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub comment: Vec<Box<Comment>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -4850,6 +4862,7 @@ pub struct CommentList {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "comment")]
 pub struct Comment {
     #[cfg(feature = "sml-comments")]
     #[serde(rename = "@ref")]
@@ -4859,21 +4872,21 @@ pub struct Comment {
     pub author_id: u32,
     #[cfg(feature = "sml-comments")]
     #[serde(rename = "@guid")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub guid: Option<Guid>,
     #[cfg(feature = "sml-comments")]
     #[serde(rename = "@shapeId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_id: Option<u32>,
     #[cfg(feature = "sml-comments")]
     #[serde(rename = "text")]
     pub text: Box<RichString>,
     #[serde(rename = "commentPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comment_pr: Option<Box<CTCommentPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4888,46 +4901,46 @@ pub struct Comment {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCommentPr {
     #[serde(rename = "@locked")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_line: Option<bool>,
     #[serde(rename = "@altText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_text: Option<XmlString>,
     #[serde(rename = "@textHAlign")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_h_align: Option<STTextHAlign>,
     #[serde(rename = "@textVAlign")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_v_align: Option<STTextVAlign>,
     #[serde(rename = "@lockText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock_text: Option<bool>,
     #[serde(rename = "@justLastX")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub just_last_x: Option<bool>,
     #[serde(rename = "@autoScale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_scale: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4946,14 +4959,14 @@ pub struct MapInfo {
     #[serde(rename = "@SelectionNamespaces")]
     pub selection_namespaces: String,
     #[serde(rename = "Schema")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub schema: Vec<Box<XmlSchema>>,
     #[serde(rename = "Map")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub map: Vec<Box<XmlMap>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -4991,11 +5004,11 @@ pub struct XmlMap {
     #[serde(rename = "@PreserveFormat")]
     pub preserve_format: bool,
     #[serde(rename = "DataBinding")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_binding: Option<Box<DataBinding>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5010,22 +5023,22 @@ pub struct XmlMap {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataBinding {
     #[serde(rename = "@DataBindingName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_binding_name: Option<String>,
     #[serde(rename = "@FileBinding")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_binding: Option<bool>,
     #[serde(rename = "@ConnectionID")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub connection_i_d: Option<u32>,
     #[serde(rename = "@FileBindingName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_binding_name: Option<String>,
     #[serde(rename = "@DataBindingLoadMode")]
     pub data_binding_load_mode: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5039,7 +5052,7 @@ pub type SmlConnections = Box<Connections>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Connections {
     #[serde(rename = "connection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub connection: Vec<Box<Connection>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -5053,82 +5066,82 @@ pub struct Connection {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@sourceFile")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_file: Option<XmlString>,
     #[serde(rename = "@odcFile")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odc_file: Option<XmlString>,
     #[serde(rename = "@keepAlive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub keep_alive: Option<bool>,
     #[serde(rename = "@interval")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub interval: Option<u32>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@description")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<XmlString>,
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<u32>,
     #[serde(rename = "@reconnectionMethod")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reconnection_method: Option<u32>,
     #[serde(rename = "@refreshedVersion")]
     pub refreshed_version: u8,
     #[serde(rename = "@minRefreshableVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_refreshable_version: Option<u8>,
     #[serde(rename = "@savePassword")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_password: Option<bool>,
     #[serde(rename = "@new")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub new: Option<bool>,
     #[serde(rename = "@deleted")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deleted: Option<bool>,
     #[serde(rename = "@onlyUseConnectionFile")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub only_use_connection_file: Option<bool>,
     #[serde(rename = "@background")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@saveData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_data: Option<bool>,
     #[serde(rename = "@credentials")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub credentials: Option<STCredMethod>,
     #[serde(rename = "@singleSignOnId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub single_sign_on_id: Option<XmlString>,
     #[serde(rename = "dbPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub db_pr: Option<Box<DatabaseProperties>>,
     #[serde(rename = "olapPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub olap_pr: Option<Box<OlapProperties>>,
     #[serde(rename = "webPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_pr: Option<Box<WebQueryProperties>>,
     #[serde(rename = "textPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_pr: Option<Box<TextImportProperties>>,
     #[serde(rename = "parameters")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parameters: Option<Box<Parameters>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5145,17 +5158,17 @@ pub struct DatabaseProperties {
     #[serde(rename = "@connection")]
     pub connection: XmlString,
     #[serde(rename = "@command")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub command: Option<XmlString>,
     #[serde(rename = "@serverCommand")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_command: Option<XmlString>,
     #[serde(rename = "@commandType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub command_type: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5165,35 +5178,35 @@ pub struct DatabaseProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OlapProperties {
     #[serde(rename = "@local")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local: Option<bool>,
     #[serde(rename = "@localConnection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_connection: Option<XmlString>,
     #[serde(rename = "@localRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_refresh: Option<bool>,
     #[serde(rename = "@sendLocale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub send_locale: Option<bool>,
     #[serde(rename = "@rowDrillCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_drill_count: Option<u32>,
     #[serde(rename = "@serverFill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_fill: Option<bool>,
     #[serde(rename = "@serverNumberFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_number_format: Option<bool>,
     #[serde(rename = "@serverFont")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_font: Option<bool>,
     #[serde(rename = "@serverFontColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_font_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5203,50 +5216,50 @@ pub struct OlapProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebQueryProperties {
     #[serde(rename = "@xml")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xml: Option<bool>,
     #[serde(rename = "@sourceData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_data: Option<bool>,
     #[serde(rename = "@parsePre")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parse_pre: Option<bool>,
     #[serde(rename = "@consecutive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consecutive: Option<bool>,
     #[serde(rename = "@firstRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<bool>,
     #[serde(rename = "@xl97")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xl97: Option<bool>,
     #[serde(rename = "@textDates")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_dates: Option<bool>,
     #[serde(rename = "@xl2000")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xl2000: Option<bool>,
     #[serde(rename = "@url")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<XmlString>,
     #[serde(rename = "@post")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub post: Option<XmlString>,
     #[serde(rename = "@htmlTables")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub html_tables: Option<bool>,
     #[serde(rename = "@htmlFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub html_format: Option<STHtmlFmt>,
     #[serde(rename = "@editPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edit_page: Option<XmlString>,
     #[serde(rename = "tables")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tables: Option<Box<DataTables>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5261,14 +5274,14 @@ pub struct WebQueryProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Parameters {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "parameter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub parameter: Vec<Box<Parameter>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5283,38 +5296,38 @@ pub struct Parameters {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Parameter {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@sqlType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sql_type: Option<i32>,
     #[serde(rename = "@parameterType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parameter_type: Option<STParameterType>,
     #[serde(rename = "@refreshOnChange")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_on_change: Option<bool>,
     #[serde(rename = "@prompt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt: Option<XmlString>,
     #[serde(rename = "@boolean")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub boolean: Option<bool>,
     #[serde(rename = "@double")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub double: Option<f64>,
     #[serde(rename = "@integer")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub integer: Option<i32>,
     #[serde(rename = "@string")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub string: Option<XmlString>,
     #[serde(rename = "@cell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5324,11 +5337,11 @@ pub struct Parameter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataTables {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5341,59 +5354,59 @@ pub struct TableMissing;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextImportProperties {
     #[serde(rename = "@prompt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt: Option<bool>,
     #[serde(rename = "@fileType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_type: Option<STFileType>,
     #[serde(rename = "@codePage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_page: Option<u32>,
     #[serde(rename = "@characterSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub character_set: Option<String>,
     #[serde(rename = "@firstRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<u32>,
     #[serde(rename = "@sourceFile")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_file: Option<XmlString>,
     #[serde(rename = "@delimited")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delimited: Option<bool>,
     #[serde(rename = "@decimal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub decimal: Option<XmlString>,
     #[serde(rename = "@thousands")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thousands: Option<XmlString>,
     #[serde(rename = "@tab")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<bool>,
     #[serde(rename = "@space")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<bool>,
     #[serde(rename = "@comma")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comma: Option<bool>,
     #[serde(rename = "@semicolon")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub semicolon: Option<bool>,
     #[serde(rename = "@consecutive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub consecutive: Option<bool>,
     #[serde(rename = "@qualifier")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub qualifier: Option<STQualifier>,
     #[serde(rename = "@delimiter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delimiter: Option<XmlString>,
     #[serde(rename = "textFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_fields: Option<Box<TextFields>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5408,14 +5421,14 @@ pub struct TextImportProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "textField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub text_field: Vec<Box<TextField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5430,14 +5443,14 @@ pub struct TextFields {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextField {
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STExternalConnectionType>,
     #[serde(rename = "@position")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub position: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5453,90 +5466,90 @@ pub type SmlPivotTableDefinition = Box<CTPivotTableDefinition>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCacheDefinition {
     #[serde(rename = "@invalid")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub invalid: Option<bool>,
     #[serde(rename = "@saveData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_data: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@optimizeMemory")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub optimize_memory: Option<bool>,
     #[serde(rename = "@enableRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_refresh: Option<bool>,
     #[serde(rename = "@refreshedBy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refreshed_by: Option<XmlString>,
     #[serde(rename = "@refreshedDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refreshed_date: Option<f64>,
     #[serde(rename = "@refreshedDateIso")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refreshed_date_iso: Option<String>,
     #[serde(rename = "@backgroundQuery")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background_query: Option<bool>,
     #[serde(rename = "@missingItemsLimit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub missing_items_limit: Option<u32>,
     #[serde(rename = "@createdVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub created_version: Option<u8>,
     #[serde(rename = "@refreshedVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refreshed_version: Option<u8>,
     #[serde(rename = "@minRefreshableVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_refreshable_version: Option<u8>,
     #[serde(rename = "@recordCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub record_count: Option<u32>,
     #[serde(rename = "@upgradeOnRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub upgrade_on_refresh: Option<bool>,
     #[serde(rename = "@tupleCache")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tuple_cache: Option<bool>,
     #[serde(rename = "@supportSubquery")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub support_subquery: Option<bool>,
     #[serde(rename = "@supportAdvancedDrill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub support_advanced_drill: Option<bool>,
     #[serde(rename = "cacheSource")]
     pub cache_source: Box<CacheSource>,
     #[serde(rename = "cacheFields")]
     pub cache_fields: Box<CacheFields>,
     #[serde(rename = "cacheHierarchies")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cache_hierarchies: Option<Box<CTCacheHierarchies>>,
     #[serde(rename = "kpis")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kpis: Option<Box<CTPCDKPIs>>,
     #[serde(rename = "calculatedItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calculated_items: Option<Box<CTCalculatedItems>>,
     #[serde(rename = "calculatedMembers")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calculated_members: Option<Box<CTCalculatedMembers>>,
     #[serde(rename = "dimensions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimensions: Option<Box<CTDimensions>>,
     #[serde(rename = "measureGroups")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_groups: Option<Box<CTMeasureGroups>>,
     #[serde(rename = "maps")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub maps: Option<Box<CTMeasureDimensionMaps>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5551,14 +5564,14 @@ pub struct PivotCacheDefinition {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CacheFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "cacheField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cache_field: Vec<Box<CacheField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5575,56 +5588,56 @@ pub struct CacheField {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@caption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<XmlString>,
     #[serde(rename = "@propertyName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub property_name: Option<XmlString>,
     #[serde(rename = "@serverField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_field: Option<bool>,
     #[serde(rename = "@uniqueList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_list: Option<bool>,
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@formula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<XmlString>,
     #[serde(rename = "@sqlType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sql_type: Option<i32>,
     #[serde(rename = "@hierarchy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hierarchy: Option<i32>,
     #[serde(rename = "@level")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub level: Option<u32>,
     #[serde(rename = "@databaseField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub database_field: Option<bool>,
     #[serde(rename = "@mappingCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mapping_count: Option<u32>,
     #[serde(rename = "@memberPropertyField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub member_property_field: Option<bool>,
     #[serde(rename = "sharedItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shared_items: Option<Box<SharedItems>>,
     #[serde(rename = "fieldGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_group: Option<Box<FieldGroup>>,
     #[serde(rename = "mpMap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub mp_map: Vec<Box<CTX>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5641,11 +5654,11 @@ pub struct CacheSource {
     #[serde(rename = "@type")]
     pub r#type: STSourceType,
     #[serde(rename = "@connectionId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub connection_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5655,17 +5668,17 @@ pub struct CacheSource {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WorksheetSource {
     #[serde(rename = "@ref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5675,16 +5688,16 @@ pub struct WorksheetSource {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Consolidation {
     #[serde(rename = "@autoPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_page: Option<bool>,
     #[serde(rename = "pages")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pages: Option<Box<CTPages>>,
     #[serde(rename = "rangeSets")]
     pub range_sets: Box<CTRangeSets>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5699,14 +5712,14 @@ pub struct Consolidation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPages {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "page")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page: Vec<Box<CTPCDSCPage>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5721,14 +5734,14 @@ pub struct CTPages {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPCDSCPage {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "pageItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page_item: Vec<Box<CTPageItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5746,7 +5759,7 @@ pub struct CTPageItem {
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5756,14 +5769,14 @@ pub struct CTPageItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRangeSets {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "rangeSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub range_set: Vec<Box<CTRangeSet>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5778,29 +5791,29 @@ pub struct CTRangeSets {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRangeSet {
     #[serde(rename = "@i1")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i1: Option<u32>,
     #[serde(rename = "@i2")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i2: Option<u32>,
     #[serde(rename = "@i3")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i3: Option<u32>,
     #[serde(rename = "@i4")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i4: Option<u32>,
     #[serde(rename = "@ref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5810,50 +5823,50 @@ pub struct CTRangeSet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SharedItems {
     #[serde(rename = "@containsSemiMixedTypes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_semi_mixed_types: Option<bool>,
     #[serde(rename = "@containsNonDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_non_date: Option<bool>,
     #[serde(rename = "@containsDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_date: Option<bool>,
     #[serde(rename = "@containsString")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_string: Option<bool>,
     #[serde(rename = "@containsBlank")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_blank: Option<bool>,
     #[serde(rename = "@containsMixedTypes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_mixed_types: Option<bool>,
     #[serde(rename = "@containsNumber")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_number: Option<bool>,
     #[serde(rename = "@containsInteger")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contains_integer: Option<bool>,
     #[serde(rename = "@minValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_value: Option<f64>,
     #[serde(rename = "@maxValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_value: Option<f64>,
     #[serde(rename = "@minDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_date: Option<String>,
     #[serde(rename = "@maxDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_date: Option<String>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@longText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub long_text: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5863,47 +5876,47 @@ pub struct SharedItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMissing {
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "@in")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5920,47 +5933,47 @@ pub struct CTNumber {
     #[serde(rename = "@v")]
     pub value: f64,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "@in")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -5977,23 +5990,23 @@ pub struct CTBoolean {
     #[serde(rename = "@v")]
     pub value: bool,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6010,47 +6023,47 @@ pub struct CTError {
     #[serde(rename = "@v")]
     pub value: XmlString,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "@in")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tpls: Option<Box<CTTuples>>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6067,47 +6080,47 @@ pub struct CTString {
     #[serde(rename = "@v")]
     pub value: XmlString,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "@in")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#in: Option<u32>,
     #[serde(rename = "@bc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6124,23 +6137,23 @@ pub struct CTDateTime {
     #[serde(rename = "@v")]
     pub value: String,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<XmlString>,
     #[serde(rename = "@cp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp: Option<u32>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6155,23 +6168,23 @@ pub struct CTDateTime {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FieldGroup {
     #[serde(rename = "@par")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub par: Option<u32>,
     #[serde(rename = "@base")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base: Option<u32>,
     #[serde(rename = "rangePr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub range_pr: Option<Box<CTRangePr>>,
     #[serde(rename = "discretePr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub discrete_pr: Option<Box<CTDiscretePr>>,
     #[serde(rename = "groupItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group_items: Option<Box<GroupItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6186,32 +6199,32 @@ pub struct FieldGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRangePr {
     #[serde(rename = "@autoStart")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_start: Option<bool>,
     #[serde(rename = "@autoEnd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_end: Option<bool>,
     #[serde(rename = "@groupBy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group_by: Option<STGroupBy>,
     #[serde(rename = "@startNum")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_num: Option<f64>,
     #[serde(rename = "@endNum")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_num: Option<f64>,
     #[serde(rename = "@startDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_date: Option<String>,
     #[serde(rename = "@endDate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_date: Option<String>,
     #[serde(rename = "@groupInterval")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group_interval: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6221,14 +6234,14 @@ pub struct CTRangePr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDiscretePr {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6243,11 +6256,11 @@ pub struct CTDiscretePr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6257,17 +6270,17 @@ pub struct GroupItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCacheRecords {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reference: Vec<Box<CTRecord>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6285,14 +6298,14 @@ pub struct CTRecord;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPCDKPIs {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "kpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub kpi: Vec<Box<CTPCDKPI>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6309,37 +6322,37 @@ pub struct CTPCDKPI {
     #[serde(rename = "@uniqueName")]
     pub unique_name: XmlString,
     #[serde(rename = "@caption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<XmlString>,
     #[serde(rename = "@displayFolder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_folder: Option<XmlString>,
     #[serde(rename = "@measureGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_group: Option<XmlString>,
     #[serde(rename = "@parent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parent: Option<XmlString>,
     #[serde(rename = "@value")]
     pub value: XmlString,
     #[serde(rename = "@goal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub goal: Option<XmlString>,
     #[serde(rename = "@status")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status: Option<XmlString>,
     #[serde(rename = "@trend")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub trend: Option<XmlString>,
     #[serde(rename = "@weight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub weight: Option<XmlString>,
     #[serde(rename = "@time")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6349,14 +6362,14 @@ pub struct CTPCDKPI {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCacheHierarchies {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "cacheHierarchy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cache_hierarchy: Vec<Box<CTCacheHierarchy>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6373,79 +6386,79 @@ pub struct CTCacheHierarchy {
     #[serde(rename = "@uniqueName")]
     pub unique_name: XmlString,
     #[serde(rename = "@caption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<XmlString>,
     #[serde(rename = "@measure")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure: Option<bool>,
     #[serde(rename = "@set")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub set: Option<bool>,
     #[serde(rename = "@parentSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parent_set: Option<u32>,
     #[serde(rename = "@iconSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<i32>,
     #[serde(rename = "@attribute")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub attribute: Option<bool>,
     #[serde(rename = "@time")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time: Option<bool>,
     #[serde(rename = "@keyAttribute")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub key_attribute: Option<bool>,
     #[serde(rename = "@defaultMemberUniqueName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_member_unique_name: Option<XmlString>,
     #[serde(rename = "@allUniqueName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_unique_name: Option<XmlString>,
     #[serde(rename = "@allCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_caption: Option<XmlString>,
     #[serde(rename = "@dimensionUniqueName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimension_unique_name: Option<XmlString>,
     #[serde(rename = "@displayFolder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_folder: Option<XmlString>,
     #[serde(rename = "@measureGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_group: Option<XmlString>,
     #[serde(rename = "@measures")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measures: Option<bool>,
     #[serde(rename = "@count")]
     pub count: u32,
     #[serde(rename = "@oneField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub one_field: Option<bool>,
     #[serde(rename = "@memberValueDatatype")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub member_value_datatype: Option<u16>,
     #[serde(rename = "@unbalanced")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unbalanced: Option<bool>,
     #[serde(rename = "@unbalancedGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unbalanced_group: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[serde(rename = "fieldsUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fields_usage: Option<Box<CTFieldsUsage>>,
     #[serde(rename = "groupLevels")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group_levels: Option<Box<CTGroupLevels>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6460,14 +6473,14 @@ pub struct CTCacheHierarchy {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFieldsUsage {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "fieldUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub field_usage: Vec<Box<CTFieldUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6485,7 +6498,7 @@ pub struct CTFieldUsage {
     pub x: i32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6495,14 +6508,14 @@ pub struct CTFieldUsage {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupLevels {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "groupLevel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub group_level: Vec<Box<CTGroupLevel>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6521,20 +6534,20 @@ pub struct CTGroupLevel {
     #[serde(rename = "@caption")]
     pub caption: XmlString,
     #[serde(rename = "@user")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user: Option<bool>,
     #[serde(rename = "@customRollUp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_roll_up: Option<bool>,
     #[serde(rename = "groups")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub groups: Option<Box<CTGroups>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6549,14 +6562,14 @@ pub struct CTGroupLevel {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroups {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "group")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub group: Vec<Box<CTLevelGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6577,16 +6590,16 @@ pub struct CTLevelGroup {
     #[serde(rename = "@caption")]
     pub caption: XmlString,
     #[serde(rename = "@uniqueParent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_parent: Option<XmlString>,
     #[serde(rename = "@id")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<i32>,
     #[serde(rename = "groupMembers")]
     pub group_members: Box<CTGroupMembers>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6601,14 +6614,14 @@ pub struct CTLevelGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupMembers {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "groupMember")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub group_member: Vec<Box<CTGroupMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6625,11 +6638,11 @@ pub struct CTGroupMember {
     #[serde(rename = "@uniqueName")]
     pub unique_name: XmlString,
     #[serde(rename = "@group")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub group: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6639,19 +6652,19 @@ pub struct CTGroupMember {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTupleCache {
     #[serde(rename = "entries")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub entries: Option<Box<CTPCDSDTCEntries>>,
     #[serde(rename = "sets")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sets: Option<Box<CTSets>>,
     #[serde(rename = "queryCache")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_cache: Option<Box<CTQueryCache>>,
     #[serde(rename = "serverFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_formats: Option<Box<CTServerFormats>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -6663,14 +6676,14 @@ pub struct CTTupleCache {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTServerFormat {
     #[serde(rename = "@culture")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub culture: Option<XmlString>,
     #[serde(rename = "@format")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6680,14 +6693,14 @@ pub struct CTServerFormat {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTServerFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "serverFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub server_format: Vec<Box<CTServerFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6702,11 +6715,11 @@ pub struct CTServerFormats {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPCDSDTCEntries {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6716,14 +6729,14 @@ pub struct CTPCDSDTCEntries {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTuples {
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<u32>,
     #[serde(rename = "tpl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tpl: Vec<Box<CTTuple>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6738,16 +6751,16 @@ pub struct CTTuples {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTuple {
     #[serde(rename = "@fld")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld: Option<u32>,
     #[serde(rename = "@hier")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hier: Option<u32>,
     #[serde(rename = "@item")]
     pub item: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6757,14 +6770,14 @@ pub struct CTTuple {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSets {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "set")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub set: Vec<Box<CTSet>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6779,27 +6792,27 @@ pub struct CTSets {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSet {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@maxRank")]
     pub max_rank: i32,
     #[serde(rename = "@setDefinition")]
     pub set_definition: XmlString,
     #[serde(rename = "@sortType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_type: Option<STSortType>,
     #[serde(rename = "@queryFailed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_failed: Option<bool>,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tpls: Vec<Box<CTTuples>>,
     #[serde(rename = "sortByTuple")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_by_tuple: Option<Box<CTTuples>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6814,14 +6827,14 @@ pub struct CTSet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTQueryCache {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "query")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub query: Vec<Box<CTQuery>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6838,11 +6851,11 @@ pub struct CTQuery {
     #[serde(rename = "@mdx")]
     pub mdx: XmlString,
     #[serde(rename = "tpls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tpls: Option<Box<CTTuples>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6857,14 +6870,14 @@ pub struct CTQuery {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCalculatedItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "calculatedItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub calculated_item: Vec<Box<CTCalculatedItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6879,19 +6892,19 @@ pub struct CTCalculatedItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCalculatedItem {
     #[serde(rename = "@field")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field: Option<u32>,
     #[serde(rename = "@formula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<XmlString>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6906,14 +6919,14 @@ pub struct CTCalculatedItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCalculatedMembers {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "calculatedMember")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub calculated_member: Vec<Box<CTCalculatedMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6932,26 +6945,26 @@ pub struct CTCalculatedMember {
     #[serde(rename = "@mdx")]
     pub mdx: XmlString,
     #[serde(rename = "@memberName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub member_name: Option<XmlString>,
     #[serde(rename = "@hierarchy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hierarchy: Option<XmlString>,
     #[serde(rename = "@parent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parent: Option<XmlString>,
     #[serde(rename = "@solveOrder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solve_order: Option<i32>,
     #[serde(rename = "@set")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub set: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -6970,234 +6983,234 @@ pub struct CTPivotTableDefinition {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
     #[serde(rename = "@dataOnRows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_on_rows: Option<bool>,
     #[serde(rename = "@dataPosition")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_position: Option<u32>,
     #[serde(rename = "@dataCaption")]
     pub data_caption: XmlString,
     #[serde(rename = "@grandTotalCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grand_total_caption: Option<XmlString>,
     #[serde(rename = "@errorCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error_caption: Option<XmlString>,
     #[serde(rename = "@showError")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_error: Option<bool>,
     #[serde(rename = "@missingCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub missing_caption: Option<XmlString>,
     #[serde(rename = "@showMissing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_missing: Option<bool>,
     #[serde(rename = "@pageStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_style: Option<XmlString>,
     #[serde(rename = "@pivotTableStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_table_style: Option<XmlString>,
     #[serde(rename = "@vacatedStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vacated_style: Option<XmlString>,
     #[serde(rename = "@tag")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tag: Option<XmlString>,
     #[serde(rename = "@updatedVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub updated_version: Option<u8>,
     #[serde(rename = "@minRefreshableVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_refreshable_version: Option<u8>,
     #[serde(rename = "@asteriskTotals")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub asterisk_totals: Option<bool>,
     #[serde(rename = "@showItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_items: Option<bool>,
     #[serde(rename = "@editData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edit_data: Option<bool>,
     #[serde(rename = "@disableFieldList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disable_field_list: Option<bool>,
     #[serde(rename = "@showCalcMbrs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_calc_mbrs: Option<bool>,
     #[serde(rename = "@visualTotals")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visual_totals: Option<bool>,
     #[serde(rename = "@showMultipleLabel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_multiple_label: Option<bool>,
     #[serde(rename = "@showDataDropDown")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_data_drop_down: Option<bool>,
     #[serde(rename = "@showDrill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_drill: Option<bool>,
     #[serde(rename = "@printDrill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_drill: Option<bool>,
     #[serde(rename = "@showMemberPropertyTips")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_member_property_tips: Option<bool>,
     #[serde(rename = "@showDataTips")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_data_tips: Option<bool>,
     #[serde(rename = "@enableWizard")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_wizard: Option<bool>,
     #[serde(rename = "@enableDrill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_drill: Option<bool>,
     #[serde(rename = "@enableFieldProperties")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_field_properties: Option<bool>,
     #[serde(rename = "@preserveFormatting")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preserve_formatting: Option<bool>,
     #[serde(rename = "@useAutoFormatting")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_auto_formatting: Option<bool>,
     #[serde(rename = "@pageWrap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_wrap: Option<u32>,
     #[serde(rename = "@pageOverThenDown")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_over_then_down: Option<bool>,
     #[serde(rename = "@subtotalHiddenItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal_hidden_items: Option<bool>,
     #[serde(rename = "@rowGrandTotals")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_grand_totals: Option<bool>,
     #[serde(rename = "@colGrandTotals")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_grand_totals: Option<bool>,
     #[serde(rename = "@fieldPrintTitles")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_print_titles: Option<bool>,
     #[serde(rename = "@itemPrintTitles")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub item_print_titles: Option<bool>,
     #[serde(rename = "@mergeItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merge_item: Option<bool>,
     #[serde(rename = "@showDropZones")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_drop_zones: Option<bool>,
     #[serde(rename = "@createdVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub created_version: Option<u8>,
     #[serde(rename = "@indent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<u32>,
     #[serde(rename = "@showEmptyRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_empty_row: Option<bool>,
     #[serde(rename = "@showEmptyCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_empty_col: Option<bool>,
     #[serde(rename = "@showHeaders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_headers: Option<bool>,
     #[serde(rename = "@compact")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compact: Option<bool>,
     #[serde(rename = "@outline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<bool>,
     #[serde(rename = "@outlineData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_data: Option<bool>,
     #[serde(rename = "@compactData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compact_data: Option<bool>,
     #[serde(rename = "@published")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub published: Option<bool>,
     #[serde(rename = "@gridDropZones")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_drop_zones: Option<bool>,
     #[serde(rename = "@immersive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub immersive: Option<bool>,
     #[serde(rename = "@multipleFieldFilters")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multiple_field_filters: Option<bool>,
     #[serde(rename = "@chartFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chart_format: Option<u32>,
     #[serde(rename = "@rowHeaderCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_header_caption: Option<XmlString>,
     #[serde(rename = "@colHeaderCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_header_caption: Option<XmlString>,
     #[serde(rename = "@fieldListSortAscending")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_list_sort_ascending: Option<bool>,
     #[serde(rename = "@mdxSubqueries")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mdx_subqueries: Option<bool>,
     #[serde(rename = "@customListSort")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_list_sort: Option<bool>,
     #[serde(rename = "location")]
     pub location: Box<PivotLocation>,
     #[serde(rename = "pivotFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_fields: Option<Box<PivotFields>>,
     #[serde(rename = "rowFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_fields: Option<Box<RowFields>>,
     #[serde(rename = "rowItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_items: Option<Box<CTRowItems>>,
     #[serde(rename = "colFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_fields: Option<Box<ColFields>>,
     #[serde(rename = "colItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_items: Option<Box<CTColItems>>,
     #[serde(rename = "pageFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_fields: Option<Box<PageFields>>,
     #[serde(rename = "dataFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_fields: Option<Box<DataFields>>,
     #[serde(rename = "formats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formats: Option<Box<CTFormats>>,
     #[serde(rename = "conditionalFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conditional_formats: Option<Box<CTConditionalFormats>>,
     #[serde(rename = "chartFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chart_formats: Option<Box<CTChartFormats>>,
     #[serde(rename = "pivotHierarchies")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_hierarchies: Option<Box<CTPivotHierarchies>>,
     #[serde(rename = "pivotTableStyleInfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_table_style_info: Option<Box<CTPivotTableStyle>>,
     #[serde(rename = "filters")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filters: Option<Box<PivotFilters>>,
     #[serde(rename = "rowHierarchiesUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_hierarchies_usage: Option<Box<CTRowHierarchiesUsage>>,
     #[serde(rename = "colHierarchiesUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_hierarchies_usage: Option<Box<CTColHierarchiesUsage>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7220,14 +7233,14 @@ pub struct PivotLocation {
     #[serde(rename = "@firstDataCol")]
     pub first_data_col: u32,
     #[serde(rename = "@rowPageCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_page_count: Option<u32>,
     #[serde(rename = "@colPageCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_page_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7237,14 +7250,14 @@ pub struct PivotLocation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "pivotField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pivot_field: Vec<Box<PivotField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7259,161 +7272,161 @@ pub struct PivotFields {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotField {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@axis")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub axis: Option<STAxis>,
     #[serde(rename = "@dataField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_field: Option<bool>,
     #[serde(rename = "@subtotalCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal_caption: Option<XmlString>,
     #[serde(rename = "@showDropDowns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_drop_downs: Option<bool>,
     #[serde(rename = "@hiddenLevel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_level: Option<bool>,
     #[serde(rename = "@uniqueMemberProperty")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_member_property: Option<XmlString>,
     #[serde(rename = "@compact")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compact: Option<bool>,
     #[serde(rename = "@allDrilled")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_drilled: Option<bool>,
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@outline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<bool>,
     #[serde(rename = "@subtotalTop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal_top: Option<bool>,
     #[serde(rename = "@dragToRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_row: Option<bool>,
     #[serde(rename = "@dragToCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_col: Option<bool>,
     #[serde(rename = "@multipleItemSelectionAllowed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multiple_item_selection_allowed: Option<bool>,
     #[serde(rename = "@dragToPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_page: Option<bool>,
     #[serde(rename = "@dragToData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_data: Option<bool>,
     #[serde(rename = "@dragOff")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_off: Option<bool>,
     #[serde(rename = "@showAll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_all: Option<bool>,
     #[serde(rename = "@insertBlankRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_blank_row: Option<bool>,
     #[serde(rename = "@serverField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_field: Option<bool>,
     #[serde(rename = "@insertPageBreak")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_page_break: Option<bool>,
     #[serde(rename = "@autoShow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_show: Option<bool>,
     #[serde(rename = "@topAutoShow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_auto_show: Option<bool>,
     #[serde(rename = "@hideNewItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_new_items: Option<bool>,
     #[serde(rename = "@measureFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_filter: Option<bool>,
     #[serde(rename = "@includeNewItemsInFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_new_items_in_filter: Option<bool>,
     #[serde(rename = "@itemPageCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub item_page_count: Option<u32>,
     #[serde(rename = "@sortType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_type: Option<STFieldSortType>,
     #[serde(rename = "@dataSourceSort")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_source_sort: Option<bool>,
     #[serde(rename = "@nonAutoSortDefault")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub non_auto_sort_default: Option<bool>,
     #[serde(rename = "@rankBy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rank_by: Option<u32>,
     #[serde(rename = "@defaultSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_subtotal: Option<bool>,
     #[serde(rename = "@sumSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sum_subtotal: Option<bool>,
     #[serde(rename = "@countASubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_a_subtotal: Option<bool>,
     #[serde(rename = "@avgSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub avg_subtotal: Option<bool>,
     #[serde(rename = "@maxSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_subtotal: Option<bool>,
     #[serde(rename = "@minSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_subtotal: Option<bool>,
     #[serde(rename = "@productSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub product_subtotal: Option<bool>,
     #[serde(rename = "@countSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_subtotal: Option<bool>,
     #[serde(rename = "@stdDevSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub std_dev_subtotal: Option<bool>,
     #[serde(rename = "@stdDevPSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub std_dev_p_subtotal: Option<bool>,
     #[serde(rename = "@varSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub var_subtotal: Option<bool>,
     #[serde(rename = "@varPSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "@showPropCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_prop_cell: Option<bool>,
     #[serde(rename = "@showPropTip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_prop_tip: Option<bool>,
     #[serde(rename = "@showPropAsCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_prop_as_caption: Option<bool>,
     #[serde(rename = "@defaultAttributeDrillState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_attribute_drill_state: Option<bool>,
     #[serde(rename = "items")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub items: Option<Box<PivotItems>>,
     #[serde(rename = "autoSortScope")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_sort_scope: Option<Box<CTAutoSortScope>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7430,14 +7443,14 @@ pub type CTAutoSortScope = Box<PivotArea>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "item")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub item: Vec<Box<PivotItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7452,41 +7465,41 @@ pub struct PivotItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotItem {
     #[serde(rename = "@n")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub n: Option<XmlString>,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<STItemType>,
     #[serde(rename = "@h")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<bool>,
     #[serde(rename = "@sd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sd: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@m")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub m: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<bool>,
     #[serde(rename = "@x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x: Option<u32>,
     #[serde(rename = "@d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub d: Option<bool>,
     #[serde(rename = "@e")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub e: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7496,14 +7509,14 @@ pub struct PivotItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "pageField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub page_field: Vec<Box<PageField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7520,23 +7533,23 @@ pub struct PageField {
     #[serde(rename = "@fld")]
     pub fld: i32,
     #[serde(rename = "@item")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub item: Option<u32>,
     #[serde(rename = "@hier")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hier: Option<i32>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@cap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cap: Option<XmlString>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7551,14 +7564,14 @@ pub struct PageField {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "dataField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub data_field: Vec<Box<DataField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7573,31 +7586,31 @@ pub struct DataFields {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataField {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@fld")]
     pub fld: u32,
     #[serde(rename = "@subtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal: Option<STDataConsolidateFunction>,
     #[serde(rename = "@showDataAs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_data_as: Option<STShowDataAs>,
     #[serde(rename = "@baseField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base_field: Option<i32>,
     #[serde(rename = "@baseItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base_item: Option<u32>,
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7612,14 +7625,14 @@ pub struct DataField {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRowItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub i: Vec<Box<CTI>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7634,14 +7647,14 @@ pub struct CTRowItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub i: Vec<Box<CTI>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7656,20 +7669,20 @@ pub struct CTColItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTI {
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<STItemType>,
     #[serde(rename = "@r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<u32>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<u32>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTX>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7684,11 +7697,11 @@ pub struct CTI {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTX {
     #[serde(rename = "@v")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<i32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7698,14 +7711,14 @@ pub struct CTX {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RowFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "field")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub field: Vec<Box<CTField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7720,14 +7733,14 @@ pub struct RowFields {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "field")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub field: Vec<Box<CTField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7745,7 +7758,7 @@ pub struct CTField {
     pub x: i32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7755,14 +7768,14 @@ pub struct CTField {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "format")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub format: Vec<Box<CTFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7777,19 +7790,19 @@ pub struct CTFormats {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFormat {
     #[serde(rename = "@action")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub action: Option<STFormatAction>,
     #[serde(rename = "@dxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7804,14 +7817,14 @@ pub struct CTFormat {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTConditionalFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "conditionalFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub conditional_format: Vec<Box<CTConditionalFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7826,21 +7839,21 @@ pub struct CTConditionalFormats {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTConditionalFormat {
     #[serde(rename = "@scope")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scope: Option<STScope>,
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STType>,
     #[serde(rename = "@priority")]
     pub priority: u32,
     #[serde(rename = "pivotAreas")]
     pub pivot_areas: Box<PivotAreas>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7855,14 +7868,14 @@ pub struct CTConditionalFormat {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotAreas {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "pivotArea")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pivot_area: Vec<Box<PivotArea>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7877,14 +7890,14 @@ pub struct PivotAreas {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTChartFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "chartFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub chart_format: Vec<Box<CTChartFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7903,13 +7916,13 @@ pub struct CTChartFormat {
     #[serde(rename = "@format")]
     pub format: u32,
     #[serde(rename = "@series")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub series: Option<bool>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7924,14 +7937,14 @@ pub struct CTChartFormat {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotHierarchies {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "pivotHierarchy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pivot_hierarchy: Vec<Box<CTPivotHierarchy>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -7946,50 +7959,50 @@ pub struct CTPivotHierarchies {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotHierarchy {
     #[serde(rename = "@outline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<bool>,
     #[serde(rename = "@multipleItemSelectionAllowed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multiple_item_selection_allowed: Option<bool>,
     #[serde(rename = "@subtotalTop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal_top: Option<bool>,
     #[serde(rename = "@showInFieldList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_in_field_list: Option<bool>,
     #[serde(rename = "@dragToRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_row: Option<bool>,
     #[serde(rename = "@dragToCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_col: Option<bool>,
     #[serde(rename = "@dragToPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_page: Option<bool>,
     #[serde(rename = "@dragToData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_to_data: Option<bool>,
     #[serde(rename = "@dragOff")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drag_off: Option<bool>,
     #[serde(rename = "@includeNewItemsInFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_new_items_in_filter: Option<bool>,
     #[serde(rename = "@caption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<XmlString>,
     #[serde(rename = "mps")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mps: Option<Box<CTMemberProperties>>,
     #[serde(rename = "members")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub members: Vec<Box<CTMembers>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8004,14 +8017,14 @@ pub struct CTPivotHierarchy {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRowHierarchiesUsage {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "rowHierarchyUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub row_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8026,14 +8039,14 @@ pub struct CTRowHierarchiesUsage {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColHierarchiesUsage {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "colHierarchyUsage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub col_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8051,7 +8064,7 @@ pub struct CTHierarchyUsage {
     pub hierarchy_usage: i32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8061,14 +8074,14 @@ pub struct CTHierarchyUsage {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMemberProperties {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "mp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub mp: Vec<Box<CTMemberProperty>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8083,34 +8096,34 @@ pub struct CTMemberProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMemberProperty {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@showCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_cell: Option<bool>,
     #[serde(rename = "@showTip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_tip: Option<bool>,
     #[serde(rename = "@showAsCaption")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_as_caption: Option<bool>,
     #[serde(rename = "@nameLen")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name_len: Option<u32>,
     #[serde(rename = "@pPos")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pos: Option<u32>,
     #[serde(rename = "@pLen")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_len: Option<u32>,
     #[serde(rename = "@level")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub level: Option<u32>,
     #[serde(rename = "@field")]
     pub field: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8120,17 +8133,17 @@ pub struct CTMemberProperty {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMembers {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@level")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub level: Option<u32>,
     #[serde(rename = "member")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub member: Vec<Box<CTMember>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8148,7 +8161,7 @@ pub struct CTMember {
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8158,14 +8171,14 @@ pub struct CTMember {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDimensions {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "dimension")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dimension: Vec<Box<CTPivotDimension>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8180,7 +8193,7 @@ pub struct CTDimensions {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotDimension {
     #[serde(rename = "@measure")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure: Option<bool>,
     #[serde(rename = "@name")]
     pub name: XmlString,
@@ -8190,7 +8203,7 @@ pub struct CTPivotDimension {
     pub caption: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8200,14 +8213,14 @@ pub struct CTPivotDimension {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMeasureGroups {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "measureGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub measure_group: Vec<Box<CTMeasureGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8222,14 +8235,14 @@ pub struct CTMeasureGroups {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMeasureDimensionMaps {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "map")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub map: Vec<Box<CTMeasureDimensionMap>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8249,7 +8262,7 @@ pub struct CTMeasureGroup {
     pub caption: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8259,14 +8272,14 @@ pub struct CTMeasureGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMeasureDimensionMap {
     #[serde(rename = "@measureGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_group: Option<u32>,
     #[serde(rename = "@dimension")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimension: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8276,26 +8289,26 @@ pub struct CTMeasureDimensionMap {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotTableStyle {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "@showRowHeaders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_row_headers: Option<bool>,
     #[serde(rename = "@showColHeaders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_col_headers: Option<bool>,
     #[serde(rename = "@showRowStripes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_row_stripes: Option<bool>,
     #[serde(rename = "@showColStripes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_col_stripes: Option<bool>,
     #[serde(rename = "@showLastColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_last_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8305,14 +8318,14 @@ pub struct CTPivotTableStyle {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotFilters {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "filter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub filter: Vec<Box<PivotFilter>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8329,41 +8342,41 @@ pub struct PivotFilter {
     #[serde(rename = "@fld")]
     pub fld: u32,
     #[serde(rename = "@mpFld")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mp_fld: Option<u32>,
     #[serde(rename = "@type")]
     pub r#type: STPivotFilterType,
     #[serde(rename = "@evalOrder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub eval_order: Option<i32>,
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@iMeasureHier")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i_measure_hier: Option<u32>,
     #[serde(rename = "@iMeasureFld")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i_measure_fld: Option<u32>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@description")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<XmlString>,
     #[serde(rename = "@stringValue1")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub string_value1: Option<XmlString>,
     #[serde(rename = "@stringValue2")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub string_value2: Option<XmlString>,
     #[serde(rename = "autoFilter")]
     pub auto_filter: Box<AutoFilter>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8378,50 +8391,50 @@ pub struct PivotFilter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotArea {
     #[serde(rename = "@field")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field: Option<i32>,
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STPivotAreaType>,
     #[serde(rename = "@dataOnly")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_only: Option<bool>,
     #[serde(rename = "@labelOnly")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label_only: Option<bool>,
     #[serde(rename = "@grandRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grand_row: Option<bool>,
     #[serde(rename = "@grandCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grand_col: Option<bool>,
     #[serde(rename = "@cacheIndex")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cache_index: Option<bool>,
     #[serde(rename = "@outline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<bool>,
     #[serde(rename = "@offset")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub offset: Option<Reference>,
     #[serde(rename = "@collapsedLevelsAreSubtotals")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collapsed_levels_are_subtotals: Option<bool>,
     #[serde(rename = "@axis")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub axis: Option<STAxis>,
     #[serde(rename = "@fieldPosition")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_position: Option<u32>,
     #[serde(rename = "references")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub references: Option<Box<CTPivotAreaReferences>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8436,14 +8449,14 @@ pub struct PivotArea {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotAreaReferences {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "reference")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reference: Vec<Box<CTPivotAreaReference>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8458,65 +8471,65 @@ pub struct CTPivotAreaReferences {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotAreaReference {
     #[serde(rename = "@field")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field: Option<u32>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@selected")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selected: Option<bool>,
     #[serde(rename = "@byPosition")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub by_position: Option<bool>,
     #[serde(rename = "@relative")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub relative: Option<bool>,
     #[serde(rename = "@defaultSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_subtotal: Option<bool>,
     #[serde(rename = "@sumSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sum_subtotal: Option<bool>,
     #[serde(rename = "@countASubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_a_subtotal: Option<bool>,
     #[serde(rename = "@avgSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub avg_subtotal: Option<bool>,
     #[serde(rename = "@maxSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_subtotal: Option<bool>,
     #[serde(rename = "@minSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_subtotal: Option<bool>,
     #[serde(rename = "@productSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub product_subtotal: Option<bool>,
     #[serde(rename = "@countSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_subtotal: Option<bool>,
     #[serde(rename = "@stdDevSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub std_dev_subtotal: Option<bool>,
     #[serde(rename = "@stdDevPSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub std_dev_p_subtotal: Option<bool>,
     #[serde(rename = "@varSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub var_subtotal: Option<bool>,
     #[serde(rename = "@varPSubtotal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "x")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub x: Vec<Box<CTIndex>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8534,7 +8547,7 @@ pub struct CTIndex {
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8548,55 +8561,55 @@ pub struct QueryTable {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@headers")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<bool>,
     #[serde(rename = "@rowNumbers")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_numbers: Option<bool>,
     #[serde(rename = "@disableRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disable_refresh: Option<bool>,
     #[serde(rename = "@backgroundRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub background_refresh: Option<bool>,
     #[serde(rename = "@firstBackgroundRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_background_refresh: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@growShrinkType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grow_shrink_type: Option<STGrowShrinkType>,
     #[serde(rename = "@fillFormulas")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_formulas: Option<bool>,
     #[serde(rename = "@removeDataOnSave")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub remove_data_on_save: Option<bool>,
     #[serde(rename = "@disableEdit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disable_edit: Option<bool>,
     #[serde(rename = "@preserveFormatting")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preserve_formatting: Option<bool>,
     #[serde(rename = "@adjustColumnWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adjust_column_width: Option<bool>,
     #[serde(rename = "@intermediate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub intermediate: Option<bool>,
     #[serde(rename = "@connectionId")]
     pub connection_id: u32,
     #[serde(rename = "queryTableRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_table_refresh: Option<Box<QueryTableRefresh>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8611,40 +8624,40 @@ pub struct QueryTable {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryTableRefresh {
     #[serde(rename = "@preserveSortFilterLayout")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preserve_sort_filter_layout: Option<bool>,
     #[serde(rename = "@fieldIdWrapped")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_id_wrapped: Option<bool>,
     #[serde(rename = "@headersInLastRefresh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers_in_last_refresh: Option<bool>,
     #[serde(rename = "@minimumVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minimum_version: Option<u8>,
     #[serde(rename = "@nextId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next_id: Option<u32>,
     #[serde(rename = "@unboundColumnsLeft")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unbound_columns_left: Option<u32>,
     #[serde(rename = "@unboundColumnsRight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unbound_columns_right: Option<u32>,
     #[serde(rename = "queryTableFields")]
     pub query_table_fields: Box<QueryTableFields>,
     #[serde(rename = "queryTableDeletedFields")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_table_deleted_fields: Option<Box<QueryTableDeletedFields>>,
     #[serde(rename = "sortState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8659,14 +8672,14 @@ pub struct QueryTableRefresh {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryTableDeletedFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "deletedField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub deleted_field: Vec<Box<CTDeletedField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8684,7 +8697,7 @@ pub struct CTDeletedField {
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8694,14 +8707,14 @@ pub struct CTDeletedField {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryTableFields {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "queryTableField")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub query_table_field: Vec<Box<QueryTableField>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8718,29 +8731,29 @@ pub struct QueryTableField {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@dataBound")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_bound: Option<bool>,
     #[serde(rename = "@rowNumbers")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_numbers: Option<bool>,
     #[serde(rename = "@fillFormulas")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_formulas: Option<bool>,
     #[serde(rename = "@clipped")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clipped: Option<bool>,
     #[serde(rename = "@tableColumnId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_column_id: Option<u32>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8755,22 +8768,23 @@ pub struct QueryTableField {
 pub type SmlSst = Box<SharedStrings>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sst")]
 pub struct SharedStrings {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@uniqueCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_count: Option<u32>,
     #[serde(rename = "si")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub si: Vec<Box<RichString>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8792,7 +8806,7 @@ pub struct PhoneticRun {
     pub cell_type: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8805,9 +8819,10 @@ pub struct PhoneticRun {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "r")]
 pub struct RichTextElement {
     #[serde(rename = "rPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<RichTextRunProperties>>,
     #[serde(rename = "t")]
     pub cell_type: XmlString,
@@ -8819,21 +8834,23 @@ pub struct RichTextElement {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "rPr")]
 pub struct RichTextRunProperties;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "is")]
 pub struct RichString {
     #[serde(rename = "t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<XmlString>,
     #[serde(rename = "r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reference: Vec<Box<RichTextElement>>,
     #[serde(rename = "rPh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub r_ph: Vec<Box<PhoneticRun>>,
     #[serde(rename = "phoneticPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -8847,14 +8864,14 @@ pub struct PhoneticProperties {
     #[serde(rename = "@fontId")]
     pub font_id: STFontId,
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STPhoneticType>,
     #[serde(rename = "@alignment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alignment: Option<STPhoneticAlignment>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8870,44 +8887,44 @@ pub struct RevisionHeaders {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@lastGuid")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_guid: Option<Guid>,
     #[serde(rename = "@shared")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shared: Option<bool>,
     #[serde(rename = "@diskRevisions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disk_revisions: Option<bool>,
     #[serde(rename = "@history")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub history: Option<bool>,
     #[serde(rename = "@trackRevisions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub track_revisions: Option<bool>,
     #[serde(rename = "@exclusive")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub exclusive: Option<bool>,
     #[serde(rename = "@revisionId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revision_id: Option<u32>,
     #[serde(rename = "@version")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub version: Option<i32>,
     #[serde(rename = "@keepChangeHistory")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub keep_change_history: Option<bool>,
     #[serde(rename = "@protected")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub protected: Option<bool>,
     #[serde(rename = "@preserveHistory")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preserve_history: Option<u32>,
     #[serde(rename = "header")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub header: Vec<Box<RevisionHeader>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8927,14 +8944,14 @@ pub struct SmlAGRevData {
     #[serde(rename = "@rId")]
     pub r_id: u32,
     #[serde(rename = "@ua")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ua: Option<bool>,
     #[serde(rename = "@ra")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ra: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8952,22 +8969,22 @@ pub struct RevisionHeader {
     #[serde(rename = "@userName")]
     pub user_name: XmlString,
     #[serde(rename = "@minRId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_r_id: Option<u32>,
     #[serde(rename = "@maxRId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_r_id: Option<u32>,
     #[serde(rename = "sheetIdMap")]
     pub sheet_id_map: Box<CTSheetIdMap>,
     #[serde(rename = "reviewedList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reviewed_list: Option<Box<ReviewedRevisions>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -8982,14 +8999,14 @@ pub struct RevisionHeader {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSheetIdMap {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "sheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet_id: Vec<Box<CTSheetId>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9007,7 +9024,7 @@ pub struct CTSheetId {
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9017,14 +9034,14 @@ pub struct CTSheetId {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReviewedRevisions {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "reviewed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reviewed: Vec<Box<Reviewed>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9042,7 +9059,7 @@ pub struct Reviewed {
     pub r_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9056,34 +9073,34 @@ pub struct UndoInfo {
     #[serde(rename = "@exp")]
     pub exp: STFormulaExpression,
     #[serde(rename = "@ref3D")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ref3_d: Option<bool>,
     #[serde(rename = "@array")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub array: Option<bool>,
     #[serde(rename = "@v")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<bool>,
     #[serde(rename = "@nf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nf: Option<bool>,
     #[serde(rename = "@cs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cs: Option<bool>,
     #[serde(rename = "@dr")]
     pub dr: STRefA,
     #[serde(rename = "@dn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dn: Option<XmlString>,
     #[serde(rename = "@r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<CellRef>,
     #[serde(rename = "@sId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub s_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9095,18 +9112,18 @@ pub struct RevisionRowColumn {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@eol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub eol: Option<bool>,
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[serde(rename = "@action")]
     pub action: STRwColActionType,
     #[serde(rename = "@edge")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9122,11 +9139,11 @@ pub struct RevisionMove {
     #[serde(rename = "@destination")]
     pub destination: Reference,
     #[serde(rename = "@sourceSheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9141,7 +9158,7 @@ pub struct RevisionCustomView {
     pub action: STRevisionAction,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9157,11 +9174,11 @@ pub struct RevisionSheetRename {
     #[serde(rename = "@newName")]
     pub new_name: XmlString,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9183,7 +9200,7 @@ pub struct RevisionInsertSheet {
     pub sheet_position: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9195,49 +9212,49 @@ pub struct RevisionCellChange {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@odxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odxf: Option<bool>,
     #[serde(rename = "@xfDxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<bool>,
     #[serde(rename = "@dxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf: Option<bool>,
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@quotePrefix")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub quote_prefix: Option<bool>,
     #[serde(rename = "@oldQuotePrefix")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_quote_prefix: Option<bool>,
     #[serde(rename = "@ph")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<bool>,
     #[serde(rename = "@oldPh")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_ph: Option<bool>,
     #[serde(rename = "@endOfListFormulaUpdate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_of_list_formula_update: Option<bool>,
     #[serde(rename = "oc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub oc: Option<Box<Cell>>,
     #[serde(rename = "nc")]
     pub nc: Box<Cell>,
     #[serde(rename = "ndxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ndxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9254,28 +9271,28 @@ pub struct RevisionFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@xfDxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<bool>,
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[serde(rename = "@start")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<u32>,
     #[serde(rename = "@length")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub length: Option<u32>,
     #[serde(rename = "dxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf: Option<Box<DifferentialFormat>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9295,7 +9312,7 @@ pub struct RevisionAutoFormatting {
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9311,31 +9328,31 @@ pub struct RevisionComment {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@action")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub action: Option<STRevisionAction>,
     #[serde(rename = "@alwaysShow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub always_show: Option<bool>,
     #[serde(rename = "@old")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old: Option<bool>,
     #[serde(rename = "@hiddenRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_row: Option<bool>,
     #[serde(rename = "@hiddenColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_column: Option<bool>,
     #[serde(rename = "@author")]
     pub author: XmlString,
     #[serde(rename = "@oldLength")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_length: Option<u32>,
     #[serde(rename = "@newLength")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub new_length: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9345,79 +9362,79 @@ pub struct RevisionComment {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionDefinedName {
     #[serde(rename = "@localSheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_sheet_id: Option<u32>,
     #[serde(rename = "@customView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_view: Option<bool>,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@function")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function: Option<bool>,
     #[serde(rename = "@oldFunction")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_function: Option<bool>,
     #[serde(rename = "@functionGroupId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function_group_id: Option<u8>,
     #[serde(rename = "@oldFunctionGroupId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_function_group_id: Option<u8>,
     #[serde(rename = "@shortcutKey")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shortcut_key: Option<u8>,
     #[serde(rename = "@oldShortcutKey")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_shortcut_key: Option<u8>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[serde(rename = "@oldHidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_hidden: Option<bool>,
     #[serde(rename = "@customMenu")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_menu: Option<XmlString>,
     #[serde(rename = "@oldCustomMenu")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_custom_menu: Option<XmlString>,
     #[serde(rename = "@description")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<XmlString>,
     #[serde(rename = "@oldDescription")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_description: Option<XmlString>,
     #[serde(rename = "@help")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub help: Option<XmlString>,
     #[serde(rename = "@oldHelp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_help: Option<XmlString>,
     #[serde(rename = "@statusBar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status_bar: Option<XmlString>,
     #[serde(rename = "@oldStatusBar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_status_bar: Option<XmlString>,
     #[serde(rename = "@comment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comment: Option<XmlString>,
     #[serde(rename = "@oldComment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_comment: Option<XmlString>,
     #[serde(rename = "formula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<STFormula>,
     #[serde(rename = "oldFormula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_formula: Option<STFormula>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9432,11 +9449,11 @@ pub struct RevisionDefinedName {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionConflict {
     #[serde(rename = "@sheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9453,7 +9470,7 @@ pub struct RevisionQueryTableField {
     pub field_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9465,14 +9482,14 @@ pub type SmlUsers = Box<Users>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Users {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "userInfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub user_info: Vec<Box<SharedUser>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9495,11 +9512,11 @@ pub struct SharedUser {
     #[serde(rename = "@dateTime")]
     pub date_time: String,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9520,84 +9537,84 @@ pub type SmlDialogsheet = Box<CTDialogsheet>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMacrosheet {
     #[serde(rename = "sheetPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimension: Option<Box<SheetDimension>>,
     #[serde(rename = "sheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_views: Option<Box<SheetViews>>,
     #[serde(rename = "sheetFormatPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "cols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cols: Vec<Box<Columns>>,
     #[serde(rename = "sheetData")]
     pub sheet_data: Box<SheetData>,
     #[serde(rename = "sheetProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "autoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "sortState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_state: Option<Box<SortState>>,
     #[serde(rename = "dataConsolidate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[serde(rename = "customSheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "phoneticPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
     #[serde(rename = "conditionalFormatting")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
     #[serde(rename = "printOptions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "rowBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "colBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "customProperties")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_properties: Option<Box<CTCustomProperties>>,
     #[serde(rename = "drawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "picture")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<SheetBackgroundPicture>>,
     #[serde(rename = "oleObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_objects: Option<Box<OleObjects>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -9609,52 +9626,52 @@ pub struct CTMacrosheet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDialogsheet {
     #[serde(rename = "sheetPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "sheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_views: Option<Box<SheetViews>>,
     #[serde(rename = "sheetFormatPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "sheetProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_protection: Option<Box<SheetProtection>>,
     #[serde(rename = "customSheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "printOptions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "drawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<Drawing>>,
     #[serde(rename = "legacyDrawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "oleObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_objects: Option<Box<OleObjects>>,
     #[serde(rename = "controls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub controls: Option<Box<Controls>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -9664,157 +9681,158 @@ pub struct CTDialogsheet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "worksheet")]
 pub struct Worksheet {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "sheetPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_properties: Option<Box<SheetProperties>>,
     #[serde(rename = "dimension")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimension: Option<Box<SheetDimension>>,
     #[serde(rename = "sheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_views: Option<Box<SheetViews>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "sheetFormatPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_format: Option<Box<SheetFormat>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cols: Vec<Box<Columns>>,
     #[serde(rename = "sheetData")]
     pub sheet_data: Box<SheetData>,
     #[cfg(feature = "sml-formulas")]
     #[serde(rename = "sheetCalcPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_calc_pr: Option<Box<SheetCalcProperties>>,
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "sheetProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_protection: Option<Box<SheetProtection>>,
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "protectedRanges")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub protected_ranges: Option<Box<ProtectedRanges>>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "scenarios")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scenarios: Option<Box<Scenarios>>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "autoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter: Option<Box<AutoFilter>>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "sortState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_state: Option<Box<SortState>>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "dataConsolidate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_consolidate: Option<Box<CTDataConsolidate>>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "customSheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "mergeCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merged_cells: Option<Box<MergedCells>>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "phoneticPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "conditionalFormatting")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "dataValidations")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_validations: Option<Box<DataValidations>>,
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "hyperlinks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hyperlinks: Option<Box<Hyperlinks>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "printOptions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_options: Option<Box<PrintOptions>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<PageSetup>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "rowBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_breaks: Option<Box<PageBreaks>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "colBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_breaks: Option<Box<PageBreaks>>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "customProperties")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_properties: Option<Box<CTCustomProperties>>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "cellWatches")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_watches: Option<Box<CellWatches>>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "ignoredErrors")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ignored_errors: Option<Box<IgnoredErrors>>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTags")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tags: Option<Box<SmartTags>>,
     #[cfg(feature = "sml-drawings")]
     #[serde(rename = "drawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<Drawing>>,
     #[cfg(feature = "sml-comments")]
     #[serde(rename = "legacyDrawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "legacyDrawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[cfg(feature = "sml-drawings")]
     #[serde(rename = "drawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[cfg(feature = "sml-drawings")]
     #[serde(rename = "picture")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<SheetBackgroundPicture>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "oleObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_objects: Option<Box<OleObjects>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "controls")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub controls: Option<Box<Controls>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_publish_items: Option<Box<WebPublishItems>>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableParts")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_parts: Option<Box<TableParts>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -9824,9 +9842,10 @@ pub struct Worksheet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetData")]
 pub struct SheetData {
     #[serde(rename = "row")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub row: Vec<Box<Row>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -9838,11 +9857,11 @@ pub struct SheetData {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SheetCalcProperties {
     #[serde(rename = "@fullCalcOnLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_calc_on_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9850,36 +9869,37 @@ pub struct SheetCalcProperties {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetFormatPr")]
 pub struct SheetFormat {
     #[serde(rename = "@baseColWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub base_col_width: Option<u32>,
     #[serde(rename = "@defaultColWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_col_width: Option<f64>,
     #[serde(rename = "@defaultRowHeight")]
     pub default_row_height: f64,
     #[serde(rename = "@customHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_height: Option<bool>,
     #[serde(rename = "@zeroHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zero_height: Option<bool>,
     #[serde(rename = "@thickTop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thick_top: Option<bool>,
     #[serde(rename = "@thickBottom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thick_bottom: Option<bool>,
     #[serde(rename = "@outlineLevelRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_level_row: Option<u8>,
     #[serde(rename = "@outlineLevelCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_level_col: Option<u8>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9887,9 +9907,10 @@ pub struct SheetFormat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cols")]
 pub struct Columns {
     #[serde(rename = "col")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub col: Vec<Box<Column>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -9899,6 +9920,7 @@ pub struct Columns {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "col")]
 pub struct Column {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@min")]
@@ -9908,39 +9930,39 @@ pub struct Column {
     pub end_column: u32,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@width")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<f64>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@style")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<u32>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bestFit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub best_fit: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_width: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@phonetic")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phonetic: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_level: Option<u8>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collapsed: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -9948,62 +9970,63 @@ pub struct Column {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "row")]
 pub struct Row {
     #[serde(rename = "@r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<u32>,
     #[serde(rename = "@spans")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_spans: Option<CellSpans>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<u32>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_format: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@ht")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<f64>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_height: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_level: Option<u8>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub collapsed: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickTop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thick_top: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickBot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thick_bot: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<bool>,
     #[serde(rename = "c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cells: Vec<Box<Cell>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10016,44 +10039,45 @@ pub struct Row {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "c")]
 pub struct Cell {
     #[serde(rename = "@r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<CellRef>,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<u32>,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<CellType>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "@cm")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cm: Option<u32>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "@vm")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vm: Option<u32>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub placeholder: Option<bool>,
     #[serde(rename = "f")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<Box<CellFormula>>,
     #[serde(rename = "v")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     #[serde(rename = "is")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub is: Option<Box<RichString>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10066,46 +10090,47 @@ pub struct Cell {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetPr")]
 pub struct SheetProperties {
     #[serde(rename = "@syncHorizontal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sync_horizontal: Option<bool>,
     #[serde(rename = "@syncVertical")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sync_vertical: Option<bool>,
     #[serde(rename = "@syncRef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sync_ref: Option<Reference>,
     #[serde(rename = "@transitionEvaluation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition_evaluation: Option<bool>,
     #[serde(rename = "@transitionEntry")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition_entry: Option<bool>,
     #[serde(rename = "@published")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub published: Option<bool>,
     #[serde(rename = "@codeName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
     #[serde(rename = "@filterMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filter_mode: Option<bool>,
     #[serde(rename = "@enableFormatConditionsCalculation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enable_format_conditions_calculation: Option<bool>,
     #[serde(rename = "tabColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_color: Option<Box<Color>>,
     #[serde(rename = "outlinePr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_pr: Option<Box<OutlineProperties>>,
     #[serde(rename = "pageSetUpPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_set_up_pr: Option<Box<PageSetupProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10118,12 +10143,13 @@ pub struct SheetProperties {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dimension")]
 pub struct SheetDimension {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10131,12 +10157,13 @@ pub struct SheetDimension {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetViews")]
 pub struct SheetViews {
     #[serde(rename = "sheetView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet_view: Vec<Box<SheetView>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -10146,94 +10173,95 @@ pub struct SheetViews {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetView")]
 pub struct SheetView {
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "@windowProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window_protection: Option<bool>,
     #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@showFormulas")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_formulas: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showGridLines")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_grid_lines: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showRowColHeaders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_row_col_headers: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showZeros")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_zeros: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@rightToLeft")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right_to_left: Option<bool>,
     #[serde(rename = "@tabSelected")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_selected: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showRuler")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_ruler: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showOutlineSymbols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_outline_symbols: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@defaultGridColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_grid_color: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showWhiteSpace")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_white_space: Option<bool>,
     #[serde(rename = "@view")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub view: Option<SheetViewType>,
     #[serde(rename = "@topLeftCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_left_cell: Option<CellRef>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@colorId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color_id: Option<u32>,
     #[serde(rename = "@zoomScale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_scale: Option<u32>,
     #[serde(rename = "@zoomScaleNormal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_scale_normal: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@zoomScaleSheetLayoutView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_scale_sheet_layout_view: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@zoomScalePageLayoutView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_scale_page_layout_view: Option<u32>,
     #[serde(rename = "@workbookViewId")]
     pub workbook_view_id: u32,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "pane")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub selection: Vec<Box<Selection>>,
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "pivotSelection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pivot_selection: Vec<Box<CTPivotSelection>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10246,30 +10274,31 @@ pub struct SheetView {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "pane")]
 pub struct Pane {
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@xSplit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_split: Option<f64>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@ySplit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_split: Option<f64>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@topLeftCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_left_cell: Option<CellRef>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@activePane")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_pane: Option<PaneType>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@state")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<PaneState>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10279,58 +10308,58 @@ pub struct Pane {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotSelection {
     #[serde(rename = "@pane")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pane: Option<PaneType>,
     #[serde(rename = "@showHeader")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_header: Option<bool>,
     #[serde(rename = "@label")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<bool>,
     #[serde(rename = "@data")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data: Option<bool>,
     #[serde(rename = "@extendable")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extendable: Option<bool>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@axis")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub axis: Option<STAxis>,
     #[serde(rename = "@dimension")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dimension: Option<u32>,
     #[serde(rename = "@start")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<u32>,
     #[serde(rename = "@min")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_column: Option<u32>,
     #[serde(rename = "@max")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_column: Option<u32>,
     #[serde(rename = "@activeRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_row: Option<u32>,
     #[serde(rename = "@activeCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_col: Option<u32>,
     #[serde(rename = "@previousRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub previous_row: Option<u32>,
     #[serde(rename = "@previousCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub previous_col: Option<u32>,
     #[serde(rename = "@click")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub click: Option<u32>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10343,22 +10372,23 @@ pub struct CTPivotSelection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "selection")]
 pub struct Selection {
     #[serde(rename = "@pane")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pane: Option<PaneType>,
     #[serde(rename = "@activeCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_cell: Option<CellRef>,
     #[serde(rename = "@activeCellId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_cell_id: Option<u32>,
     #[serde(rename = "@sqref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub square_reference: Option<SquareRef>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10366,19 +10396,20 @@ pub struct Selection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "rowBreaks")]
 pub struct PageBreaks {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@manualBreakCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub manual_break_count: Option<u32>,
     #[serde(rename = "brk")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub brk: Vec<Box<PageBreak>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10393,23 +10424,23 @@ pub struct PageBreaks {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageBreak {
     #[serde(rename = "@id")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<u32>,
     #[serde(rename = "@min")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_column: Option<u32>,
     #[serde(rename = "@max")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_column: Option<u32>,
     #[serde(rename = "@man")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub man: Option<bool>,
     #[serde(rename = "@pt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pt: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10419,20 +10450,20 @@ pub struct PageBreak {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutlineProperties {
     #[serde(rename = "@applyStyles")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_styles: Option<bool>,
     #[serde(rename = "@summaryBelow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub summary_below: Option<bool>,
     #[serde(rename = "@summaryRight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub summary_right: Option<bool>,
     #[serde(rename = "@showOutlineSymbols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_outline_symbols: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10442,14 +10473,14 @@ pub struct OutlineProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageSetupProperties {
     #[serde(rename = "@autoPageBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_page_breaks: Option<bool>,
     #[serde(rename = "@fitToPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fit_to_page: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10459,26 +10490,26 @@ pub struct PageSetupProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDataConsolidate {
     #[serde(rename = "@function")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function: Option<STDataConsolidateFunction>,
     #[serde(rename = "@startLabels")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_labels: Option<bool>,
     #[serde(rename = "@leftLabels")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left_labels: Option<bool>,
     #[serde(rename = "@topLabels")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_labels: Option<bool>,
     #[serde(rename = "@link")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub link: Option<bool>,
     #[serde(rename = "dataRefs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_refs: Option<Box<CTDataRefs>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10493,14 +10524,14 @@ pub struct CTDataConsolidate {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDataRefs {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "dataRef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub data_ref: Vec<Box<CTDataRef>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10515,17 +10546,17 @@ pub struct CTDataRefs {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDataRef {
     #[serde(rename = "@ref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@sheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10533,16 +10564,17 @@ pub struct CTDataRef {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "mergeCells")]
 pub struct MergedCells {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "mergeCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub merge_cell: Vec<Box<MergedCell>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10555,12 +10587,13 @@ pub struct MergedCells {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "mergeCell")]
 pub struct MergedCell {
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10570,7 +10603,7 @@ pub struct MergedCell {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmartTags {
     #[serde(rename = "cellSmartTags")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell_smart_tags: Vec<Box<CellSmartTags>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -10584,11 +10617,11 @@ pub struct CellSmartTags {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     #[serde(rename = "cellSmartTag")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell_smart_tag: Vec<Box<CellSmartTag>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10605,17 +10638,17 @@ pub struct CellSmartTag {
     #[serde(rename = "@type")]
     pub r#type: u32,
     #[serde(rename = "@deleted")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deleted: Option<bool>,
     #[serde(rename = "@xmlBased")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xml_based: Option<bool>,
     #[serde(rename = "cellSmartTagPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell_smart_tag_pr: Vec<Box<CTCellSmartTagPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10635,7 +10668,7 @@ pub struct CTCellSmartTagPr {
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10651,62 +10684,62 @@ pub struct LegacyDrawing;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DrawingHeaderFooter {
     #[serde(rename = "@lho")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lho: Option<u32>,
     #[serde(rename = "@lhe")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lhe: Option<u32>,
     #[serde(rename = "@lhf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lhf: Option<u32>,
     #[serde(rename = "@cho")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cho: Option<u32>,
     #[serde(rename = "@che")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub che: Option<u32>,
     #[serde(rename = "@chf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chf: Option<u32>,
     #[serde(rename = "@rho")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rho: Option<u32>,
     #[serde(rename = "@rhe")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rhe: Option<u32>,
     #[serde(rename = "@rhf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rhf: Option<u32>,
     #[serde(rename = "@lfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lfo: Option<u32>,
     #[serde(rename = "@lfe")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lfe: Option<u32>,
     #[serde(rename = "@lff")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lff: Option<u32>,
     #[serde(rename = "@cfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cfo: Option<u32>,
     #[serde(rename = "@cfe")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cfe: Option<u32>,
     #[serde(rename = "@cff")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cff: Option<u32>,
     #[serde(rename = "@rfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rfo: Option<u32>,
     #[serde(rename = "@rfe")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rfe: Option<u32>,
     #[serde(rename = "@rff")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rff: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10716,7 +10749,7 @@ pub struct DrawingHeaderFooter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomSheetViews {
     #[serde(rename = "customSheetView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub custom_sheet_view: Vec<Box<CustomSheetView>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -10730,95 +10763,95 @@ pub struct CustomSheetView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@scale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scale: Option<u32>,
     #[serde(rename = "@colorId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color_id: Option<u32>,
     #[serde(rename = "@showPageBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_page_breaks: Option<bool>,
     #[serde(rename = "@showFormulas")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_formulas: Option<bool>,
     #[serde(rename = "@showGridLines")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_grid_lines: Option<bool>,
     #[serde(rename = "@showRowCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_row_col: Option<bool>,
     #[serde(rename = "@outlineSymbols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_symbols: Option<bool>,
     #[serde(rename = "@zeroValues")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zero_values: Option<bool>,
     #[serde(rename = "@fitToPage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fit_to_page: Option<bool>,
     #[serde(rename = "@printArea")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_area: Option<bool>,
     #[serde(rename = "@filter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filter: Option<bool>,
     #[serde(rename = "@showAutoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_auto_filter: Option<bool>,
     #[serde(rename = "@hiddenRows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_rows: Option<bool>,
     #[serde(rename = "@hiddenColumns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden_columns: Option<bool>,
     #[serde(rename = "@state")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
     #[serde(rename = "@filterUnique")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filter_unique: Option<bool>,
     #[serde(rename = "@view")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub view: Option<SheetViewType>,
     #[serde(rename = "@showRuler")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_ruler: Option<bool>,
     #[serde(rename = "@topLeftCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_left_cell: Option<CellRef>,
     #[serde(rename = "pane")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selection: Option<Box<Selection>>,
     #[serde(rename = "rowBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "colBreaks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_breaks: Option<Box<PageBreaks>>,
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "printOptions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_options: Option<Box<PrintOptions>>,
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<PageSetup>>,
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "autoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter: Option<Box<AutoFilter>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10831,25 +10864,26 @@ pub struct CustomSheetView {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dataValidations")]
 pub struct DataValidations {
     #[serde(rename = "@disablePrompts")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disable_prompts: Option<bool>,
     #[serde(rename = "@xWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_window: Option<u32>,
     #[serde(rename = "@yWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_window: Option<u32>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "dataValidation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub data_validation: Vec<Box<DataValidation>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10862,69 +10896,70 @@ pub struct DataValidations {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dataValidation")]
 pub struct DataValidation {
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<ValidationType>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@errorStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error_style: Option<ValidationErrorStyle>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@imeMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ime_mode: Option<STDataValidationImeMode>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@operator")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub operator: Option<ValidationOperator>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@allowBlank")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_blank: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showDropDown")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_drop_down: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showInputMessage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_input_message: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showErrorMessage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_error_message: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@errorTitle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error_title: Option<XmlString>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@error")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<XmlString>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@promptTitle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt_title: Option<XmlString>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@prompt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt: Option<XmlString>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "formula1")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula1: Option<STFormula>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "formula2")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula2: Option<STFormula>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10937,26 +10972,27 @@ pub struct DataValidation {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "conditionalFormatting")]
 pub struct ConditionalFormatting {
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@sqref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub square_reference: Option<SquareRef>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfRule")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cf_rule: Vec<Box<ConditionalRule>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -10969,81 +11005,82 @@ pub struct ConditionalFormatting {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cfRule")]
 pub struct ConditionalRule {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<ConditionalType>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@dxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@priority")]
     pub priority: i32,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@stopIfTrue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stop_if_true: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@aboveAverage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub above_average: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@percent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub percent: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bottom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@operator")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub operator: Option<ConditionalOperator>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@text")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@timePeriod")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time_period: Option<STTimePeriod>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@rank")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rank: Option<u32>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@stdDev")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub std_dev: Option<i32>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@equalAverage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub equal_average: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "formula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub formula: Vec<STFormula>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "colorScale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color_scale: Option<Box<ColorScale>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "dataBar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_bar: Option<Box<DataBar>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "iconSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<Box<IconSet>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11056,9 +11093,10 @@ pub struct ConditionalRule {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "hyperlinks")]
 pub struct Hyperlinks {
     #[serde(rename = "hyperlink")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub hyperlink: Vec<Box<Hyperlink>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11068,25 +11106,26 @@ pub struct Hyperlinks {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "hyperlink")]
 pub struct Hyperlink {
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@location")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub location: Option<XmlString>,
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@tooltip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tooltip: Option<XmlString>,
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@display")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11094,57 +11133,58 @@ pub struct Hyperlink {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "f")]
 pub struct CellFormula {
     #[serde(rename = "$text")]
     pub text: String,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<FormulaType>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@aca")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub aca: Option<bool>,
     #[serde(rename = "@ref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dt2D")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dt2_d: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dtr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dtr: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del1")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del1: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del2")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub del2: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@r1")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r1: Option<CellRef>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@r2")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r2: Option<CellRef>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@ca")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ca: Option<bool>,
     #[serde(rename = "@si")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub si: Option<u32>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@bx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bx: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11157,12 +11197,13 @@ pub struct CellFormula {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "colorScale")]
 pub struct ColorScale {
     #[serde(rename = "cfvo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
     #[serde(rename = "color")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub color: Vec<Box<Color>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11172,24 +11213,25 @@ pub struct ColorScale {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dataBar")]
 pub struct DataBar {
     #[serde(rename = "@minLength")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_length: Option<u32>,
     #[serde(rename = "@maxLength")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_length: Option<u32>,
     #[serde(rename = "@showValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_value: Option<bool>,
     #[serde(rename = "cfvo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
     #[serde(rename = "color")]
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11202,25 +11244,26 @@ pub struct DataBar {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "iconSet")]
 pub struct IconSet {
     #[serde(rename = "@iconSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<IconSetType>,
     #[serde(rename = "@showValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_value: Option<bool>,
     #[serde(rename = "@percent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub percent: Option<bool>,
     #[serde(rename = "@reverse")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reverse: Option<bool>,
     #[serde(rename = "cfvo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11233,21 +11276,22 @@ pub struct IconSet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cfvo")]
 pub struct ConditionalFormatValue {
     #[serde(rename = "@type")]
     pub r#type: ConditionalValueType,
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     #[serde(rename = "@gte")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gte: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11260,6 +11304,7 @@ pub struct ConditionalFormatValue {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "pageMargins")]
 pub struct PageMargins {
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@left")]
@@ -11281,7 +11326,7 @@ pub struct PageMargins {
     pub footer: f64,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11289,25 +11334,26 @@ pub struct PageMargins {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "printOptions")]
 pub struct PrintOptions {
     #[serde(rename = "@horizontalCentered")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal_centered: Option<bool>,
     #[serde(rename = "@verticalCentered")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_centered: Option<bool>,
     #[serde(rename = "@headings")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headings: Option<bool>,
     #[serde(rename = "@gridLines")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_lines: Option<bool>,
     #[serde(rename = "@gridLinesSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_lines_set: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11315,82 +11361,83 @@ pub struct PrintOptions {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "pageSetup")]
 pub struct PageSetup {
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_size: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_height: Option<STPositiveUniversalMeasure>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_width: Option<STPositiveUniversalMeasure>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@scale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scale: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@firstPageNumber")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_page_number: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@fitToWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fit_to_width: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@fitToHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fit_to_height: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@pageOrder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_order: Option<STPageOrder>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@orientation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub orientation: Option<STOrientation>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@usePrinterDefaults")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_printer_defaults: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@blackAndWhite")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub black_and_white: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@draft")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draft: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@cellComments")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_comments: Option<STCellComments>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@useFirstPageNumber")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_first_page_number: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@errors")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub errors: Option<STPrintError>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@horizontalDpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal_dpi: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@verticalDpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_dpi: Option<u32>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@copies")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub copies: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11398,50 +11445,51 @@ pub struct PageSetup {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "headerFooter")]
 pub struct HeaderFooter {
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentOddEven")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub different_odd_even: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentFirst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub different_first: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@scaleWithDoc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scale_with_doc: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@alignWithMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub align_with_margins: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "oddHeader")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_header: Option<XmlString>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "oddFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_footer: Option<XmlString>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "evenHeader")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_header: Option<XmlString>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "evenFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_footer: Option<XmlString>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "firstHeader")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_header: Option<XmlString>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "firstFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_footer: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11456,20 +11504,20 @@ pub struct HeaderFooter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Scenarios {
     #[serde(rename = "@current")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub current: Option<u32>,
     #[serde(rename = "@show")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show: Option<u32>,
     #[serde(rename = "@sqref")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub square_reference: Option<SquareRef>,
     #[serde(rename = "scenario")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub scenario: Vec<Box<Scenario>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11482,73 +11530,74 @@ pub struct Scenarios {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheetProtection")]
 pub struct SheetProtection {
     #[serde(rename = "@password")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
     #[serde(rename = "@saltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
     #[serde(rename = "@spinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     #[serde(rename = "@sheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<bool>,
     #[serde(rename = "@objects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub objects: Option<bool>,
     #[serde(rename = "@scenarios")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scenarios: Option<bool>,
     #[serde(rename = "@formatCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format_cells: Option<bool>,
     #[serde(rename = "@formatColumns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format_columns: Option<bool>,
     #[serde(rename = "@formatRows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format_rows: Option<bool>,
     #[serde(rename = "@insertColumns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_columns: Option<bool>,
     #[serde(rename = "@insertRows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_rows: Option<bool>,
     #[serde(rename = "@insertHyperlinks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_hyperlinks: Option<bool>,
     #[serde(rename = "@deleteColumns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delete_columns: Option<bool>,
     #[serde(rename = "@deleteRows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delete_rows: Option<bool>,
     #[serde(rename = "@selectLockedCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub select_locked_cells: Option<bool>,
     #[serde(rename = "@sort")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort: Option<bool>,
     #[serde(rename = "@autoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter: Option<bool>,
     #[serde(rename = "@pivotTables")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_tables: Option<bool>,
     #[serde(rename = "@selectUnlockedCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub select_unlocked_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11556,9 +11605,10 @@ pub struct SheetProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "protectedRanges")]
 pub struct ProtectedRanges {
     #[serde(rename = "protectedRange")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub protected_range: Vec<Box<ProtectedRange>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11568,32 +11618,33 @@ pub struct ProtectedRanges {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "protectedRange")]
 pub struct ProtectedRange {
     #[serde(rename = "@password")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@securityDescriptor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub security_descriptor: Option<String>,
     #[serde(rename = "@algorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
     #[serde(rename = "@saltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
     #[serde(rename = "@spinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11605,26 +11656,26 @@ pub struct Scenario {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@locked")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@user")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user: Option<XmlString>,
     #[serde(rename = "@comment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comment: Option<XmlString>,
     #[serde(rename = "inputCells")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub input_cells: Vec<Box<InputCells>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11641,19 +11692,19 @@ pub struct InputCells {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     #[serde(rename = "@deleted")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deleted: Option<bool>,
     #[serde(rename = "@undone")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub undone: Option<bool>,
     #[serde(rename = "@val")]
     pub value: XmlString,
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11663,7 +11714,7 @@ pub struct InputCells {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CellWatches {
     #[serde(rename = "cellWatch")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell_watch: Vec<Box<CellWatch>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11678,7 +11729,7 @@ pub struct CellWatch {
     pub reference: CellRef,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11688,44 +11739,44 @@ pub struct CellWatch {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Chartsheet {
     #[serde(rename = "sheetPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_properties: Option<Box<ChartsheetProperties>>,
     #[serde(rename = "sheetViews")]
     pub sheet_views: Box<ChartsheetViews>,
     #[serde(rename = "sheetProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_protection: Option<Box<ChartsheetProtection>>,
     #[serde(rename = "customSheetViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_sheet_views: Option<Box<CustomChartsheetViews>>,
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<ChartsheetPageSetup>>,
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     #[serde(rename = "drawing")]
     pub drawing: Box<Drawing>,
     #[serde(rename = "legacyDrawing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing: Option<Box<LegacyDrawing>>,
     #[serde(rename = "legacyDrawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
     #[serde(rename = "drawingHF")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
     #[serde(rename = "picture")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<SheetBackgroundPicture>>,
     #[serde(rename = "webPublishItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_publish_items: Option<Box<WebPublishItems>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11737,17 +11788,17 @@ pub struct Chartsheet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetProperties {
     #[serde(rename = "@published")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub published: Option<bool>,
     #[serde(rename = "@codeName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
     #[serde(rename = "tabColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11762,10 +11813,10 @@ pub struct ChartsheetProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetViews {
     #[serde(rename = "sheetView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet_view: Vec<Box<ChartsheetView>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11777,22 +11828,22 @@ pub struct ChartsheetViews {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetView {
     #[serde(rename = "@tabSelected")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_selected: Option<bool>,
     #[serde(rename = "@zoomScale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_scale: Option<u32>,
     #[serde(rename = "@workbookViewId")]
     pub workbook_view_id: u32,
     #[serde(rename = "@zoomToFit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11807,29 +11858,29 @@ pub struct ChartsheetView {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetProtection {
     #[serde(rename = "@password")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
     #[serde(rename = "@saltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
     #[serde(rename = "@spinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     #[serde(rename = "@content")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content: Option<bool>,
     #[serde(rename = "@objects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub objects: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11839,44 +11890,44 @@ pub struct ChartsheetProtection {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetPageSetup {
     #[serde(rename = "@paperSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_size: Option<u32>,
     #[serde(rename = "@paperHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_height: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@paperWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paper_width: Option<STPositiveUniversalMeasure>,
     #[serde(rename = "@firstPageNumber")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_page_number: Option<u32>,
     #[serde(rename = "@orientation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub orientation: Option<STOrientation>,
     #[serde(rename = "@usePrinterDefaults")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_printer_defaults: Option<bool>,
     #[serde(rename = "@blackAndWhite")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub black_and_white: Option<bool>,
     #[serde(rename = "@draft")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draft: Option<bool>,
     #[serde(rename = "@useFirstPageNumber")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub use_first_page_number: Option<bool>,
     #[serde(rename = "@horizontalDpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal_dpi: Option<u32>,
     #[serde(rename = "@verticalDpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_dpi: Option<u32>,
     #[serde(rename = "@copies")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub copies: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11886,7 +11937,7 @@ pub struct ChartsheetPageSetup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomChartsheetViews {
     #[serde(rename = "customSheetView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub custom_sheet_view: Vec<Box<CustomChartsheetView>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11900,26 +11951,26 @@ pub struct CustomChartsheetView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@scale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scale: Option<u32>,
     #[serde(rename = "@state")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
     #[serde(rename = "@zoomToFit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "pageMargins")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_margins: Option<Box<PageMargins>>,
     #[serde(rename = "pageSetup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_setup: Option<Box<ChartsheetPageSetup>>,
     #[serde(rename = "headerFooter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_footer: Option<Box<HeaderFooter>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11934,7 +11985,7 @@ pub struct CustomChartsheetView {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomProperties {
     #[serde(rename = "customPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub custom_pr: Vec<Box<CTCustomProperty>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11949,7 +12000,7 @@ pub struct CTCustomProperty {
     pub name: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -11959,7 +12010,7 @@ pub struct CTCustomProperty {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OleObjects {
     #[serde(rename = "oleObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ole_object: Vec<Box<OleObject>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -11971,28 +12022,28 @@ pub struct OleObjects {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OleObject {
     #[serde(rename = "@progId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<String>,
     #[serde(rename = "@dvAspect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dv_aspect: Option<STDvAspect>,
     #[serde(rename = "@link")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub link: Option<XmlString>,
     #[serde(rename = "@oleUpdate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_update: Option<STOleUpdate>,
     #[serde(rename = "@autoLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_load: Option<bool>,
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
     #[serde(rename = "objectPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_pr: Option<Box<ObjectProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12007,43 +12058,43 @@ pub struct OleObject {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ObjectProperties {
     #[serde(rename = "@locked")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
     #[serde(rename = "@uiObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui_object: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_line: Option<bool>,
     #[serde(rename = "@autoPict")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#macro: Option<STFormula>,
     #[serde(rename = "@altText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_text: Option<XmlString>,
     #[serde(rename = "@dde")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dde: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12058,14 +12109,14 @@ pub struct ObjectProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebPublishItems {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "webPublishItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub web_publish_item: Vec<Box<WebPublishItem>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12086,22 +12137,22 @@ pub struct WebPublishItem {
     #[serde(rename = "@sourceType")]
     pub source_type: STWebSourceType,
     #[serde(rename = "@sourceRef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_ref: Option<Reference>,
     #[serde(rename = "@sourceObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_object: Option<XmlString>,
     #[serde(rename = "@destinationFile")]
     pub destination_file: XmlString,
     #[serde(rename = "@title")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12111,7 +12162,7 @@ pub struct WebPublishItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Controls {
     #[serde(rename = "control")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub control: Vec<Box<Control>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12125,14 +12176,14 @@ pub struct Control {
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "controlPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub control_pr: Option<Box<CTControlPr>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12147,52 +12198,52 @@ pub struct Control {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTControlPr {
     #[serde(rename = "@locked")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
     #[serde(rename = "@recalcAlways")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recalc_always: Option<bool>,
     #[serde(rename = "@uiObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui_object: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_line: Option<bool>,
     #[serde(rename = "@autoPict")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#macro: Option<STFormula>,
     #[serde(rename = "@altText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_text: Option<XmlString>,
     #[serde(rename = "@linkedCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub linked_cell: Option<STFormula>,
     #[serde(rename = "@listFillRange")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub list_fill_range: Option<STFormula>,
     #[serde(rename = "@cf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cf: Option<XmlString>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12207,10 +12258,10 @@ pub struct CTControlPr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IgnoredErrors {
     #[serde(rename = "ignoredError")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ignored_error: Vec<Box<IgnoredError>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12224,35 +12275,35 @@ pub struct IgnoredError {
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[serde(rename = "@evalError")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub eval_error: Option<bool>,
     #[serde(rename = "@twoDigitTextYear")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub two_digit_text_year: Option<bool>,
     #[serde(rename = "@numberStoredAsText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_stored_as_text: Option<bool>,
     #[serde(rename = "@formula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula: Option<bool>,
     #[serde(rename = "@formulaRange")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formula_range: Option<bool>,
     #[serde(rename = "@unlockedFormula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unlocked_formula: Option<bool>,
     #[serde(rename = "@emptyCellReference")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub empty_cell_reference: Option<bool>,
     #[serde(rename = "@listDataValidation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub list_data_validation: Option<bool>,
     #[serde(rename = "@calculatedColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calculated_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12260,16 +12311,17 @@ pub struct IgnoredError {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "tableParts")]
 pub struct TableParts {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "tablePart")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub table_part: Vec<Box<TablePart>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12282,6 +12334,7 @@ pub struct TableParts {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "tablePart")]
 pub struct TablePart;
 
 pub type SmlMetadata = Box<Metadata>;
@@ -12289,25 +12342,25 @@ pub type SmlMetadata = Box<Metadata>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Metadata {
     #[serde(rename = "metadataTypes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub metadata_types: Option<Box<MetadataTypes>>,
     #[serde(rename = "metadataStrings")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub metadata_strings: Option<Box<MetadataStrings>>,
     #[serde(rename = "mdxMetadata")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mdx_metadata: Option<Box<CTMdxMetadata>>,
     #[serde(rename = "futureMetadata")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub future_metadata: Vec<Box<CTFutureMetadata>>,
     #[serde(rename = "cellMetadata")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_metadata: Option<Box<MetadataBlocks>>,
     #[serde(rename = "valueMetadata")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value_metadata: Option<Box<MetadataBlocks>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12319,14 +12372,14 @@ pub struct Metadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetadataTypes {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "metadataType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub metadata_type: Vec<Box<MetadataType>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12345,86 +12398,86 @@ pub struct MetadataType {
     #[serde(rename = "@minSupportedVersion")]
     pub min_supported_version: u32,
     #[serde(rename = "@ghostRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ghost_row: Option<bool>,
     #[serde(rename = "@ghostCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ghost_col: Option<bool>,
     #[serde(rename = "@edit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edit: Option<bool>,
     #[serde(rename = "@delete")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delete: Option<bool>,
     #[serde(rename = "@copy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub copy: Option<bool>,
     #[serde(rename = "@pasteAll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_all: Option<bool>,
     #[serde(rename = "@pasteFormulas")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_formulas: Option<bool>,
     #[serde(rename = "@pasteValues")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_values: Option<bool>,
     #[serde(rename = "@pasteFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_formats: Option<bool>,
     #[serde(rename = "@pasteComments")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_comments: Option<bool>,
     #[serde(rename = "@pasteDataValidation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_data_validation: Option<bool>,
     #[serde(rename = "@pasteBorders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_borders: Option<bool>,
     #[serde(rename = "@pasteColWidths")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_col_widths: Option<bool>,
     #[serde(rename = "@pasteNumberFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub paste_number_formats: Option<bool>,
     #[serde(rename = "@merge")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merge: Option<bool>,
     #[serde(rename = "@splitFirst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub split_first: Option<bool>,
     #[serde(rename = "@splitAll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub split_all: Option<bool>,
     #[serde(rename = "@rowColShift")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_col_shift: Option<bool>,
     #[serde(rename = "@clearAll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_all: Option<bool>,
     #[serde(rename = "@clearFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_formats: Option<bool>,
     #[serde(rename = "@clearContents")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_contents: Option<bool>,
     #[serde(rename = "@clearComments")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_comments: Option<bool>,
     #[serde(rename = "@assign")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub assign: Option<bool>,
     #[serde(rename = "@coerce")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub coerce: Option<bool>,
     #[serde(rename = "@adjust")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adjust: Option<bool>,
     #[serde(rename = "@cellMeta")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_meta: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12434,14 +12487,14 @@ pub struct MetadataType {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetadataBlocks {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "bk")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub bk: Vec<Box<MetadataBlock>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12456,7 +12509,7 @@ pub struct MetadataBlocks {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetadataBlock {
     #[serde(rename = "rc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub rc: Vec<Box<MetadataRecord>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12473,7 +12526,7 @@ pub struct MetadataRecord {
     pub value: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12485,17 +12538,17 @@ pub struct CTFutureMetadata {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "bk")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub bk: Vec<Box<CTFutureMetadataBlock>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12510,7 +12563,7 @@ pub struct CTFutureMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFutureMetadataBlock {
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12522,14 +12575,14 @@ pub struct CTFutureMetadataBlock {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMdxMetadata {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "mdx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub mdx: Vec<Box<CTMdx>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12549,7 +12602,7 @@ pub struct CTMdx {
     pub formula: STMdxFunctionType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12559,41 +12612,41 @@ pub struct CTMdx {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMdxTuple {
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<u32>,
     #[serde(rename = "@ct")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ct: Option<XmlString>,
     #[serde(rename = "@si")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub si: Option<u32>,
     #[serde(rename = "@fi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fi: Option<u32>,
     #[serde(rename = "@bc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bc: Option<STUnsignedIntHex>,
     #[serde(rename = "@fc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<bool>,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<bool>,
     #[serde(rename = "n")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub n: Vec<Box<CTMetadataStringIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12610,17 +12663,17 @@ pub struct CTMdxSet {
     #[serde(rename = "@ns")]
     pub ns: u32,
     #[serde(rename = "@c")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cells: Option<u32>,
     #[serde(rename = "@o")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub o: Option<STMdxSetOrder>,
     #[serde(rename = "n")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub n: Vec<Box<CTMetadataStringIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12640,7 +12693,7 @@ pub struct CTMdxMemeberProp {
     pub np: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12657,7 +12710,7 @@ pub struct CTMdxKPI {
     pub p: STMdxKPIProperty,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12669,11 +12722,11 @@ pub struct CTMetadataStringIndex {
     #[serde(rename = "@x")]
     pub x: u32,
     #[serde(rename = "@s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_index: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12683,14 +12736,14 @@ pub struct CTMetadataStringIndex {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MetadataStrings {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "s")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub style_index: Vec<Box<CTXStringElement>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12707,7 +12760,7 @@ pub type SmlSingleXmlCells = Box<SingleXmlCells>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SingleXmlCells {
     #[serde(rename = "singleXmlCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub single_xml_cell: Vec<Box<SingleXmlCell>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12727,11 +12780,11 @@ pub struct SingleXmlCell {
     #[serde(rename = "xmlCellPr")]
     pub xml_cell_pr: Box<XmlCellProperties>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12748,16 +12801,16 @@ pub struct XmlCellProperties {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_name: Option<XmlString>,
     #[serde(rename = "xmlPr")]
     pub xml_pr: Box<XmlProperties>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12778,11 +12831,11 @@ pub struct XmlProperties {
     #[serde(rename = "@xmlDataType")]
     pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12797,50 +12850,51 @@ pub struct XmlProperties {
 pub type SmlStyleSheet = Box<Stylesheet>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "styleSheet")]
 pub struct Stylesheet {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "numFmts")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmts: Option<Box<NumberFormats>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "fonts")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fonts: Option<Box<Fonts>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "fills")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fills: Option<Box<Fills>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "borders")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub borders: Option<Box<Borders>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellStyleXfs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_style_xfs: Option<Box<CellStyleFormats>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellXfs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_xfs: Option<Box<CellFormats>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellStyles")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_styles: Option<Box<CellStyles>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "dxfs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxfs: Option<Box<DifferentialFormats>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "tableStyles")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_styles: Option<Box<TableStyles>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "colors")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub colors: Option<Box<Colors>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -12850,37 +12904,38 @@ pub struct Stylesheet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "alignment")]
 pub struct CellAlignment {
     #[serde(rename = "@horizontal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal: Option<HorizontalAlignment>,
     #[serde(rename = "@vertical")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical: Option<VerticalAlignment>,
     #[serde(rename = "@textRotation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_rotation: Option<STTextRotation>,
     #[serde(rename = "@wrapText")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap_text: Option<bool>,
     #[serde(rename = "@indent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<u32>,
     #[serde(rename = "@relativeIndent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub relative_indent: Option<i32>,
     #[serde(rename = "@justifyLastLine")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub justify_last_line: Option<bool>,
     #[serde(rename = "@shrinkToFit")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shrink_to_fit: Option<bool>,
     #[serde(rename = "@readingOrder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reading_order: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12888,16 +12943,17 @@ pub struct CellAlignment {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "borders")]
 pub struct Borders {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "border")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub border: Vec<Box<Border>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12910,56 +12966,57 @@ pub struct Borders {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "border")]
 pub struct Border {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalUp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub diagonal_up: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalDown")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub diagonal_down: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@outline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline: Option<bool>,
     #[serde(rename = "start")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<Box<BorderProperties>>,
     #[serde(rename = "end")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "left")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "right")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "top")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "bottom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "diagonal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub diagonal: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "vertical")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical: Option<Box<BorderProperties>>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "horizontal")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal: Option<Box<BorderProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12972,16 +13029,17 @@ pub struct Border {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "left")]
 pub struct BorderProperties {
     #[serde(rename = "@style")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<BorderStyle>,
     #[serde(rename = "color")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -12994,16 +13052,17 @@ pub struct BorderProperties {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "protection")]
 pub struct CellProtection {
     #[serde(rename = "@locked")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13011,16 +13070,17 @@ pub struct CellProtection {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "fonts")]
 pub struct Fonts {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "font")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub font: Vec<Box<Font>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13033,16 +13093,17 @@ pub struct Fonts {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "fills")]
 pub struct Fills {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "fill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub fill: Vec<Box<Fill>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13055,22 +13116,24 @@ pub struct Fills {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "fill")]
 pub struct Fill;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "patternFill")]
 pub struct PatternFill {
     #[serde(rename = "@patternType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pattern_type: Option<PatternType>,
     #[serde(rename = "fgColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fg_color: Option<Box<Color>>,
     #[serde(rename = "bgColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg_color: Option<Box<Color>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13083,25 +13146,26 @@ pub struct PatternFill {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "color")]
 pub struct Color {
     #[serde(rename = "@auto")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto: Option<bool>,
     #[serde(rename = "@indexed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indexed: Option<u32>,
     #[serde(rename = "@rgb")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rgb: Option<STUnsignedIntHex>,
     #[serde(rename = "@theme")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme: Option<u32>,
     #[serde(rename = "@tint")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tint: Option<f64>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13109,31 +13173,32 @@ pub struct Color {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "gradientFill")]
 pub struct GradientFill {
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<GradientType>,
     #[serde(rename = "@degree")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub degree: Option<f64>,
     #[serde(rename = "@left")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<f64>,
     #[serde(rename = "@right")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<f64>,
     #[serde(rename = "@top")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<f64>,
     #[serde(rename = "@bottom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<f64>,
     #[serde(rename = "stop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub stop: Vec<Box<GradientStop>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13146,6 +13211,7 @@ pub struct GradientFill {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "stop")]
 pub struct GradientStop {
     #[serde(rename = "@position")]
     pub position: f64,
@@ -13153,7 +13219,7 @@ pub struct GradientStop {
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13166,16 +13232,17 @@ pub struct GradientStop {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "numFmts")]
 pub struct NumberFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "numFmt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub num_fmt: Vec<Box<NumberFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13188,6 +13255,7 @@ pub struct NumberFormats {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "numFmt")]
 pub struct NumberFormat {
     #[serde(rename = "@numFmtId")]
     pub number_format_id: STNumFmtId,
@@ -13195,7 +13263,7 @@ pub struct NumberFormat {
     pub format_code: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13203,16 +13271,17 @@ pub struct NumberFormat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cellStyleXfs")]
 pub struct CellStyleFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "xf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub xf: Vec<Box<Format>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13225,16 +13294,17 @@ pub struct CellStyleFormats {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cellXfs")]
 pub struct CellFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "xf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub xf: Vec<Box<Format>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13247,74 +13317,75 @@ pub struct CellFormats {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "xf")]
 pub struct Format {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@numFmtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@fontId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_id: Option<STFontId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@fillId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_id: Option<STFillId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@borderId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub border_id: Option<STBorderId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@xfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format_id: Option<STCellStyleXfId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@quotePrefix")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub quote_prefix: Option<bool>,
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivotButton")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_button: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyNumberFormat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_number_format: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFont")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_font: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_fill: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyBorder")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_border: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyAlignment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_alignment: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_protection: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "alignment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alignment: Option<Box<CellAlignment>>,
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "protection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub protection: Option<Box<CellProtection>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13327,16 +13398,17 @@ pub struct Format {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cellStyles")]
 pub struct CellStyles {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "cellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell_style: Vec<Box<CellStyle>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13349,30 +13421,31 @@ pub struct CellStyles {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "cellStyle")]
 pub struct CellStyle {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@xfId")]
     pub format_id: STCellStyleXfId,
     #[serde(rename = "@builtinId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub builtin_id: Option<u32>,
     #[serde(rename = "@iLevel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i_level: Option<u32>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[serde(rename = "@customBuiltin")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_builtin: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13385,16 +13458,17 @@ pub struct CellStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dxfs")]
 pub struct DifferentialFormats {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "dxf")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dxf: Vec<Box<DifferentialFormat>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13407,27 +13481,28 @@ pub struct DifferentialFormats {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "dxf")]
 pub struct DifferentialFormat {
     #[serde(rename = "font")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font: Option<Box<Font>>,
     #[serde(rename = "numFmt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<Box<NumberFormat>>,
     #[serde(rename = "fill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<Box<Fill>>,
     #[serde(rename = "alignment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alignment: Option<Box<CellAlignment>>,
     #[serde(rename = "border")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub border: Option<Box<Border>>,
     #[serde(rename = "protection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub protection: Option<Box<CellProtection>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13437,12 +13512,13 @@ pub struct DifferentialFormat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "colors")]
 pub struct Colors {
     #[serde(rename = "indexedColors")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indexed_colors: Option<Box<IndexedColors>>,
     #[serde(rename = "mruColors")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mru_colors: Option<Box<MostRecentColors>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13454,7 +13530,7 @@ pub struct Colors {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IndexedColors {
     #[serde(rename = "rgbColor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub rgb_color: Vec<Box<RgbColor>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13466,7 +13542,7 @@ pub struct IndexedColors {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MostRecentColors {
     #[serde(rename = "color")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub color: Vec<Box<Color>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13478,11 +13554,11 @@ pub struct MostRecentColors {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RgbColor {
     #[serde(rename = "@rgb")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rgb: Option<STUnsignedIntHex>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13492,20 +13568,20 @@ pub struct RgbColor {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TableStyles {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@defaultTableStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_table_style: Option<String>,
     #[serde(rename = "@defaultPivotStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_pivot_style: Option<String>,
     #[serde(rename = "tableStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub table_style: Vec<Box<TableStyle>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13522,20 +13598,20 @@ pub struct TableStyle {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "@pivot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot: Option<bool>,
     #[serde(rename = "@table")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table: Option<bool>,
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "tableStyleElement")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub table_style_element: Vec<Box<TableStyleElement>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13552,14 +13628,14 @@ pub struct TableStyleElement {
     #[serde(rename = "@type")]
     pub r#type: STTableStyleType,
     #[serde(rename = "@size")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<u32>,
     #[serde(rename = "@dxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13569,11 +13645,11 @@ pub struct TableStyleElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BooleanProperty {
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13586,7 +13662,7 @@ pub struct FontSize {
     pub value: f64,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13599,7 +13675,7 @@ pub struct IntProperty {
     pub value: i32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13612,7 +13688,7 @@ pub struct FontName {
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13625,7 +13701,7 @@ pub struct VerticalAlignFontProperty {
     pub value: VerticalAlignRun,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13638,7 +13714,7 @@ pub struct FontSchemeProperty {
     pub value: FontScheme,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13648,11 +13724,11 @@ pub struct FontSchemeProperty {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnderlineProperty {
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<UnderlineStyle>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13660,6 +13736,7 @@ pub struct UnderlineProperty {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename = "font")]
 pub struct Font;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13668,7 +13745,7 @@ pub struct FontFamily {
     pub value: STFontFamily,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13678,29 +13755,29 @@ pub struct FontFamily {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmlAGAutoFormat {
     #[serde(rename = "@autoFormatId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_format_id: Option<u32>,
     #[serde(rename = "@applyNumberFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_number_formats: Option<bool>,
     #[serde(rename = "@applyBorderFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_border_formats: Option<bool>,
     #[serde(rename = "@applyFontFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_font_formats: Option<bool>,
     #[serde(rename = "@applyPatternFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_pattern_formats: Option<bool>,
     #[serde(rename = "@applyAlignmentFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_alignment_formats: Option<bool>,
     #[serde(rename = "@applyWidthHeightFormats")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub apply_width_height_formats: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13712,7 +13789,7 @@ pub type SmlExternalLink = Box<ExternalLink>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalLink {
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13724,13 +13801,13 @@ pub struct ExternalLink {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalBook {
     #[serde(rename = "sheetNames")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_names: Option<Box<CTExternalSheetNames>>,
     #[serde(rename = "definedNames")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub defined_names: Option<Box<CTExternalDefinedNames>>,
     #[serde(rename = "sheetDataSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_data_set: Option<Box<ExternalSheetDataSet>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13742,7 +13819,7 @@ pub struct ExternalBook {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTExternalSheetNames {
     #[serde(rename = "sheetName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet_name: Vec<Box<CTExternalSheetName>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13754,11 +13831,11 @@ pub struct CTExternalSheetNames {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTExternalSheetName {
     #[serde(rename = "@val")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13768,7 +13845,7 @@ pub struct CTExternalSheetName {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTExternalDefinedNames {
     #[serde(rename = "definedName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub defined_name: Vec<Box<CTExternalDefinedName>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13782,14 +13859,14 @@ pub struct CTExternalDefinedName {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@refersTo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refers_to: Option<XmlString>,
     #[serde(rename = "@sheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_id: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13799,7 +13876,7 @@ pub struct CTExternalDefinedName {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalSheetDataSet {
     #[serde(rename = "sheetData")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet_data: Vec<Box<ExternalSheetData>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13813,14 +13890,14 @@ pub struct ExternalSheetData {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@refreshError")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_error: Option<bool>,
     #[serde(rename = "row")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub row: Vec<Box<ExternalRow>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13837,11 +13914,11 @@ pub struct ExternalRow {
     #[serde(rename = "@r")]
     pub reference: u32,
     #[serde(rename = "cell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cell: Vec<Box<ExternalCell>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13856,20 +13933,20 @@ pub struct ExternalRow {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalCell {
     #[serde(rename = "@r")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<CellRef>,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<CellType>,
     #[serde(rename = "@vm")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vm: Option<u32>,
     #[serde(rename = "v")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13888,11 +13965,11 @@ pub struct DdeLink {
     #[serde(rename = "@ddeTopic")]
     pub dde_topic: XmlString,
     #[serde(rename = "ddeItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dde_items: Option<Box<DdeItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13907,7 +13984,7 @@ pub struct DdeLink {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DdeItems {
     #[serde(rename = "ddeItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub dde_item: Vec<Box<DdeItem>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -13919,23 +13996,23 @@ pub struct DdeItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DdeItem {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@ole")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole: Option<bool>,
     #[serde(rename = "@advise")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub advise: Option<bool>,
     #[serde(rename = "@preferPic")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefer_pic: Option<bool>,
     #[serde(rename = "values")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub values: Option<Box<CTDdeValues>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13950,17 +14027,17 @@ pub struct DdeItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDdeValues {
     #[serde(rename = "@rows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rows: Option<u32>,
     #[serde(rename = "@cols")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cols: Option<u32>,
     #[serde(rename = "value")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub value: Vec<Box<CTDdeValue>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13975,13 +14052,13 @@ pub struct CTDdeValues {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDdeValue {
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<STDdeValueType>,
     #[serde(rename = "val")]
     pub value: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -13998,11 +14075,11 @@ pub struct OleLink {
     #[serde(rename = "@progId")]
     pub prog_id: XmlString,
     #[serde(rename = "oleItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_items: Option<Box<OleItems>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14017,7 +14094,7 @@ pub struct OleLink {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OleItems {
     #[serde(rename = "oleItem")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ole_item: Vec<Box<OleItem>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14031,17 +14108,17 @@ pub struct OleItem {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@icon")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon: Option<bool>,
     #[serde(rename = "@advise")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub advise: Option<bool>,
     #[serde(rename = "@preferPic")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefer_pic: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14051,114 +14128,115 @@ pub struct OleItem {
 pub type SmlTable = Box<Table>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "table")]
 pub struct Table {
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@id")]
     pub id: u32,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@displayName")]
     pub display_name: XmlString,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@comment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comment: Option<XmlString>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@tableType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_type: Option<STTableType>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_count: Option<u32>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_row: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRowShift")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub insert_row_shift: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_count: Option<u32>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowShown")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_shown: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@published")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub published: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@dataDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowBorderDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_border_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@tableBorderDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_border_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowBorderDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_border_dxf_id: Option<STDxfId>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_cell_style: Option<XmlString>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@dataCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_cell_style: Option<XmlString>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_cell_style: Option<XmlString>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@connectionId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub connection_id: Option<u32>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "autoFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter: Option<Box<AutoFilter>>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "sortState")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_state: Option<Box<SortState>>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableColumns")]
     pub table_columns: Box<TableColumns>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableStyleInfo")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_style_info: Option<Box<TableStyleInfo>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14173,23 +14251,23 @@ pub struct Table {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TableStyleInfo {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@showFirstColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_first_column: Option<bool>,
     #[serde(rename = "@showLastColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_last_column: Option<bool>,
     #[serde(rename = "@showRowStripes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_row_stripes: Option<bool>,
     #[serde(rename = "@showColumnStripes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_column_stripes: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14197,16 +14275,17 @@ pub struct TableStyleInfo {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "tableColumns")]
 pub struct TableColumns {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "tableColumn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub table_column: Vec<Box<TableColumn>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14219,56 +14298,57 @@ pub struct TableColumns {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "tableColumn")]
 pub struct TableColumn {
     #[serde(rename = "@id")]
     pub id: u32,
     #[serde(rename = "@uniqueName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_name: Option<XmlString>,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@totalsRowFunction")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_function: Option<STTotalsRowFunction>,
     #[serde(rename = "@totalsRowLabel")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_label: Option<XmlString>,
     #[serde(rename = "@queryTableFieldId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_table_field_id: Option<u32>,
     #[serde(rename = "@headerRowDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@dataDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_dxf_id: Option<STDxfId>,
     #[serde(rename = "@totalsRowDxfId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_dxf_id: Option<STDxfId>,
     #[serde(rename = "@headerRowCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub header_row_cell_style: Option<XmlString>,
     #[serde(rename = "@dataCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_cell_style: Option<XmlString>,
     #[serde(rename = "@totalsRowCellStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_cell_style: Option<XmlString>,
     #[serde(rename = "calculatedColumnFormula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calculated_column_formula: Option<Box<TableFormula>>,
     #[serde(rename = "totalsRowFormula")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub totals_row_formula: Option<Box<TableFormula>>,
     #[serde(rename = "xmlColumnPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xml_column_pr: Option<Box<XmlColumnProperties>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14285,11 +14365,11 @@ pub struct TableFormula {
     #[serde(rename = "$text")]
     pub text: String,
     #[serde(rename = "@array")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub array: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14308,16 +14388,16 @@ pub struct XmlColumnProperties {
     #[serde(rename = "@xpath")]
     pub xpath: XmlString,
     #[serde(rename = "@denormalized")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub denormalized: Option<bool>,
     #[serde(rename = "@xmlDataType")]
     pub xml_data_type: STXmlDataType,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14334,10 +14414,10 @@ pub type SmlVolTypes = Box<CTVolTypes>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTVolTypes {
     #[serde(rename = "volType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub vol_type: Vec<Box<CTVolType>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14351,11 +14431,11 @@ pub struct CTVolType {
     #[serde(rename = "@type")]
     pub r#type: STVolDepType,
     #[serde(rename = "main")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub main: Vec<Box<CTVolMain>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14372,11 +14452,11 @@ pub struct CTVolMain {
     #[serde(rename = "@first")]
     pub first: XmlString,
     #[serde(rename = "tp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tp: Vec<Box<CTVolTopic>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14391,19 +14471,19 @@ pub struct CTVolMain {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTVolTopic {
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<STVolValueType>,
     #[serde(rename = "v")]
     pub value: XmlString,
     #[serde(rename = "stp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub stp: Vec<XmlString>,
     #[serde(rename = "tr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tr: Vec<Box<CTVolTopicRef>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14423,7 +14503,7 @@ pub struct CTVolTopicRef {
     pub style_index: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14433,82 +14513,83 @@ pub struct CTVolTopicRef {
 pub type SmlWorkbook = Box<Workbook>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "workbook")]
 pub struct Workbook {
     #[serde(rename = "@conformance")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conformance: Option<STConformanceClass>,
     #[serde(rename = "fileVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_version: Option<Box<FileVersion>>,
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "fileSharing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file_sharing: Option<Box<FileSharing>>,
     #[serde(rename = "workbookPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_pr: Option<Box<WorkbookProperties>>,
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "workbookProtection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_protection: Option<Box<WorkbookProtection>>,
     #[serde(rename = "bookViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub book_views: Option<Box<BookViews>>,
     #[serde(rename = "sheets")]
     pub sheets: Box<Sheets>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "functionGroups")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function_groups: Option<Box<CTFunctionGroups>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "externalReferences")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub external_references: Option<Box<ExternalReferences>>,
     #[serde(rename = "definedNames")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub defined_names: Option<Box<DefinedNames>>,
     #[cfg(feature = "sml-formulas")]
     #[serde(rename = "calcPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_pr: Option<Box<CalculationProperties>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "oleSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_size: Option<Box<CTOleSize>>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "customWorkbookViews")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_workbook_views: Option<Box<CustomWorkbookViews>>,
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "pivotCaches")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pivot_caches: Option<Box<PivotCaches>>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTagPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tag_pr: Option<Box<CTSmartTagPr>>,
     #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTagTypes")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tag_types: Option<Box<CTSmartTagTypes>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishing")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_publishing: Option<Box<WebPublishing>>,
     #[serde(rename = "fileRecoveryPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub file_recovery_pr: Vec<Box<FileRecoveryProperties>>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_publish_objects: Option<Box<CTWebPublishObjects>>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14523,23 +14604,23 @@ pub struct Workbook {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileVersion {
     #[serde(rename = "@appName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub app_name: Option<String>,
     #[serde(rename = "@lastEdited")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_edited: Option<String>,
     #[serde(rename = "@lowestEdited")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lowest_edited: Option<String>,
     #[serde(rename = "@rupBuild")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rup_build: Option<String>,
     #[serde(rename = "@codeName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<Guid>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14547,9 +14628,10 @@ pub struct FileVersion {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "bookViews")]
 pub struct BookViews {
     #[serde(rename = "workbookView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub workbook_view: Vec<Box<BookView>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14559,52 +14641,53 @@ pub struct BookViews {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "workbookView")]
 pub struct BookView {
     #[serde(rename = "@visibility")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visibility: Option<Visibility>,
     #[serde(rename = "@minimized")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minimized: Option<bool>,
     #[serde(rename = "@showHorizontalScroll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_horizontal_scroll: Option<bool>,
     #[serde(rename = "@showVerticalScroll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_vertical_scroll: Option<bool>,
     #[serde(rename = "@showSheetTabs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_sheet_tabs: Option<bool>,
     #[serde(rename = "@xWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_window: Option<i32>,
     #[serde(rename = "@yWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_window: Option<i32>,
     #[serde(rename = "@windowWidth")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window_width: Option<u32>,
     #[serde(rename = "@windowHeight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window_height: Option<u32>,
     #[serde(rename = "@tabRatio")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_ratio: Option<u32>,
     #[serde(rename = "@firstSheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_sheet: Option<u32>,
     #[serde(rename = "@activeTab")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_tab: Option<u32>,
     #[serde(rename = "@autoFilterDateGrouping")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_filter_date_grouping: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14619,7 +14702,7 @@ pub struct BookView {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub custom_workbook_view: Vec<Box<CustomWorkbookView>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14635,74 +14718,74 @@ pub struct CustomWorkbookView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@autoUpdate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_update: Option<bool>,
     #[serde(rename = "@mergeInterval")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merge_interval: Option<u32>,
     #[serde(rename = "@changesSavedWin")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub changes_saved_win: Option<bool>,
     #[serde(rename = "@onlySync")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub only_sync: Option<bool>,
     #[serde(rename = "@personalView")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub personal_view: Option<bool>,
     #[serde(rename = "@includePrintSettings")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_print_settings: Option<bool>,
     #[serde(rename = "@includeHiddenRowCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub include_hidden_row_col: Option<bool>,
     #[serde(rename = "@maximized")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub maximized: Option<bool>,
     #[serde(rename = "@minimized")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub minimized: Option<bool>,
     #[serde(rename = "@showHorizontalScroll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_horizontal_scroll: Option<bool>,
     #[serde(rename = "@showVerticalScroll")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_vertical_scroll: Option<bool>,
     #[serde(rename = "@showSheetTabs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_sheet_tabs: Option<bool>,
     #[serde(rename = "@xWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_window: Option<i32>,
     #[serde(rename = "@yWindow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_window: Option<i32>,
     #[serde(rename = "@windowWidth")]
     pub window_width: u32,
     #[serde(rename = "@windowHeight")]
     pub window_height: u32,
     #[serde(rename = "@tabRatio")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_ratio: Option<u32>,
     #[serde(rename = "@activeSheetId")]
     pub active_sheet_id: u32,
     #[serde(rename = "@showFormulaBar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_formula_bar: Option<bool>,
     #[serde(rename = "@showStatusbar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_statusbar: Option<bool>,
     #[serde(rename = "@showComments")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_comments: Option<CommentVisibility>,
     #[serde(rename = "@showObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14715,9 +14798,10 @@ pub struct CustomWorkbookView {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheets")]
 pub struct Sheets {
     #[serde(rename = "sheet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub sheet: Vec<Box<Sheet>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14727,6 +14811,7 @@ pub struct Sheets {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "sheet")]
 pub struct Sheet {
     #[serde(rename = "@name")]
     pub name: XmlString,
@@ -14734,11 +14819,11 @@ pub struct Sheet {
     pub sheet_id: u32,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@state")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14746,64 +14831,65 @@ pub struct Sheet {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "workbookPr")]
 pub struct WorkbookProperties {
     #[serde(rename = "@date1904")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date1904: Option<bool>,
     #[serde(rename = "@showObjects")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "@showBorderUnselectedTables")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_border_unselected_tables: Option<bool>,
     #[serde(rename = "@filterPrivacy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub filter_privacy: Option<bool>,
     #[serde(rename = "@promptedSolutions")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompted_solutions: Option<bool>,
     #[serde(rename = "@showInkAnnotation")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_ink_annotation: Option<bool>,
     #[serde(rename = "@backupFile")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub backup_file: Option<bool>,
     #[serde(rename = "@saveExternalLinkValues")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub save_external_link_values: Option<bool>,
     #[serde(rename = "@updateLinks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub update_links: Option<UpdateLinks>,
     #[serde(rename = "@codeName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
     #[serde(rename = "@hidePivotFieldList")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_pivot_field_list: Option<bool>,
     #[serde(rename = "@showPivotChartFilter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_pivot_chart_filter: Option<bool>,
     #[serde(rename = "@allowRefreshQuery")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_refresh_query: Option<bool>,
     #[serde(rename = "@publishItems")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publish_items: Option<bool>,
     #[serde(rename = "@checkCompatibility")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub check_compatibility: Option<bool>,
     #[serde(rename = "@autoCompressPictures")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_compress_pictures: Option<bool>,
     #[serde(rename = "@refreshAllConnections")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refresh_all_connections: Option<bool>,
     #[serde(rename = "@defaultThemeVersion")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_theme_version: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14813,14 +14899,14 @@ pub struct WorkbookProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagPr {
     #[serde(rename = "@embed")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embed: Option<bool>,
     #[serde(rename = "@show")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show: Option<STSmartTagShow>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14830,7 +14916,7 @@ pub struct CTSmartTagPr {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagTypes {
     #[serde(rename = "smartTagType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub smart_tag_type: Vec<Box<CTSmartTagType>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14842,17 +14928,17 @@ pub struct CTSmartTagTypes {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagType {
     #[serde(rename = "@namespaceUri")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub namespace_uri: Option<XmlString>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@url")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14862,20 +14948,20 @@ pub struct CTSmartTagType {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileRecoveryProperties {
     #[serde(rename = "@autoRecover")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_recover: Option<bool>,
     #[serde(rename = "@crashSave")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crash_save: Option<bool>,
     #[serde(rename = "@dataExtractLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_extract_load: Option<bool>,
     #[serde(rename = "@repairLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub repair_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14883,49 +14969,50 @@ pub struct FileRecoveryProperties {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "calcPr")]
 pub struct CalculationProperties {
     #[serde(rename = "@calcId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_id: Option<u32>,
     #[serde(rename = "@calcMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_mode: Option<CalculationMode>,
     #[serde(rename = "@fullCalcOnLoad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_calc_on_load: Option<bool>,
     #[serde(rename = "@refMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ref_mode: Option<ReferenceMode>,
     #[serde(rename = "@iterate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate: Option<bool>,
     #[serde(rename = "@iterateCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate_count: Option<u32>,
     #[serde(rename = "@iterateDelta")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate_delta: Option<f64>,
     #[serde(rename = "@fullPrecision")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_precision: Option<bool>,
     #[serde(rename = "@calcCompleted")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_completed: Option<bool>,
     #[serde(rename = "@calcOnSave")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_on_save: Option<bool>,
     #[serde(rename = "@concurrentCalc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub concurrent_calc: Option<bool>,
     #[serde(rename = "@concurrentManualCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub concurrent_manual_count: Option<u32>,
     #[serde(rename = "@forceFullCalc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub force_full_calc: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -14933,9 +15020,10 @@ pub struct CalculationProperties {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "definedNames")]
 pub struct DefinedNames {
     #[serde(rename = "definedName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub defined_name: Vec<Box<DefinedName>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -14945,67 +15033,68 @@ pub struct DefinedNames {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "definedName")]
 pub struct DefinedName {
     #[serde(rename = "$text")]
     pub text: String,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@comment")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comment: Option<XmlString>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@customMenu")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_menu: Option<XmlString>,
     #[serde(rename = "@description")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<XmlString>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@help")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub help: Option<XmlString>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@statusBar")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status_bar: Option<XmlString>,
     #[serde(rename = "@localSheetId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_sheet_id: Option<u32>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@function")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@vbProcedure")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vb_procedure: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@xlm")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub xlm: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@functionGroupId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function_group_id: Option<u32>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@shortcutKey")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shortcut_key: Option<XmlString>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "@publishToServer")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub publish_to_server: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@workbookParameter")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_parameter: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15020,7 +15109,7 @@ pub struct DefinedName {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub external_reference: Vec<Box<ExternalReference>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -15038,7 +15127,7 @@ pub struct SheetBackgroundPicture;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCaches {
     #[serde(rename = "pivotCache")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pivot_cache: Vec<Box<CTPivotCache>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
@@ -15053,7 +15142,7 @@ pub struct CTPivotCache {
     pub cache_id: u32,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15063,29 +15152,29 @@ pub struct CTPivotCache {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileSharing {
     #[serde(rename = "@readOnlyRecommended")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_only_recommended: Option<bool>,
     #[serde(rename = "@userName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub user_name: Option<XmlString>,
     #[serde(rename = "@reservationPassword")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reservation_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@algorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<XmlString>,
     #[serde(rename = "@hashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
     #[serde(rename = "@saltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
     #[serde(rename = "@spinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15098,7 +15187,7 @@ pub struct CTOleSize {
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15106,55 +15195,56 @@ pub struct CTOleSize {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "workbookProtection")]
 pub struct WorkbookProtection {
     #[serde(rename = "@workbookPassword")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@workbookPasswordCharacterSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_password_character_set: Option<String>,
     #[serde(rename = "@revisionsPassword")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_password: Option<STUnsignedShortHex>,
     #[serde(rename = "@revisionsPasswordCharacterSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_password_character_set: Option<String>,
     #[serde(rename = "@lockStructure")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock_structure: Option<bool>,
     #[serde(rename = "@lockWindows")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock_windows: Option<bool>,
     #[serde(rename = "@lockRevision")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lock_revision: Option<bool>,
     #[serde(rename = "@revisionsAlgorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_algorithm_name: Option<XmlString>,
     #[serde(rename = "@revisionsHashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_hash_value: Option<Vec<u8>>,
     #[serde(rename = "@revisionsSaltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_salt_value: Option<Vec<u8>>,
     #[serde(rename = "@revisionsSpinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_spin_count: Option<u32>,
     #[serde(rename = "@workbookAlgorithmName")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_algorithm_name: Option<XmlString>,
     #[serde(rename = "@workbookHashValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_hash_value: Option<Vec<u8>>,
     #[serde(rename = "@workbookSaltValue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_salt_value: Option<Vec<u8>>,
     #[serde(rename = "@workbookSpinCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub workbook_spin_count: Option<u32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15164,35 +15254,35 @@ pub struct WorkbookProtection {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebPublishing {
     #[serde(rename = "@css")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub css: Option<bool>,
     #[serde(rename = "@thicket")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thicket: Option<bool>,
     #[serde(rename = "@longFileNames")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub long_file_names: Option<bool>,
     #[serde(rename = "@vml")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vml: Option<bool>,
     #[serde(rename = "@allowPng")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub allow_png: Option<bool>,
     #[serde(rename = "@targetScreenSize")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target_screen_size: Option<STTargetScreenSize>,
     #[serde(rename = "@dpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dpi: Option<u32>,
     #[serde(rename = "@codePage")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_page: Option<u32>,
     #[serde(rename = "@characterSet")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub character_set: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15202,14 +15292,14 @@ pub struct WebPublishing {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFunctionGroups {
     #[serde(rename = "@builtInGroupCount")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub built_in_group_count: Option<u32>,
     #[serde(rename = "functionGroup")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub function_group: Vec<Box<CTFunctionGroup>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15224,11 +15314,11 @@ pub struct CTFunctionGroups {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFunctionGroup {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15238,14 +15328,14 @@ pub struct CTFunctionGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTWebPublishObjects {
     #[serde(rename = "@count")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "webPublishObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub web_publish_object: Vec<Box<CTWebPublishObject>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
@@ -15264,19 +15354,19 @@ pub struct CTWebPublishObject {
     #[serde(rename = "@divId")]
     pub div_id: XmlString,
     #[serde(rename = "@sourceObject")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_object: Option<XmlString>,
     #[serde(rename = "@destinationFile")]
     pub destination_file: XmlString,
     #[serde(rename = "@title")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
-    #[serde(flatten)]
+    #[serde(skip)]
     #[cfg(feature = "extra-attrs")]
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]

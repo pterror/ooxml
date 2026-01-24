@@ -372,7 +372,7 @@ impl<'a> ParserGenerator<'a> {
         let fields = self.extract_fields(&def.pattern);
 
         if fields.is_empty() {
-            // Empty struct - simple impl
+            // Empty struct - skip all children with depth tracking
             let mut code = String::new();
             writeln!(code, "impl FromXml for {} {{", rust_name).unwrap();
             writeln!(
@@ -381,15 +381,25 @@ impl<'a> ParserGenerator<'a> {
             )
             .unwrap();
             writeln!(code, "        if !is_empty {{").unwrap();
-            writeln!(code, "            // Skip to end tag").unwrap();
+            writeln!(
+                code,
+                "            // Skip to matching end tag with depth tracking"
+            )
+            .unwrap();
             writeln!(code, "            let mut buf = Vec::new();").unwrap();
+            writeln!(code, "            let mut depth = 1u32;").unwrap();
             writeln!(code, "            loop {{").unwrap();
             writeln!(
                 code,
                 "                match reader.read_event_into(&mut buf)? {{"
             )
             .unwrap();
-            writeln!(code, "                    Event::End(_) => break,").unwrap();
+            writeln!(code, "                    Event::Start(_) => depth += 1,").unwrap();
+            writeln!(
+                code,
+                "                    Event::End(_) => {{ depth -= 1; if depth == 0 {{ break; }} }}"
+            )
+            .unwrap();
             writeln!(code, "                    Event::Eof => break,").unwrap();
             writeln!(code, "                    _ => {{}}").unwrap();
             writeln!(code, "                }}").unwrap();

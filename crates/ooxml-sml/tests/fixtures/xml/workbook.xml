@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: workbook root element -->
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+          xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <fileVersion appName="xl" lastEdited="7" lowestEdited="7" rupBuild="12345"/>
+    <workbookPr defaultThemeVersion="166925"/>
+    <bookViews>
+        <workbookView xWindow="0" yWindow="0" windowWidth="28800" windowHeight="12300"/>
+    </bookViews>
+    <sheets>
+        <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+        <sheet name="Sheet2" sheetId="2" r:id="rId2"/>
+        <sheet name="Hidden" sheetId="3" state="hidden" r:id="rId3"/>
+    </sheets>
+    <definedNames>
+        <definedName name="_xlnm.Print_Area" localSheetId="0">Sheet1!$A$1:$D$10</definedName>
+        <definedName name="MyRange">Sheet1!$B$2:$C$5</definedName>
+    </definedNames>
+    <calcPr calcId="191029"/>
+</workbook>

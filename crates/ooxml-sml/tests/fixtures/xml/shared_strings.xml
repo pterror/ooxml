@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: shared strings table -->
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="10" uniqueCount="7">
+    <si><t>Hello</t></si>
+    <si><t>World</t></si>
+    <si><t>Test String</t></si>
+    <si><t xml:space="preserve">  Spaces  </t></si>
+    <si>
+        <r><t>Plain </t></r>
+        <r><rPr><b/><sz val="12"/><color rgb="FFFF0000"/></rPr><t>Bold Red</t></r>
+        <r><t> Normal</t></r>
+    </si>
+    <si><t>日本語</t></si>
+    <si><t/></si>
+</sst>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: comments root element -->
+<comments xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <authors>
+        <author>John Doe</author>
+        <author>Jane Smith</author>
+    </authors>
+    <commentList>
+        <comment ref="A1" authorId="0">
+            <text>
+                <r><t>This is a comment</t></r>
+            </text>
+        </comment>
+        <comment ref="B2" authorId="1">
+            <text>
+                <r><rPr><b/></rPr><t>Bold text</t></r>
+                <r><t> and normal text</t></r>
+            </text>
+        </comment>
+        <comment ref="C3" authorId="0">
+            <text>
+                <t>Simple text comment</t>
+            </text>
+        </comment>
+    </commentList>
+</comments>
