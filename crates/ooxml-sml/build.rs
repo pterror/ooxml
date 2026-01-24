@@ -1,4 +1,6 @@
-use ooxml_codegen::{CodegenConfig, NameMappings, Schema, generate, generate_parsers, parse_rnc};
+use ooxml_codegen::{
+    CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers, parse_rnc,
+};
 use std::fs;
 use std::path::Path;
 
@@ -8,6 +10,10 @@ fn main() {
         "/../../spec/OfficeOpenXML-RELAXNG-Transitional"
     );
     let names_path = concat!(env!("CARGO_MANIFEST_DIR"), "/../../spec/ooxml-names.yaml");
+    let features_path = concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../spec/ooxml-features.yaml"
+    );
 
     // Paths to schemas
     let sml_path = format!("{}/sml.rnc", spec_dir);
@@ -17,6 +23,7 @@ fn main() {
     println!("cargo::rerun-if-changed={}", sml_path);
     println!("cargo::rerun-if-changed={}", shared_path);
     println!("cargo::rerun-if-changed={}", names_path);
+    println!("cargo::rerun-if-changed={}", features_path);
     println!("cargo::rerun-if-changed=build.rs");
 
     // The generated file is committed at src/generated.rs
@@ -83,12 +90,29 @@ fn main() {
         None
     };
 
+    // Load feature mappings if available
+    let feature_mappings = if Path::new(features_path).exists() {
+        match FeatureMappings::from_yaml_file(Path::new(features_path)) {
+            Ok(mappings) => {
+                eprintln!("Loaded feature mappings from {}", features_path);
+                Some(mappings)
+            }
+            Err(e) => {
+                eprintln!("Warning: Failed to load feature mappings: {}", e);
+                None
+            }
+        }
+    } else {
+        None
+    };
+
     // Generate Rust code
     // SML schema uses "sml_" prefix for SpreadsheetML types
     let config = CodegenConfig {
         strip_prefix: Some("sml_".to_string()),
         module_name: "sml".to_string(),
         name_mappings,
+        feature_mappings,
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);

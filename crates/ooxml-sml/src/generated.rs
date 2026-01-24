@@ -4394,15 +4394,19 @@ impl std::str::FromStr for STTargetScreenSize {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoFilter {
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@ref")]
     #[serde(default)]
     pub reference: Option<Reference>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "filterColumn")]
     #[serde(default)]
     pub filter_column: Vec<Box<FilterColumn>>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "sortState")]
     #[serde(default)]
     pub sort_state: Option<Box<SortState>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -4410,11 +4414,14 @@ pub struct AutoFilter {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FilterColumn {
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@colId")]
     pub column_id: u32,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@hiddenButton")]
     #[serde(default)]
     pub hidden_button: Option<bool>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@showButton")]
     #[serde(default)]
     pub show_button: Option<bool>,
@@ -4680,16 +4687,21 @@ pub struct CommentList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Comment {
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "@authorId")]
     pub author_id: u32,
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "@guid")]
     #[serde(default)]
     pub guid: Option<Guid>,
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "@shapeId")]
     #[serde(default)]
     pub shape_id: Option<u32>,
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "text")]
     pub text: Box<RichString>,
     #[serde(rename = "commentPr")]
@@ -8004,6 +8016,7 @@ pub struct CTDialogsheet {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Worksheet {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "sheetPr")]
     #[serde(default)]
     pub sheet_properties: Option<Box<SheetProperties>>,
@@ -8013,110 +8026,144 @@ pub struct Worksheet {
     #[serde(rename = "sheetViews")]
     #[serde(default)]
     pub sheet_views: Option<Box<SheetViews>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "sheetFormatPr")]
     #[serde(default)]
     pub sheet_format: Option<Box<SheetFormat>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cols")]
     #[serde(default)]
     pub cols: Vec<Box<Columns>>,
     #[serde(rename = "sheetData")]
     pub sheet_data: Box<SheetData>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "sheetCalcPr")]
     #[serde(default)]
     pub sheet_calc_pr: Option<Box<SheetCalcProperties>>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "sheetProtection")]
     #[serde(default)]
     pub sheet_protection: Option<Box<SheetProtection>>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "protectedRanges")]
     #[serde(default)]
     pub protected_ranges: Option<Box<ProtectedRanges>>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "scenarios")]
     #[serde(default)]
     pub scenarios: Option<Box<Scenarios>>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "autoFilter")]
     #[serde(default)]
     pub auto_filter: Option<Box<AutoFilter>>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "sortState")]
     #[serde(default)]
     pub sort_state: Option<Box<SortState>>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "dataConsolidate")]
     #[serde(default)]
     pub data_consolidate: Option<Box<CTDataConsolidate>>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "customSheetViews")]
     #[serde(default)]
     pub custom_sheet_views: Option<Box<CustomSheetViews>>,
     #[serde(rename = "mergeCells")]
     #[serde(default)]
     pub merged_cells: Option<Box<MergedCells>>,
+    #[cfg(feature = "sml-i18n")]
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "conditionalFormatting")]
     #[serde(default)]
     pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "dataValidations")]
     #[serde(default)]
     pub data_validations: Option<Box<DataValidations>>,
+    #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "hyperlinks")]
     #[serde(default)]
     pub hyperlinks: Option<Box<Hyperlinks>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "printOptions")]
     #[serde(default)]
     pub print_options: Option<Box<PrintOptions>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "pageMargins")]
     #[serde(default)]
     pub page_margins: Option<Box<PageMargins>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "pageSetup")]
     #[serde(default)]
     pub page_setup: Option<Box<PageSetup>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "headerFooter")]
     #[serde(default)]
     pub header_footer: Option<Box<HeaderFooter>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "rowBreaks")]
     #[serde(default)]
     pub row_breaks: Option<Box<PageBreaks>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "colBreaks")]
     #[serde(default)]
     pub col_breaks: Option<Box<PageBreaks>>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "customProperties")]
     #[serde(default)]
     pub custom_properties: Option<Box<CTCustomProperties>>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "cellWatches")]
     #[serde(default)]
     pub cell_watches: Option<Box<CellWatches>>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "ignoredErrors")]
     #[serde(default)]
     pub ignored_errors: Option<Box<IgnoredErrors>>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTags")]
     #[serde(default)]
     pub smart_tags: Option<Box<SmartTags>>,
+    #[cfg(feature = "sml-drawings")]
     #[serde(rename = "drawing")]
     #[serde(default)]
     pub drawing: Option<Box<Drawing>>,
+    #[cfg(feature = "sml-comments")]
     #[serde(rename = "legacyDrawing")]
     #[serde(default)]
     pub legacy_drawing: Option<Box<LegacyDrawing>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "legacyDrawingHF")]
     #[serde(default)]
     pub legacy_drawing_h_f: Option<Box<LegacyDrawing>>,
+    #[cfg(feature = "sml-drawings")]
     #[serde(rename = "drawingHF")]
     #[serde(default)]
     pub drawing_h_f: Option<Box<DrawingHeaderFooter>>,
+    #[cfg(feature = "sml-drawings")]
     #[serde(rename = "picture")]
     #[serde(default)]
     pub picture: Option<Box<SheetBackgroundPicture>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "oleObjects")]
     #[serde(default)]
     pub ole_objects: Option<Box<OleObjects>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "controls")]
     #[serde(default)]
     pub controls: Option<Box<Controls>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishItems")]
     #[serde(default)]
     pub web_publish_items: Option<Box<WebPublishItems>>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableParts")]
     #[serde(default)]
     pub table_parts: Option<Box<TableParts>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8175,31 +8222,41 @@ pub struct Columns {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Column {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@min")]
     pub start_column: u32,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@max")]
     pub end_column: u32,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@width")]
     #[serde(default)]
     pub width: Option<f64>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@style")]
     #[serde(default)]
     pub style: Option<u32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
     #[serde(default)]
     pub hidden: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bestFit")]
     #[serde(default)]
     pub best_fit: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customWidth")]
     #[serde(default)]
     pub custom_width: Option<bool>,
+    #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@phonetic")]
     #[serde(default)]
     pub phonetic: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
     #[serde(default)]
     pub outline_level: Option<u8>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
     #[serde(default)]
     pub collapsed: Option<bool>,
@@ -8216,36 +8273,46 @@ pub struct Row {
     #[serde(rename = "@s")]
     #[serde(default)]
     pub style_index: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customFormat")]
     #[serde(default)]
     pub custom_format: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@ht")]
     #[serde(default)]
     pub height: Option<f64>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
     #[serde(default)]
     pub hidden: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customHeight")]
     #[serde(default)]
     pub custom_height: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
     #[serde(default)]
     pub outline_level: Option<u8>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
     #[serde(default)]
     pub collapsed: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickTop")]
     #[serde(default)]
     pub thick_top: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickBot")]
     #[serde(default)]
     pub thick_bot: Option<bool>,
+    #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
     #[serde(default)]
     pub placeholder: Option<bool>,
     #[serde(rename = "c")]
     #[serde(default)]
     pub cells: Vec<Box<Cell>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8262,12 +8329,15 @@ pub struct Cell {
     #[serde(rename = "@t")]
     #[serde(default)]
     pub cell_type: Option<CellType>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "@cm")]
     #[serde(default)]
     pub cm: Option<u32>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "@vm")]
     #[serde(default)]
     pub vm: Option<u32>,
+    #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
     #[serde(default)]
     pub placeholder: Option<bool>,
@@ -8280,6 +8350,7 @@ pub struct Cell {
     #[serde(rename = "is")]
     #[serde(default)]
     pub is: Option<Box<RichString>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8343,36 +8414,46 @@ pub struct SheetViews {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SheetView {
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "@windowProtection")]
     #[serde(default)]
     pub window_protection: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@showFormulas")]
     #[serde(default)]
     pub show_formulas: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showGridLines")]
     #[serde(default)]
     pub show_grid_lines: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showRowColHeaders")]
     #[serde(default)]
     pub show_row_col_headers: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showZeros")]
     #[serde(default)]
     pub show_zeros: Option<bool>,
+    #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@rightToLeft")]
     #[serde(default)]
     pub right_to_left: Option<bool>,
     #[serde(rename = "@tabSelected")]
     #[serde(default)]
     pub tab_selected: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showRuler")]
     #[serde(default)]
     pub show_ruler: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showOutlineSymbols")]
     #[serde(default)]
     pub show_outline_symbols: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@defaultGridColor")]
     #[serde(default)]
     pub default_grid_color: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showWhiteSpace")]
     #[serde(default)]
     pub show_white_space: Option<bool>,
@@ -8382,6 +8463,7 @@ pub struct SheetView {
     #[serde(rename = "@topLeftCell")]
     #[serde(default)]
     pub top_left_cell: Option<CellRef>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@colorId")]
     #[serde(default)]
     pub color_id: Option<u32>,
@@ -8391,23 +8473,28 @@ pub struct SheetView {
     #[serde(rename = "@zoomScaleNormal")]
     #[serde(default)]
     pub zoom_scale_normal: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@zoomScaleSheetLayoutView")]
     #[serde(default)]
     pub zoom_scale_sheet_layout_view: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@zoomScalePageLayoutView")]
     #[serde(default)]
     pub zoom_scale_page_layout_view: Option<u32>,
     #[serde(rename = "@workbookViewId")]
     pub workbook_view_id: u32,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "pane")]
     #[serde(default)]
     pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
     #[serde(default)]
     pub selection: Vec<Box<Selection>>,
+    #[cfg(feature = "sml-pivot")]
     #[serde(rename = "pivotSelection")]
     #[serde(default)]
     pub pivot_selection: Vec<Box<CTPivotSelection>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8415,18 +8502,23 @@ pub struct SheetView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Pane {
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@xSplit")]
     #[serde(default)]
     pub x_split: Option<f64>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@ySplit")]
     #[serde(default)]
     pub y_split: Option<f64>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@topLeftCell")]
     #[serde(default)]
     pub top_left_cell: Option<CellRef>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@activePane")]
     #[serde(default)]
     pub active_pane: Option<PaneType>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@state")]
     #[serde(default)]
     pub state: Option<PaneState>,
@@ -8845,47 +8937,62 @@ pub struct DataValidations {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DataValidation {
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@type")]
     #[serde(default)]
     pub r#type: Option<ValidationType>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@errorStyle")]
     #[serde(default)]
     pub error_style: Option<ValidationErrorStyle>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@imeMode")]
     #[serde(default)]
     pub ime_mode: Option<STDataValidationImeMode>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@operator")]
     #[serde(default)]
     pub operator: Option<ValidationOperator>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@allowBlank")]
     #[serde(default)]
     pub allow_blank: Option<bool>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showDropDown")]
     #[serde(default)]
     pub show_drop_down: Option<bool>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showInputMessage")]
     #[serde(default)]
     pub show_input_message: Option<bool>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showErrorMessage")]
     #[serde(default)]
     pub show_error_message: Option<bool>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@errorTitle")]
     #[serde(default)]
     pub error_title: Option<XmlString>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@error")]
     #[serde(default)]
     pub error: Option<XmlString>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@promptTitle")]
     #[serde(default)]
     pub prompt_title: Option<XmlString>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@prompt")]
     #[serde(default)]
     pub prompt: Option<XmlString>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "formula1")]
     #[serde(default)]
     pub formula1: Option<STFormula>,
+    #[cfg(feature = "sml-validation")]
     #[serde(rename = "formula2")]
     #[serde(default)]
     pub formula2: Option<STFormula>,
@@ -8893,15 +9000,19 @@ pub struct DataValidation {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConditionalFormatting {
+    #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivot")]
     #[serde(default)]
     pub pivot: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@sqref")]
     #[serde(default)]
     pub square_reference: Option<SquareRef>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfRule")]
     #[serde(default)]
     pub cf_rule: Vec<Box<ConditionalRule>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8909,56 +9020,74 @@ pub struct ConditionalFormatting {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConditionalRule {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@type")]
     #[serde(default)]
     pub r#type: Option<ConditionalType>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@dxfId")]
     #[serde(default)]
     pub dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@priority")]
     pub priority: i32,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@stopIfTrue")]
     #[serde(default)]
     pub stop_if_true: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@aboveAverage")]
     #[serde(default)]
     pub above_average: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@percent")]
     #[serde(default)]
     pub percent: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bottom")]
     #[serde(default)]
     pub bottom: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@operator")]
     #[serde(default)]
     pub operator: Option<ConditionalOperator>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@text")]
     #[serde(default)]
     pub text: Option<String>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@timePeriod")]
     #[serde(default)]
     pub time_period: Option<STTimePeriod>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@rank")]
     #[serde(default)]
     pub rank: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@stdDev")]
     #[serde(default)]
     pub std_dev: Option<i32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@equalAverage")]
     #[serde(default)]
     pub equal_average: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "formula")]
     #[serde(default)]
     pub formula: Vec<STFormula>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "colorScale")]
     #[serde(default)]
     pub color_scale: Option<Box<ColorScale>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "dataBar")]
     #[serde(default)]
     pub data_bar: Option<Box<DataBar>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "iconSet")]
     #[serde(default)]
     pub icon_set: Option<Box<IconSet>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8973,14 +9102,18 @@ pub struct Hyperlinks {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Hyperlink {
+    #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@location")]
     #[serde(default)]
     pub location: Option<XmlString>,
+    #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@tooltip")]
     #[serde(default)]
     pub tooltip: Option<XmlString>,
+    #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@display")]
     #[serde(default)]
     pub display: Option<XmlString>,
@@ -8993,36 +9126,45 @@ pub struct CellFormula {
     #[serde(rename = "@t")]
     #[serde(default)]
     pub cell_type: Option<FormulaType>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@aca")]
     #[serde(default)]
     pub aca: Option<bool>,
     #[serde(rename = "@ref")]
     #[serde(default)]
     pub reference: Option<Reference>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dt2D")]
     #[serde(default)]
     pub dt2_d: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dtr")]
     #[serde(default)]
     pub dtr: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del1")]
     #[serde(default)]
     pub del1: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del2")]
     #[serde(default)]
     pub del2: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@r1")]
     #[serde(default)]
     pub r1: Option<CellRef>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@r2")]
     #[serde(default)]
     pub r2: Option<CellRef>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@ca")]
     #[serde(default)]
     pub ca: Option<bool>,
     #[serde(rename = "@si")]
     #[serde(default)]
     pub si: Option<u32>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@bx")]
     #[serde(default)]
     pub bx: Option<bool>,
@@ -9092,16 +9234,22 @@ pub struct ConditionalFormatValue {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageMargins {
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@left")]
     pub left: f64,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@right")]
     pub right: f64,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@top")]
     pub top: f64,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@bottom")]
     pub bottom: f64,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@header")]
     pub header: f64,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@footer")]
     pub footer: f64,
 }
@@ -9127,57 +9275,75 @@ pub struct PrintOptions {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageSetup {
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperSize")]
     #[serde(default)]
     pub paper_size: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperHeight")]
     #[serde(default)]
     pub paper_height: Option<STPositiveUniversalMeasure>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@paperWidth")]
     #[serde(default)]
     pub paper_width: Option<STPositiveUniversalMeasure>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@scale")]
     #[serde(default)]
     pub scale: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@firstPageNumber")]
     #[serde(default)]
     pub first_page_number: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@fitToWidth")]
     #[serde(default)]
     pub fit_to_width: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@fitToHeight")]
     #[serde(default)]
     pub fit_to_height: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@pageOrder")]
     #[serde(default)]
     pub page_order: Option<STPageOrder>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@orientation")]
     #[serde(default)]
     pub orientation: Option<STOrientation>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@usePrinterDefaults")]
     #[serde(default)]
     pub use_printer_defaults: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@blackAndWhite")]
     #[serde(default)]
     pub black_and_white: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@draft")]
     #[serde(default)]
     pub draft: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@cellComments")]
     #[serde(default)]
     pub cell_comments: Option<STCellComments>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@useFirstPageNumber")]
     #[serde(default)]
     pub use_first_page_number: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@errors")]
     #[serde(default)]
     pub errors: Option<STPrintError>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@horizontalDpi")]
     #[serde(default)]
     pub horizontal_dpi: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@verticalDpi")]
     #[serde(default)]
     pub vertical_dpi: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@copies")]
     #[serde(default)]
     pub copies: Option<u32>,
@@ -9185,33 +9351,43 @@ pub struct PageSetup {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HeaderFooter {
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentOddEven")]
     #[serde(default)]
     pub different_odd_even: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentFirst")]
     #[serde(default)]
     pub different_first: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@scaleWithDoc")]
     #[serde(default)]
     pub scale_with_doc: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@alignWithMargins")]
     #[serde(default)]
     pub align_with_margins: Option<bool>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "oddHeader")]
     #[serde(default)]
     pub odd_header: Option<XmlString>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "oddFooter")]
     #[serde(default)]
     pub odd_footer: Option<XmlString>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "evenHeader")]
     #[serde(default)]
     pub even_header: Option<XmlString>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "evenFooter")]
     #[serde(default)]
     pub even_footer: Option<XmlString>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "firstHeader")]
     #[serde(default)]
     pub first_header: Option<XmlString>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "firstFooter")]
     #[serde(default)]
     pub first_footer: Option<XmlString>,
@@ -10140,36 +10316,47 @@ pub type SmlStyleSheet = Box<Stylesheet>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Stylesheet {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "numFmts")]
     #[serde(default)]
     pub num_fmts: Option<Box<NumberFormats>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "fonts")]
     #[serde(default)]
     pub fonts: Option<Box<Fonts>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "fills")]
     #[serde(default)]
     pub fills: Option<Box<Fills>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "borders")]
     #[serde(default)]
     pub borders: Option<Box<Borders>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellStyleXfs")]
     #[serde(default)]
     pub cell_style_xfs: Option<Box<CellStyleFormats>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellXfs")]
     #[serde(default)]
     pub cell_xfs: Option<Box<CellFormats>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cellStyles")]
     #[serde(default)]
     pub cell_styles: Option<Box<CellStyles>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "dxfs")]
     #[serde(default)]
     pub dxfs: Option<Box<DifferentialFormats>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "tableStyles")]
     #[serde(default)]
     pub table_styles: Option<Box<TableStyles>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "colors")]
     #[serde(default)]
     pub colors: Option<Box<Colors>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -10218,12 +10405,15 @@ pub struct Borders {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Border {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalUp")]
     #[serde(default)]
     pub diagonal_up: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalDown")]
     #[serde(default)]
     pub diagonal_down: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@outline")]
     #[serde(default)]
     pub outline: Option<bool>,
@@ -10233,24 +10423,31 @@ pub struct Border {
     #[serde(rename = "end")]
     #[serde(default)]
     pub end: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "left")]
     #[serde(default)]
     pub left: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "right")]
     #[serde(default)]
     pub right: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "top")]
     #[serde(default)]
     pub top: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "bottom")]
     #[serde(default)]
     pub bottom: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "diagonal")]
     #[serde(default)]
     pub diagonal: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "vertical")]
     #[serde(default)]
     pub vertical: Option<Box<BorderProperties>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "horizontal")]
     #[serde(default)]
     pub horizontal: Option<Box<BorderProperties>>,
@@ -10404,51 +10601,67 @@ pub struct CellFormats {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Format {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
     pub number_format_id: Option<STNumFmtId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@fontId")]
     #[serde(default)]
     pub font_id: Option<STFontId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@fillId")]
     #[serde(default)]
     pub fill_id: Option<STFillId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@borderId")]
     #[serde(default)]
     pub border_id: Option<STBorderId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@xfId")]
     #[serde(default)]
     pub format_id: Option<STCellStyleXfId>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@quotePrefix")]
     #[serde(default)]
     pub quote_prefix: Option<bool>,
+    #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivotButton")]
     #[serde(default)]
     pub pivot_button: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyNumberFormat")]
     #[serde(default)]
     pub apply_number_format: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFont")]
     #[serde(default)]
     pub apply_font: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFill")]
     #[serde(default)]
     pub apply_fill: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyBorder")]
     #[serde(default)]
     pub apply_border: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyAlignment")]
     #[serde(default)]
     pub apply_alignment: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyProtection")]
     #[serde(default)]
     pub apply_protection: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "alignment")]
     #[serde(default)]
     pub alignment: Option<Box<CellAlignment>>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "protection")]
     #[serde(default)]
     pub protection: Option<Box<CellProtection>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -10871,80 +11084,107 @@ pub type SmlTable = Box<Table>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Table {
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@id")]
     pub id: u32,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@displayName")]
     pub display_name: XmlString,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@comment")]
     #[serde(default)]
     pub comment: Option<XmlString>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@tableType")]
     #[serde(default)]
     pub table_type: Option<STTableType>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowCount")]
     #[serde(default)]
     pub header_row_count: Option<u32>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRow")]
     #[serde(default)]
     pub insert_row: Option<bool>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRowShift")]
     #[serde(default)]
     pub insert_row_shift: Option<bool>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowCount")]
     #[serde(default)]
     pub totals_row_count: Option<u32>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowShown")]
     #[serde(default)]
     pub totals_row_shown: Option<bool>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@published")]
     #[serde(default)]
     pub published: Option<bool>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowDxfId")]
     #[serde(default)]
     pub header_row_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@dataDxfId")]
     #[serde(default)]
     pub data_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowDxfId")]
     #[serde(default)]
     pub totals_row_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowBorderDxfId")]
     #[serde(default)]
     pub header_row_border_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@tableBorderDxfId")]
     #[serde(default)]
     pub table_border_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowBorderDxfId")]
     #[serde(default)]
     pub totals_row_border_dxf_id: Option<STDxfId>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowCellStyle")]
     #[serde(default)]
     pub header_row_cell_style: Option<XmlString>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@dataCellStyle")]
     #[serde(default)]
     pub data_cell_style: Option<XmlString>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowCellStyle")]
     #[serde(default)]
     pub totals_row_cell_style: Option<XmlString>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "@connectionId")]
     #[serde(default)]
     pub connection_id: Option<u32>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "autoFilter")]
     #[serde(default)]
     pub auto_filter: Option<Box<AutoFilter>>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "sortState")]
     #[serde(default)]
     pub sort_state: Option<Box<SortState>>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableColumns")]
     pub table_columns: Box<TableColumns>,
+    #[cfg(feature = "sml-tables")]
     #[serde(rename = "tableStyleInfo")]
     #[serde(default)]
     pub table_style_info: Option<Box<TableStyleInfo>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -11117,12 +11357,14 @@ pub struct Workbook {
     #[serde(rename = "fileVersion")]
     #[serde(default)]
     pub file_version: Option<Box<FileVersion>>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "fileSharing")]
     #[serde(default)]
     pub file_sharing: Option<Box<FileSharing>>,
     #[serde(rename = "workbookPr")]
     #[serde(default)]
     pub workbook_pr: Option<Box<WorkbookProperties>>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "workbookProtection")]
     #[serde(default)]
     pub workbook_protection: Option<Box<WorkbookProtection>>,
@@ -11131,42 +11373,53 @@ pub struct Workbook {
     pub book_views: Option<Box<BookViews>>,
     #[serde(rename = "sheets")]
     pub sheets: Box<Sheets>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "functionGroups")]
     #[serde(default)]
     pub function_groups: Option<Box<CTFunctionGroups>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "externalReferences")]
     #[serde(default)]
     pub external_references: Option<Box<ExternalReferences>>,
     #[serde(rename = "definedNames")]
     #[serde(default)]
     pub defined_names: Option<Box<DefinedNames>>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "calcPr")]
     #[serde(default)]
     pub calc_pr: Option<Box<CalculationProperties>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "oleSize")]
     #[serde(default)]
     pub ole_size: Option<Box<CTOleSize>>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "customWorkbookViews")]
     #[serde(default)]
     pub custom_workbook_views: Option<Box<CustomWorkbookViews>>,
+    #[cfg(feature = "sml-pivot")]
     #[serde(rename = "pivotCaches")]
     #[serde(default)]
     pub pivot_caches: Option<Box<PivotCaches>>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTagPr")]
     #[serde(default)]
     pub smart_tag_pr: Option<Box<CTSmartTagPr>>,
+    #[cfg(feature = "sml-metadata")]
     #[serde(rename = "smartTagTypes")]
     #[serde(default)]
     pub smart_tag_types: Option<Box<CTSmartTagTypes>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishing")]
     #[serde(default)]
     pub web_publishing: Option<Box<WebPublishing>>,
     #[serde(rename = "fileRecoveryPr")]
     #[serde(default)]
     pub file_recovery_pr: Vec<Box<FileRecoveryProperties>>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishObjects")]
     #[serde(default)]
     pub web_publish_objects: Option<Box<CTWebPublishObjects>>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -11338,6 +11591,7 @@ pub struct Sheet {
     pub name: XmlString,
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@state")]
     #[serde(default)]
     pub state: Option<SheetState>,
@@ -11506,42 +11760,53 @@ pub struct DefinedName {
     #[serde(rename = "@comment")]
     #[serde(default)]
     pub comment: Option<XmlString>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@customMenu")]
     #[serde(default)]
     pub custom_menu: Option<XmlString>,
     #[serde(rename = "@description")]
     #[serde(default)]
     pub description: Option<XmlString>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@help")]
     #[serde(default)]
     pub help: Option<XmlString>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@statusBar")]
     #[serde(default)]
     pub status_bar: Option<XmlString>,
     #[serde(rename = "@localSheetId")]
     #[serde(default)]
     pub local_sheet_id: Option<u32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
     #[serde(default)]
     pub hidden: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@function")]
     #[serde(default)]
     pub function: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@vbProcedure")]
     #[serde(default)]
     pub vb_procedure: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@xlm")]
     #[serde(default)]
     pub xlm: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@functionGroupId")]
     #[serde(default)]
     pub function_group_id: Option<u32>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@shortcutKey")]
     #[serde(default)]
     pub shortcut_key: Option<XmlString>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "@publishToServer")]
     #[serde(default)]
     pub publish_to_server: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@workbookParameter")]
     #[serde(default)]
     pub workbook_parameter: Option<bool>,

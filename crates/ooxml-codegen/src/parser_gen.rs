@@ -116,6 +116,7 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output).unwrap();
         writeln!(self.output, "#![allow(unused_variables)]").unwrap();
         writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();
+        writeln!(self.output, "#![allow(clippy::match_single_binding)]").unwrap();
         writeln!(self.output, "#![allow(clippy::manual_is_multiple_of)]").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "use super::generated::*;").unwrap();
@@ -403,10 +404,18 @@ impl<'a> ParserGenerator<'a> {
             let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
             let base_name = base_name.trim_start_matches('_');
             let var_name = format!("f_{}", base_name);
+
+            // Add cfg attribute for feature-gated fields
+            if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                write!(code, "        #[cfg(feature = \"{}\")] ", feature).unwrap();
+            } else {
+                write!(code, "        ").unwrap();
+            }
+
             if field.is_vec {
-                writeln!(code, "        let mut {} = Vec::new();", var_name).unwrap();
+                writeln!(code, "let mut {} = Vec::new();", var_name).unwrap();
             } else if field.is_optional {
-                writeln!(code, "        let mut {} = None;", var_name).unwrap();
+                writeln!(code, "let mut {} = None;", var_name).unwrap();
             } else {
                 let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
                 let full_type = if needs_box {
@@ -414,12 +423,7 @@ impl<'a> ParserGenerator<'a> {
                 } else {
                     rust_type
                 };
-                writeln!(
-                    code,
-                    "        let mut {}: Option<{}> = None;",
-                    var_name, full_type
-                )
-                .unwrap();
+                writeln!(code, "let mut {}: Option<{}> = None;", var_name, full_type).unwrap();
             }
         }
 
@@ -439,6 +443,11 @@ impl<'a> ParserGenerator<'a> {
                 let base_name = base_name.trim_start_matches('_');
                 let var_name = format!("f_{}", base_name);
                 let parse_expr = self.gen_attr_parse_expr(&field.pattern);
+
+                // Add cfg attribute for feature-gated fields
+                if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                    writeln!(code, "                #[cfg(feature = \"{}\")]", feature).unwrap();
+                }
                 writeln!(code, "                b\"{}\" => {{", field.xml_name).unwrap();
                 writeln!(
                     code,
@@ -478,6 +487,16 @@ impl<'a> ParserGenerator<'a> {
                 let base_name = base_name.trim_start_matches('_');
                 let var_name = format!("f_{}", base_name);
                 let parse_expr = self.gen_element_parse_code(field, false);
+
+                // Add cfg attribute for feature-gated fields
+                if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                    writeln!(
+                        code,
+                        "                            #[cfg(feature = \"{}\")]",
+                        feature
+                    )
+                    .unwrap();
+                }
                 writeln!(
                     code,
                     "                            b\"{}\" => {{",
@@ -524,6 +543,16 @@ impl<'a> ParserGenerator<'a> {
                 let base_name = base_name.trim_start_matches('_');
                 let var_name = format!("f_{}", base_name);
                 let parse_expr = self.gen_element_parse_code(field, true);
+
+                // Add cfg attribute for feature-gated fields
+                if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                    writeln!(
+                        code,
+                        "                            #[cfg(feature = \"{}\")]",
+                        feature
+                    )
+                    .unwrap();
+                }
                 writeln!(
                     code,
                     "                            b\"{}\" => {{",
@@ -602,6 +631,12 @@ impl<'a> ParserGenerator<'a> {
             let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
             let base_name = base_name.trim_start_matches('_');
             let var_name = format!("f_{}", base_name);
+
+            // Add cfg attribute for feature-gated fields
+            if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                writeln!(code, "            #[cfg(feature = \"{}\")]", feature).unwrap();
+            }
+
             if field.is_optional || field.is_vec {
                 writeln!(code, "            {}: {},", field.name, var_name).unwrap();
             } else {
@@ -796,6 +831,18 @@ impl<'a> ParserGenerator<'a> {
             return mapped.to_string();
         }
         to_snake_case(&qname.local)
+    }
+
+    /// Get the feature name for a field if it requires feature gating.
+    /// Returns None if the field is "core" (always included) or unmapped.
+    fn get_field_feature(&self, struct_name: &str, xml_field_name: &str) -> Option<String> {
+        self.config
+            .feature_mappings
+            .as_ref()
+            .and_then(|fm| {
+                fm.primary_feature(&self.config.module_name, struct_name, xml_field_name)
+            })
+            .map(|feature| format!("{}-{}", self.config.module_name, feature))
     }
 
     fn pattern_to_rust_type(&self, pattern: &Pattern) -> (String, bool) {

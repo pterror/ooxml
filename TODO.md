@@ -40,6 +40,13 @@ DocumentBuilder handles common cases but doesn't expose:
 
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
 
+## Codegen Performance
+
+- [ ] **Lazy/cursor API** - Alternate API that avoids struct materialization for high-performance streaming use cases. Iterator-based access to rows/cells without allocating intermediate structs.
+- [ ] **Feature-gated extra_attrs** - Capture unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Gate behind a feature flag (e.g., `roundtrip`) to avoid overhead when not needed.
+- [ ] **Feature-gated unknown children** - Capture unknown child elements in `extra_children: Vec<RawXml>` for full roundtrip support. Separate feature flag (e.g., `roundtrip-children`) since this has higher overhead than attrs.
+- [ ] **Per-field feature gating** - Use `spec/ooxml-features.yaml` to gate non-core fields behind features (styling, formulas, etc.). Non-featured fields go to extra_attrs when the feature is disabled.
+
 ## Robustness
 
 - [ ] Edge case handling from corpus analysis

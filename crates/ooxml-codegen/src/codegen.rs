@@ -90,6 +90,87 @@ impl NameMappings {
     }
 }
 
+// =============================================================================
+// Feature mappings for conditional compilation
+// =============================================================================
+
+/// Feature tags for a single element's attributes/children.
+/// Maps attribute/child name -> list of feature tags.
+pub type ElementFeatures = HashMap<String, Vec<String>>;
+
+/// Feature mappings for a single module.
+/// Maps element name (Rust name like "Row") -> attribute/child features.
+pub type ModuleFeatures = HashMap<String, ElementFeatures>;
+
+/// Complete feature mappings file structure.
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct FeatureMappings {
+    /// SpreadsheetML feature mappings.
+    #[serde(default)]
+    pub sml: ModuleFeatures,
+    /// WordprocessingML feature mappings.
+    #[serde(default)]
+    pub wml: ModuleFeatures,
+    /// PresentationML feature mappings.
+    #[serde(default)]
+    pub pml: ModuleFeatures,
+    /// DrawingML feature mappings.
+    #[serde(default)]
+    pub dml: ModuleFeatures,
+}
+
+impl FeatureMappings {
+    /// Load mappings from a YAML string.
+    pub fn from_yaml(yaml: &str) -> Result<Self, serde_yaml::Error> {
+        serde_yaml::from_str(yaml)
+    }
+
+    /// Load mappings from a YAML file.
+    pub fn from_yaml_file(path: &std::path::Path) -> Result<Self, Box<dyn std::error::Error>> {
+        let contents = std::fs::read_to_string(path)?;
+        Ok(Self::from_yaml(&contents)?)
+    }
+
+    /// Get the module features for a given module name.
+    pub fn for_module(&self, module: &str) -> &ModuleFeatures {
+        match module {
+            "sml" => &self.sml,
+            "wml" => &self.wml,
+            "pml" => &self.pml,
+            "dml" => &self.dml,
+            _ => &self.sml, // Default to sml
+        }
+    }
+
+    /// Get feature tags for a specific element's attribute/child.
+    /// Returns None if no mapping exists (meaning it's always included).
+    pub fn get_tags(&self, module: &str, element: &str, field: &str) -> Option<&[String]> {
+        self.for_module(module)
+            .get(element)
+            .and_then(|elem| elem.get(field))
+            .map(|v| v.as_slice())
+    }
+
+    /// Check if a field has the "core" tag (always included).
+    pub fn is_core(&self, module: &str, element: &str, field: &str) -> bool {
+        self.get_tags(module, element, field)
+            .is_some_and(|tags| tags.iter().any(|t| t == "core"))
+    }
+
+    /// Get the primary feature name for a field (first non-core tag).
+    /// Returns None if no feature gating needed (core or unmapped).
+    pub fn primary_feature(&self, module: &str, element: &str, field: &str) -> Option<&str> {
+        self.get_tags(module, element, field).and_then(|tags| {
+            // If it's core, no feature gating needed
+            if tags.iter().any(|t| t == "core") {
+                return None;
+            }
+            // Return first tag as the primary feature
+            tags.first().map(|s| s.as_str())
+        })
+    }
+}
+
 /// Code generation configuration.
 #[derive(Debug, Clone, Default)]
 pub struct CodegenConfig {
@@ -99,6 +180,8 @@ pub struct CodegenConfig {
     pub module_name: String,
     /// Optional name mappings for nicer Rust names.
     pub name_mappings: Option<NameMappings>,
+    /// Optional feature mappings for conditional compilation.
+    pub feature_mappings: Option<FeatureMappings>,
     /// Warn about types/fields without mappings (useful for finding unmapped items).
     pub warn_unmapped: bool,
 }
@@ -498,6 +581,11 @@ impl<'a> Generator<'a> {
                     inner_type
                 };
 
+                // Add feature cfg attribute if not core
+                if let Some(ref feature) = self.get_field_feature(&rust_name, &field.xml_name) {
+                    writeln!(code, "    #[cfg(feature = \"{}\")]", feature).unwrap();
+                }
+
                 // Add serde attributes
                 let xml_name = &field.xml_name;
                 if field.is_text_content {
@@ -676,6 +764,19 @@ impl<'a> Generator<'a> {
 
         // Fall back to snake_case conversion
         to_snake_case(&qname.local)
+    }
+
+    /// Get the feature name for a field if it requires feature gating.
+    /// Returns None if the field is "core" (always included) or unmapped.
+    /// Returns the feature name prefixed with the module name (e.g., "sml-styling").
+    fn get_field_feature(&self, struct_name: &str, xml_field_name: &str) -> Option<String> {
+        self.config
+            .feature_mappings
+            .as_ref()
+            .and_then(|fm| {
+                fm.primary_feature(&self.config.module_name, struct_name, xml_field_name)
+            })
+            .map(|feature| format!("{}-{}", self.config.module_name, feature))
     }
 
     fn xsd_to_rust(&self, library: &str, name: &str) -> &'static str {
