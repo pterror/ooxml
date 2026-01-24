@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: merged cell regions -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:E10"/>
+    <sheetData>
+        <row r="1">
+            <!-- Title spanning 4 columns -->
+            <c r="A1" t="s"><v>0</v></c>
+        </row>
+        <row r="3">
+            <!-- Header cells -->
+            <c r="A3" t="s"><v>1</v></c>
+            <c r="B3" t="s"><v>2</v></c>
+            <c r="C3" t="s"><v>3</v></c>
+        </row>
+        <row r="4">
+            <!-- Vertical merge start -->
+            <c r="A4" t="s"><v>4</v></c>
+            <c r="B4"><v>100</v></c>
+            <c r="C4"><v>200</v></c>
+        </row>
+        <row r="5">
+            <c r="B5"><v>150</v></c>
+            <c r="C5"><v>250</v></c>
+        </row>
+    </sheetData>
+    <mergeCells count="3">
+        <!-- Title row: A1:D1 -->
+        <mergeCell ref="A1:D1"/>
+        <!-- Vertical merge: A4:A5 -->
+        <mergeCell ref="A4:A5"/>
+        <!-- Multi-cell merge: D4:E5 -->
+        <mergeCell ref="D4:E5"/>
+    </mergeCells>
+</worksheet>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: column widths and row heights -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:D10"/>
+    <sheetFormatPr defaultRowHeight="15" defaultColWidth="8.43"/>
+    <cols>
+        <!-- Single column with custom width -->
+        <col min="1" max="1" width="20" customWidth="1"/>
+        <!-- Range of columns -->
+        <col min="2" max="3" width="15.5" style="1"/>
+        <!-- Hidden column -->
+        <col min="4" max="4" width="0" hidden="1"/>
+        <!-- Best fit column -->
+        <col min="5" max="5" width="12" bestFit="1" customWidth="1"/>
+    </cols>
+    <sheetData>
+        <row r="1" ht="25" customHeight="1">
+            <c r="A1" t="s"><v>0</v></c>
+        </row>
+        <row r="2" ht="30">
+            <c r="A2"><v>1</v></c>
+        </row>
+        <!-- Hidden row -->
+        <row r="3" hidden="1">
+            <c r="A3"><v>Hidden</v></c>
+        </row>
+        <!-- Row with style -->
+        <row r="4" s="2" customFormat="1">
+            <c r="A4"><v>Styled Row</v></c>
+        </row>
+        <!-- Collapsed row (outline) -->
+        <row r="5" outlineLevel="1" collapsed="1">
+            <c r="A5"><v>Outline</v></c>
+        </row>
+    </sheetData>
+</worksheet>

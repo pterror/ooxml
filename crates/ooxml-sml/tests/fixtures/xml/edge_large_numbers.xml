@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edge case: large numbers, precision, special values -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:A10"/>
+    <sheetData>
+        <row r="1">
+            <!-- Large integer -->
+            <c r="A1"><v>9999999999999999</v></c>
+        </row>
+        <row r="2">
+            <!-- Very small number -->
+            <c r="A2"><v>0.000000000001</v></c>
+        </row>
+        <row r="3">
+            <!-- Scientific notation -->
+            <c r="A3"><v>1.23E+15</v></c>
+        </row>
+        <row r="4">
+            <!-- Negative scientific -->
+            <c r="A4"><v>-9.87E-10</v></c>
+        </row>
+        <row r="5">
+            <!-- Max double -->
+            <c r="A5"><v>1.7976931348623157E+308</v></c>
+        </row>
+        <row r="6">
+            <!-- Min positive double -->
+            <c r="A6"><v>2.2250738585072014E-308</v></c>
+        </row>
+        <row r="7">
+            <!-- Many decimal places -->
+            <c r="A7"><v>3.141592653589793</v></c>
+        </row>
+        <row r="8">
+            <!-- Zero -->
+            <c r="A8"><v>0</v></c>
+        </row>
+        <row r="9">
+            <!-- Negative zero (should equal zero) -->
+            <c r="A9"><v>-0</v></c>
+        </row>
+        <row r="10">
+            <!-- Date as number (Excel date serial) -->
+            <c r="A10"><v>45000.5</v></c>
+        </row>
+    </sheetData>
+</worksheet>

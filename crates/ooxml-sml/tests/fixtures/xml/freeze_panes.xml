@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: sheet views with frozen panes, split panes, selection -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetViews>
+        <!-- Frozen row (header row) -->
+        <sheetView tabSelected="1" workbookViewId="0">
+            <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>
+            <selection pane="bottomLeft" activeCell="A2" sqref="A2"/>
+        </sheetView>
+    </sheetViews>
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s"><v>0</v></c>
+            <c r="B1" t="s"><v>1</v></c>
+            <c r="C1" t="s"><v>2</v></c>
+        </row>
+        <row r="2">
+            <c r="A2"><v>1</v></c>
+            <c r="B2"><v>2</v></c>
+            <c r="C2"><v>3</v></c>
+        </row>
+    </sheetData>
+</worksheet>

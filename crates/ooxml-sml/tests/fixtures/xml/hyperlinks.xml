@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: hyperlinks (internal, external, email) -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <dimension ref="A1:A5"/>
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s"><v>0</v></c>
+        </row>
+        <row r="2">
+            <c r="A2" t="s"><v>1</v></c>
+        </row>
+        <row r="3">
+            <c r="A3" t="s"><v>2</v></c>
+        </row>
+        <row r="4">
+            <c r="A4" t="s"><v>3</v></c>
+        </row>
+        <row r="5">
+            <c r="A5" t="s"><v>4</v></c>
+        </row>
+    </sheetData>
+    <hyperlinks>
+        <!-- External URL -->
+        <hyperlink ref="A1" r:id="rId1" tooltip="Click to visit"/>
+        <!-- Internal reference to another sheet -->
+        <hyperlink ref="A2" location="Sheet2!A1" display="Go to Sheet2"/>
+        <!-- Internal reference with defined name -->
+        <hyperlink ref="A3" location="MyRange"/>
+        <!-- Email link -->
+        <hyperlink ref="A4" r:id="rId2"/>
+        <!-- File link -->
+        <hyperlink ref="A5" r:id="rId3"/>
+    </hyperlinks>
+</worksheet>

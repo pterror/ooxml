@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: data validation rules -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:D10"/>
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s"><v>0</v></c>
+            <c r="B1" t="s"><v>1</v></c>
+            <c r="C1" t="s"><v>2</v></c>
+            <c r="D1" t="s"><v>3</v></c>
+        </row>
+    </sheetData>
+    <dataValidations count="5">
+        <!-- Dropdown list -->
+        <dataValidation type="list" allowBlank="1" showInputMessage="1" showErrorMessage="1" sqref="A2:A10">
+            <formula1>"Yes,No,Maybe"</formula1>
+        </dataValidation>
+        <!-- Whole number between 1 and 100 -->
+        <dataValidation type="whole" operator="between" allowBlank="1" sqref="B2:B10"
+            errorTitle="Invalid Number" error="Please enter a number between 1 and 100"
+            promptTitle="Enter Number" prompt="Enter a whole number from 1 to 100">
+            <formula1>1</formula1>
+            <formula2>100</formula2>
+        </dataValidation>
+        <!-- Decimal greater than 0 -->
+        <dataValidation type="decimal" operator="greaterThan" sqref="C2:C10">
+            <formula1>0</formula1>
+        </dataValidation>
+        <!-- Date validation -->
+        <dataValidation type="date" operator="greaterThanOrEqual" sqref="D2:D10">
+            <formula1>TODAY()</formula1>
+        </dataValidation>
+        <!-- Text length -->
+        <dataValidation type="textLength" operator="lessThanOrEqual" sqref="E2:E10">
+            <formula1>50</formula1>
+        </dataValidation>
+    </dataValidations>
+</worksheet>

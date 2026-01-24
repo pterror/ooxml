@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: conditional formatting rules -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:D10"/>
+    <sheetData>
+        <row r="1">
+            <c r="A1"><v>10</v></c>
+            <c r="B1"><v>20</v></c>
+            <c r="C1"><v>30</v></c>
+            <c r="D1"><v>40</v></c>
+        </row>
+    </sheetData>
+    <conditionalFormatting sqref="A1:A10">
+        <!-- Cell value greater than -->
+        <cfRule type="cellIs" dxfId="0" priority="1" operator="greaterThan">
+            <formula>50</formula>
+        </cfRule>
+        <!-- Cell value between -->
+        <cfRule type="cellIs" dxfId="1" priority="2" operator="between">
+            <formula>10</formula>
+            <formula>50</formula>
+        </cfRule>
+    </conditionalFormatting>
+    <conditionalFormatting sqref="B1:B10">
+        <!-- Expression-based rule -->
+        <cfRule type="expression" dxfId="2" priority="3">
+            <formula>$B1&gt;$A1</formula>
+        </cfRule>
+    </conditionalFormatting>
+    <conditionalFormatting sqref="C1:C10">
+        <!-- Color scale (2 colors) -->
+        <cfRule type="colorScale" priority="4">
+            <colorScale>
+                <cfvo type="min"/>
+                <cfvo type="max"/>
+                <color rgb="FFF8696B"/>
+                <color rgb="FF63BE7B"/>
+            </colorScale>
+        </cfRule>
+    </conditionalFormatting>
+    <conditionalFormatting sqref="D1:D10">
+        <!-- Data bar -->
+        <cfRule type="dataBar" priority="5">
+            <dataBar>
+                <cfvo type="min"/>
+                <cfvo type="max"/>
+                <color rgb="FF638EC6"/>
+            </dataBar>
+        </cfRule>
+    </conditionalFormatting>
+</worksheet>

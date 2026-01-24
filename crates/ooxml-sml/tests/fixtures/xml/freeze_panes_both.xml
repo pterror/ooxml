@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: both row and column frozen -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetViews>
+        <sheetView workbookViewId="0">
+            <!-- Freeze first row and first column -->
+            <pane xSplit="1" ySplit="1" topLeftCell="B2" activePane="bottomRight" state="frozen"/>
+            <selection pane="topRight" activeCell="B1" sqref="B1"/>
+            <selection pane="bottomLeft" activeCell="A2" sqref="A2"/>
+            <selection pane="bottomRight" activeCell="B2" sqref="B2"/>
+        </sheetView>
+    </sheetViews>
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s"><v>0</v></c>
+            <c r="B1" t="s"><v>1</v></c>
+        </row>
+    </sheetData>
+</worksheet>

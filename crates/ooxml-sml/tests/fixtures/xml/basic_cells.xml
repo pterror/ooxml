@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Tests: basic cell types (number, string, boolean, error, shared string, inline string) -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:F2"/>
+    <sheetData>
+        <row r="1">
+            <!-- Number (implicit type) -->
+            <c r="A1"><v>42.5</v></c>
+            <!-- Explicit number type -->
+            <c r="B1" t="n"><v>100</v></c>
+            <!-- Shared string reference -->
+            <c r="C1" t="s"><v>0</v></c>
+            <!-- Boolean true -->
+            <c r="D1" t="b"><v>1</v></c>
+            <!-- Error value -->
+            <c r="E1" t="e"><v>#DIV/0!</v></c>
+            <!-- Inline string -->
+            <c r="F1" t="inlineStr"><is><t>Inline Text</t></is></c>
+        </row>
+        <row r="2">
+            <!-- Negative number -->
+            <c r="A2"><v>-123.456</v></c>
+            <!-- Boolean false -->
+            <c r="B2" t="b"><v>0</v></c>
+            <!-- Formula string result -->
+            <c r="C2" t="str"><v>Calculated</v></c>
+            <!-- Empty cell with style -->
+            <c r="D2" s="1"/>
+        </row>
+    </sheetData>
+</worksheet>

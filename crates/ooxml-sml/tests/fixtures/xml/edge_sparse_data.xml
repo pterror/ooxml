@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edge case: sparse data with gaps in rows/columns -->
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <dimension ref="A1:ZZ1000"/>
+    <sheetData>
+        <!-- First row normal -->
+        <row r="1">
+            <c r="A1"><v>1</v></c>
+        </row>
+        <!-- Large gap to row 100 -->
+        <row r="100">
+            <c r="A100"><v>100</v></c>
+            <!-- Gap to column Z -->
+            <c r="Z100"><v>26</v></c>
+        </row>
+        <!-- Another gap -->
+        <row r="500">
+            <c r="AA500"><v>27</v></c>
+            <c r="ZZ500"><v>702</v></c>
+        </row>
+        <!-- Last row -->
+        <row r="1000">
+            <c r="A1000"><v>End</v></c>
+        </row>
+    </sheetData>
+</worksheet>
