@@ -377,18 +377,22 @@ pub trait WorksheetExt {
     fn rows(&self) -> impl Iterator<Item = &Row>;
 
     /// Check if the worksheet has an auto-filter.
+    #[cfg(feature = "sml-filtering")]
     fn has_auto_filter(&self) -> bool;
 
     /// Check if the worksheet has merged cells.
     fn has_merged_cells(&self) -> bool;
 
     /// Check if the worksheet has conditional formatting.
+    #[cfg(feature = "sml-styling")]
     fn has_conditional_formatting(&self) -> bool;
 
     /// Check if the worksheet has data validations.
+    #[cfg(feature = "sml-validation")]
     fn has_data_validations(&self) -> bool;
 
     /// Check if the worksheet has freeze panes.
+    #[cfg(feature = "sml-structure")]
     fn has_freeze_panes(&self) -> bool;
 }
 
@@ -433,6 +437,7 @@ impl WorksheetExt for Worksheet {
         self.sheet_data.row.iter().map(|r| r.as_ref())
     }
 
+    #[cfg(feature = "sml-filtering")]
     fn has_auto_filter(&self) -> bool {
         self.auto_filter.is_some()
     }
@@ -441,14 +446,17 @@ impl WorksheetExt for Worksheet {
         self.merged_cells.is_some()
     }
 
+    #[cfg(feature = "sml-styling")]
     fn has_conditional_formatting(&self) -> bool {
         !self.conditional_formatting.is_empty()
     }
 
+    #[cfg(feature = "sml-validation")]
     fn has_data_validations(&self) -> bool {
         self.data_validations.is_some()
     }
 
+    #[cfg(feature = "sml-structure")]
     fn has_freeze_panes(&self) -> bool {
         // Check if any sheet view has a pane with frozen state
         self.sheet_views
@@ -669,6 +677,7 @@ impl ResolvedSheet {
     // -------------------------------------------------------------------------
 
     /// Check if the sheet has an auto-filter.
+    #[cfg(feature = "sml-filtering")]
     pub fn has_auto_filter(&self) -> bool {
         self.worksheet.has_auto_filter()
     }
@@ -679,16 +688,19 @@ impl ResolvedSheet {
     }
 
     /// Check if the sheet has conditional formatting.
+    #[cfg(feature = "sml-styling")]
     pub fn has_conditional_formatting(&self) -> bool {
         self.worksheet.has_conditional_formatting()
     }
 
     /// Check if the sheet has data validations.
+    #[cfg(feature = "sml-validation")]
     pub fn has_data_validations(&self) -> bool {
         self.worksheet.has_data_validations()
     }
 
     /// Check if the sheet has freeze panes.
+    #[cfg(feature = "sml-structure")]
     pub fn has_freeze_panes(&self) -> bool {
         self.worksheet.has_freeze_panes()
     }
@@ -764,16 +776,19 @@ impl ResolvedSheet {
     }
 
     /// Get conditional formatting rules (raw data).
+    #[cfg(feature = "sml-styling")]
     pub fn conditional_formatting(&self) -> &[Box<crate::types::ConditionalFormatting>] {
         &self.worksheet.conditional_formatting
     }
 
     /// Get data validations (raw data).
+    #[cfg(feature = "sml-validation")]
     pub fn data_validations(&self) -> Option<&crate::types::DataValidations> {
         self.worksheet.data_validations.as_deref()
     }
 
     /// Get the auto-filter configuration (raw data).
+    #[cfg(feature = "sml-filtering")]
     pub fn auto_filter(&self) -> Option<&crate::types::AutoFilter> {
         self.worksheet.auto_filter.as_deref()
     }
@@ -784,6 +799,7 @@ impl ResolvedSheet {
     }
 
     /// Get the freeze pane configuration (if any).
+    #[cfg(feature = "sml-structure")]
     pub fn freeze_pane(&self) -> Option<&crate::types::Pane> {
         self.worksheet
             .sheet_views
@@ -793,6 +809,7 @@ impl ResolvedSheet {
     }
 
     /// Get column definitions.
+    #[cfg(feature = "sml-styling")]
     pub fn columns(&self) -> &[Box<crate::types::Columns>] {
         &self.worksheet.cols
     }

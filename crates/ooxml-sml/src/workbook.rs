@@ -230,48 +230,11 @@ impl<R: Read + Seek> Workbook<R> {
 
         // Parse the worksheet using generated FromXml parser
         let worksheet = if is_chartsheet {
-            // Chartsheets don't have the same structure - create empty worksheet
-            crate::types::Worksheet {
-                sheet_properties: None,
-                dimension: None,
-                sheet_views: None,
-                sheet_format: None,
-                cols: Vec::new(),
-                sheet_data: Box::new(crate::types::SheetData { row: Vec::new() }),
-                sheet_calc_pr: None,
-                sheet_protection: None,
-                protected_ranges: None,
-                scenarios: None,
-                auto_filter: None,
-                sort_state: None,
-                data_consolidate: None,
-                custom_sheet_views: None,
-                merged_cells: None,
-                phonetic_pr: None,
-                conditional_formatting: Vec::new(),
-                data_validations: None,
-                hyperlinks: None,
-                print_options: None,
-                page_margins: None,
-                page_setup: None,
-                header_footer: None,
-                row_breaks: None,
-                col_breaks: None,
-                custom_properties: None,
-                cell_watches: None,
-                ignored_errors: None,
-                smart_tags: None,
-                drawing: None,
-                legacy_drawing: None,
-                legacy_drawing_h_f: None,
-                drawing_h_f: None,
-                picture: None,
-                ole_objects: None,
-                controls: None,
-                web_publish_items: None,
-                table_parts: None,
-                extension_list: None,
-            }
+            // Chartsheets don't have the same structure - parse minimal empty worksheet XML
+            // This ensures feature-gated fields are handled correctly by the generated parser
+            let minimal_xml = br#"<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData/></worksheet>"#;
+            parse_worksheet(minimal_xml)
+                .map_err(|e| Error::Invalid(format!("Chartsheet parse error: {:?}", e)))?
         } else {
             parse_worksheet(&data).map_err(|e| Error::Invalid(format!("Parse error: {:?}", e)))?
         };
