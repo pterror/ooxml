@@ -123,6 +123,8 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "use quick_xml::Reader;").unwrap();
         writeln!(self.output, "use quick_xml::events::{{Event, BytesStart}};").unwrap();
         writeln!(self.output, "use std::io::BufRead;").unwrap();
+        writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
+        writeln!(self.output, "use ooxml_xml::{{RawXmlElement, RawXmlNode}};").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "/// Error type for XML parsing.").unwrap();
         writeln!(self.output, "#[derive(Debug)]").unwrap();
@@ -430,6 +432,11 @@ impl<'a> ParserGenerator<'a> {
         // Parse attributes
         let attr_fields: Vec<_> = fields.iter().filter(|f| f.is_attribute).collect();
         let has_attrs = !attr_fields.is_empty();
+        let elem_fields: Vec<_> = fields
+            .iter()
+            .filter(|f| !f.is_attribute && !f.is_text_content)
+            .collect();
+        let has_children = !elem_fields.is_empty();
         if has_attrs {
             // Declare extra_attrs for capturing unknown attributes (feature-gated)
             writeln!(code, "        #[cfg(feature = \"extra-attrs\")]").unwrap();
@@ -438,7 +445,16 @@ impl<'a> ParserGenerator<'a> {
                 "        let mut extra_attrs = std::collections::HashMap::new();"
             )
             .unwrap();
+        }
+        if has_children {
+            // Declare extra_children for capturing unknown child elements (feature-gated)
+            writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+            writeln!(code, "        let mut extra_children = Vec::new();").unwrap();
+        }
+        if has_attrs || has_children {
             writeln!(code).unwrap();
+        }
+        if has_attrs {
             writeln!(code, "        // Parse attributes").unwrap();
             writeln!(
                 code,
@@ -490,12 +506,8 @@ impl<'a> ParserGenerator<'a> {
         }
 
         // Parse child elements and text content (only if not empty element)
-        let elem_fields: Vec<_> = fields
-            .iter()
-            .filter(|f| !f.is_attribute && !f.is_text_content)
-            .collect();
         let text_fields: Vec<_> = fields.iter().filter(|f| f.is_text_content).collect();
-        if !elem_fields.is_empty() || !text_fields.is_empty() {
+        if has_children || !text_fields.is_empty() {
             writeln!(code).unwrap();
             writeln!(code, "        // Parse child elements").unwrap();
             writeln!(code, "        if !is_empty {{").unwrap();
@@ -548,6 +560,30 @@ impl<'a> ParserGenerator<'a> {
                 writeln!(code, "                            }}").unwrap();
             }
 
+            // Capture or skip unknown elements (feature-gated)
+            writeln!(
+                code,
+                "                            #[cfg(feature = \"extra-children\")]"
+            )
+            .unwrap();
+            writeln!(code, "                            _ => {{").unwrap();
+            writeln!(
+                code,
+                "                                // Capture unknown element for roundtrip"
+            )
+            .unwrap();
+            writeln!(code, "                                let elem = RawXmlElement::from_reader(reader, &e)?;").unwrap();
+            writeln!(
+                code,
+                "                                extra_children.push(RawXmlNode::Element(elem));"
+            )
+            .unwrap();
+            writeln!(code, "                            }}").unwrap();
+            writeln!(
+                code,
+                "                            #[cfg(not(feature = \"extra-children\"))]"
+            )
+            .unwrap();
             writeln!(code, "                            _ => {{").unwrap();
             writeln!(
                 code,
@@ -604,6 +640,34 @@ impl<'a> ParserGenerator<'a> {
                 writeln!(code, "                            }}").unwrap();
             }
 
+            // Capture or skip unknown empty elements (feature-gated)
+            writeln!(
+                code,
+                "                            #[cfg(feature = \"extra-children\")]"
+            )
+            .unwrap();
+            writeln!(code, "                            _ => {{").unwrap();
+            writeln!(
+                code,
+                "                                // Capture unknown empty element for roundtrip"
+            )
+            .unwrap();
+            writeln!(
+                code,
+                "                                let elem = RawXmlElement::from_empty(&e)?;"
+            )
+            .unwrap();
+            writeln!(
+                code,
+                "                                extra_children.push(RawXmlNode::Element(elem));"
+            )
+            .unwrap();
+            writeln!(code, "                            }}").unwrap();
+            writeln!(
+                code,
+                "                            #[cfg(not(feature = \"extra-children\"))]"
+            )
+            .unwrap();
             writeln!(code, "                            _ => {{}}").unwrap();
             writeln!(code, "                        }}").unwrap();
             writeln!(code, "                    }}").unwrap();
@@ -680,6 +744,11 @@ impl<'a> ParserGenerator<'a> {
         if has_attrs {
             writeln!(code, "            #[cfg(feature = \"extra-attrs\")]").unwrap();
             writeln!(code, "            extra_attrs,").unwrap();
+        }
+        // Add extra_children if this struct has child elements (feature-gated)
+        if has_children {
+            writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+            writeln!(code, "            extra_children,").unwrap();
         }
         writeln!(code, "        }})").unwrap();
         writeln!(code, "    }}").unwrap();

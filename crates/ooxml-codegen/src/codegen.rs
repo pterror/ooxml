@@ -621,6 +621,20 @@ impl<'a> Generator<'a> {
                 .unwrap();
             }
 
+            // Add extra_children field to capture unknown child elements for roundtrip fidelity
+            let has_children = fields.iter().any(|f| !f.is_attribute && !f.is_text_content);
+            if has_children {
+                writeln!(
+                    code,
+                    "    /// Unknown child elements captured for roundtrip fidelity."
+                )
+                .unwrap();
+                writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(code, "    #[serde(skip)]").unwrap();
+                writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(code, "    pub extra_children: Vec<ooxml_xml::RawXmlNode>,").unwrap();
+            }
+
             writeln!(code, "}}").unwrap();
         }
 

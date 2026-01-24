@@ -773,6 +773,7 @@ dependencies = [
  "criterion",
  "ooxml-codegen",
  "ooxml-opc",
+ "ooxml-xml",
  "quick-xml",
  "serde",
  "thiserror",
