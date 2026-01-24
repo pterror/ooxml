@@ -857,6 +857,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            extra_attrs: Default::default(),
         };
 
         assert_eq!(cell.column_number(), Some(2));
@@ -879,6 +880,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            extra_attrs: Default::default(),
         };
 
         let ctx = ResolveContext::default();
@@ -900,6 +902,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            extra_attrs: Default::default(),
         };
 
         let ctx = ResolveContext::new(vec!["Hello".to_string(), "World".to_string()]);
@@ -923,6 +926,7 @@ mod tests {
             placeholder: None,
             is: None,
             extension_list: None,
+            extra_attrs: Default::default(),
         };
 
         let ctx = ResolveContext::default();

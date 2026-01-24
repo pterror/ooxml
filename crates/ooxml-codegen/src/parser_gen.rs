@@ -429,12 +429,24 @@ impl<'a> ParserGenerator<'a> {
 
         // Parse attributes
         let attr_fields: Vec<_> = fields.iter().filter(|f| f.is_attribute).collect();
-        if !attr_fields.is_empty() {
+        let has_attrs = !attr_fields.is_empty();
+        if has_attrs {
+            // Declare extra_attrs for capturing unknown attributes
+            writeln!(
+                code,
+                "        let mut extra_attrs = std::collections::HashMap::new();"
+            )
+            .unwrap();
             writeln!(code).unwrap();
             writeln!(code, "        // Parse attributes").unwrap();
             writeln!(
                 code,
                 "        for attr in start_tag.attributes().filter_map(|a| a.ok()) {{"
+            )
+            .unwrap();
+            writeln!(
+                code,
+                "            let val = String::from_utf8_lossy(&attr.value);"
             )
             .unwrap();
             writeln!(code, "            match attr.key.as_ref() {{").unwrap();
@@ -449,15 +461,18 @@ impl<'a> ParserGenerator<'a> {
                     writeln!(code, "                #[cfg(feature = \"{}\")]", feature).unwrap();
                 }
                 writeln!(code, "                b\"{}\" => {{", field.xml_name).unwrap();
-                writeln!(
-                    code,
-                    "                    let val = String::from_utf8_lossy(&attr.value);"
-                )
-                .unwrap();
                 writeln!(code, "                    {} = {};", var_name, parse_expr).unwrap();
                 writeln!(code, "                }}").unwrap();
             }
-            writeln!(code, "                _ => {{}}").unwrap();
+            // Capture unknown attributes for roundtrip fidelity
+            writeln!(code, "                _ => {{").unwrap();
+            writeln!(code, "                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();").unwrap();
+            writeln!(
+                code,
+                "                    extra_attrs.insert(key, val.into_owned());"
+            )
+            .unwrap();
+            writeln!(code, "                }}").unwrap();
             writeln!(code, "            }}").unwrap();
             writeln!(code, "        }}").unwrap();
         }
@@ -648,6 +663,10 @@ impl<'a> ParserGenerator<'a> {
                 )
                 .unwrap();
             }
+        }
+        // Add extra_attrs if this struct has attributes
+        if has_attrs {
+            writeln!(code, "            extra_attrs,").unwrap();
         }
         writeln!(code, "        }})").unwrap();
         writeln!(code, "    }}").unwrap();

@@ -4410,6 +4410,10 @@ pub struct AutoFilter {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4425,6 +4429,10 @@ pub struct FilterColumn {
     #[serde(rename = "@showButton")]
     #[serde(default)]
     pub show_button: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4441,6 +4449,10 @@ pub struct Filters {
     #[serde(rename = "dateGroupItem")]
     #[serde(default)]
     pub date_group_item: Vec<Box<DateGroupItem>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4448,6 +4460,10 @@ pub struct Filter {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4458,6 +4474,10 @@ pub struct CustomFilters {
     #[serde(rename = "customFilter")]
     #[serde(default)]
     pub custom_filter: Vec<Box<CustomFilter>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4468,6 +4488,10 @@ pub struct CustomFilter {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4483,6 +4507,10 @@ pub struct Top10Filter {
     #[serde(rename = "@filterVal")]
     #[serde(default)]
     pub filter_val: Option<f64>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4493,6 +4521,10 @@ pub struct ColorFilter {
     #[serde(rename = "@cellColor")]
     #[serde(default)]
     pub cell_color: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4502,6 +4534,10 @@ pub struct IconFilter {
     #[serde(rename = "@iconId")]
     #[serde(default)]
     pub icon_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4520,6 +4556,10 @@ pub struct DynamicFilter {
     #[serde(rename = "@maxValIso")]
     #[serde(default)]
     pub max_val_iso: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4541,6 +4581,10 @@ pub struct SortState {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4565,6 +4609,10 @@ pub struct SortCondition {
     #[serde(rename = "@iconId")]
     #[serde(default)]
     pub icon_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4588,12 +4636,20 @@ pub struct DateGroupItem {
     pub second: Option<u16>,
     #[serde(rename = "@dateTimeGrouping")]
     pub date_time_grouping: STDateTimeGrouping,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTXStringElement {
     #[serde(rename = "@v")]
     pub value: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4601,6 +4657,10 @@ pub struct Extension {
     #[serde(rename = "@uri")]
     #[serde(default)]
     pub uri: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTExtensionAny = String;
@@ -4613,6 +4673,10 @@ pub struct ObjectAnchor {
     #[serde(rename = "@sizeWithCells")]
     #[serde(default)]
     pub size_with_cells: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4656,6 +4720,10 @@ pub struct CalcCell {
     #[serde(rename = "@a")]
     #[serde(default)]
     pub a: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlComments = Box<Comments>;
@@ -4707,6 +4775,10 @@ pub struct Comment {
     #[serde(rename = "commentPr")]
     #[serde(default)]
     pub comment_pr: Option<Box<CTCommentPr>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4749,6 +4821,10 @@ pub struct CTCommentPr {
     pub auto_scale: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlMapInfo = Box<MapInfo>;
@@ -4763,6 +4839,10 @@ pub struct MapInfo {
     #[serde(rename = "Map")]
     #[serde(default)]
     pub map: Vec<Box<XmlMap>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4793,6 +4873,10 @@ pub struct XmlMap {
     #[serde(rename = "DataBinding")]
     #[serde(default)]
     pub data_binding: Option<Box<DataBinding>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4811,6 +4895,10 @@ pub struct DataBinding {
     pub file_binding_name: Option<String>,
     #[serde(rename = "@DataBindingLoadMode")]
     pub data_binding_load_mode: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTDataBindingAny = String;
@@ -4902,6 +4990,10 @@ pub struct Connection {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4917,6 +5009,10 @@ pub struct DatabaseProperties {
     #[serde(rename = "@commandType")]
     #[serde(default)]
     pub command_type: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4948,6 +5044,10 @@ pub struct OlapProperties {
     #[serde(rename = "@serverFontColor")]
     #[serde(default)]
     pub server_font_color: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4994,6 +5094,10 @@ pub struct WebQueryProperties {
     #[serde(rename = "tables")]
     #[serde(default)]
     pub tables: Option<Box<DataTables>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5004,6 +5108,10 @@ pub struct Parameters {
     #[serde(rename = "parameter")]
     #[serde(default)]
     pub parameter: Vec<Box<Parameter>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5038,6 +5146,10 @@ pub struct Parameter {
     #[serde(rename = "@cell")]
     #[serde(default)]
     pub cell: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5045,6 +5157,10 @@ pub struct DataTables {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5103,6 +5219,10 @@ pub struct TextImportProperties {
     #[serde(rename = "textFields")]
     #[serde(default)]
     pub text_fields: Option<Box<TextFields>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5113,6 +5233,10 @@ pub struct TextFields {
     #[serde(rename = "textField")]
     #[serde(default)]
     pub text_field: Vec<Box<TextField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5123,6 +5247,10 @@ pub struct TextField {
     #[serde(rename = "@position")]
     #[serde(default)]
     pub position: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlPivotCacheDefinition = Box<PivotCacheDefinition>;
@@ -5215,6 +5343,10 @@ pub struct PivotCacheDefinition {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5225,6 +5357,10 @@ pub struct CacheFields {
     #[serde(rename = "cacheField")]
     #[serde(default)]
     pub cache_field: Vec<Box<CacheField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5279,6 +5415,10 @@ pub struct CacheField {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5288,6 +5428,10 @@ pub struct CacheSource {
     #[serde(rename = "@connectionId")]
     #[serde(default)]
     pub connection_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5301,6 +5445,10 @@ pub struct WorksheetSource {
     #[serde(rename = "@sheet")]
     #[serde(default)]
     pub sheet: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5313,6 +5461,10 @@ pub struct Consolidation {
     pub pages: Option<Box<CTPages>>,
     #[serde(rename = "rangeSets")]
     pub range_sets: Box<CTRangeSets>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5323,6 +5475,10 @@ pub struct CTPages {
     #[serde(rename = "page")]
     #[serde(default)]
     pub page: Vec<Box<CTPCDSCPage>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5333,12 +5489,20 @@ pub struct CTPCDSCPage {
     #[serde(rename = "pageItem")]
     #[serde(default)]
     pub page_item: Vec<Box<CTPageItem>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPageItem {
     #[serde(rename = "@name")]
     pub name: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5349,6 +5513,10 @@ pub struct CTRangeSets {
     #[serde(rename = "rangeSet")]
     #[serde(default)]
     pub range_set: Vec<Box<CTRangeSet>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5374,6 +5542,10 @@ pub struct CTRangeSet {
     #[serde(rename = "@sheet")]
     #[serde(default)]
     pub sheet: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5420,6 +5592,10 @@ pub struct SharedItems {
     #[serde(rename = "@longText")]
     #[serde(default)]
     pub long_text: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5463,6 +5639,10 @@ pub struct CTMissing {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5508,6 +5688,10 @@ pub struct CTNumber {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5529,6 +5713,10 @@ pub struct CTBoolean {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5574,6 +5762,10 @@ pub struct CTError {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5619,6 +5811,10 @@ pub struct CTString {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5640,6 +5836,10 @@ pub struct CTDateTime {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5659,6 +5859,10 @@ pub struct FieldGroup {
     #[serde(rename = "groupItems")]
     #[serde(default)]
     pub group_items: Option<Box<GroupItems>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5687,6 +5891,10 @@ pub struct CTRangePr {
     #[serde(rename = "@groupInterval")]
     #[serde(default)]
     pub group_interval: Option<f64>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5697,6 +5905,10 @@ pub struct CTDiscretePr {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTIndex>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5704,6 +5916,10 @@ pub struct GroupItems {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5717,6 +5933,10 @@ pub struct PivotCacheRecords {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5730,6 +5950,10 @@ pub struct CTPCDKPIs {
     #[serde(rename = "kpi")]
     #[serde(default)]
     pub kpi: Vec<Box<CTPCDKPI>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5765,6 +5989,10 @@ pub struct CTPCDKPI {
     #[serde(rename = "@time")]
     #[serde(default)]
     pub time: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5775,6 +6003,10 @@ pub struct CTCacheHierarchies {
     #[serde(rename = "cacheHierarchy")]
     #[serde(default)]
     pub cache_hierarchy: Vec<Box<CTCacheHierarchy>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5852,6 +6084,10 @@ pub struct CTCacheHierarchy {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5862,12 +6098,20 @@ pub struct CTFieldsUsage {
     #[serde(rename = "fieldUsage")]
     #[serde(default)]
     pub field_usage: Vec<Box<CTFieldUsage>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFieldUsage {
     #[serde(rename = "@x")]
     pub x: i32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5878,6 +6122,10 @@ pub struct CTGroupLevels {
     #[serde(rename = "groupLevel")]
     #[serde(default)]
     pub group_level: Vec<Box<CTGroupLevel>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5898,6 +6146,10 @@ pub struct CTGroupLevel {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5908,6 +6160,10 @@ pub struct CTGroups {
     #[serde(rename = "group")]
     #[serde(default)]
     pub group: Vec<Box<CTLevelGroup>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5926,6 +6182,10 @@ pub struct CTLevelGroup {
     pub id: Option<i32>,
     #[serde(rename = "groupMembers")]
     pub group_members: Box<CTGroupMembers>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5936,6 +6196,10 @@ pub struct CTGroupMembers {
     #[serde(rename = "groupMember")]
     #[serde(default)]
     pub group_member: Vec<Box<CTGroupMember>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5945,6 +6209,10 @@ pub struct CTGroupMember {
     #[serde(rename = "@group")]
     #[serde(default)]
     pub group: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5974,6 +6242,10 @@ pub struct CTServerFormat {
     #[serde(rename = "@format")]
     #[serde(default)]
     pub format: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5984,6 +6256,10 @@ pub struct CTServerFormats {
     #[serde(rename = "serverFormat")]
     #[serde(default)]
     pub server_format: Vec<Box<CTServerFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5991,6 +6267,10 @@ pub struct CTPCDSDTCEntries {
     #[serde(rename = "@count")]
     #[serde(default)]
     pub count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6001,6 +6281,10 @@ pub struct CTTuples {
     #[serde(rename = "tpl")]
     #[serde(default)]
     pub tpl: Vec<Box<CTTuple>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6013,6 +6297,10 @@ pub struct CTTuple {
     pub hier: Option<u32>,
     #[serde(rename = "@item")]
     pub item: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6023,6 +6311,10 @@ pub struct CTSets {
     #[serde(rename = "set")]
     #[serde(default)]
     pub set: Vec<Box<CTSet>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6046,6 +6338,10 @@ pub struct CTSet {
     #[serde(rename = "sortByTuple")]
     #[serde(default)]
     pub sort_by_tuple: Option<Box<CTTuples>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6056,6 +6352,10 @@ pub struct CTQueryCache {
     #[serde(rename = "query")]
     #[serde(default)]
     pub query: Vec<Box<CTQuery>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6065,6 +6365,10 @@ pub struct CTQuery {
     #[serde(rename = "tpls")]
     #[serde(default)]
     pub tpls: Option<Box<CTTuples>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6075,6 +6379,10 @@ pub struct CTCalculatedItems {
     #[serde(rename = "calculatedItem")]
     #[serde(default)]
     pub calculated_item: Vec<Box<CTCalculatedItem>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6090,6 +6398,10 @@ pub struct CTCalculatedItem {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6100,6 +6412,10 @@ pub struct CTCalculatedMembers {
     #[serde(rename = "calculatedMember")]
     #[serde(default)]
     pub calculated_member: Vec<Box<CTCalculatedMember>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6126,6 +6442,10 @@ pub struct CTCalculatedMember {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6360,6 +6680,10 @@ pub struct CTPivotTableDefinition {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6378,6 +6702,10 @@ pub struct PivotLocation {
     #[serde(rename = "@colPageCount")]
     #[serde(default)]
     pub col_page_count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6388,6 +6716,10 @@ pub struct PivotFields {
     #[serde(rename = "pivotField")]
     #[serde(default)]
     pub pivot_field: Vec<Box<PivotField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6545,6 +6877,10 @@ pub struct PivotField {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTAutoSortScope = Box<PivotArea>;
@@ -6557,6 +6893,10 @@ pub struct PivotItems {
     #[serde(rename = "item")]
     #[serde(default)]
     pub item: Vec<Box<PivotItem>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6594,6 +6934,10 @@ pub struct PivotItem {
     #[serde(rename = "@e")]
     #[serde(default)]
     pub e: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6604,6 +6948,10 @@ pub struct PageFields {
     #[serde(rename = "pageField")]
     #[serde(default)]
     pub page_field: Vec<Box<PageField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6625,6 +6973,10 @@ pub struct PageField {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6635,6 +6987,10 @@ pub struct DataFields {
     #[serde(rename = "dataField")]
     #[serde(default)]
     pub data_field: Vec<Box<DataField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6662,6 +7018,10 @@ pub struct DataField {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6672,6 +7032,10 @@ pub struct CTRowItems {
     #[serde(rename = "i")]
     #[serde(default)]
     pub i: Vec<Box<CTI>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6682,6 +7046,10 @@ pub struct CTColItems {
     #[serde(rename = "i")]
     #[serde(default)]
     pub i: Vec<Box<CTI>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6698,6 +7066,10 @@ pub struct CTI {
     #[serde(rename = "x")]
     #[serde(default)]
     pub x: Vec<Box<CTX>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6705,6 +7077,10 @@ pub struct CTX {
     #[serde(rename = "@v")]
     #[serde(default)]
     pub value: Option<i32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6715,6 +7091,10 @@ pub struct RowFields {
     #[serde(rename = "field")]
     #[serde(default)]
     pub field: Vec<Box<CTField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6725,12 +7105,20 @@ pub struct ColFields {
     #[serde(rename = "field")]
     #[serde(default)]
     pub field: Vec<Box<CTField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTField {
     #[serde(rename = "@x")]
     pub x: i32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6741,6 +7129,10 @@ pub struct CTFormats {
     #[serde(rename = "format")]
     #[serde(default)]
     pub format: Vec<Box<CTFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6756,6 +7148,10 @@ pub struct CTFormat {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6766,6 +7162,10 @@ pub struct CTConditionalFormats {
     #[serde(rename = "conditionalFormat")]
     #[serde(default)]
     pub conditional_format: Vec<Box<CTConditionalFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6783,6 +7183,10 @@ pub struct CTConditionalFormat {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6793,6 +7197,10 @@ pub struct PivotAreas {
     #[serde(rename = "pivotArea")]
     #[serde(default)]
     pub pivot_area: Vec<Box<PivotArea>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6803,6 +7211,10 @@ pub struct CTChartFormats {
     #[serde(rename = "chartFormat")]
     #[serde(default)]
     pub chart_format: Vec<Box<CTChartFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6816,6 +7228,10 @@ pub struct CTChartFormat {
     pub series: Option<bool>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6826,6 +7242,10 @@ pub struct CTPivotHierarchies {
     #[serde(rename = "pivotHierarchy")]
     #[serde(default)]
     pub pivot_hierarchy: Vec<Box<CTPivotHierarchy>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6872,6 +7292,10 @@ pub struct CTPivotHierarchy {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6882,6 +7306,10 @@ pub struct CTRowHierarchiesUsage {
     #[serde(rename = "rowHierarchyUsage")]
     #[serde(default)]
     pub row_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6892,12 +7320,20 @@ pub struct CTColHierarchiesUsage {
     #[serde(rename = "colHierarchyUsage")]
     #[serde(default)]
     pub col_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHierarchyUsage {
     #[serde(rename = "@hierarchyUsage")]
     pub hierarchy_usage: i32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6908,6 +7344,10 @@ pub struct CTMemberProperties {
     #[serde(rename = "mp")]
     #[serde(default)]
     pub mp: Vec<Box<CTMemberProperty>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6938,6 +7378,10 @@ pub struct CTMemberProperty {
     pub level: Option<u32>,
     #[serde(rename = "@field")]
     pub field: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6951,12 +7395,20 @@ pub struct CTMembers {
     #[serde(rename = "member")]
     #[serde(default)]
     pub member: Vec<Box<CTMember>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMember {
     #[serde(rename = "@name")]
     pub name: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6967,6 +7419,10 @@ pub struct CTDimensions {
     #[serde(rename = "dimension")]
     #[serde(default)]
     pub dimension: Vec<Box<CTPivotDimension>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6980,6 +7436,10 @@ pub struct CTPivotDimension {
     pub unique_name: XmlString,
     #[serde(rename = "@caption")]
     pub caption: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6990,6 +7450,10 @@ pub struct CTMeasureGroups {
     #[serde(rename = "measureGroup")]
     #[serde(default)]
     pub measure_group: Vec<Box<CTMeasureGroup>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7000,6 +7464,10 @@ pub struct CTMeasureDimensionMaps {
     #[serde(rename = "map")]
     #[serde(default)]
     pub map: Vec<Box<CTMeasureDimensionMap>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7008,6 +7476,10 @@ pub struct CTMeasureGroup {
     pub name: XmlString,
     #[serde(rename = "@caption")]
     pub caption: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7018,6 +7490,10 @@ pub struct CTMeasureDimensionMap {
     #[serde(rename = "@dimension")]
     #[serde(default)]
     pub dimension: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7040,6 +7516,10 @@ pub struct CTPivotTableStyle {
     #[serde(rename = "@showLastColumn")]
     #[serde(default)]
     pub show_last_column: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7050,6 +7530,10 @@ pub struct PivotFilters {
     #[serde(rename = "filter")]
     #[serde(default)]
     pub filter: Vec<Box<PivotFilter>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7089,6 +7573,10 @@ pub struct PivotFilter {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7135,6 +7623,10 @@ pub struct PivotArea {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7145,6 +7637,10 @@ pub struct CTPivotAreaReferences {
     #[serde(rename = "reference")]
     #[serde(default)]
     pub reference: Vec<Box<CTPivotAreaReference>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7206,12 +7702,20 @@ pub struct CTPivotAreaReference {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTIndex {
     #[serde(rename = "@v")]
     pub value: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlQueryTable = Box<QueryTable>;
@@ -7267,6 +7771,10 @@ pub struct QueryTable {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7303,6 +7811,10 @@ pub struct QueryTableRefresh {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7313,12 +7825,20 @@ pub struct QueryTableDeletedFields {
     #[serde(rename = "deletedField")]
     #[serde(default)]
     pub deleted_field: Vec<Box<CTDeletedField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDeletedField {
     #[serde(rename = "@name")]
     pub name: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7329,6 +7849,10 @@ pub struct QueryTableFields {
     #[serde(rename = "queryTableField")]
     #[serde(default)]
     pub query_table_field: Vec<Box<QueryTableField>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7356,6 +7880,10 @@ pub struct QueryTableField {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlSst = Box<SharedStrings>;
@@ -7374,6 +7902,10 @@ pub struct SharedStrings {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7384,6 +7916,10 @@ pub struct PhoneticRun {
     pub eb: u32,
     #[serde(rename = "t")]
     pub cell_type: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7424,6 +7960,10 @@ pub struct PhoneticProperties {
     #[serde(rename = "@alignment")]
     #[serde(default)]
     pub alignment: Option<STPhoneticAlignment>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlHeaders = Box<RevisionHeaders>;
@@ -7470,6 +8010,10 @@ pub struct RevisionHeaders {
     #[serde(rename = "header")]
     #[serde(default)]
     pub header: Vec<Box<RevisionHeader>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7485,6 +8029,10 @@ pub struct SmlAGRevData {
     #[serde(rename = "@ra")]
     #[serde(default)]
     pub ra: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7511,6 +8059,10 @@ pub struct RevisionHeader {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7521,12 +8073,20 @@ pub struct CTSheetIdMap {
     #[serde(rename = "sheetId")]
     #[serde(default)]
     pub sheet_id: Vec<Box<CTSheetId>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSheetId {
     #[serde(rename = "@val")]
     pub value: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7537,12 +8097,20 @@ pub struct ReviewedRevisions {
     #[serde(rename = "reviewed")]
     #[serde(default)]
     pub reviewed: Vec<Box<Reviewed>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Reviewed {
     #[serde(rename = "@rId")]
     pub r_id: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7577,6 +8145,10 @@ pub struct UndoInfo {
     #[serde(rename = "@sId")]
     #[serde(default)]
     pub s_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7593,6 +8165,10 @@ pub struct RevisionRowColumn {
     #[serde(rename = "@edge")]
     #[serde(default)]
     pub edge: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7606,6 +8182,10 @@ pub struct RevisionMove {
     #[serde(rename = "@sourceSheetId")]
     #[serde(default)]
     pub source_sheet_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7614,6 +8194,10 @@ pub struct RevisionCustomView {
     pub guid: Guid,
     #[serde(rename = "@action")]
     pub action: STRevisionAction,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7627,6 +8211,10 @@ pub struct RevisionSheetRename {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7637,6 +8225,10 @@ pub struct RevisionInsertSheet {
     pub name: XmlString,
     #[serde(rename = "@sheetPosition")]
     pub sheet_position: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7684,6 +8276,10 @@ pub struct RevisionCellChange {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7710,6 +8306,10 @@ pub struct RevisionFormatting {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7718,6 +8318,10 @@ pub struct RevisionAutoFormatting {
     pub sheet_id: u32,
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7751,6 +8355,10 @@ pub struct RevisionComment {
     #[serde(rename = "@newLength")]
     #[serde(default)]
     pub new_length: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7826,6 +8434,10 @@ pub struct RevisionDefinedName {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7833,6 +8445,10 @@ pub struct RevisionConflict {
     #[serde(rename = "@sheetId")]
     #[serde(default)]
     pub sheet_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7843,6 +8459,10 @@ pub struct RevisionQueryTableField {
     pub reference: Reference,
     #[serde(rename = "@fieldId")]
     pub field_id: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlUsers = Box<Users>;
@@ -7855,6 +8475,10 @@ pub struct Users {
     #[serde(rename = "userInfo")]
     #[serde(default)]
     pub user_info: Vec<Box<SharedUser>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7870,6 +8494,10 @@ pub struct SharedUser {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlWorksheet = Box<Worksheet>;
@@ -8181,6 +8809,10 @@ pub struct SheetCalcProperties {
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(default)]
     pub full_calc_on_load: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8211,6 +8843,10 @@ pub struct SheetFormat {
     #[serde(rename = "@outlineLevelCol")]
     #[serde(default)]
     pub outline_level_col: Option<u8>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8260,6 +8896,10 @@ pub struct Column {
     #[serde(rename = "@collapsed")]
     #[serde(default)]
     pub collapsed: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8316,6 +8956,10 @@ pub struct Row {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8354,6 +8998,10 @@ pub struct Cell {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8394,12 +9042,20 @@ pub struct SheetProperties {
     #[serde(rename = "pageSetUpPr")]
     #[serde(default)]
     pub page_set_up_pr: Option<Box<PageSetupProperties>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SheetDimension {
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8498,6 +9154,10 @@ pub struct SheetView {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8522,6 +9182,10 @@ pub struct Pane {
     #[serde(rename = "@state")]
     #[serde(default)]
     pub state: Option<PaneState>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8576,6 +9240,10 @@ pub struct CTPivotSelection {
     pub click: Option<u32>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8592,6 +9260,10 @@ pub struct Selection {
     #[serde(rename = "@sqref")]
     #[serde(default)]
     pub square_reference: Option<SquareRef>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8605,6 +9277,10 @@ pub struct PageBreaks {
     #[serde(rename = "brk")]
     #[serde(default)]
     pub brk: Vec<Box<PageBreak>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8624,6 +9300,10 @@ pub struct PageBreak {
     #[serde(rename = "@pt")]
     #[serde(default)]
     pub pt: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8640,6 +9320,10 @@ pub struct OutlineProperties {
     #[serde(rename = "@showOutlineSymbols")]
     #[serde(default)]
     pub show_outline_symbols: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8650,6 +9334,10 @@ pub struct PageSetupProperties {
     #[serde(rename = "@fitToPage")]
     #[serde(default)]
     pub fit_to_page: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8672,6 +9360,10 @@ pub struct CTDataConsolidate {
     #[serde(rename = "dataRefs")]
     #[serde(default)]
     pub data_refs: Option<Box<CTDataRefs>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8682,6 +9374,10 @@ pub struct CTDataRefs {
     #[serde(rename = "dataRef")]
     #[serde(default)]
     pub data_ref: Vec<Box<CTDataRef>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8695,6 +9391,10 @@ pub struct CTDataRef {
     #[serde(rename = "@sheet")]
     #[serde(default)]
     pub sheet: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8705,12 +9405,20 @@ pub struct MergedCells {
     #[serde(rename = "mergeCell")]
     #[serde(default)]
     pub merge_cell: Vec<Box<MergedCell>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MergedCell {
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8727,6 +9435,10 @@ pub struct CellSmartTags {
     #[serde(rename = "cellSmartTag")]
     #[serde(default)]
     pub cell_smart_tag: Vec<Box<CellSmartTag>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8742,6 +9454,10 @@ pub struct CellSmartTag {
     #[serde(rename = "cellSmartTagPr")]
     #[serde(default)]
     pub cell_smart_tag_pr: Vec<Box<CTCellSmartTagPr>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8750,6 +9466,10 @@ pub struct CTCellSmartTagPr {
     pub key: XmlString,
     #[serde(rename = "@val")]
     pub value: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8814,6 +9534,10 @@ pub struct DrawingHeaderFooter {
     #[serde(rename = "@rff")]
     #[serde(default)]
     pub rff: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8914,6 +9638,10 @@ pub struct CustomSheetView {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8933,6 +9661,10 @@ pub struct DataValidations {
     #[serde(rename = "dataValidation")]
     #[serde(default)]
     pub data_validation: Vec<Box<DataValidation>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8996,6 +9728,10 @@ pub struct DataValidation {
     #[serde(rename = "formula2")]
     #[serde(default)]
     pub formula2: Option<STFormula>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9016,6 +9752,10 @@ pub struct ConditionalFormatting {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9091,6 +9831,10 @@ pub struct ConditionalRule {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9117,6 +9861,10 @@ pub struct Hyperlink {
     #[serde(rename = "@display")]
     #[serde(default)]
     pub display: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9168,6 +9916,10 @@ pub struct CellFormula {
     #[serde(rename = "@bx")]
     #[serde(default)]
     pub bx: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9196,6 +9948,10 @@ pub struct DataBar {
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
     #[serde(rename = "color")]
     pub color: Box<Color>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9215,6 +9971,10 @@ pub struct IconSet {
     #[serde(rename = "cfvo")]
     #[serde(default)]
     pub cfvo: Vec<Box<ConditionalFormatValue>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9230,6 +9990,10 @@ pub struct ConditionalFormatValue {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9252,6 +10016,10 @@ pub struct PageMargins {
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@footer")]
     pub footer: f64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9271,6 +10039,10 @@ pub struct PrintOptions {
     #[serde(rename = "@gridLinesSet")]
     #[serde(default)]
     pub grid_lines_set: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9347,6 +10119,10 @@ pub struct PageSetup {
     #[serde(rename = "@copies")]
     #[serde(default)]
     pub copies: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9391,6 +10167,10 @@ pub struct HeaderFooter {
     #[serde(rename = "firstFooter")]
     #[serde(default)]
     pub first_footer: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9407,6 +10187,10 @@ pub struct Scenarios {
     #[serde(rename = "scenario")]
     #[serde(default)]
     pub scenario: Vec<Box<Scenario>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9474,6 +10258,10 @@ pub struct SheetProtection {
     #[serde(rename = "@selectUnlockedCells")]
     #[serde(default)]
     pub select_unlocked_cells: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9507,6 +10295,10 @@ pub struct ProtectedRange {
     #[serde(rename = "@spinCount")]
     #[serde(default)]
     pub spin_count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9531,6 +10323,10 @@ pub struct Scenario {
     #[serde(rename = "inputCells")]
     #[serde(default)]
     pub input_cells: Vec<Box<InputCells>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9548,6 +10344,10 @@ pub struct InputCells {
     #[serde(rename = "@numFmtId")]
     #[serde(default)]
     pub number_format_id: Option<STNumFmtId>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9561,6 +10361,10 @@ pub struct CellWatches {
 pub struct CellWatch {
     #[serde(rename = "@r")]
     pub reference: CellRef,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9618,6 +10422,10 @@ pub struct ChartsheetProperties {
     #[serde(rename = "tabColor")]
     #[serde(default)]
     pub tab_color: Option<Box<Color>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9646,6 +10454,10 @@ pub struct ChartsheetView {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9671,6 +10483,10 @@ pub struct ChartsheetProtection {
     #[serde(rename = "@objects")]
     #[serde(default)]
     pub objects: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9711,6 +10527,10 @@ pub struct ChartsheetPageSetup {
     #[serde(rename = "@copies")]
     #[serde(default)]
     pub copies: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9742,6 +10562,10 @@ pub struct CustomChartsheetView {
     #[serde(rename = "headerFooter")]
     #[serde(default)]
     pub header_footer: Option<Box<HeaderFooter>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9755,6 +10579,10 @@ pub struct CTCustomProperties {
 pub struct CTCustomProperty {
     #[serde(rename = "@name")]
     pub name: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9786,6 +10614,10 @@ pub struct OleObject {
     #[serde(rename = "objectPr")]
     #[serde(default)]
     pub object_pr: Option<Box<ObjectProperties>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9825,6 +10657,10 @@ pub struct ObjectProperties {
     pub dde: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9835,6 +10671,10 @@ pub struct WebPublishItems {
     #[serde(rename = "webPublishItem")]
     #[serde(default)]
     pub web_publish_item: Vec<Box<WebPublishItem>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9859,6 +10699,10 @@ pub struct WebPublishItem {
     #[serde(rename = "@autoRepublish")]
     #[serde(default)]
     pub auto_republish: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9878,6 +10722,10 @@ pub struct Control {
     #[serde(rename = "controlPr")]
     #[serde(default)]
     pub control_pr: Option<Box<CTControlPr>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9926,6 +10774,10 @@ pub struct CTControlPr {
     pub cf: Option<XmlString>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9969,6 +10821,10 @@ pub struct IgnoredError {
     #[serde(rename = "@calculatedColumn")]
     #[serde(default)]
     pub calculated_column: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9979,6 +10835,10 @@ pub struct TableParts {
     #[serde(rename = "tablePart")]
     #[serde(default)]
     pub table_part: Vec<Box<TablePart>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10019,6 +10879,10 @@ pub struct MetadataTypes {
     #[serde(rename = "metadataType")]
     #[serde(default)]
     pub metadata_type: Vec<Box<MetadataType>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10105,6 +10969,10 @@ pub struct MetadataType {
     #[serde(rename = "@cellMeta")]
     #[serde(default)]
     pub cell_meta: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10115,6 +10983,10 @@ pub struct MetadataBlocks {
     #[serde(rename = "bk")]
     #[serde(default)]
     pub bk: Vec<Box<MetadataBlock>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10130,6 +11002,10 @@ pub struct MetadataRecord {
     pub cell_type: u32,
     #[serde(rename = "@v")]
     pub value: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10145,6 +11021,10 @@ pub struct CTFutureMetadata {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10162,6 +11042,10 @@ pub struct CTMdxMetadata {
     #[serde(rename = "mdx")]
     #[serde(default)]
     pub mdx: Vec<Box<CTMdx>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10170,6 +11054,10 @@ pub struct CTMdx {
     pub n: u32,
     #[serde(rename = "@f")]
     pub formula: STMdxFunctionType,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10207,6 +11095,10 @@ pub struct CTMdxTuple {
     #[serde(rename = "n")]
     #[serde(default)]
     pub n: Vec<Box<CTMetadataStringIndex>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10222,6 +11114,10 @@ pub struct CTMdxSet {
     #[serde(rename = "n")]
     #[serde(default)]
     pub n: Vec<Box<CTMetadataStringIndex>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10230,6 +11126,10 @@ pub struct CTMdxMemeberProp {
     pub n: u32,
     #[serde(rename = "@np")]
     pub np: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10240,6 +11140,10 @@ pub struct CTMdxKPI {
     pub np: u32,
     #[serde(rename = "@p")]
     pub p: STMdxKPIProperty,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10249,6 +11153,10 @@ pub struct CTMetadataStringIndex {
     #[serde(rename = "@s")]
     #[serde(default)]
     pub style_index: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10259,6 +11167,10 @@ pub struct MetadataStrings {
     #[serde(rename = "s")]
     #[serde(default)]
     pub style_index: Vec<Box<CTXStringElement>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlSingleXmlCells = Box<SingleXmlCells>;
@@ -10283,6 +11195,10 @@ pub struct SingleXmlCell {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10297,6 +11213,10 @@ pub struct XmlCellProperties {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10310,6 +11230,10 @@ pub struct XmlProperties {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlStyleSheet = Box<Stylesheet>;
@@ -10391,6 +11315,10 @@ pub struct CellAlignment {
     #[serde(rename = "@readingOrder")]
     #[serde(default)]
     pub reading_order: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10401,6 +11329,10 @@ pub struct Borders {
     #[serde(rename = "border")]
     #[serde(default)]
     pub border: Vec<Box<Border>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10451,6 +11383,10 @@ pub struct Border {
     #[serde(rename = "horizontal")]
     #[serde(default)]
     pub horizontal: Option<Box<BorderProperties>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10461,6 +11397,10 @@ pub struct BorderProperties {
     #[serde(rename = "color")]
     #[serde(default)]
     pub color: Option<Box<Color>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10471,6 +11411,10 @@ pub struct CellProtection {
     #[serde(rename = "@hidden")]
     #[serde(default)]
     pub hidden: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10481,6 +11425,10 @@ pub struct Fonts {
     #[serde(rename = "font")]
     #[serde(default)]
     pub font: Vec<Box<Font>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10491,6 +11439,10 @@ pub struct Fills {
     #[serde(rename = "fill")]
     #[serde(default)]
     pub fill: Vec<Box<Fill>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10507,6 +11459,10 @@ pub struct PatternFill {
     #[serde(rename = "bgColor")]
     #[serde(default)]
     pub bg_color: Option<Box<Color>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10526,6 +11482,10 @@ pub struct Color {
     #[serde(rename = "@tint")]
     #[serde(default)]
     pub tint: Option<f64>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10551,6 +11511,10 @@ pub struct GradientFill {
     #[serde(rename = "stop")]
     #[serde(default)]
     pub stop: Vec<Box<GradientStop>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10559,6 +11523,10 @@ pub struct GradientStop {
     pub position: f64,
     #[serde(rename = "color")]
     pub color: Box<Color>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10569,6 +11537,10 @@ pub struct NumberFormats {
     #[serde(rename = "numFmt")]
     #[serde(default)]
     pub num_fmt: Vec<Box<NumberFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10577,6 +11549,10 @@ pub struct NumberFormat {
     pub number_format_id: STNumFmtId,
     #[serde(rename = "@formatCode")]
     pub format_code: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10587,6 +11563,10 @@ pub struct CellStyleFormats {
     #[serde(rename = "xf")]
     #[serde(default)]
     pub xf: Vec<Box<Format>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10597,6 +11577,10 @@ pub struct CellFormats {
     #[serde(rename = "xf")]
     #[serde(default)]
     pub xf: Vec<Box<Format>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10665,6 +11649,10 @@ pub struct Format {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10675,6 +11663,10 @@ pub struct CellStyles {
     #[serde(rename = "cellStyle")]
     #[serde(default)]
     pub cell_style: Vec<Box<CellStyle>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10699,6 +11691,10 @@ pub struct CellStyle {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10709,6 +11705,10 @@ pub struct DifferentialFormats {
     #[serde(rename = "dxf")]
     #[serde(default)]
     pub dxf: Vec<Box<DifferentialFormat>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10765,6 +11765,10 @@ pub struct RgbColor {
     #[serde(rename = "@rgb")]
     #[serde(default)]
     pub rgb: Option<STUnsignedIntHex>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10781,6 +11785,10 @@ pub struct TableStyles {
     #[serde(rename = "tableStyle")]
     #[serde(default)]
     pub table_style: Vec<Box<TableStyle>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10799,6 +11807,10 @@ pub struct TableStyle {
     #[serde(rename = "tableStyleElement")]
     #[serde(default)]
     pub table_style_element: Vec<Box<TableStyleElement>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10811,6 +11823,10 @@ pub struct TableStyleElement {
     #[serde(rename = "@dxfId")]
     #[serde(default)]
     pub dxf_id: Option<STDxfId>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10818,36 +11834,60 @@ pub struct BooleanProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FontSize {
     #[serde(rename = "@val")]
     pub value: f64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IntProperty {
     #[serde(rename = "@val")]
     pub value: i32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FontName {
     #[serde(rename = "@val")]
     pub value: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VerticalAlignFontProperty {
     #[serde(rename = "@val")]
     pub value: VerticalAlignRun,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FontSchemeProperty {
     #[serde(rename = "@val")]
     pub value: FontScheme,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10855,6 +11895,10 @@ pub struct UnderlineProperty {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<UnderlineStyle>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10864,6 +11908,10 @@ pub struct Font;
 pub struct FontFamily {
     #[serde(rename = "@val")]
     pub value: STFontFamily,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10889,6 +11937,10 @@ pub struct SmlAGAutoFormat {
     #[serde(rename = "@applyWidthHeightFormats")]
     #[serde(default)]
     pub apply_width_height_formats: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlExternalLink = Box<ExternalLink>;
@@ -10925,6 +11977,10 @@ pub struct CTExternalSheetName {
     #[serde(rename = "@val")]
     #[serde(default)]
     pub value: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10944,6 +12000,10 @@ pub struct CTExternalDefinedName {
     #[serde(rename = "@sheetId")]
     #[serde(default)]
     pub sheet_id: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10963,6 +12023,10 @@ pub struct ExternalSheetData {
     #[serde(rename = "row")]
     #[serde(default)]
     pub row: Vec<Box<ExternalRow>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10972,6 +12036,10 @@ pub struct ExternalRow {
     #[serde(rename = "cell")]
     #[serde(default)]
     pub cell: Vec<Box<ExternalCell>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10988,6 +12056,10 @@ pub struct ExternalCell {
     #[serde(rename = "v")]
     #[serde(default)]
     pub value: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10999,6 +12071,10 @@ pub struct DdeLink {
     #[serde(rename = "ddeItems")]
     #[serde(default)]
     pub dde_items: Option<Box<DdeItems>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11025,6 +12101,10 @@ pub struct DdeItem {
     #[serde(rename = "values")]
     #[serde(default)]
     pub values: Option<Box<CTDdeValues>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11038,6 +12118,10 @@ pub struct CTDdeValues {
     #[serde(rename = "value")]
     #[serde(default)]
     pub value: Vec<Box<CTDdeValue>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11047,6 +12131,10 @@ pub struct CTDdeValue {
     pub cell_type: Option<STDdeValueType>,
     #[serde(rename = "val")]
     pub value: XmlString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11056,6 +12144,10 @@ pub struct OleLink {
     #[serde(rename = "oleItems")]
     #[serde(default)]
     pub ole_items: Option<Box<OleItems>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11078,6 +12170,10 @@ pub struct OleItem {
     #[serde(rename = "@preferPic")]
     #[serde(default)]
     pub prefer_pic: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlTable = Box<Table>;
@@ -11188,6 +12284,10 @@ pub struct Table {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11207,6 +12307,10 @@ pub struct TableStyleInfo {
     #[serde(rename = "@showColumnStripes")]
     #[serde(default)]
     pub show_column_stripes: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11217,6 +12321,10 @@ pub struct TableColumns {
     #[serde(rename = "tableColumn")]
     #[serde(default)]
     pub table_column: Vec<Box<TableColumn>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11267,6 +12375,10 @@ pub struct TableColumn {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11276,6 +12388,10 @@ pub struct TableFormula {
     #[serde(rename = "@array")]
     #[serde(default)]
     pub array: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11292,6 +12408,10 @@ pub struct XmlColumnProperties {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlVolTypes = Box<CTVolTypes>;
@@ -11313,6 +12433,10 @@ pub struct CTVolType {
     #[serde(rename = "main")]
     #[serde(default)]
     pub main: Vec<Box<CTVolMain>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11322,6 +12446,10 @@ pub struct CTVolMain {
     #[serde(rename = "tp")]
     #[serde(default)]
     pub tp: Vec<Box<CTVolTopic>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11337,6 +12465,10 @@ pub struct CTVolTopic {
     #[serde(rename = "tr")]
     #[serde(default)]
     pub tr: Vec<Box<CTVolTopicRef>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11345,6 +12477,10 @@ pub struct CTVolTopicRef {
     pub reference: CellRef,
     #[serde(rename = "@s")]
     pub style_index: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlWorkbook = Box<Workbook>;
@@ -11423,6 +12559,10 @@ pub struct Workbook {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11442,6 +12582,10 @@ pub struct FileVersion {
     #[serde(rename = "@codeName")]
     #[serde(default)]
     pub code_name: Option<Guid>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11495,6 +12639,10 @@ pub struct BookView {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11576,6 +12724,10 @@ pub struct CustomWorkbookView {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11595,6 +12747,10 @@ pub struct Sheet {
     #[serde(rename = "@state")]
     #[serde(default)]
     pub state: Option<SheetState>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11653,6 +12809,10 @@ pub struct WorkbookProperties {
     #[serde(rename = "@defaultThemeVersion")]
     #[serde(default)]
     pub default_theme_version: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11663,6 +12823,10 @@ pub struct CTSmartTagPr {
     #[serde(rename = "@show")]
     #[serde(default)]
     pub show: Option<STSmartTagShow>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11683,6 +12847,10 @@ pub struct CTSmartTagType {
     #[serde(rename = "@url")]
     #[serde(default)]
     pub url: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11699,6 +12867,10 @@ pub struct FileRecoveryProperties {
     #[serde(rename = "@repairLoad")]
     #[serde(default)]
     pub repair_load: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11742,6 +12914,10 @@ pub struct CalculationProperties {
     #[serde(rename = "@forceFullCalc")]
     #[serde(default)]
     pub force_full_calc: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11810,6 +12986,10 @@ pub struct DefinedName {
     #[serde(rename = "@workbookParameter")]
     #[serde(default)]
     pub workbook_parameter: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11836,6 +13016,10 @@ pub struct PivotCaches {
 pub struct CTPivotCache {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11861,12 +13045,20 @@ pub struct FileSharing {
     #[serde(rename = "@spinCount")]
     #[serde(default)]
     pub spin_count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTOleSize {
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11916,6 +13108,10 @@ pub struct WorkbookProtection {
     #[serde(rename = "@workbookSpinCount")]
     #[serde(default)]
     pub workbook_spin_count: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11947,6 +13143,10 @@ pub struct WebPublishing {
     #[serde(rename = "@characterSet")]
     #[serde(default)]
     pub character_set: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11957,6 +13157,10 @@ pub struct CTFunctionGroups {
     #[serde(rename = "functionGroup")]
     #[serde(default)]
     pub function_group: Vec<Box<CTFunctionGroup>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11964,6 +13168,10 @@ pub struct CTFunctionGroup {
     #[serde(rename = "@name")]
     #[serde(default)]
     pub name: Option<XmlString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11974,6 +13182,10 @@ pub struct CTWebPublishObjects {
     #[serde(rename = "webPublishObject")]
     #[serde(default)]
     pub web_publish_object: Vec<Box<CTWebPublishObject>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11993,4 +13205,8 @@ pub struct CTWebPublishObject {
     #[serde(rename = "@autoRepublish")]
     #[serde(default)]
     pub auto_republish: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[serde(flatten)]
+    #[serde(default)]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }

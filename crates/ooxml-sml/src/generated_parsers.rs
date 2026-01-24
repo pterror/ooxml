@@ -101,16 +101,20 @@ impl FromXml for AutoFilter {
         let mut f_sort_state = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-filtering")]
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -176,6 +180,7 @@ impl FromXml for AutoFilter {
             sort_state: f_sort_state,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -192,26 +197,28 @@ impl FromXml for FilterColumn {
         let mut f_hidden_button = None;
         #[cfg(feature = "sml-filtering")]
         let mut f_show_button = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-filtering")]
                 b"colId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_column_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-filtering")]
                 b"hiddenButton" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_button = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-filtering")]
                 b"showButton" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_button = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -235,6 +242,7 @@ impl FromXml for FilterColumn {
             hidden_button: f_hidden_button,
             #[cfg(feature = "sml-filtering")]
             show_button: f_show_button,
+            extra_attrs,
         })
     }
 }
@@ -249,19 +257,22 @@ impl FromXml for Filters {
         let mut f_calendar_type = None;
         let mut f_filter = Vec::new();
         let mut f_date_group_item = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"blank" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_blank = Some(val == "true" || val == "1");
                 }
                 b"calendarType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calendar_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -308,6 +319,7 @@ impl FromXml for Filters {
             calendar_type: f_calendar_type,
             filter: f_filter,
             date_group_item: f_date_group_item,
+            extra_attrs,
         })
     }
 }
@@ -319,15 +331,19 @@ impl FromXml for Filter {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -343,7 +359,10 @@ impl FromXml for Filter {
             }
         }
 
-        Ok(Self { value: f_value })
+        Ok(Self {
+            value: f_value,
+            extra_attrs,
+        })
     }
 }
 
@@ -355,15 +374,19 @@ impl FromXml for CustomFilters {
     ) -> Result<Self, ParseError> {
         let mut f_and = None;
         let mut f_custom_filter = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"and" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_and = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -402,6 +425,7 @@ impl FromXml for CustomFilters {
         Ok(Self {
             and: f_and,
             custom_filter: f_custom_filter,
+            extra_attrs,
         })
     }
 }
@@ -414,19 +438,22 @@ impl FromXml for CustomFilter {
     ) -> Result<Self, ParseError> {
         let mut f_operator = None;
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"operator" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_operator = val.parse().ok();
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -445,6 +472,7 @@ impl FromXml for CustomFilter {
         Ok(Self {
             operator: f_operator,
             value: f_value,
+            extra_attrs,
         })
     }
 }
@@ -459,27 +487,28 @@ impl FromXml for Top10Filter {
         let mut f_percent = None;
         let mut f_value: Option<f64> = None;
         let mut f_filter_val = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"top" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top = Some(val == "true" || val == "1");
                 }
                 b"percent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_percent = Some(val == "true" || val == "1");
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
                 b"filterVal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_filter_val = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -500,6 +529,7 @@ impl FromXml for Top10Filter {
             percent: f_percent,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             filter_val: f_filter_val,
+            extra_attrs,
         })
     }
 }
@@ -512,19 +542,22 @@ impl FromXml for ColorFilter {
     ) -> Result<Self, ParseError> {
         let mut f_dxf_id = None;
         let mut f_cell_color = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"dxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf_id = val.parse().ok();
                 }
                 b"cellColor" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_color = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -543,6 +576,7 @@ impl FromXml for ColorFilter {
         Ok(Self {
             dxf_id: f_dxf_id,
             cell_color: f_cell_color,
+            extra_attrs,
         })
     }
 }
@@ -555,19 +589,22 @@ impl FromXml for IconFilter {
     ) -> Result<Self, ParseError> {
         let mut f_icon_set: Option<IconSetType> = None;
         let mut f_icon_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"iconSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_set = val.parse().ok();
                 }
                 b"iconId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -587,6 +624,7 @@ impl FromXml for IconFilter {
             icon_set: f_icon_set
                 .ok_or_else(|| ParseError::MissingAttribute("iconSet".to_string()))?,
             icon_id: f_icon_id,
+            extra_attrs,
         })
     }
 }
@@ -602,31 +640,31 @@ impl FromXml for DynamicFilter {
         let mut f_val_iso = None;
         let mut f_max_val = None;
         let mut f_max_val_iso = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
                 b"valIso" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_val_iso = Some(val.into_owned());
                 }
                 b"maxVal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_val = val.parse().ok();
                 }
                 b"maxValIso" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_val_iso = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -648,6 +686,7 @@ impl FromXml for DynamicFilter {
             val_iso: f_val_iso,
             max_val: f_max_val,
             max_val_iso: f_max_val_iso,
+            extra_attrs,
         })
     }
 }
@@ -664,27 +703,28 @@ impl FromXml for SortState {
         let mut f_reference: Option<Reference> = None;
         let mut f_sort_condition = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"columnSort" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_column_sort = Some(val == "true" || val == "1");
                 }
                 b"caseSensitive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_case_sensitive = Some(val == "true" || val == "1");
                 }
                 b"sortMethod" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sort_method = val.parse().ok();
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -736,6 +776,7 @@ impl FromXml for SortState {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             sort_condition: f_sort_condition,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -753,39 +794,37 @@ impl FromXml for SortCondition {
         let mut f_dxf_id = None;
         let mut f_icon_set = None;
         let mut f_icon_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"descending" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_descending = Some(val == "true" || val == "1");
                 }
                 b"sortBy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sort_by = val.parse().ok();
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"customList" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_list = Some(val.into_owned());
                 }
                 b"dxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf_id = val.parse().ok();
                 }
                 b"iconSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_set = val.parse().ok();
                 }
                 b"iconId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -810,6 +849,7 @@ impl FromXml for SortCondition {
             dxf_id: f_dxf_id,
             icon_set: f_icon_set,
             icon_id: f_icon_id,
+            extra_attrs,
         })
     }
 }
@@ -827,39 +867,37 @@ impl FromXml for DateGroupItem {
         let mut f_minute = None;
         let mut f_second = None;
         let mut f_date_time_grouping: Option<STDateTimeGrouping> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"year" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_year = val.parse().ok();
                 }
                 b"month" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_month = val.parse().ok();
                 }
                 b"day" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_day = val.parse().ok();
                 }
                 b"hour" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hour = val.parse().ok();
                 }
                 b"minute" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_minute = val.parse().ok();
                 }
                 b"second" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_second = val.parse().ok();
                 }
                 b"dateTimeGrouping" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_date_time_grouping = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -884,6 +922,7 @@ impl FromXml for DateGroupItem {
             second: f_second,
             date_time_grouping: f_date_time_grouping
                 .ok_or_else(|| ParseError::MissingAttribute("dateTimeGrouping".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -895,15 +934,19 @@ impl FromXml for CTXStringElement {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -921,6 +964,7 @@ impl FromXml for CTXStringElement {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -932,15 +976,19 @@ impl FromXml for Extension {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_uri = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"uri" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_uri = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -956,7 +1004,10 @@ impl FromXml for Extension {
             }
         }
 
-        Ok(Self { uri: f_uri })
+        Ok(Self {
+            uri: f_uri,
+            extra_attrs,
+        })
     }
 }
 
@@ -968,19 +1019,22 @@ impl FromXml for ObjectAnchor {
     ) -> Result<Self, ParseError> {
         let mut f_move_with_cells = None;
         let mut f_size_with_cells = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"moveWithCells" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_move_with_cells = Some(val == "true" || val == "1");
                 }
                 b"sizeWithCells" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_size_with_cells = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -999,6 +1053,7 @@ impl FromXml for ObjectAnchor {
         Ok(Self {
             move_with_cells: f_move_with_cells,
             size_with_cells: f_size_with_cells,
+            extra_attrs,
         })
     }
 }
@@ -1133,35 +1188,34 @@ impl FromXml for CalcCell {
         let mut f_l = None;
         let mut f_cell_type = None;
         let mut f_a = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"_any" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_any = Some(val.into_owned());
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = val.parse().ok();
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = Some(val == "true" || val == "1");
                 }
                 b"l" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_l = Some(val == "true" || val == "1");
                 }
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = Some(val == "true" || val == "1");
                 }
                 b"a" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_a = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1184,6 +1238,7 @@ impl FromXml for CalcCell {
             l: f_l,
             cell_type: f_cell_type,
             a: f_a,
+            extra_attrs,
         })
     }
 }
@@ -1355,31 +1410,32 @@ impl FromXml for Comment {
         #[cfg(feature = "sml-comments")]
         let mut f_text: Option<Box<RichString>> = None;
         let mut f_comment_pr = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-comments")]
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-comments")]
                 b"authorId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_author_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-comments")]
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-comments")]
                 b"shapeId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shape_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1436,6 +1492,7 @@ impl FromXml for Comment {
             #[cfg(feature = "sml-comments")]
             text: f_text.ok_or_else(|| ParseError::MissingAttribute("text".to_string()))?,
             comment_pr: f_comment_pr,
+            extra_attrs,
         })
     }
 }
@@ -1459,59 +1516,52 @@ impl FromXml for CTCommentPr {
         let mut f_just_last_x = None;
         let mut f_auto_scale = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"locked" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_locked = Some(val == "true" || val == "1");
                 }
                 b"defaultSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_size = Some(val == "true" || val == "1");
                 }
                 b"print" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_print = Some(val == "true" || val == "1");
                 }
                 b"disabled" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disabled = Some(val == "true" || val == "1");
                 }
                 b"autoFill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_fill = Some(val == "true" || val == "1");
                 }
                 b"autoLine" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_line = Some(val == "true" || val == "1");
                 }
                 b"altText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_alt_text = Some(val.into_owned());
                 }
                 b"textHAlign" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_text_h_align = val.parse().ok();
                 }
                 b"textVAlign" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_text_v_align = val.parse().ok();
                 }
                 b"lockText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lock_text = Some(val == "true" || val == "1");
                 }
                 b"justLastX" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_just_last_x = Some(val == "true" || val == "1");
                 }
                 b"autoScale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_scale = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1560,6 +1610,7 @@ impl FromXml for CTCommentPr {
             just_last_x: f_just_last_x,
             auto_scale: f_auto_scale,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -1573,15 +1624,19 @@ impl FromXml for MapInfo {
         let mut f_selection_namespaces: Option<String> = None;
         let mut f_schema = Vec::new();
         let mut f_map = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"SelectionNamespaces" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_selection_namespaces = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1626,6 +1681,7 @@ impl FromXml for MapInfo {
                 .ok_or_else(|| ParseError::MissingAttribute("SelectionNamespaces".to_string()))?,
             schema: f_schema,
             map: f_map,
+            extra_attrs,
         })
     }
 }
@@ -1668,47 +1724,43 @@ impl FromXml for XmlMap {
         let mut f_preserve_sort_a_f_layout: Option<bool> = None;
         let mut f_preserve_format: Option<bool> = None;
         let mut f_data_binding = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ID" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i_d = val.parse().ok();
                 }
                 b"Name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"RootElement" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_root_element = Some(val.into_owned());
                 }
                 b"SchemaID" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_schema_i_d = Some(val.into_owned());
                 }
                 b"ShowImportExportValidationErrors" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_import_export_validation_errors = Some(val == "true" || val == "1");
                 }
                 b"AutoFit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_fit = Some(val == "true" || val == "1");
                 }
                 b"Append" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_append = Some(val == "true" || val == "1");
                 }
                 b"PreserveSortAFLayout" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_sort_a_f_layout = Some(val == "true" || val == "1");
                 }
                 b"PreserveFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_format = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1763,6 +1815,7 @@ impl FromXml for XmlMap {
             preserve_format: f_preserve_format
                 .ok_or_else(|| ParseError::MissingAttribute("PreserveFormat".to_string()))?,
             data_binding: f_data_binding,
+            extra_attrs,
         })
     }
 }
@@ -1778,31 +1831,31 @@ impl FromXml for DataBinding {
         let mut f_connection_i_d = None;
         let mut f_file_binding_name = None;
         let mut f_data_binding_load_mode: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"DataBindingName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_binding_name = Some(val.into_owned());
                 }
                 b"FileBinding" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_file_binding = Some(val == "true" || val == "1");
                 }
                 b"ConnectionID" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection_i_d = val.parse().ok();
                 }
                 b"FileBindingName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_file_binding_name = Some(val.into_owned());
                 }
                 b"DataBindingLoadMode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_binding_load_mode = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -1825,6 +1878,7 @@ impl FromXml for DataBinding {
             file_binding_name: f_file_binding_name,
             data_binding_load_mode: f_data_binding_load_mode
                 .ok_or_else(|| ParseError::MissingAttribute("DataBindingLoadMode".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -1906,91 +1960,76 @@ impl FromXml for Connection {
         let mut f_text_pr = None;
         let mut f_parameters = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"sourceFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_file = Some(val.into_owned());
                 }
                 b"odcFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_odc_file = Some(val.into_owned());
                 }
                 b"keepAlive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_keep_alive = Some(val == "true" || val == "1");
                 }
                 b"interval" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_interval = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"description" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_description = Some(val.into_owned());
                 }
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"reconnectionMethod" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reconnection_method = val.parse().ok();
                 }
                 b"refreshedVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refreshed_version = val.parse().ok();
                 }
                 b"minRefreshableVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_refreshable_version = val.parse().ok();
                 }
                 b"savePassword" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_save_password = Some(val == "true" || val == "1");
                 }
                 b"new" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_new = Some(val == "true" || val == "1");
                 }
                 b"deleted" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_deleted = Some(val == "true" || val == "1");
                 }
                 b"onlyUseConnectionFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_only_use_connection_file = Some(val == "true" || val == "1");
                 }
                 b"background" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_background = Some(val == "true" || val == "1");
                 }
                 b"refreshOnLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_on_load = Some(val == "true" || val == "1");
                 }
                 b"saveData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_save_data = Some(val == "true" || val == "1");
                 }
                 b"credentials" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_credentials = val.parse().ok();
                 }
                 b"singleSignOnId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_single_sign_on_id = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2095,6 +2134,7 @@ impl FromXml for Connection {
             text_pr: f_text_pr,
             parameters: f_parameters,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -2109,27 +2149,28 @@ impl FromXml for DatabaseProperties {
         let mut f_command = None;
         let mut f_server_command = None;
         let mut f_command_type = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"connection" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection = Some(val.into_owned());
                 }
                 b"command" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_command = Some(val.into_owned());
                 }
                 b"serverCommand" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_command = Some(val.into_owned());
                 }
                 b"commandType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_command_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2151,6 +2192,7 @@ impl FromXml for DatabaseProperties {
             command: f_command,
             server_command: f_server_command,
             command_type: f_command_type,
+            extra_attrs,
         })
     }
 }
@@ -2170,47 +2212,43 @@ impl FromXml for OlapProperties {
         let mut f_server_number_format = None;
         let mut f_server_font = None;
         let mut f_server_font_color = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"local" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_local = Some(val == "true" || val == "1");
                 }
                 b"localConnection" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_local_connection = Some(val.into_owned());
                 }
                 b"localRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_local_refresh = Some(val == "true" || val == "1");
                 }
                 b"sendLocale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_send_locale = Some(val == "true" || val == "1");
                 }
                 b"rowDrillCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_drill_count = val.parse().ok();
                 }
                 b"serverFill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_fill = Some(val == "true" || val == "1");
                 }
                 b"serverNumberFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_number_format = Some(val == "true" || val == "1");
                 }
                 b"serverFont" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_font = Some(val == "true" || val == "1");
                 }
                 b"serverFontColor" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_font_color = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2236,6 +2274,7 @@ impl FromXml for OlapProperties {
             server_number_format: f_server_number_format,
             server_font: f_server_font,
             server_font_color: f_server_font_color,
+            extra_attrs,
         })
     }
 }
@@ -2260,63 +2299,55 @@ impl FromXml for WebQueryProperties {
         let mut f_html_format = None;
         let mut f_edit_page = None;
         let mut f_tables = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"xml" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xml = Some(val == "true" || val == "1");
                 }
                 b"sourceData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_data = Some(val == "true" || val == "1");
                 }
                 b"parsePre" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_parse_pre = Some(val == "true" || val == "1");
                 }
                 b"consecutive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_consecutive = Some(val == "true" || val == "1");
                 }
                 b"firstRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_row = Some(val == "true" || val == "1");
                 }
                 b"xl97" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xl97 = Some(val == "true" || val == "1");
                 }
                 b"textDates" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_text_dates = Some(val == "true" || val == "1");
                 }
                 b"xl2000" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xl2000 = Some(val == "true" || val == "1");
                 }
                 b"url" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_url = Some(val.into_owned());
                 }
                 b"post" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_post = Some(val.into_owned());
                 }
                 b"htmlTables" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_html_tables = Some(val == "true" || val == "1");
                 }
                 b"htmlFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_html_format = val.parse().ok();
                 }
                 b"editPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_edit_page = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2365,6 +2396,7 @@ impl FromXml for WebQueryProperties {
             html_format: f_html_format,
             edit_page: f_edit_page,
             tables: f_tables,
+            extra_attrs,
         })
     }
 }
@@ -2377,15 +2409,19 @@ impl FromXml for Parameters {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_parameter = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2422,6 +2458,7 @@ impl FromXml for Parameters {
         Ok(Self {
             count: f_count,
             parameter: f_parameter,
+            extra_attrs,
         })
     }
 }
@@ -2442,51 +2479,46 @@ impl FromXml for Parameter {
         let mut f_integer = None;
         let mut f_string = None;
         let mut f_cell = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sqlType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sql_type = val.parse().ok();
                 }
                 b"parameterType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_parameter_type = val.parse().ok();
                 }
                 b"refreshOnChange" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_on_change = Some(val == "true" || val == "1");
                 }
                 b"prompt" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prompt = Some(val.into_owned());
                 }
                 b"boolean" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_boolean = Some(val == "true" || val == "1");
                 }
                 b"double" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_double = val.parse().ok();
                 }
                 b"integer" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_integer = val.parse().ok();
                 }
                 b"string" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_string = Some(val.into_owned());
                 }
                 b"cell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2513,6 +2545,7 @@ impl FromXml for Parameter {
             integer: f_integer,
             string: f_string,
             cell: f_cell,
+            extra_attrs,
         })
     }
 }
@@ -2524,15 +2557,19 @@ impl FromXml for DataTables {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2548,7 +2585,10 @@ impl FromXml for DataTables {
             }
         }
 
-        Ok(Self { count: f_count })
+        Ok(Self {
+            count: f_count,
+            extra_attrs,
+        })
     }
 }
 
@@ -2597,75 +2637,64 @@ impl FromXml for TextImportProperties {
         let mut f_qualifier = None;
         let mut f_delimiter = None;
         let mut f_text_fields = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"prompt" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prompt = Some(val == "true" || val == "1");
                 }
                 b"fileType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_file_type = val.parse().ok();
                 }
                 b"codePage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_page = val.parse().ok();
                 }
                 b"characterSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_character_set = Some(val.into_owned());
                 }
                 b"firstRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_row = val.parse().ok();
                 }
                 b"sourceFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_file = Some(val.into_owned());
                 }
                 b"delimited" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_delimited = Some(val == "true" || val == "1");
                 }
                 b"decimal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_decimal = Some(val.into_owned());
                 }
                 b"thousands" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thousands = Some(val.into_owned());
                 }
                 b"tab" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tab = Some(val == "true" || val == "1");
                 }
                 b"space" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_space = Some(val == "true" || val == "1");
                 }
                 b"comma" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_comma = Some(val == "true" || val == "1");
                 }
                 b"semicolon" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_semicolon = Some(val == "true" || val == "1");
                 }
                 b"consecutive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_consecutive = Some(val == "true" || val == "1");
                 }
                 b"qualifier" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_qualifier = val.parse().ok();
                 }
                 b"delimiter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_delimiter = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2718,6 +2747,7 @@ impl FromXml for TextImportProperties {
             qualifier: f_qualifier,
             delimiter: f_delimiter,
             text_fields: f_text_fields,
+            extra_attrs,
         })
     }
 }
@@ -2730,15 +2760,19 @@ impl FromXml for TextFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_text_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2776,6 +2810,7 @@ impl FromXml for TextFields {
         Ok(Self {
             count: f_count,
             text_field: f_text_field,
+            extra_attrs,
         })
     }
 }
@@ -2788,19 +2823,22 @@ impl FromXml for TextField {
     ) -> Result<Self, ParseError> {
         let mut f_type = None;
         let mut f_position = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"position" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_position = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -2819,6 +2857,7 @@ impl FromXml for TextField {
         Ok(Self {
             r#type: f_type,
             position: f_position,
+            extra_attrs,
         })
     }
 }
@@ -2857,83 +2896,70 @@ impl FromXml for PivotCacheDefinition {
         let mut f_measure_groups = None;
         let mut f_maps = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"invalid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_invalid = Some(val == "true" || val == "1");
                 }
                 b"saveData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_save_data = Some(val == "true" || val == "1");
                 }
                 b"refreshOnLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_on_load = Some(val == "true" || val == "1");
                 }
                 b"optimizeMemory" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_optimize_memory = Some(val == "true" || val == "1");
                 }
                 b"enableRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_enable_refresh = Some(val == "true" || val == "1");
                 }
                 b"refreshedBy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refreshed_by = Some(val.into_owned());
                 }
                 b"refreshedDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refreshed_date = val.parse().ok();
                 }
                 b"refreshedDateIso" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refreshed_date_iso = Some(val.into_owned());
                 }
                 b"backgroundQuery" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_background_query = Some(val == "true" || val == "1");
                 }
                 b"missingItemsLimit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_missing_items_limit = val.parse().ok();
                 }
                 b"createdVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_created_version = val.parse().ok();
                 }
                 b"refreshedVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refreshed_version = val.parse().ok();
                 }
                 b"minRefreshableVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_refreshable_version = val.parse().ok();
                 }
                 b"recordCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_record_count = val.parse().ok();
                 }
                 b"upgradeOnRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_upgrade_on_refresh = Some(val == "true" || val == "1");
                 }
                 b"tupleCache" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tuple_cache = Some(val == "true" || val == "1");
                 }
                 b"supportSubquery" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_support_subquery = Some(val == "true" || val == "1");
                 }
                 b"supportAdvancedDrill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_support_advanced_drill = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3074,6 +3100,7 @@ impl FromXml for PivotCacheDefinition {
             measure_groups: f_measure_groups,
             maps: f_maps,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -3086,15 +3113,19 @@ impl FromXml for CacheFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cache_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3132,6 +3163,7 @@ impl FromXml for CacheFields {
         Ok(Self {
             count: f_count,
             cache_field: f_cache_field,
+            extra_attrs,
         })
     }
 }
@@ -3159,63 +3191,55 @@ impl FromXml for CacheField {
         let mut f_field_group = None;
         let mut f_mp_map = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
                 b"propertyName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_property_name = Some(val.into_owned());
                 }
                 b"serverField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_field = Some(val == "true" || val == "1");
                 }
                 b"uniqueList" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_list = Some(val == "true" || val == "1");
                 }
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
                 b"formula" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val.into_owned());
                 }
                 b"sqlType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sql_type = val.parse().ok();
                 }
                 b"hierarchy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hierarchy = val.parse().ok();
                 }
                 b"level" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_level = val.parse().ok();
                 }
                 b"databaseField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_database_field = Some(val == "true" || val == "1");
                 }
                 b"mappingCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_mapping_count = val.parse().ok();
                 }
                 b"memberPropertyField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_member_property_field = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3290,6 +3314,7 @@ impl FromXml for CacheField {
             field_group: f_field_group,
             mp_map: f_mp_map,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -3302,19 +3327,22 @@ impl FromXml for CacheSource {
     ) -> Result<Self, ParseError> {
         let mut f_type: Option<STSourceType> = None;
         let mut f_connection_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"connectionId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3333,6 +3361,7 @@ impl FromXml for CacheSource {
         Ok(Self {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             connection_id: f_connection_id,
+            extra_attrs,
         })
     }
 }
@@ -3346,23 +3375,25 @@ impl FromXml for WorksheetSource {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sheet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3382,6 +3413,7 @@ impl FromXml for WorksheetSource {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            extra_attrs,
         })
     }
 }
@@ -3395,15 +3427,19 @@ impl FromXml for Consolidation {
         let mut f_auto_page = None;
         let mut f_pages = None;
         let mut f_range_sets: Option<Box<CTRangeSets>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"autoPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_page = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3449,6 +3485,7 @@ impl FromXml for Consolidation {
             pages: f_pages,
             range_sets: f_range_sets
                 .ok_or_else(|| ParseError::MissingAttribute("rangeSets".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -3461,15 +3498,19 @@ impl FromXml for CTPages {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3506,6 +3547,7 @@ impl FromXml for CTPages {
         Ok(Self {
             count: f_count,
             page: f_page,
+            extra_attrs,
         })
     }
 }
@@ -3518,15 +3560,19 @@ impl FromXml for CTPCDSCPage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page_item = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3564,6 +3610,7 @@ impl FromXml for CTPCDSCPage {
         Ok(Self {
             count: f_count,
             page_item: f_page_item,
+            extra_attrs,
         })
     }
 }
@@ -3575,15 +3622,19 @@ impl FromXml for CTPageItem {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3601,6 +3652,7 @@ impl FromXml for CTPageItem {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -3613,15 +3665,19 @@ impl FromXml for CTRangeSets {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_range_set = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3659,6 +3715,7 @@ impl FromXml for CTRangeSets {
         Ok(Self {
             count: f_count,
             range_set: f_range_set,
+            extra_attrs,
         })
     }
 }
@@ -3676,39 +3733,37 @@ impl FromXml for CTRangeSet {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"i1" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i1 = val.parse().ok();
                 }
                 b"i2" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i2 = val.parse().ok();
                 }
                 b"i3" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i3 = val.parse().ok();
                 }
                 b"i4" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i4 = val.parse().ok();
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sheet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3732,6 +3787,7 @@ impl FromXml for CTRangeSet {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            extra_attrs,
         })
     }
 }
@@ -3756,67 +3812,58 @@ impl FromXml for SharedItems {
         let mut f_max_date = None;
         let mut f_count = None;
         let mut f_long_text = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"containsSemiMixedTypes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_semi_mixed_types = Some(val == "true" || val == "1");
                 }
                 b"containsNonDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_non_date = Some(val == "true" || val == "1");
                 }
                 b"containsDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_date = Some(val == "true" || val == "1");
                 }
                 b"containsString" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_string = Some(val == "true" || val == "1");
                 }
                 b"containsBlank" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_blank = Some(val == "true" || val == "1");
                 }
                 b"containsMixedTypes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_mixed_types = Some(val == "true" || val == "1");
                 }
                 b"containsNumber" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_number = Some(val == "true" || val == "1");
                 }
                 b"containsInteger" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_contains_integer = Some(val == "true" || val == "1");
                 }
                 b"minValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_value = val.parse().ok();
                 }
                 b"maxValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_value = val.parse().ok();
                 }
                 b"minDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_date = Some(val.into_owned());
                 }
                 b"maxDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_date = Some(val.into_owned());
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"longText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_long_text = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3847,6 +3894,7 @@ impl FromXml for SharedItems {
             max_date: f_max_date,
             count: f_count,
             long_text: f_long_text,
+            extra_attrs,
         })
     }
 }
@@ -3870,55 +3918,49 @@ impl FromXml for CTMissing {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
                 b"in" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_in = val.parse().ok();
                 }
                 b"bc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bc = decode_hex(&val);
                 }
                 b"fc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fc = decode_hex(&val);
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = Some(val == "true" || val == "1");
                 }
                 b"un" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_un = Some(val == "true" || val == "1");
                 }
                 b"st" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_st = Some(val == "true" || val == "1");
                 }
                 b"b" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -3972,6 +4014,7 @@ impl FromXml for CTMissing {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -3996,59 +4039,52 @@ impl FromXml for CTNumber {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
                 b"in" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_in = val.parse().ok();
                 }
                 b"bc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bc = decode_hex(&val);
                 }
                 b"fc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fc = decode_hex(&val);
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = Some(val == "true" || val == "1");
                 }
                 b"un" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_un = Some(val == "true" || val == "1");
                 }
                 b"st" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_st = Some(val == "true" || val == "1");
                 }
                 b"b" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4103,6 +4139,7 @@ impl FromXml for CTNumber {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4119,31 +4156,31 @@ impl FromXml for CTBoolean {
         let mut f_cells = None;
         let mut f_cp = None;
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val == "true" || val == "1");
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4184,6 +4221,7 @@ impl FromXml for CTBoolean {
             cells: f_cells,
             cp: f_cp,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4208,59 +4246,52 @@ impl FromXml for CTError {
         let mut f_b = None;
         let mut f_tpls = None;
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
                 b"in" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_in = val.parse().ok();
                 }
                 b"bc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bc = decode_hex(&val);
                 }
                 b"fc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fc = decode_hex(&val);
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = Some(val == "true" || val == "1");
                 }
                 b"un" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_un = Some(val == "true" || val == "1");
                 }
                 b"st" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_st = Some(val == "true" || val == "1");
                 }
                 b"b" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4315,6 +4346,7 @@ impl FromXml for CTError {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4339,59 +4371,52 @@ impl FromXml for CTString {
         let mut f_b = None;
         let mut f_tpls = Vec::new();
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
                 b"in" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_in = val.parse().ok();
                 }
                 b"bc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bc = decode_hex(&val);
                 }
                 b"fc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fc = decode_hex(&val);
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = Some(val == "true" || val == "1");
                 }
                 b"un" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_un = Some(val == "true" || val == "1");
                 }
                 b"st" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_st = Some(val == "true" || val == "1");
                 }
                 b"b" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4446,6 +4471,7 @@ impl FromXml for CTString {
             b: f_b,
             tpls: f_tpls,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4462,31 +4488,31 @@ impl FromXml for CTDateTime {
         let mut f_cells = None;
         let mut f_cp = None;
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val.into_owned());
                 }
                 b"cp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cp = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4527,6 +4553,7 @@ impl FromXml for CTDateTime {
             cells: f_cells,
             cp: f_cp,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4542,19 +4569,22 @@ impl FromXml for FieldGroup {
         let mut f_range_pr = None;
         let mut f_discrete_pr = None;
         let mut f_group_items = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"par" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_par = val.parse().ok();
                 }
                 b"base" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_base = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4610,6 +4640,7 @@ impl FromXml for FieldGroup {
             range_pr: f_range_pr,
             discrete_pr: f_discrete_pr,
             group_items: f_group_items,
+            extra_attrs,
         })
     }
 }
@@ -4628,43 +4659,40 @@ impl FromXml for CTRangePr {
         let mut f_start_date = None;
         let mut f_end_date = None;
         let mut f_group_interval = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"autoStart" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_start = Some(val == "true" || val == "1");
                 }
                 b"autoEnd" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_end = Some(val == "true" || val == "1");
                 }
                 b"groupBy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_group_by = val.parse().ok();
                 }
                 b"startNum" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_num = val.parse().ok();
                 }
                 b"endNum" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_num = val.parse().ok();
                 }
                 b"startDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_date = Some(val.into_owned());
                 }
                 b"endDate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_date = Some(val.into_owned());
                 }
                 b"groupInterval" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_group_interval = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4689,6 +4717,7 @@ impl FromXml for CTRangePr {
             start_date: f_start_date,
             end_date: f_end_date,
             group_interval: f_group_interval,
+            extra_attrs,
         })
     }
 }
@@ -4701,15 +4730,19 @@ impl FromXml for CTDiscretePr {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4746,6 +4779,7 @@ impl FromXml for CTDiscretePr {
         Ok(Self {
             count: f_count,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -4757,15 +4791,19 @@ impl FromXml for GroupItems {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4781,7 +4819,10 @@ impl FromXml for GroupItems {
             }
         }
 
-        Ok(Self { count: f_count })
+        Ok(Self {
+            count: f_count,
+            extra_attrs,
+        })
     }
 }
 
@@ -4794,15 +4835,19 @@ impl FromXml for PivotCacheRecords {
         let mut f_count = None;
         let mut f_reference = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4848,6 +4893,7 @@ impl FromXml for PivotCacheRecords {
             count: f_count,
             reference: f_reference,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -4882,15 +4928,19 @@ impl FromXml for CTPCDKPIs {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_kpi = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -4927,6 +4977,7 @@ impl FromXml for CTPCDKPIs {
         Ok(Self {
             count: f_count,
             kpi: f_kpi,
+            extra_attrs,
         })
     }
 }
@@ -4948,55 +4999,49 @@ impl FromXml for CTPCDKPI {
         let mut f_trend = None;
         let mut f_weight = None;
         let mut f_time = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
                 b"displayFolder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_display_folder = Some(val.into_owned());
                 }
                 b"measureGroup" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure_group = Some(val.into_owned());
                 }
                 b"parent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_parent = Some(val.into_owned());
                 }
                 b"value" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"goal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_goal = Some(val.into_owned());
                 }
                 b"status" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_status = Some(val.into_owned());
                 }
                 b"trend" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_trend = Some(val.into_owned());
                 }
                 b"weight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_weight = Some(val.into_owned());
                 }
                 b"time" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_time = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5025,6 +5070,7 @@ impl FromXml for CTPCDKPI {
             trend: f_trend,
             weight: f_weight,
             time: f_time,
+            extra_attrs,
         })
     }
 }
@@ -5037,15 +5083,19 @@ impl FromXml for CTCacheHierarchies {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cache_hierarchy = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5084,6 +5134,7 @@ impl FromXml for CTCacheHierarchies {
         Ok(Self {
             count: f_count,
             cache_hierarchy: f_cache_hierarchy,
+            extra_attrs,
         })
     }
 }
@@ -5119,99 +5170,82 @@ impl FromXml for CTCacheHierarchy {
         let mut f_fields_usage = None;
         let mut f_group_levels = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
                 b"measure" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure = Some(val == "true" || val == "1");
                 }
                 b"set" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_set = Some(val == "true" || val == "1");
                 }
                 b"parentSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_parent_set = val.parse().ok();
                 }
                 b"iconSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_set = val.parse().ok();
                 }
                 b"attribute" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_attribute = Some(val == "true" || val == "1");
                 }
                 b"time" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_time = Some(val == "true" || val == "1");
                 }
                 b"keyAttribute" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_key_attribute = Some(val == "true" || val == "1");
                 }
                 b"defaultMemberUniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_member_unique_name = Some(val.into_owned());
                 }
                 b"allUniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_all_unique_name = Some(val.into_owned());
                 }
                 b"allCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_all_caption = Some(val.into_owned());
                 }
                 b"dimensionUniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dimension_unique_name = Some(val.into_owned());
                 }
                 b"displayFolder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_display_folder = Some(val.into_owned());
                 }
                 b"measureGroup" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure_group = Some(val.into_owned());
                 }
                 b"measures" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measures = Some(val == "true" || val == "1");
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"oneField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_one_field = Some(val == "true" || val == "1");
                 }
                 b"memberValueDatatype" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_member_value_datatype = val.parse().ok();
                 }
                 b"unbalanced" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unbalanced = Some(val == "true" || val == "1");
                 }
                 b"unbalancedGroup" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unbalanced_group = Some(val == "true" || val == "1");
                 }
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5290,6 +5324,7 @@ impl FromXml for CTCacheHierarchy {
             fields_usage: f_fields_usage,
             group_levels: f_group_levels,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -5302,15 +5337,19 @@ impl FromXml for CTFieldsUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field_usage = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5348,6 +5387,7 @@ impl FromXml for CTFieldsUsage {
         Ok(Self {
             count: f_count,
             field_usage: f_field_usage,
+            extra_attrs,
         })
     }
 }
@@ -5359,15 +5399,19 @@ impl FromXml for CTFieldUsage {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<i32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"x" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5385,6 +5429,7 @@ impl FromXml for CTFieldUsage {
 
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -5397,15 +5442,19 @@ impl FromXml for CTGroupLevels {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group_level = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5443,6 +5492,7 @@ impl FromXml for CTGroupLevels {
         Ok(Self {
             count: f_count,
             group_level: f_group_level,
+            extra_attrs,
         })
     }
 }
@@ -5459,27 +5509,28 @@ impl FromXml for CTGroupLevel {
         let mut f_custom_roll_up = None;
         let mut f_groups = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
                 b"user" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_user = Some(val == "true" || val == "1");
                 }
                 b"customRollUp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_roll_up = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5530,6 +5581,7 @@ impl FromXml for CTGroupLevel {
             custom_roll_up: f_custom_roll_up,
             groups: f_groups,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -5542,15 +5594,19 @@ impl FromXml for CTGroups {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5587,6 +5643,7 @@ impl FromXml for CTGroups {
         Ok(Self {
             count: f_count,
             group: f_group,
+            extra_attrs,
         })
     }
 }
@@ -5603,31 +5660,31 @@ impl FromXml for CTLevelGroup {
         let mut f_unique_parent = None;
         let mut f_id = None;
         let mut f_group_members: Option<Box<CTGroupMembers>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
                 b"uniqueParent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_parent = Some(val.into_owned());
                 }
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5673,6 +5730,7 @@ impl FromXml for CTLevelGroup {
             id: f_id,
             group_members: f_group_members
                 .ok_or_else(|| ParseError::MissingAttribute("groupMembers".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -5685,15 +5743,19 @@ impl FromXml for CTGroupMembers {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_group_member = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5732,6 +5794,7 @@ impl FromXml for CTGroupMembers {
         Ok(Self {
             count: f_count,
             group_member: f_group_member,
+            extra_attrs,
         })
     }
 }
@@ -5744,19 +5807,22 @@ impl FromXml for CTGroupMember {
     ) -> Result<Self, ParseError> {
         let mut f_unique_name: Option<XmlString> = None;
         let mut f_group = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"group" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_group = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5776,6 +5842,7 @@ impl FromXml for CTGroupMember {
             unique_name: f_unique_name
                 .ok_or_else(|| ParseError::MissingAttribute("uniqueName".to_string()))?,
             group: f_group,
+            extra_attrs,
         })
     }
 }
@@ -5872,19 +5939,22 @@ impl FromXml for CTServerFormat {
     ) -> Result<Self, ParseError> {
         let mut f_culture = None;
         let mut f_format = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"culture" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_culture = Some(val.into_owned());
                 }
                 b"format" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5903,6 +5973,7 @@ impl FromXml for CTServerFormat {
         Ok(Self {
             culture: f_culture,
             format: f_format,
+            extra_attrs,
         })
     }
 }
@@ -5915,15 +5986,19 @@ impl FromXml for CTServerFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_server_format = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5962,6 +6037,7 @@ impl FromXml for CTServerFormats {
         Ok(Self {
             count: f_count,
             server_format: f_server_format,
+            extra_attrs,
         })
     }
 }
@@ -5973,15 +6049,19 @@ impl FromXml for CTPCDSDTCEntries {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -5997,7 +6077,10 @@ impl FromXml for CTPCDSDTCEntries {
             }
         }
 
-        Ok(Self { count: f_count })
+        Ok(Self {
+            count: f_count,
+            extra_attrs,
+        })
     }
 }
 
@@ -6009,15 +6092,19 @@ impl FromXml for CTTuples {
     ) -> Result<Self, ParseError> {
         let mut f_cells = None;
         let mut f_tpl = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6054,6 +6141,7 @@ impl FromXml for CTTuples {
         Ok(Self {
             cells: f_cells,
             tpl: f_tpl,
+            extra_attrs,
         })
     }
 }
@@ -6067,23 +6155,25 @@ impl FromXml for CTTuple {
         let mut f_fld = None;
         let mut f_hier = None;
         let mut f_item: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"fld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fld = val.parse().ok();
                 }
                 b"hier" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hier = val.parse().ok();
                 }
                 b"item" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_item = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6103,6 +6193,7 @@ impl FromXml for CTTuple {
             fld: f_fld,
             hier: f_hier,
             item: f_item.ok_or_else(|| ParseError::MissingAttribute("item".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -6115,15 +6206,19 @@ impl FromXml for CTSets {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_set = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6160,6 +6255,7 @@ impl FromXml for CTSets {
         Ok(Self {
             count: f_count,
             set: f_set,
+            extra_attrs,
         })
     }
 }
@@ -6177,31 +6273,31 @@ impl FromXml for CTSet {
         let mut f_query_failed = None;
         let mut f_tpls = Vec::new();
         let mut f_sort_by_tuple = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"maxRank" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_rank = val.parse().ok();
                 }
                 b"setDefinition" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_set_definition = Some(val.into_owned());
                 }
                 b"sortType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sort_type = val.parse().ok();
                 }
                 b"queryFailed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_query_failed = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6252,6 +6348,7 @@ impl FromXml for CTSet {
             query_failed: f_query_failed,
             tpls: f_tpls,
             sort_by_tuple: f_sort_by_tuple,
+            extra_attrs,
         })
     }
 }
@@ -6264,15 +6361,19 @@ impl FromXml for CTQueryCache {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_query = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6309,6 +6410,7 @@ impl FromXml for CTQueryCache {
         Ok(Self {
             count: f_count,
             query: f_query,
+            extra_attrs,
         })
     }
 }
@@ -6321,15 +6423,19 @@ impl FromXml for CTQuery {
     ) -> Result<Self, ParseError> {
         let mut f_mdx: Option<XmlString> = None;
         let mut f_tpls = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"mdx" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_mdx = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6366,6 +6472,7 @@ impl FromXml for CTQuery {
         Ok(Self {
             mdx: f_mdx.ok_or_else(|| ParseError::MissingAttribute("mdx".to_string()))?,
             tpls: f_tpls,
+            extra_attrs,
         })
     }
 }
@@ -6378,15 +6485,19 @@ impl FromXml for CTCalculatedItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_calculated_item = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6425,6 +6536,7 @@ impl FromXml for CTCalculatedItems {
         Ok(Self {
             count: f_count,
             calculated_item: f_calculated_item,
+            extra_attrs,
         })
     }
 }
@@ -6439,19 +6551,22 @@ impl FromXml for CTCalculatedItem {
         let mut f_formula = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"field" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field = val.parse().ok();
                 }
                 b"formula" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6500,6 +6615,7 @@ impl FromXml for CTCalculatedItem {
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -6512,15 +6628,19 @@ impl FromXml for CTCalculatedMembers {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_calculated_member = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6560,6 +6680,7 @@ impl FromXml for CTCalculatedMembers {
         Ok(Self {
             count: f_count,
             calculated_member: f_calculated_member,
+            extra_attrs,
         })
     }
 }
@@ -6578,39 +6699,37 @@ impl FromXml for CTCalculatedMember {
         let mut f_solve_order = None;
         let mut f_set = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"mdx" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_mdx = Some(val.into_owned());
                 }
                 b"memberName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_member_name = Some(val.into_owned());
                 }
                 b"hierarchy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hierarchy = Some(val.into_owned());
                 }
                 b"parent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_parent = Some(val.into_owned());
                 }
                 b"solveOrder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_solve_order = val.parse().ok();
                 }
                 b"set" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_set = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -6655,6 +6774,7 @@ impl FromXml for CTCalculatedMember {
             solve_order: f_solve_order,
             set: f_set,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -6743,255 +6863,199 @@ impl FromXml for CTPivotTableDefinition {
         let mut f_row_hierarchies_usage = None;
         let mut f_col_hierarchies_usage = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"cacheId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cache_id = val.parse().ok();
                 }
                 b"dataOnRows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_on_rows = Some(val == "true" || val == "1");
                 }
                 b"dataPosition" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_position = val.parse().ok();
                 }
                 b"dataCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_caption = Some(val.into_owned());
                 }
                 b"grandTotalCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grand_total_caption = Some(val.into_owned());
                 }
                 b"errorCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_error_caption = Some(val.into_owned());
                 }
                 b"showError" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_error = Some(val == "true" || val == "1");
                 }
                 b"missingCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_missing_caption = Some(val.into_owned());
                 }
                 b"showMissing" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_missing = Some(val == "true" || val == "1");
                 }
                 b"pageStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_page_style = Some(val.into_owned());
                 }
                 b"pivotTableStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pivot_table_style = Some(val.into_owned());
                 }
                 b"vacatedStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vacated_style = Some(val.into_owned());
                 }
                 b"tag" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tag = Some(val.into_owned());
                 }
                 b"updatedVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_updated_version = val.parse().ok();
                 }
                 b"minRefreshableVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_refreshable_version = val.parse().ok();
                 }
                 b"asteriskTotals" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_asterisk_totals = Some(val == "true" || val == "1");
                 }
                 b"showItems" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_items = Some(val == "true" || val == "1");
                 }
                 b"editData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_edit_data = Some(val == "true" || val == "1");
                 }
                 b"disableFieldList" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disable_field_list = Some(val == "true" || val == "1");
                 }
                 b"showCalcMbrs" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_calc_mbrs = Some(val == "true" || val == "1");
                 }
                 b"visualTotals" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_visual_totals = Some(val == "true" || val == "1");
                 }
                 b"showMultipleLabel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_multiple_label = Some(val == "true" || val == "1");
                 }
                 b"showDataDropDown" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_data_drop_down = Some(val == "true" || val == "1");
                 }
                 b"showDrill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_drill = Some(val == "true" || val == "1");
                 }
                 b"printDrill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_print_drill = Some(val == "true" || val == "1");
                 }
                 b"showMemberPropertyTips" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_member_property_tips = Some(val == "true" || val == "1");
                 }
                 b"showDataTips" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_data_tips = Some(val == "true" || val == "1");
                 }
                 b"enableWizard" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_enable_wizard = Some(val == "true" || val == "1");
                 }
                 b"enableDrill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_enable_drill = Some(val == "true" || val == "1");
                 }
                 b"enableFieldProperties" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_enable_field_properties = Some(val == "true" || val == "1");
                 }
                 b"preserveFormatting" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_formatting = Some(val == "true" || val == "1");
                 }
                 b"useAutoFormatting" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_use_auto_formatting = Some(val == "true" || val == "1");
                 }
                 b"pageWrap" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_page_wrap = val.parse().ok();
                 }
                 b"pageOverThenDown" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_page_over_then_down = Some(val == "true" || val == "1");
                 }
                 b"subtotalHiddenItems" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_subtotal_hidden_items = Some(val == "true" || val == "1");
                 }
                 b"rowGrandTotals" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_grand_totals = Some(val == "true" || val == "1");
                 }
                 b"colGrandTotals" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_col_grand_totals = Some(val == "true" || val == "1");
                 }
                 b"fieldPrintTitles" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field_print_titles = Some(val == "true" || val == "1");
                 }
                 b"itemPrintTitles" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_item_print_titles = Some(val == "true" || val == "1");
                 }
                 b"mergeItem" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_merge_item = Some(val == "true" || val == "1");
                 }
                 b"showDropZones" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_drop_zones = Some(val == "true" || val == "1");
                 }
                 b"createdVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_created_version = val.parse().ok();
                 }
                 b"indent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_indent = val.parse().ok();
                 }
                 b"showEmptyRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_empty_row = Some(val == "true" || val == "1");
                 }
                 b"showEmptyCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_empty_col = Some(val == "true" || val == "1");
                 }
                 b"showHeaders" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_headers = Some(val == "true" || val == "1");
                 }
                 b"compact" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_compact = Some(val == "true" || val == "1");
                 }
                 b"outline" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline = Some(val == "true" || val == "1");
                 }
                 b"outlineData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_data = Some(val == "true" || val == "1");
                 }
                 b"compactData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_compact_data = Some(val == "true" || val == "1");
                 }
                 b"published" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_published = Some(val == "true" || val == "1");
                 }
                 b"gridDropZones" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grid_drop_zones = Some(val == "true" || val == "1");
                 }
                 b"immersive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_immersive = Some(val == "true" || val == "1");
                 }
                 b"multipleFieldFilters" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_multiple_field_filters = Some(val == "true" || val == "1");
                 }
                 b"chartFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_chart_format = val.parse().ok();
                 }
                 b"rowHeaderCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_header_caption = Some(val.into_owned());
                 }
                 b"colHeaderCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_col_header_caption = Some(val.into_owned());
                 }
                 b"fieldListSortAscending" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field_list_sort_ascending = Some(val == "true" || val == "1");
                 }
                 b"mdxSubqueries" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_mdx_subqueries = Some(val == "true" || val == "1");
                 }
                 b"customListSort" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_list_sort = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7231,6 +7295,7 @@ impl FromXml for CTPivotTableDefinition {
             row_hierarchies_usage: f_row_hierarchies_usage,
             col_hierarchies_usage: f_col_hierarchies_usage,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -7247,35 +7312,34 @@ impl FromXml for PivotLocation {
         let mut f_first_data_col: Option<u32> = None;
         let mut f_row_page_count = None;
         let mut f_col_page_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"firstHeaderRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_header_row = val.parse().ok();
                 }
                 b"firstDataRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_data_row = val.parse().ok();
                 }
                 b"firstDataCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_data_col = val.parse().ok();
                 }
                 b"rowPageCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_page_count = val.parse().ok();
                 }
                 b"colPageCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_col_page_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7302,6 +7366,7 @@ impl FromXml for PivotLocation {
                 .ok_or_else(|| ParseError::MissingAttribute("firstDataCol".to_string()))?,
             row_page_count: f_row_page_count,
             col_page_count: f_col_page_count,
+            extra_attrs,
         })
     }
 }
@@ -7314,15 +7379,19 @@ impl FromXml for PivotFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7360,6 +7429,7 @@ impl FromXml for PivotFields {
         Ok(Self {
             count: f_count,
             pivot_field: f_pivot_field,
+            extra_attrs,
         })
     }
 }
@@ -7421,203 +7491,160 @@ impl FromXml for PivotField {
         let mut f_items = None;
         let mut f_auto_sort_scope = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"axis" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_axis = val.parse().ok();
                 }
                 b"dataField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_field = Some(val == "true" || val == "1");
                 }
                 b"subtotalCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_subtotal_caption = Some(val.into_owned());
                 }
                 b"showDropDowns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_drop_downs = Some(val == "true" || val == "1");
                 }
                 b"hiddenLevel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_level = Some(val == "true" || val == "1");
                 }
                 b"uniqueMemberProperty" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_member_property = Some(val.into_owned());
                 }
                 b"compact" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_compact = Some(val == "true" || val == "1");
                 }
                 b"allDrilled" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_all_drilled = Some(val == "true" || val == "1");
                 }
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
                 b"outline" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline = Some(val == "true" || val == "1");
                 }
                 b"subtotalTop" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_subtotal_top = Some(val == "true" || val == "1");
                 }
                 b"dragToRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_row = Some(val == "true" || val == "1");
                 }
                 b"dragToCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_col = Some(val == "true" || val == "1");
                 }
                 b"multipleItemSelectionAllowed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_multiple_item_selection_allowed = Some(val == "true" || val == "1");
                 }
                 b"dragToPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_page = Some(val == "true" || val == "1");
                 }
                 b"dragToData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_data = Some(val == "true" || val == "1");
                 }
                 b"dragOff" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_off = Some(val == "true" || val == "1");
                 }
                 b"showAll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_all = Some(val == "true" || val == "1");
                 }
                 b"insertBlankRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_blank_row = Some(val == "true" || val == "1");
                 }
                 b"serverField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_server_field = Some(val == "true" || val == "1");
                 }
                 b"insertPageBreak" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_page_break = Some(val == "true" || val == "1");
                 }
                 b"autoShow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_show = Some(val == "true" || val == "1");
                 }
                 b"topAutoShow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top_auto_show = Some(val == "true" || val == "1");
                 }
                 b"hideNewItems" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hide_new_items = Some(val == "true" || val == "1");
                 }
                 b"measureFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure_filter = Some(val == "true" || val == "1");
                 }
                 b"includeNewItemsInFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_include_new_items_in_filter = Some(val == "true" || val == "1");
                 }
                 b"itemPageCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_item_page_count = val.parse().ok();
                 }
                 b"sortType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sort_type = val.parse().ok();
                 }
                 b"dataSourceSort" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_source_sort = Some(val == "true" || val == "1");
                 }
                 b"nonAutoSortDefault" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_non_auto_sort_default = Some(val == "true" || val == "1");
                 }
                 b"rankBy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rank_by = val.parse().ok();
                 }
                 b"defaultSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_subtotal = Some(val == "true" || val == "1");
                 }
                 b"sumSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sum_subtotal = Some(val == "true" || val == "1");
                 }
                 b"countASubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count_a_subtotal = Some(val == "true" || val == "1");
                 }
                 b"avgSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_avg_subtotal = Some(val == "true" || val == "1");
                 }
                 b"maxSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_subtotal = Some(val == "true" || val == "1");
                 }
                 b"minSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_subtotal = Some(val == "true" || val == "1");
                 }
                 b"productSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_product_subtotal = Some(val == "true" || val == "1");
                 }
                 b"countSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count_subtotal = Some(val == "true" || val == "1");
                 }
                 b"stdDevSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_std_dev_subtotal = Some(val == "true" || val == "1");
                 }
                 b"stdDevPSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_std_dev_p_subtotal = Some(val == "true" || val == "1");
                 }
                 b"varSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_var_subtotal = Some(val == "true" || val == "1");
                 }
                 b"varPSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_var_p_subtotal = Some(val == "true" || val == "1");
                 }
                 b"showPropCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_prop_cell = Some(val == "true" || val == "1");
                 }
                 b"showPropTip" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_prop_tip = Some(val == "true" || val == "1");
                 }
                 b"showPropAsCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_prop_as_caption = Some(val == "true" || val == "1");
                 }
                 b"defaultAttributeDrillState" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_attribute_drill_state = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7720,6 +7747,7 @@ impl FromXml for PivotField {
             items: f_items,
             auto_sort_scope: f_auto_sort_scope,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -7732,15 +7760,19 @@ impl FromXml for PivotItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_item = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7777,6 +7809,7 @@ impl FromXml for PivotItems {
         Ok(Self {
             count: f_count,
             item: f_item,
+            extra_attrs,
         })
     }
 }
@@ -7798,55 +7831,49 @@ impl FromXml for PivotItem {
         let mut f_x = None;
         let mut f_d = None;
         let mut f_e = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"n" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_n = Some(val.into_owned());
                 }
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 b"h" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_height = Some(val == "true" || val == "1");
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = Some(val == "true" || val == "1");
                 }
                 b"sd" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sd = Some(val == "true" || val == "1");
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"m" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_m = Some(val == "true" || val == "1");
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = Some(val == "true" || val == "1");
                 }
                 b"x" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x = val.parse().ok();
                 }
                 b"d" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_d = Some(val == "true" || val == "1");
                 }
                 b"e" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_e = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7874,6 +7901,7 @@ impl FromXml for PivotItem {
             x: f_x,
             d: f_d,
             e: f_e,
+            extra_attrs,
         })
     }
 }
@@ -7886,15 +7914,19 @@ impl FromXml for PageFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_page_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -7932,6 +7964,7 @@ impl FromXml for PageFields {
         Ok(Self {
             count: f_count,
             page_field: f_page_field,
+            extra_attrs,
         })
     }
 }
@@ -7948,31 +7981,31 @@ impl FromXml for PageField {
         let mut f_name = None;
         let mut f_cap = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"fld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fld = val.parse().ok();
                 }
                 b"item" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_item = val.parse().ok();
                 }
                 b"hier" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hier = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"cap" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cap = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8015,6 +8048,7 @@ impl FromXml for PageField {
             name: f_name,
             cap: f_cap,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -8027,15 +8061,19 @@ impl FromXml for DataFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_data_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8073,6 +8111,7 @@ impl FromXml for DataFields {
         Ok(Self {
             count: f_count,
             data_field: f_data_field,
+            extra_attrs,
         })
     }
 }
@@ -8091,39 +8130,37 @@ impl FromXml for DataField {
         let mut f_base_item = None;
         let mut f_number_format_id = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"fld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fld = val.parse().ok();
                 }
                 b"subtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_subtotal = val.parse().ok();
                 }
                 b"showDataAs" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_data_as = val.parse().ok();
                 }
                 b"baseField" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_base_field = val.parse().ok();
                 }
                 b"baseItem" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_base_item = val.parse().ok();
                 }
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8168,6 +8205,7 @@ impl FromXml for DataField {
             base_item: f_base_item,
             number_format_id: f_number_format_id,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -8180,15 +8218,19 @@ impl FromXml for CTRowItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_i = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8225,6 +8267,7 @@ impl FromXml for CTRowItems {
         Ok(Self {
             count: f_count,
             i: f_i,
+            extra_attrs,
         })
     }
 }
@@ -8237,15 +8280,19 @@ impl FromXml for CTColItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_i = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8282,6 +8329,7 @@ impl FromXml for CTColItems {
         Ok(Self {
             count: f_count,
             i: f_i,
+            extra_attrs,
         })
     }
 }
@@ -8296,23 +8344,25 @@ impl FromXml for CTI {
         let mut f_reference = None;
         let mut f_i = None;
         let mut f_x = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = val.parse().ok();
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8351,6 +8401,7 @@ impl FromXml for CTI {
             reference: f_reference,
             i: f_i,
             x: f_x,
+            extra_attrs,
         })
     }
 }
@@ -8362,15 +8413,19 @@ impl FromXml for CTX {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8386,7 +8441,10 @@ impl FromXml for CTX {
             }
         }
 
-        Ok(Self { value: f_value })
+        Ok(Self {
+            value: f_value,
+            extra_attrs,
+        })
     }
 }
 
@@ -8398,15 +8456,19 @@ impl FromXml for RowFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8443,6 +8505,7 @@ impl FromXml for RowFields {
         Ok(Self {
             count: f_count,
             field: f_field,
+            extra_attrs,
         })
     }
 }
@@ -8455,15 +8518,19 @@ impl FromXml for ColFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8500,6 +8567,7 @@ impl FromXml for ColFields {
         Ok(Self {
             count: f_count,
             field: f_field,
+            extra_attrs,
         })
     }
 }
@@ -8511,15 +8579,19 @@ impl FromXml for CTField {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<i32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"x" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8537,6 +8609,7 @@ impl FromXml for CTField {
 
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -8549,15 +8622,19 @@ impl FromXml for CTFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_format = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8594,6 +8671,7 @@ impl FromXml for CTFormats {
         Ok(Self {
             count: f_count,
             format: f_format,
+            extra_attrs,
         })
     }
 }
@@ -8608,19 +8686,22 @@ impl FromXml for CTFormat {
         let mut f_dxf_id = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"action" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_action = val.parse().ok();
                 }
                 b"dxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8669,6 +8750,7 @@ impl FromXml for CTFormat {
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -8681,15 +8763,19 @@ impl FromXml for CTConditionalFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_conditional_format = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8729,6 +8815,7 @@ impl FromXml for CTConditionalFormats {
         Ok(Self {
             count: f_count,
             conditional_format: f_conditional_format,
+            extra_attrs,
         })
     }
 }
@@ -8744,23 +8831,25 @@ impl FromXml for CTConditionalFormat {
         let mut f_priority: Option<u32> = None;
         let mut f_pivot_areas: Option<Box<PivotAreas>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"scope" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scope = val.parse().ok();
                 }
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"priority" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_priority = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8811,6 +8900,7 @@ impl FromXml for CTConditionalFormat {
             pivot_areas: f_pivot_areas
                 .ok_or_else(|| ParseError::MissingAttribute("pivotAreas".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -8823,15 +8913,19 @@ impl FromXml for PivotAreas {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_area = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8869,6 +8963,7 @@ impl FromXml for PivotAreas {
         Ok(Self {
             count: f_count,
             pivot_area: f_pivot_area,
+            extra_attrs,
         })
     }
 }
@@ -8881,15 +8976,19 @@ impl FromXml for CTChartFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_chart_format = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8928,6 +9027,7 @@ impl FromXml for CTChartFormats {
         Ok(Self {
             count: f_count,
             chart_format: f_chart_format,
+            extra_attrs,
         })
     }
 }
@@ -8942,23 +9042,25 @@ impl FromXml for CTChartFormat {
         let mut f_format: Option<u32> = None;
         let mut f_series = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"chart" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_chart = val.parse().ok();
                 }
                 b"format" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format = val.parse().ok();
                 }
                 b"series" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_series = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -8999,6 +9101,7 @@ impl FromXml for CTChartFormat {
             series: f_series,
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9011,15 +9114,19 @@ impl FromXml for CTPivotHierarchies {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_pivot_hierarchy = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9058,6 +9165,7 @@ impl FromXml for CTPivotHierarchies {
         Ok(Self {
             count: f_count,
             pivot_hierarchy: f_pivot_hierarchy,
+            extra_attrs,
         })
     }
 }
@@ -9082,55 +9190,49 @@ impl FromXml for CTPivotHierarchy {
         let mut f_mps = None;
         let mut f_members = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"outline" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline = Some(val == "true" || val == "1");
                 }
                 b"multipleItemSelectionAllowed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_multiple_item_selection_allowed = Some(val == "true" || val == "1");
                 }
                 b"subtotalTop" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_subtotal_top = Some(val == "true" || val == "1");
                 }
                 b"showInFieldList" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_in_field_list = Some(val == "true" || val == "1");
                 }
                 b"dragToRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_row = Some(val == "true" || val == "1");
                 }
                 b"dragToCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_col = Some(val == "true" || val == "1");
                 }
                 b"dragToPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_page = Some(val == "true" || val == "1");
                 }
                 b"dragToData" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_to_data = Some(val == "true" || val == "1");
                 }
                 b"dragOff" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_drag_off = Some(val == "true" || val == "1");
                 }
                 b"includeNewItemsInFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_include_new_items_in_filter = Some(val == "true" || val == "1");
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9195,6 +9297,7 @@ impl FromXml for CTPivotHierarchy {
             mps: f_mps,
             members: f_members,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -9207,15 +9310,19 @@ impl FromXml for CTRowHierarchiesUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_row_hierarchy_usage = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9254,6 +9361,7 @@ impl FromXml for CTRowHierarchiesUsage {
         Ok(Self {
             count: f_count,
             row_hierarchy_usage: f_row_hierarchy_usage,
+            extra_attrs,
         })
     }
 }
@@ -9266,15 +9374,19 @@ impl FromXml for CTColHierarchiesUsage {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_col_hierarchy_usage = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9313,6 +9425,7 @@ impl FromXml for CTColHierarchiesUsage {
         Ok(Self {
             count: f_count,
             col_hierarchy_usage: f_col_hierarchy_usage,
+            extra_attrs,
         })
     }
 }
@@ -9324,15 +9437,19 @@ impl FromXml for CTHierarchyUsage {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_hierarchy_usage: Option<i32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"hierarchyUsage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hierarchy_usage = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9351,6 +9468,7 @@ impl FromXml for CTHierarchyUsage {
         Ok(Self {
             hierarchy_usage: f_hierarchy_usage
                 .ok_or_else(|| ParseError::MissingAttribute("hierarchyUsage".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9363,15 +9481,19 @@ impl FromXml for CTMemberProperties {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_mp = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9408,6 +9530,7 @@ impl FromXml for CTMemberProperties {
         Ok(Self {
             count: f_count,
             mp: f_mp,
+            extra_attrs,
         })
     }
 }
@@ -9427,47 +9550,43 @@ impl FromXml for CTMemberProperty {
         let mut f_p_len = None;
         let mut f_level = None;
         let mut f_field: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"showCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_cell = Some(val == "true" || val == "1");
                 }
                 b"showTip" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_tip = Some(val == "true" || val == "1");
                 }
                 b"showAsCaption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_as_caption = Some(val == "true" || val == "1");
                 }
                 b"nameLen" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name_len = val.parse().ok();
                 }
                 b"pPos" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_p_pos = val.parse().ok();
                 }
                 b"pLen" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_p_len = val.parse().ok();
                 }
                 b"level" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_level = val.parse().ok();
                 }
                 b"field" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9493,6 +9612,7 @@ impl FromXml for CTMemberProperty {
             p_len: f_p_len,
             level: f_level,
             field: f_field.ok_or_else(|| ParseError::MissingAttribute("field".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9506,19 +9626,22 @@ impl FromXml for CTMembers {
         let mut f_count = None;
         let mut f_level = None;
         let mut f_member = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"level" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_level = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9556,6 +9679,7 @@ impl FromXml for CTMembers {
             count: f_count,
             level: f_level,
             member: f_member,
+            extra_attrs,
         })
     }
 }
@@ -9567,15 +9691,19 @@ impl FromXml for CTMember {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9593,6 +9721,7 @@ impl FromXml for CTMember {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9605,15 +9734,19 @@ impl FromXml for CTDimensions {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_dimension = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9652,6 +9785,7 @@ impl FromXml for CTDimensions {
         Ok(Self {
             count: f_count,
             dimension: f_dimension,
+            extra_attrs,
         })
     }
 }
@@ -9666,27 +9800,28 @@ impl FromXml for CTPivotDimension {
         let mut f_name: Option<XmlString> = None;
         let mut f_unique_name: Option<XmlString> = None;
         let mut f_caption: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"measure" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure = Some(val == "true" || val == "1");
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9709,6 +9844,7 @@ impl FromXml for CTPivotDimension {
                 .ok_or_else(|| ParseError::MissingAttribute("uniqueName".to_string()))?,
             caption: f_caption
                 .ok_or_else(|| ParseError::MissingAttribute("caption".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9721,15 +9857,19 @@ impl FromXml for CTMeasureGroups {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_measure_group = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9768,6 +9908,7 @@ impl FromXml for CTMeasureGroups {
         Ok(Self {
             count: f_count,
             measure_group: f_measure_group,
+            extra_attrs,
         })
     }
 }
@@ -9780,15 +9921,19 @@ impl FromXml for CTMeasureDimensionMaps {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_map = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9828,6 +9973,7 @@ impl FromXml for CTMeasureDimensionMaps {
         Ok(Self {
             count: f_count,
             map: f_map,
+            extra_attrs,
         })
     }
 }
@@ -9840,19 +9986,22 @@ impl FromXml for CTMeasureGroup {
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
         let mut f_caption: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"caption" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_caption = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9872,6 +10021,7 @@ impl FromXml for CTMeasureGroup {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             caption: f_caption
                 .ok_or_else(|| ParseError::MissingAttribute("caption".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -9884,19 +10034,22 @@ impl FromXml for CTMeasureDimensionMap {
     ) -> Result<Self, ParseError> {
         let mut f_measure_group = None;
         let mut f_dimension = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"measureGroup" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_measure_group = val.parse().ok();
                 }
                 b"dimension" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dimension = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9915,6 +10068,7 @@ impl FromXml for CTMeasureDimensionMap {
         Ok(Self {
             measure_group: f_measure_group,
             dimension: f_dimension,
+            extra_attrs,
         })
     }
 }
@@ -9931,35 +10085,34 @@ impl FromXml for CTPivotTableStyle {
         let mut f_show_row_stripes = None;
         let mut f_show_col_stripes = None;
         let mut f_show_last_column = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"showRowHeaders" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_row_headers = Some(val == "true" || val == "1");
                 }
                 b"showColHeaders" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_col_headers = Some(val == "true" || val == "1");
                 }
                 b"showRowStripes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_row_stripes = Some(val == "true" || val == "1");
                 }
                 b"showColStripes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_col_stripes = Some(val == "true" || val == "1");
                 }
                 b"showLastColumn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_last_column = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -9982,6 +10135,7 @@ impl FromXml for CTPivotTableStyle {
             show_row_stripes: f_show_row_stripes,
             show_col_stripes: f_show_col_stripes,
             show_last_column: f_show_last_column,
+            extra_attrs,
         })
     }
 }
@@ -9994,15 +10148,19 @@ impl FromXml for PivotFilters {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_filter = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10039,6 +10197,7 @@ impl FromXml for PivotFilters {
         Ok(Self {
             count: f_count,
             filter: f_filter,
+            extra_attrs,
         })
     }
 }
@@ -10062,55 +10221,49 @@ impl FromXml for PivotFilter {
         let mut f_string_value2 = None;
         let mut f_auto_filter: Option<Box<AutoFilter>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"fld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fld = val.parse().ok();
                 }
                 b"mpFld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_mp_fld = val.parse().ok();
                 }
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"evalOrder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_eval_order = val.parse().ok();
                 }
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"iMeasureHier" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i_measure_hier = val.parse().ok();
                 }
                 b"iMeasureFld" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i_measure_fld = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"description" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_description = Some(val.into_owned());
                 }
                 b"stringValue1" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_string_value1 = Some(val.into_owned());
                 }
                 b"stringValue2" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_string_value2 = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10168,6 +10321,7 @@ impl FromXml for PivotFilter {
             auto_filter: f_auto_filter
                 .ok_or_else(|| ParseError::MissingAttribute("autoFilter".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -10192,59 +10346,52 @@ impl FromXml for PivotArea {
         let mut f_field_position = None;
         let mut f_references = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"field" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field = val.parse().ok();
                 }
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"dataOnly" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_only = Some(val == "true" || val == "1");
                 }
                 b"labelOnly" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_label_only = Some(val == "true" || val == "1");
                 }
                 b"grandRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grand_row = Some(val == "true" || val == "1");
                 }
                 b"grandCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grand_col = Some(val == "true" || val == "1");
                 }
                 b"cacheIndex" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cache_index = Some(val == "true" || val == "1");
                 }
                 b"outline" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline = Some(val == "true" || val == "1");
                 }
                 b"offset" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_offset = Some(val.into_owned());
                 }
                 b"collapsedLevelsAreSubtotals" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_collapsed_levels_are_subtotals = Some(val == "true" || val == "1");
                 }
                 b"axis" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_axis = val.parse().ok();
                 }
                 b"fieldPosition" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field_position = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10304,6 +10451,7 @@ impl FromXml for PivotArea {
             field_position: f_field_position,
             references: f_references,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -10316,15 +10464,19 @@ impl FromXml for CTPivotAreaReferences {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_reference = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10364,6 +10516,7 @@ impl FromXml for CTPivotAreaReferences {
         Ok(Self {
             count: f_count,
             reference: f_reference,
+            extra_attrs,
         })
     }
 }
@@ -10393,79 +10546,67 @@ impl FromXml for CTPivotAreaReference {
         let mut f_var_p_subtotal = None;
         let mut f_x = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"field" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field = val.parse().ok();
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"selected" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_selected = Some(val == "true" || val == "1");
                 }
                 b"byPosition" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_by_position = Some(val == "true" || val == "1");
                 }
                 b"relative" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_relative = Some(val == "true" || val == "1");
                 }
                 b"defaultSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_subtotal = Some(val == "true" || val == "1");
                 }
                 b"sumSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sum_subtotal = Some(val == "true" || val == "1");
                 }
                 b"countASubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count_a_subtotal = Some(val == "true" || val == "1");
                 }
                 b"avgSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_avg_subtotal = Some(val == "true" || val == "1");
                 }
                 b"maxSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_subtotal = Some(val == "true" || val == "1");
                 }
                 b"minSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_subtotal = Some(val == "true" || val == "1");
                 }
                 b"productSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_product_subtotal = Some(val == "true" || val == "1");
                 }
                 b"countSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count_subtotal = Some(val == "true" || val == "1");
                 }
                 b"stdDevSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_std_dev_subtotal = Some(val == "true" || val == "1");
                 }
                 b"stdDevPSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_std_dev_p_subtotal = Some(val == "true" || val == "1");
                 }
                 b"varSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_var_subtotal = Some(val == "true" || val == "1");
                 }
                 b"varPSubtotal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_var_p_subtotal = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10527,6 +10668,7 @@ impl FromXml for CTPivotAreaReference {
             var_p_subtotal: f_var_p_subtotal,
             x: f_x,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -10538,15 +10680,19 @@ impl FromXml for CTIndex {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10564,6 +10710,7 @@ impl FromXml for CTIndex {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -10591,71 +10738,61 @@ impl FromXml for QueryTable {
         let mut f_connection_id: Option<u32> = None;
         let mut f_query_table_refresh = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"headers" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_headers = Some(val == "true" || val == "1");
                 }
                 b"rowNumbers" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_numbers = Some(val == "true" || val == "1");
                 }
                 b"disableRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disable_refresh = Some(val == "true" || val == "1");
                 }
                 b"backgroundRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_background_refresh = Some(val == "true" || val == "1");
                 }
                 b"firstBackgroundRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_background_refresh = Some(val == "true" || val == "1");
                 }
                 b"refreshOnLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_on_load = Some(val == "true" || val == "1");
                 }
                 b"growShrinkType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grow_shrink_type = val.parse().ok();
                 }
                 b"fillFormulas" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fill_formulas = Some(val == "true" || val == "1");
                 }
                 b"removeDataOnSave" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_remove_data_on_save = Some(val == "true" || val == "1");
                 }
                 b"disableEdit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disable_edit = Some(val == "true" || val == "1");
                 }
                 b"preserveFormatting" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_formatting = Some(val == "true" || val == "1");
                 }
                 b"adjustColumnWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_adjust_column_width = Some(val == "true" || val == "1");
                 }
                 b"intermediate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_intermediate = Some(val == "true" || val == "1");
                 }
                 b"connectionId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10718,6 +10855,7 @@ impl FromXml for QueryTable {
                 .ok_or_else(|| ParseError::MissingAttribute("connectionId".to_string()))?,
             query_table_refresh: f_query_table_refresh,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -10739,39 +10877,37 @@ impl FromXml for QueryTableRefresh {
         let mut f_query_table_deleted_fields = None;
         let mut f_sort_state = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"preserveSortFilterLayout" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_sort_filter_layout = Some(val == "true" || val == "1");
                 }
                 b"fieldIdWrapped" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field_id_wrapped = Some(val == "true" || val == "1");
                 }
                 b"headersInLastRefresh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_headers_in_last_refresh = Some(val == "true" || val == "1");
                 }
                 b"minimumVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_minimum_version = val.parse().ok();
                 }
                 b"nextId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_next_id = val.parse().ok();
                 }
                 b"unboundColumnsLeft" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unbound_columns_left = val.parse().ok();
                 }
                 b"unboundColumnsRight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unbound_columns_right = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10845,6 +10981,7 @@ impl FromXml for QueryTableRefresh {
             query_table_deleted_fields: f_query_table_deleted_fields,
             sort_state: f_sort_state,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -10857,15 +10994,19 @@ impl FromXml for QueryTableDeletedFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_deleted_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10904,6 +11045,7 @@ impl FromXml for QueryTableDeletedFields {
         Ok(Self {
             count: f_count,
             deleted_field: f_deleted_field,
+            extra_attrs,
         })
     }
 }
@@ -10915,15 +11057,19 @@ impl FromXml for CTDeletedField {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -10941,6 +11087,7 @@ impl FromXml for CTDeletedField {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -10953,15 +11100,19 @@ impl FromXml for QueryTableFields {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_query_table_field = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11000,6 +11151,7 @@ impl FromXml for QueryTableFields {
         Ok(Self {
             count: f_count,
             query_table_field: f_query_table_field,
+            extra_attrs,
         })
     }
 }
@@ -11018,39 +11170,37 @@ impl FromXml for QueryTableField {
         let mut f_clipped = None;
         let mut f_table_column_id = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"dataBound" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_bound = Some(val == "true" || val == "1");
                 }
                 b"rowNumbers" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_numbers = Some(val == "true" || val == "1");
                 }
                 b"fillFormulas" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fill_formulas = Some(val == "true" || val == "1");
                 }
                 b"clipped" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_clipped = Some(val == "true" || val == "1");
                 }
                 b"tableColumnId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_table_column_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11095,6 +11245,7 @@ impl FromXml for QueryTableField {
             clipped: f_clipped,
             table_column_id: f_table_column_id,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -11109,19 +11260,22 @@ impl FromXml for SharedStrings {
         let mut f_unique_count = None;
         let mut f_si = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"uniqueCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11168,6 +11322,7 @@ impl FromXml for SharedStrings {
             unique_count: f_unique_count,
             si: f_si,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -11181,19 +11336,22 @@ impl FromXml for PhoneticRun {
         let mut f_sb: Option<u32> = None;
         let mut f_eb: Option<u32> = None;
         let mut f_cell_type: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sb" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sb = val.parse().ok();
                 }
                 b"eb" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_eb = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11231,6 +11389,7 @@ impl FromXml for PhoneticRun {
             sb: f_sb.ok_or_else(|| ParseError::MissingAttribute("sb".to_string()))?,
             eb: f_eb.ok_or_else(|| ParseError::MissingAttribute("eb".to_string()))?,
             cell_type: f_cell_type.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -11394,23 +11553,25 @@ impl FromXml for PhoneticProperties {
         let mut f_font_id: Option<STFontId> = None;
         let mut f_type = None;
         let mut f_alignment = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"fontId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_font_id = val.parse().ok();
                 }
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"alignment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_alignment = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11430,6 +11591,7 @@ impl FromXml for PhoneticProperties {
             font_id: f_font_id.ok_or_else(|| ParseError::MissingAttribute("fontId".to_string()))?,
             r#type: f_type,
             alignment: f_alignment,
+            extra_attrs,
         })
     }
 }
@@ -11453,59 +11615,52 @@ impl FromXml for RevisionHeaders {
         let mut f_protected = None;
         let mut f_preserve_history = None;
         let mut f_header = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"lastGuid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_last_guid = Some(val.into_owned());
                 }
                 b"shared" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shared = Some(val == "true" || val == "1");
                 }
                 b"diskRevisions" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disk_revisions = Some(val == "true" || val == "1");
                 }
                 b"history" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_history = Some(val == "true" || val == "1");
                 }
                 b"trackRevisions" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_track_revisions = Some(val == "true" || val == "1");
                 }
                 b"exclusive" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_exclusive = Some(val == "true" || val == "1");
                 }
                 b"revisionId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revision_id = val.parse().ok();
                 }
                 b"version" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_version = val.parse().ok();
                 }
                 b"keepChangeHistory" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_keep_change_history = Some(val == "true" || val == "1");
                 }
                 b"protected" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_protected = Some(val == "true" || val == "1");
                 }
                 b"preserveHistory" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_preserve_history = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11554,6 +11709,7 @@ impl FromXml for RevisionHeaders {
             protected: f_protected,
             preserve_history: f_preserve_history,
             header: f_header,
+            extra_attrs,
         })
     }
 }
@@ -11589,23 +11745,25 @@ impl FromXml for SmlAGRevData {
         let mut f_r_id: Option<u32> = None;
         let mut f_ua = None;
         let mut f_ra = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"rId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_r_id = val.parse().ok();
                 }
                 b"ua" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ua = Some(val == "true" || val == "1");
                 }
                 b"ra" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ra = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11625,6 +11783,7 @@ impl FromXml for SmlAGRevData {
             r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
             ua: f_ua,
             ra: f_ra,
+            extra_attrs,
         })
     }
 }
@@ -11644,35 +11803,34 @@ impl FromXml for RevisionHeader {
         let mut f_sheet_id_map: Option<Box<CTSheetIdMap>> = None;
         let mut f_reviewed_list = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"dateTime" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_date_time = Some(val.into_owned());
                 }
                 b"maxSheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_sheet_id = val.parse().ok();
                 }
                 b"userName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_user_name = Some(val.into_owned());
                 }
                 b"minRId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_r_id = val.parse().ok();
                 }
                 b"maxRId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_r_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11738,6 +11896,7 @@ impl FromXml for RevisionHeader {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetIdMap".to_string()))?,
             reviewed_list: f_reviewed_list,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -11750,15 +11909,19 @@ impl FromXml for CTSheetIdMap {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_sheet_id = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11795,6 +11958,7 @@ impl FromXml for CTSheetIdMap {
         Ok(Self {
             count: f_count,
             sheet_id: f_sheet_id,
+            extra_attrs,
         })
     }
 }
@@ -11806,15 +11970,19 @@ impl FromXml for CTSheetId {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11832,6 +12000,7 @@ impl FromXml for CTSheetId {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -11844,15 +12013,19 @@ impl FromXml for ReviewedRevisions {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_reviewed = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11889,6 +12062,7 @@ impl FromXml for ReviewedRevisions {
         Ok(Self {
             count: f_count,
             reviewed: f_reviewed,
+            extra_attrs,
         })
     }
 }
@@ -11900,15 +12074,19 @@ impl FromXml for Reviewed {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_r_id: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"rId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_r_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -11926,6 +12104,7 @@ impl FromXml for Reviewed {
 
         Ok(Self {
             r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -11947,55 +12126,49 @@ impl FromXml for UndoInfo {
         let mut f_dn = None;
         let mut f_reference = None;
         let mut f_s_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"index" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_index = val.parse().ok();
                 }
                 b"exp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_exp = val.parse().ok();
                 }
                 b"ref3D" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ref3_d = Some(val == "true" || val == "1");
                 }
                 b"array" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_array = Some(val == "true" || val == "1");
                 }
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val == "true" || val == "1");
                 }
                 b"nf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_nf = Some(val == "true" || val == "1");
                 }
                 b"cs" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cs = Some(val == "true" || val == "1");
                 }
                 b"dr" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dr = Some(val.into_owned());
                 }
                 b"dn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dn = Some(val.into_owned());
                 }
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"sId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_s_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12023,6 +12196,7 @@ impl FromXml for UndoInfo {
             dn: f_dn,
             reference: f_reference,
             s_id: f_s_id,
+            extra_attrs,
         })
     }
 }
@@ -12038,31 +12212,31 @@ impl FromXml for RevisionRowColumn {
         let mut f_reference: Option<Reference> = None;
         let mut f_action: Option<STRwColActionType> = None;
         let mut f_edge = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_s_id = val.parse().ok();
                 }
                 b"eol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_eol = Some(val == "true" || val == "1");
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"action" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_action = val.parse().ok();
                 }
                 b"edge" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_edge = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12085,6 +12259,7 @@ impl FromXml for RevisionRowColumn {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             action: f_action.ok_or_else(|| ParseError::MissingAttribute("action".to_string()))?,
             edge: f_edge,
+            extra_attrs,
         })
     }
 }
@@ -12099,27 +12274,28 @@ impl FromXml for RevisionMove {
         let mut f_source: Option<Reference> = None;
         let mut f_destination: Option<Reference> = None;
         let mut f_source_sheet_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"source" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source = Some(val.into_owned());
                 }
                 b"destination" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_destination = Some(val.into_owned());
                 }
                 b"sourceSheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_sheet_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12142,6 +12318,7 @@ impl FromXml for RevisionMove {
             destination: f_destination
                 .ok_or_else(|| ParseError::MissingAttribute("destination".to_string()))?,
             source_sheet_id: f_source_sheet_id,
+            extra_attrs,
         })
     }
 }
@@ -12154,19 +12331,22 @@ impl FromXml for RevisionCustomView {
     ) -> Result<Self, ParseError> {
         let mut f_guid: Option<Guid> = None;
         let mut f_action: Option<STRevisionAction> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"action" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_action = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12185,6 +12365,7 @@ impl FromXml for RevisionCustomView {
         Ok(Self {
             guid: f_guid.ok_or_else(|| ParseError::MissingAttribute("guid".to_string()))?,
             action: f_action.ok_or_else(|| ParseError::MissingAttribute("action".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -12199,23 +12380,25 @@ impl FromXml for RevisionSheetRename {
         let mut f_old_name: Option<XmlString> = None;
         let mut f_new_name: Option<XmlString> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"oldName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_name = Some(val.into_owned());
                 }
                 b"newName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_new_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12259,6 +12442,7 @@ impl FromXml for RevisionSheetRename {
             new_name: f_new_name
                 .ok_or_else(|| ParseError::MissingAttribute("newName".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -12272,23 +12456,25 @@ impl FromXml for RevisionInsertSheet {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_name: Option<XmlString> = None;
         let mut f_sheet_position: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sheetPosition" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_position = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12310,6 +12496,7 @@ impl FromXml for RevisionInsertSheet {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             sheet_position: f_sheet_position
                 .ok_or_else(|| ParseError::MissingAttribute("sheetPosition".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -12335,55 +12522,49 @@ impl FromXml for RevisionCellChange {
         let mut f_nc: Option<Box<Cell>> = None;
         let mut f_ndxf = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_s_id = val.parse().ok();
                 }
                 b"odxf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_odxf = Some(val == "true" || val == "1");
                 }
                 b"xfDxf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xf_dxf = Some(val == "true" || val == "1");
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = Some(val == "true" || val == "1");
                 }
                 b"dxf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf = Some(val == "true" || val == "1");
                 }
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
                 b"quotePrefix" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_quote_prefix = Some(val == "true" || val == "1");
                 }
                 b"oldQuotePrefix" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_quote_prefix = Some(val == "true" || val == "1");
                 }
                 b"ph" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_placeholder = Some(val == "true" || val == "1");
                 }
                 b"oldPh" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_ph = Some(val == "true" || val == "1");
                 }
                 b"endOfListFormulaUpdate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_of_list_formula_update = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12456,6 +12637,7 @@ impl FromXml for RevisionCellChange {
             nc: f_nc.ok_or_else(|| ParseError::MissingAttribute("nc".to_string()))?,
             ndxf: f_ndxf,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -12474,35 +12656,34 @@ impl FromXml for RevisionFormatting {
         let mut f_length = None;
         let mut f_dxf = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"xfDxf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xf_dxf = Some(val == "true" || val == "1");
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = Some(val == "true" || val == "1");
                 }
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
                 b"start" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start = val.parse().ok();
                 }
                 b"length" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_length = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12557,6 +12738,7 @@ impl FromXml for RevisionFormatting {
             length: f_length,
             dxf: f_dxf,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -12569,19 +12751,22 @@ impl FromXml for RevisionAutoFormatting {
     ) -> Result<Self, ParseError> {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_reference: Option<Reference> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12602,6 +12787,7 @@ impl FromXml for RevisionAutoFormatting {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -12623,55 +12809,49 @@ impl FromXml for RevisionComment {
         let mut f_author: Option<XmlString> = None;
         let mut f_old_length = None;
         let mut f_new_length = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"cell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell = Some(val.into_owned());
                 }
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"action" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_action = val.parse().ok();
                 }
                 b"alwaysShow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_always_show = Some(val == "true" || val == "1");
                 }
                 b"old" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old = Some(val == "true" || val == "1");
                 }
                 b"hiddenRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_row = Some(val == "true" || val == "1");
                 }
                 b"hiddenColumn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_column = Some(val == "true" || val == "1");
                 }
                 b"author" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_author = Some(val.into_owned());
                 }
                 b"oldLength" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_length = val.parse().ok();
                 }
                 b"newLength" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_new_length = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12700,6 +12880,7 @@ impl FromXml for RevisionComment {
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             old_length: f_old_length,
             new_length: f_new_length,
+            extra_attrs,
         })
     }
 }
@@ -12734,95 +12915,79 @@ impl FromXml for RevisionDefinedName {
         let mut f_formula = None;
         let mut f_old_formula = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"localSheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_local_sheet_id = val.parse().ok();
                 }
                 b"customView" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_view = Some(val == "true" || val == "1");
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"function" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_function = Some(val == "true" || val == "1");
                 }
                 b"oldFunction" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_function = Some(val == "true" || val == "1");
                 }
                 b"functionGroupId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_function_group_id = val.parse().ok();
                 }
                 b"oldFunctionGroupId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_function_group_id = val.parse().ok();
                 }
                 b"shortcutKey" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shortcut_key = val.parse().ok();
                 }
                 b"oldShortcutKey" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_shortcut_key = val.parse().ok();
                 }
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 b"oldHidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_hidden = Some(val == "true" || val == "1");
                 }
                 b"customMenu" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_menu = Some(val.into_owned());
                 }
                 b"oldCustomMenu" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_custom_menu = Some(val.into_owned());
                 }
                 b"description" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_description = Some(val.into_owned());
                 }
                 b"oldDescription" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_description = Some(val.into_owned());
                 }
                 b"help" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_help = Some(val.into_owned());
                 }
                 b"oldHelp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_help = Some(val.into_owned());
                 }
                 b"statusBar" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_status_bar = Some(val.into_owned());
                 }
                 b"oldStatusBar" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_status_bar = Some(val.into_owned());
                 }
                 b"comment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_comment = Some(val.into_owned());
                 }
                 b"oldComment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_old_comment = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12895,6 +13060,7 @@ impl FromXml for RevisionDefinedName {
             formula: f_formula,
             old_formula: f_old_formula,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -12906,15 +13072,19 @@ impl FromXml for RevisionConflict {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_sheet_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12932,6 +13102,7 @@ impl FromXml for RevisionConflict {
 
         Ok(Self {
             sheet_id: f_sheet_id,
+            extra_attrs,
         })
     }
 }
@@ -12945,23 +13116,25 @@ impl FromXml for RevisionQueryTableField {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_reference: Option<Reference> = None;
         let mut f_field_id: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"fieldId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_field_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -12984,6 +13157,7 @@ impl FromXml for RevisionQueryTableField {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             field_id: f_field_id
                 .ok_or_else(|| ParseError::MissingAttribute("fieldId".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -12996,15 +13170,19 @@ impl FromXml for Users {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_user_info = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -13042,6 +13220,7 @@ impl FromXml for Users {
         Ok(Self {
             count: f_count,
             user_info: f_user_info,
+            extra_attrs,
         })
     }
 }
@@ -13057,27 +13236,28 @@ impl FromXml for SharedUser {
         let mut f_id: Option<i32> = None;
         let mut f_date_time: Option<String> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"dateTime" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_date_time = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -13120,6 +13300,7 @@ impl FromXml for SharedUser {
             date_time: f_date_time
                 .ok_or_else(|| ParseError::MissingAttribute("dateTime".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -14220,15 +14401,19 @@ impl FromXml for SheetCalcProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_full_calc_on_load = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"fullCalcOnLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_full_calc_on_load = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14246,6 +14431,7 @@ impl FromXml for SheetCalcProperties {
 
         Ok(Self {
             full_calc_on_load: f_full_calc_on_load,
+            extra_attrs,
         })
     }
 }
@@ -14265,47 +14451,43 @@ impl FromXml for SheetFormat {
         let mut f_thick_bottom = None;
         let mut f_outline_level_row = None;
         let mut f_outline_level_col = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"baseColWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_base_col_width = val.parse().ok();
                 }
                 b"defaultColWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_col_width = val.parse().ok();
                 }
                 b"defaultRowHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_row_height = val.parse().ok();
                 }
                 b"customHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_height = Some(val == "true" || val == "1");
                 }
                 b"zeroHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zero_height = Some(val == "true" || val == "1");
                 }
                 b"thickTop" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thick_top = Some(val == "true" || val == "1");
                 }
                 b"thickBottom" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thick_bottom = Some(val == "true" || val == "1");
                 }
                 b"outlineLevelRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_level_row = val.parse().ok();
                 }
                 b"outlineLevelCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_level_col = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14332,6 +14514,7 @@ impl FromXml for SheetFormat {
             thick_bottom: f_thick_bottom,
             outline_level_row: f_outline_level_row,
             outline_level_col: f_outline_level_col,
+            extra_attrs,
         })
     }
 }
@@ -14404,61 +14587,56 @@ impl FromXml for Column {
         let mut f_outline_level = None;
         #[cfg(feature = "sml-structure")]
         let mut f_collapsed = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"min" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_column = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"max" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_column = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"width" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_width = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"style" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"bestFit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_best_fit = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"customWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_width = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-i18n")]
                 b"phonetic" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_phonetic = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-structure")]
                 b"outlineLevel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_level = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"collapsed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_collapsed = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14497,6 +14675,7 @@ impl FromXml for Column {
             outline_level: f_outline_level,
             #[cfg(feature = "sml-structure")]
             collapsed: f_collapsed,
+            extra_attrs,
         })
     }
 }
@@ -14531,68 +14710,61 @@ impl FromXml for Row {
         let mut f_cells = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = val.parse().ok();
                 }
                 b"spans" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_spans = Some(val.into_owned());
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"customFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_format = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"ht" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_height = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"customHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_height = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-structure")]
                 b"outlineLevel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_level = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"collapsed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_collapsed = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"thickTop" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thick_top = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"thickBot" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thick_bot = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-i18n")]
                 b"ph" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_placeholder = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14661,6 +14833,7 @@ impl FromXml for Row {
             cells: f_cells,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -14685,38 +14858,37 @@ impl FromXml for Cell {
         let mut f_is = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = val.parse().ok();
                 }
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 #[cfg(feature = "sml-metadata")]
                 b"cm" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cm = val.parse().ok();
                 }
                 #[cfg(feature = "sml-metadata")]
                 b"vm" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vm = val.parse().ok();
                 }
                 #[cfg(feature = "sml-i18n")]
                 b"ph" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_placeholder = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14788,6 +14960,7 @@ impl FromXml for Cell {
             is: f_is,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -14810,47 +14983,43 @@ impl FromXml for SheetProperties {
         let mut f_tab_color = None;
         let mut f_outline_pr = None;
         let mut f_page_set_up_pr = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"syncHorizontal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sync_horizontal = Some(val == "true" || val == "1");
                 }
                 b"syncVertical" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sync_vertical = Some(val == "true" || val == "1");
                 }
                 b"syncRef" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sync_ref = Some(val.into_owned());
                 }
                 b"transitionEvaluation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_transition_evaluation = Some(val == "true" || val == "1");
                 }
                 b"transitionEntry" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_transition_entry = Some(val == "true" || val == "1");
                 }
                 b"published" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_published = Some(val == "true" || val == "1");
                 }
                 b"codeName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_name = Some(val.into_owned());
                 }
                 b"filterMode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_filter_mode = Some(val == "true" || val == "1");
                 }
                 b"enableFormatConditionsCalculation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_enable_format_conditions_calculation = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14914,6 +15083,7 @@ impl FromXml for SheetProperties {
             tab_color: f_tab_color,
             outline_pr: f_outline_pr,
             page_set_up_pr: f_page_set_up_pr,
+            extra_attrs,
         })
     }
 }
@@ -14925,15 +15095,19 @@ impl FromXml for SheetDimension {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -14952,6 +15126,7 @@ impl FromXml for SheetDimension {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -15056,100 +15231,86 @@ impl FromXml for SheetView {
         let mut f_pivot_selection = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-protection")]
                 b"windowProtection" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_window_protection = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas")]
                 b"showFormulas" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_formulas = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"showGridLines" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_grid_lines = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"showRowColHeaders" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_row_col_headers = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"showZeros" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_zeros = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-i18n")]
                 b"rightToLeft" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_right_to_left = Some(val == "true" || val == "1");
                 }
                 b"tabSelected" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tab_selected = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"showRuler" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_ruler = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-structure")]
                 b"showOutlineSymbols" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_outline_symbols = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"defaultGridColor" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_grid_color = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"showWhiteSpace" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_white_space = Some(val == "true" || val == "1");
                 }
                 b"view" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_view = val.parse().ok();
                 }
                 b"topLeftCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top_left_cell = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-styling")]
                 b"colorId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_color_id = val.parse().ok();
                 }
                 b"zoomScale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_scale = val.parse().ok();
                 }
                 b"zoomScaleNormal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_scale_normal = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"zoomScaleSheetLayoutView" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_scale_sheet_layout_view = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"zoomScalePageLayoutView" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_scale_page_layout_view = val.parse().ok();
                 }
                 b"workbookViewId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_view_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15252,6 +15413,7 @@ impl FromXml for SheetView {
             pivot_selection: f_pivot_selection,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -15272,36 +15434,36 @@ impl FromXml for Pane {
         let mut f_active_pane = None;
         #[cfg(feature = "sml-structure")]
         let mut f_state = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-structure")]
                 b"xSplit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x_split = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"ySplit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_y_split = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"topLeftCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top_left_cell = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-structure")]
                 b"activePane" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_pane = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"state" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_state = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15328,6 +15490,7 @@ impl FromXml for Pane {
             active_pane: f_active_pane,
             #[cfg(feature = "sml-structure")]
             state: f_state,
+            extra_attrs,
         })
     }
 }
@@ -15355,75 +15518,64 @@ impl FromXml for CTPivotSelection {
         let mut f_previous_col = None;
         let mut f_click = None;
         let mut f_pivot_area: Option<Box<PivotArea>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"pane" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pane = val.parse().ok();
                 }
                 b"showHeader" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_header = Some(val == "true" || val == "1");
                 }
                 b"label" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_label = Some(val == "true" || val == "1");
                 }
                 b"data" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data = Some(val == "true" || val == "1");
                 }
                 b"extendable" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_extendable = Some(val == "true" || val == "1");
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"axis" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_axis = val.parse().ok();
                 }
                 b"dimension" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dimension = val.parse().ok();
                 }
                 b"start" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start = val.parse().ok();
                 }
                 b"min" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_column = val.parse().ok();
                 }
                 b"max" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_column = val.parse().ok();
                 }
                 b"activeRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_row = val.parse().ok();
                 }
                 b"activeCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_col = val.parse().ok();
                 }
                 b"previousRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_previous_row = val.parse().ok();
                 }
                 b"previousCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_previous_col = val.parse().ok();
                 }
                 b"click" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_click = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15477,6 +15629,7 @@ impl FromXml for CTPivotSelection {
             click: f_click,
             pivot_area: f_pivot_area
                 .ok_or_else(|| ParseError::MissingAttribute("pivotArea".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -15491,27 +15644,28 @@ impl FromXml for Selection {
         let mut f_active_cell = None;
         let mut f_active_cell_id = None;
         let mut f_square_reference = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"pane" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pane = val.parse().ok();
                 }
                 b"activeCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_cell = Some(val.into_owned());
                 }
                 b"activeCellId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_cell_id = val.parse().ok();
                 }
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15532,6 +15686,7 @@ impl FromXml for Selection {
             active_cell: f_active_cell,
             active_cell_id: f_active_cell_id,
             square_reference: f_square_reference,
+            extra_attrs,
         })
     }
 }
@@ -15545,19 +15700,22 @@ impl FromXml for PageBreaks {
         let mut f_count = None;
         let mut f_manual_break_count = None;
         let mut f_brk = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"manualBreakCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_manual_break_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15595,6 +15753,7 @@ impl FromXml for PageBreaks {
             count: f_count,
             manual_break_count: f_manual_break_count,
             brk: f_brk,
+            extra_attrs,
         })
     }
 }
@@ -15610,31 +15769,31 @@ impl FromXml for PageBreak {
         let mut f_end_column = None;
         let mut f_man = None;
         let mut f_pt = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"min" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_column = val.parse().ok();
                 }
                 b"max" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_end_column = val.parse().ok();
                 }
                 b"man" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_man = Some(val == "true" || val == "1");
                 }
                 b"pt" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pt = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15656,6 +15815,7 @@ impl FromXml for PageBreak {
             end_column: f_end_column,
             man: f_man,
             pt: f_pt,
+            extra_attrs,
         })
     }
 }
@@ -15670,27 +15830,28 @@ impl FromXml for OutlineProperties {
         let mut f_summary_below = None;
         let mut f_summary_right = None;
         let mut f_show_outline_symbols = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"applyStyles" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_styles = Some(val == "true" || val == "1");
                 }
                 b"summaryBelow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_summary_below = Some(val == "true" || val == "1");
                 }
                 b"summaryRight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_summary_right = Some(val == "true" || val == "1");
                 }
                 b"showOutlineSymbols" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_outline_symbols = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15711,6 +15872,7 @@ impl FromXml for OutlineProperties {
             summary_below: f_summary_below,
             summary_right: f_summary_right,
             show_outline_symbols: f_show_outline_symbols,
+            extra_attrs,
         })
     }
 }
@@ -15723,19 +15885,22 @@ impl FromXml for PageSetupProperties {
     ) -> Result<Self, ParseError> {
         let mut f_auto_page_breaks = None;
         let mut f_fit_to_page = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"autoPageBreaks" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_page_breaks = Some(val == "true" || val == "1");
                 }
                 b"fitToPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fit_to_page = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15754,6 +15919,7 @@ impl FromXml for PageSetupProperties {
         Ok(Self {
             auto_page_breaks: f_auto_page_breaks,
             fit_to_page: f_fit_to_page,
+            extra_attrs,
         })
     }
 }
@@ -15770,31 +15936,31 @@ impl FromXml for CTDataConsolidate {
         let mut f_top_labels = None;
         let mut f_link = None;
         let mut f_data_refs = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"function" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_function = val.parse().ok();
                 }
                 b"startLabels" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_start_labels = Some(val == "true" || val == "1");
                 }
                 b"leftLabels" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_left_labels = Some(val == "true" || val == "1");
                 }
                 b"topLabels" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top_labels = Some(val == "true" || val == "1");
                 }
                 b"link" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_link = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15836,6 +16002,7 @@ impl FromXml for CTDataConsolidate {
             top_labels: f_top_labels,
             link: f_link,
             data_refs: f_data_refs,
+            extra_attrs,
         })
     }
 }
@@ -15848,15 +16015,19 @@ impl FromXml for CTDataRefs {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_data_ref = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15893,6 +16064,7 @@ impl FromXml for CTDataRefs {
         Ok(Self {
             count: f_count,
             data_ref: f_data_ref,
+            extra_attrs,
         })
     }
 }
@@ -15906,23 +16078,25 @@ impl FromXml for CTDataRef {
         let mut f_reference = None;
         let mut f_name = None;
         let mut f_sheet = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sheet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -15942,6 +16116,7 @@ impl FromXml for CTDataRef {
             reference: f_reference,
             name: f_name,
             sheet: f_sheet,
+            extra_attrs,
         })
     }
 }
@@ -15954,15 +16129,19 @@ impl FromXml for MergedCells {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_merge_cell = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16000,6 +16179,7 @@ impl FromXml for MergedCells {
         Ok(Self {
             count: f_count,
             merge_cell: f_merge_cell,
+            extra_attrs,
         })
     }
 }
@@ -16011,15 +16191,19 @@ impl FromXml for MergedCell {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16038,6 +16222,7 @@ impl FromXml for MergedCell {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -16096,15 +16281,19 @@ impl FromXml for CellSmartTags {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
         let mut f_cell_smart_tag = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16143,6 +16332,7 @@ impl FromXml for CellSmartTags {
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             cell_smart_tag: f_cell_smart_tag,
+            extra_attrs,
         })
     }
 }
@@ -16157,23 +16347,25 @@ impl FromXml for CellSmartTag {
         let mut f_deleted = None;
         let mut f_xml_based = None;
         let mut f_cell_smart_tag_pr = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"deleted" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_deleted = Some(val == "true" || val == "1");
                 }
                 b"xmlBased" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xml_based = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16214,6 +16406,7 @@ impl FromXml for CellSmartTag {
             deleted: f_deleted,
             xml_based: f_xml_based,
             cell_smart_tag_pr: f_cell_smart_tag_pr,
+            extra_attrs,
         })
     }
 }
@@ -16226,19 +16419,22 @@ impl FromXml for CTCellSmartTagPr {
     ) -> Result<Self, ParseError> {
         let mut f_key: Option<XmlString> = None;
         let mut f_value: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"key" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_key = Some(val.into_owned());
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16257,6 +16453,7 @@ impl FromXml for CTCellSmartTagPr {
         Ok(Self {
             key: f_key.ok_or_else(|| ParseError::MissingAttribute("key".to_string()))?,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -16329,83 +16526,70 @@ impl FromXml for DrawingHeaderFooter {
         let mut f_rfo = None;
         let mut f_rfe = None;
         let mut f_rff = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"lho" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lho = val.parse().ok();
                 }
                 b"lhe" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lhe = val.parse().ok();
                 }
                 b"lhf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lhf = val.parse().ok();
                 }
                 b"cho" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cho = val.parse().ok();
                 }
                 b"che" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_che = val.parse().ok();
                 }
                 b"chf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_chf = val.parse().ok();
                 }
                 b"rho" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rho = val.parse().ok();
                 }
                 b"rhe" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rhe = val.parse().ok();
                 }
                 b"rhf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rhf = val.parse().ok();
                 }
                 b"lfo" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lfo = val.parse().ok();
                 }
                 b"lfe" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lfe = val.parse().ok();
                 }
                 b"lff" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lff = val.parse().ok();
                 }
                 b"cfo" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cfo = val.parse().ok();
                 }
                 b"cfe" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cfe = val.parse().ok();
                 }
                 b"cff" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cff = val.parse().ok();
                 }
                 b"rfo" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rfo = val.parse().ok();
                 }
                 b"rfe" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rfe = val.parse().ok();
                 }
                 b"rff" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rff = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16440,6 +16624,7 @@ impl FromXml for DrawingHeaderFooter {
             rfo: f_rfo,
             rfe: f_rfe,
             rff: f_rff,
+            extra_attrs,
         })
     }
 }
@@ -16526,91 +16711,76 @@ impl FromXml for CustomSheetView {
         let mut f_header_footer = None;
         let mut f_auto_filter = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"scale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scale = val.parse().ok();
                 }
                 b"colorId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_color_id = val.parse().ok();
                 }
                 b"showPageBreaks" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_page_breaks = Some(val == "true" || val == "1");
                 }
                 b"showFormulas" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_formulas = Some(val == "true" || val == "1");
                 }
                 b"showGridLines" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_grid_lines = Some(val == "true" || val == "1");
                 }
                 b"showRowCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_row_col = Some(val == "true" || val == "1");
                 }
                 b"outlineSymbols" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline_symbols = Some(val == "true" || val == "1");
                 }
                 b"zeroValues" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zero_values = Some(val == "true" || val == "1");
                 }
                 b"fitToPage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fit_to_page = Some(val == "true" || val == "1");
                 }
                 b"printArea" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_print_area = Some(val == "true" || val == "1");
                 }
                 b"filter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_filter = Some(val == "true" || val == "1");
                 }
                 b"showAutoFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_auto_filter = Some(val == "true" || val == "1");
                 }
                 b"hiddenRows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_rows = Some(val == "true" || val == "1");
                 }
                 b"hiddenColumns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden_columns = Some(val == "true" || val == "1");
                 }
                 b"state" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_state = val.parse().ok();
                 }
                 b"filterUnique" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_filter_unique = Some(val == "true" || val == "1");
                 }
                 b"view" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_view = val.parse().ok();
                 }
                 b"showRuler" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_ruler = Some(val == "true" || val == "1");
                 }
                 b"topLeftCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top_left_cell = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16742,6 +16912,7 @@ impl FromXml for CustomSheetView {
             header_footer: f_header_footer,
             auto_filter: f_auto_filter,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -16757,27 +16928,28 @@ impl FromXml for DataValidations {
         let mut f_y_window = None;
         let mut f_count = None;
         let mut f_data_validation = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"disablePrompts" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disable_prompts = Some(val == "true" || val == "1");
                 }
                 b"xWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x_window = val.parse().ok();
                 }
                 b"yWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_y_window = val.parse().ok();
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -16819,6 +16991,7 @@ impl FromXml for DataValidations {
             y_window: f_y_window,
             count: f_count,
             data_validation: f_data_validation,
+            extra_attrs,
         })
     }
 }
@@ -16859,76 +17032,68 @@ impl FromXml for DataValidation {
         let mut f_formula1 = None;
         #[cfg(feature = "sml-validation")]
         let mut f_formula2 = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-validation")]
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 #[cfg(feature = "sml-validation")]
                 b"errorStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_error_style = val.parse().ok();
                 }
                 #[cfg(feature = "sml-validation")]
                 b"imeMode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ime_mode = val.parse().ok();
                 }
                 #[cfg(feature = "sml-validation")]
                 b"operator" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_operator = val.parse().ok();
                 }
                 #[cfg(feature = "sml-validation")]
                 b"allowBlank" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_allow_blank = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-validation")]
                 b"showDropDown" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_drop_down = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-validation")]
                 b"showInputMessage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_input_message = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-validation")]
                 b"showErrorMessage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_error_message = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-validation")]
                 b"errorTitle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_error_title = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-validation")]
                 b"error" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_error = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-validation")]
                 b"promptTitle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prompt_title = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-validation")]
                 b"prompt" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prompt = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-validation")]
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17004,6 +17169,7 @@ impl FromXml for DataValidation {
             formula1: f_formula1,
             #[cfg(feature = "sml-validation")]
             formula2: f_formula2,
+            extra_attrs,
         })
     }
 }
@@ -17022,21 +17188,24 @@ impl FromXml for ConditionalFormatting {
         let mut f_cf_rule = Vec::new();
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-pivot")]
                 b"pivot" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pivot = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17092,6 +17261,7 @@ impl FromXml for ConditionalFormatting {
             cf_rule: f_cf_rule,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -17138,76 +17308,68 @@ impl FromXml for ConditionalRule {
         let mut f_icon_set = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"dxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"priority" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_priority = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"stopIfTrue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_stop_if_true = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"aboveAverage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_above_average = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"percent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_percent = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"bottom" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bottom = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"operator" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_operator = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"text" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_text = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-styling")]
                 b"timePeriod" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_time_period = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"rank" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rank = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"stdDev" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_std_dev = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"equalAverage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_equal_average = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17316,6 +17478,7 @@ impl FromXml for ConditionalRule {
             icon_set: f_icon_set,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -17378,31 +17541,32 @@ impl FromXml for Hyperlink {
         let mut f_tooltip = None;
         #[cfg(feature = "sml-hyperlinks")]
         let mut f_display = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-hyperlinks")]
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-hyperlinks")]
                 b"location" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_location = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-hyperlinks")]
                 b"tooltip" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tooltip = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-hyperlinks")]
                 b"display" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_display = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17428,6 +17592,7 @@ impl FromXml for Hyperlink {
             tooltip: f_tooltip,
             #[cfg(feature = "sml-hyperlinks")]
             display: f_display,
+            extra_attrs,
         })
     }
 }
@@ -17460,68 +17625,61 @@ impl FromXml for CellFormula {
         let mut f_si = None;
         #[cfg(feature = "sml-formulas-advanced")]
         let mut f_bx = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"aca" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_aca = Some(val == "true" || val == "1");
                 }
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"dt2D" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dt2_d = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"dtr" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dtr = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"del1" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_del1 = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"del2" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_del2 = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"r1" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_r1 = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"r2" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_r2 = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"ca" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ca = Some(val == "true" || val == "1");
                 }
                 b"si" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_si = val.parse().ok();
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"bx" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bx = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17575,6 +17733,7 @@ impl FromXml for CellFormula {
             si: f_si,
             #[cfg(feature = "sml-formulas-advanced")]
             bx: f_bx,
+            extra_attrs,
         })
     }
 }
@@ -17646,23 +17805,25 @@ impl FromXml for DataBar {
         let mut f_show_value = None;
         let mut f_cfvo = Vec::new();
         let mut f_color: Option<Box<Color>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"minLength" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_length = val.parse().ok();
                 }
                 b"maxLength" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_max_length = val.parse().ok();
                 }
                 b"showValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_value = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17712,6 +17873,7 @@ impl FromXml for DataBar {
             show_value: f_show_value,
             cfvo: f_cfvo,
             color: f_color.ok_or_else(|| ParseError::MissingAttribute("color".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -17727,27 +17889,28 @@ impl FromXml for IconSet {
         let mut f_percent = None;
         let mut f_reverse = None;
         let mut f_cfvo = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"iconSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon_set = val.parse().ok();
                 }
                 b"showValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_value = Some(val == "true" || val == "1");
                 }
                 b"percent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_percent = Some(val == "true" || val == "1");
                 }
                 b"reverse" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reverse = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17791,6 +17954,7 @@ impl FromXml for IconSet {
             percent: f_percent,
             reverse: f_reverse,
             cfvo: f_cfvo,
+            extra_attrs,
         })
     }
 }
@@ -17805,23 +17969,25 @@ impl FromXml for ConditionalFormatValue {
         let mut f_value = None;
         let mut f_gte = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"gte" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_gte = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17862,6 +18028,7 @@ impl FromXml for ConditionalFormatValue {
             value: f_value,
             gte: f_gte,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -17884,41 +18051,40 @@ impl FromXml for PageMargins {
         let mut f_header: Option<f64> = None;
         #[cfg(feature = "sml-layout")]
         let mut f_footer: Option<f64> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"left" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_left = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"right" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_right = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"top" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"bottom" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bottom = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"header" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"footer" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_footer = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -17947,6 +18113,7 @@ impl FromXml for PageMargins {
             header: f_header.ok_or_else(|| ParseError::MissingAttribute("header".to_string()))?,
             #[cfg(feature = "sml-layout")]
             footer: f_footer.ok_or_else(|| ParseError::MissingAttribute("footer".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -17962,31 +18129,31 @@ impl FromXml for PrintOptions {
         let mut f_headings = None;
         let mut f_grid_lines = None;
         let mut f_grid_lines_set = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"horizontalCentered" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_horizontal_centered = Some(val == "true" || val == "1");
                 }
                 b"verticalCentered" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vertical_centered = Some(val == "true" || val == "1");
                 }
                 b"headings" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_headings = Some(val == "true" || val == "1");
                 }
                 b"gridLines" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grid_lines = Some(val == "true" || val == "1");
                 }
                 b"gridLinesSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_grid_lines_set = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18008,6 +18175,7 @@ impl FromXml for PrintOptions {
             headings: f_headings,
             grid_lines: f_grid_lines,
             grid_lines_set: f_grid_lines_set,
+            extra_attrs,
         })
     }
 }
@@ -18054,101 +18222,88 @@ impl FromXml for PageSetup {
         let mut f_vertical_dpi = None;
         #[cfg(feature = "sml-layout")]
         let mut f_copies = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"paperSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_size = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"paperHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_height = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-layout")]
                 b"paperWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_width = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-layout")]
                 b"scale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scale = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"firstPageNumber" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_page_number = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"fitToWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fit_to_width = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"fitToHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fit_to_height = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"pageOrder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_page_order = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"orientation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_orientation = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"usePrinterDefaults" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_use_printer_defaults = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"blackAndWhite" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_black_and_white = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"draft" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_draft = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"cellComments" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_comments = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"useFirstPageNumber" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_use_first_page_number = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"errors" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_errors = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"horizontalDpi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_horizontal_dpi = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"verticalDpi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vertical_dpi = val.parse().ok();
                 }
                 #[cfg(feature = "sml-layout")]
                 b"copies" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_copies = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18201,6 +18356,7 @@ impl FromXml for PageSetup {
             vertical_dpi: f_vertical_dpi,
             #[cfg(feature = "sml-layout")]
             copies: f_copies,
+            extra_attrs,
         })
     }
 }
@@ -18231,31 +18387,32 @@ impl FromXml for HeaderFooter {
         let mut f_first_header = None;
         #[cfg(feature = "sml-layout")]
         let mut f_first_footer = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"differentOddEven" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_different_odd_even = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"differentFirst" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_different_first = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"scaleWithDoc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scale_with_doc = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-layout")]
                 b"alignWithMargins" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_align_with_margins = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18352,6 +18509,7 @@ impl FromXml for HeaderFooter {
             first_header: f_first_header,
             #[cfg(feature = "sml-layout")]
             first_footer: f_first_footer,
+            extra_attrs,
         })
     }
 }
@@ -18366,23 +18524,25 @@ impl FromXml for Scenarios {
         let mut f_show = None;
         let mut f_square_reference = None;
         let mut f_scenario = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"current" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_current = val.parse().ok();
                 }
                 b"show" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show = val.parse().ok();
                 }
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18421,6 +18581,7 @@ impl FromXml for Scenarios {
             show: f_show,
             square_reference: f_square_reference,
             scenario: f_scenario,
+            extra_attrs,
         })
     }
 }
@@ -18452,95 +18613,79 @@ impl FromXml for SheetProtection {
         let mut f_auto_filter = None;
         let mut f_pivot_tables = None;
         let mut f_select_unlocked_cells = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"password" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_password = decode_hex(&val);
                 }
                 b"algorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hash_value = decode_hex(&val);
                 }
                 b"saltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_salt_value = decode_hex(&val);
                 }
                 b"spinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_spin_count = val.parse().ok();
                 }
                 b"sheet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet = Some(val == "true" || val == "1");
                 }
                 b"objects" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_objects = Some(val == "true" || val == "1");
                 }
                 b"scenarios" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scenarios = Some(val == "true" || val == "1");
                 }
                 b"formatCells" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_cells = Some(val == "true" || val == "1");
                 }
                 b"formatColumns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_columns = Some(val == "true" || val == "1");
                 }
                 b"formatRows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_rows = Some(val == "true" || val == "1");
                 }
                 b"insertColumns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_columns = Some(val == "true" || val == "1");
                 }
                 b"insertRows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_rows = Some(val == "true" || val == "1");
                 }
                 b"insertHyperlinks" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_hyperlinks = Some(val == "true" || val == "1");
                 }
                 b"deleteColumns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_delete_columns = Some(val == "true" || val == "1");
                 }
                 b"deleteRows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_delete_rows = Some(val == "true" || val == "1");
                 }
                 b"selectLockedCells" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_select_locked_cells = Some(val == "true" || val == "1");
                 }
                 b"sort" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sort = Some(val == "true" || val == "1");
                 }
                 b"autoFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_filter = Some(val == "true" || val == "1");
                 }
                 b"pivotTables" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pivot_tables = Some(val == "true" || val == "1");
                 }
                 b"selectUnlockedCells" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_select_unlocked_cells = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18578,6 +18723,7 @@ impl FromXml for SheetProtection {
             auto_filter: f_auto_filter,
             pivot_tables: f_pivot_tables,
             select_unlocked_cells: f_select_unlocked_cells,
+            extra_attrs,
         })
     }
 }
@@ -18642,43 +18788,40 @@ impl FromXml for ProtectedRange {
         let mut f_hash_value = None;
         let mut f_salt_value = None;
         let mut f_spin_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"password" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_password = decode_hex(&val);
                 }
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"securityDescriptor" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_security_descriptor = Some(val.into_owned());
                 }
                 b"algorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hash_value = decode_hex(&val);
                 }
                 b"saltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_salt_value = decode_hex(&val);
                 }
                 b"spinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_spin_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18704,6 +18847,7 @@ impl FromXml for ProtectedRange {
             hash_value: f_hash_value,
             salt_value: f_salt_value,
             spin_count: f_spin_count,
+            extra_attrs,
         })
     }
 }
@@ -18721,35 +18865,34 @@ impl FromXml for Scenario {
         let mut f_user = None;
         let mut f_comment = None;
         let mut f_input_cells = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"locked" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_locked = Some(val == "true" || val == "1");
                 }
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"user" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_user = Some(val.into_owned());
                 }
                 b"comment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_comment = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18792,6 +18935,7 @@ impl FromXml for Scenario {
             user: f_user,
             comment: f_comment,
             input_cells: f_input_cells,
+            extra_attrs,
         })
     }
 }
@@ -18807,31 +18951,31 @@ impl FromXml for InputCells {
         let mut f_undone = None;
         let mut f_value: Option<XmlString> = None;
         let mut f_number_format_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"deleted" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_deleted = Some(val == "true" || val == "1");
                 }
                 b"undone" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_undone = Some(val == "true" || val == "1");
                 }
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18853,6 +18997,7 @@ impl FromXml for InputCells {
             undone: f_undone,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             number_format_id: f_number_format_id,
+            extra_attrs,
         })
     }
 }
@@ -18909,15 +19054,19 @@ impl FromXml for CellWatch {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -18935,6 +19084,7 @@ impl FromXml for CellWatch {
 
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -19131,19 +19281,22 @@ impl FromXml for ChartsheetProperties {
         let mut f_published = None;
         let mut f_code_name = None;
         let mut f_tab_color = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"published" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_published = Some(val == "true" || val == "1");
                 }
                 b"codeName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19181,6 +19334,7 @@ impl FromXml for ChartsheetProperties {
             published: f_published,
             code_name: f_code_name,
             tab_color: f_tab_color,
+            extra_attrs,
         })
     }
 }
@@ -19252,27 +19406,28 @@ impl FromXml for ChartsheetView {
         let mut f_workbook_view_id: Option<u32> = None;
         let mut f_zoom_to_fit = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"tabSelected" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tab_selected = Some(val == "true" || val == "1");
                 }
                 b"zoomScale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_scale = val.parse().ok();
                 }
                 b"workbookViewId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_view_id = val.parse().ok();
                 }
                 b"zoomToFit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_to_fit = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19315,6 +19470,7 @@ impl FromXml for ChartsheetView {
                 .ok_or_else(|| ParseError::MissingAttribute("workbookViewId".to_string()))?,
             zoom_to_fit: f_zoom_to_fit,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -19332,39 +19488,37 @@ impl FromXml for ChartsheetProtection {
         let mut f_spin_count = None;
         let mut f_content = None;
         let mut f_objects = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"password" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_password = decode_hex(&val);
                 }
                 b"algorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hash_value = decode_hex(&val);
                 }
                 b"saltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_salt_value = decode_hex(&val);
                 }
                 b"spinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_spin_count = val.parse().ok();
                 }
                 b"content" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_content = Some(val == "true" || val == "1");
                 }
                 b"objects" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_objects = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19388,6 +19542,7 @@ impl FromXml for ChartsheetProtection {
             spin_count: f_spin_count,
             content: f_content,
             objects: f_objects,
+            extra_attrs,
         })
     }
 }
@@ -19410,59 +19565,52 @@ impl FromXml for ChartsheetPageSetup {
         let mut f_horizontal_dpi = None;
         let mut f_vertical_dpi = None;
         let mut f_copies = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"paperSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_size = val.parse().ok();
                 }
                 b"paperHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_height = Some(val.into_owned());
                 }
                 b"paperWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paper_width = Some(val.into_owned());
                 }
                 b"firstPageNumber" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_page_number = val.parse().ok();
                 }
                 b"orientation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_orientation = val.parse().ok();
                 }
                 b"usePrinterDefaults" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_use_printer_defaults = Some(val == "true" || val == "1");
                 }
                 b"blackAndWhite" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_black_and_white = Some(val == "true" || val == "1");
                 }
                 b"draft" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_draft = Some(val == "true" || val == "1");
                 }
                 b"useFirstPageNumber" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_use_first_page_number = Some(val == "true" || val == "1");
                 }
                 b"horizontalDpi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_horizontal_dpi = val.parse().ok();
                 }
                 b"verticalDpi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vertical_dpi = val.parse().ok();
                 }
                 b"copies" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_copies = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19491,6 +19639,7 @@ impl FromXml for ChartsheetPageSetup {
             horizontal_dpi: f_horizontal_dpi,
             vertical_dpi: f_vertical_dpi,
             copies: f_copies,
+            extra_attrs,
         })
     }
 }
@@ -19555,27 +19704,28 @@ impl FromXml for CustomChartsheetView {
         let mut f_page_margins = None;
         let mut f_page_setup = None;
         let mut f_header_footer = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"scale" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_scale = val.parse().ok();
                 }
                 b"state" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_state = val.parse().ok();
                 }
                 b"zoomToFit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_zoom_to_fit = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19636,6 +19786,7 @@ impl FromXml for CustomChartsheetView {
             page_margins: f_page_margins,
             page_setup: f_page_setup,
             header_footer: f_header_footer,
+            extra_attrs,
         })
     }
 }
@@ -19693,15 +19844,19 @@ impl FromXml for CTCustomProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19719,6 +19874,7 @@ impl FromXml for CTCustomProperty {
 
         Ok(Self {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -19781,35 +19937,34 @@ impl FromXml for OleObject {
         let mut f_auto_load = None;
         let mut f_shape_id: Option<u32> = None;
         let mut f_object_pr = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"progId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prog_id = Some(val.into_owned());
                 }
                 b"dvAspect" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dv_aspect = val.parse().ok();
                 }
                 b"link" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_link = Some(val.into_owned());
                 }
                 b"oleUpdate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ole_update = val.parse().ok();
                 }
                 b"autoLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_load = Some(val == "true" || val == "1");
                 }
                 b"shapeId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shape_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19854,6 +20009,7 @@ impl FromXml for OleObject {
             shape_id: f_shape_id
                 .ok_or_else(|| ParseError::MissingAttribute("shapeId".to_string()))?,
             object_pr: f_object_pr,
+            extra_attrs,
         })
     }
 }
@@ -19876,55 +20032,49 @@ impl FromXml for ObjectProperties {
         let mut f_alt_text = None;
         let mut f_dde = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"locked" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_locked = Some(val == "true" || val == "1");
                 }
                 b"defaultSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_size = Some(val == "true" || val == "1");
                 }
                 b"print" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_print = Some(val == "true" || val == "1");
                 }
                 b"disabled" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disabled = Some(val == "true" || val == "1");
                 }
                 b"uiObject" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ui_object = Some(val == "true" || val == "1");
                 }
                 b"autoFill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_fill = Some(val == "true" || val == "1");
                 }
                 b"autoLine" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_line = Some(val == "true" || val == "1");
                 }
                 b"autoPict" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_pict = Some(val == "true" || val == "1");
                 }
                 b"macro" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_macro = Some(val.into_owned());
                 }
                 b"altText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_alt_text = Some(val.into_owned());
                 }
                 b"dde" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dde = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -19972,6 +20122,7 @@ impl FromXml for ObjectProperties {
             alt_text: f_alt_text,
             dde: f_dde,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -19984,15 +20135,19 @@ impl FromXml for WebPublishItems {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_web_publish_item = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20031,6 +20186,7 @@ impl FromXml for WebPublishItems {
         Ok(Self {
             count: f_count,
             web_publish_item: f_web_publish_item,
+            extra_attrs,
         })
     }
 }
@@ -20049,43 +20205,40 @@ impl FromXml for WebPublishItem {
         let mut f_destination_file: Option<XmlString> = None;
         let mut f_title = None;
         let mut f_auto_republish = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"divId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_div_id = Some(val.into_owned());
                 }
                 b"sourceType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_type = val.parse().ok();
                 }
                 b"sourceRef" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_ref = Some(val.into_owned());
                 }
                 b"sourceObject" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_object = Some(val.into_owned());
                 }
                 b"destinationFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_destination_file = Some(val.into_owned());
                 }
                 b"title" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_title = Some(val.into_owned());
                 }
                 b"autoRepublish" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_republish = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20112,6 +20265,7 @@ impl FromXml for WebPublishItem {
                 .ok_or_else(|| ParseError::MissingAttribute("destinationFile".to_string()))?,
             title: f_title,
             auto_republish: f_auto_republish,
+            extra_attrs,
         })
     }
 }
@@ -20167,19 +20321,22 @@ impl FromXml for Control {
         let mut f_shape_id: Option<u32> = None;
         let mut f_name = None;
         let mut f_control_pr = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"shapeId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shape_id = val.parse().ok();
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20219,6 +20376,7 @@ impl FromXml for Control {
                 .ok_or_else(|| ParseError::MissingAttribute("shapeId".to_string()))?,
             name: f_name,
             control_pr: f_control_pr,
+            extra_attrs,
         })
     }
 }
@@ -20244,67 +20402,58 @@ impl FromXml for CTControlPr {
         let mut f_list_fill_range = None;
         let mut f_cf = None;
         let mut f_anchor: Option<Box<ObjectAnchor>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"locked" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_locked = Some(val == "true" || val == "1");
                 }
                 b"defaultSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_size = Some(val == "true" || val == "1");
                 }
                 b"print" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_print = Some(val == "true" || val == "1");
                 }
                 b"disabled" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_disabled = Some(val == "true" || val == "1");
                 }
                 b"recalcAlways" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_recalc_always = Some(val == "true" || val == "1");
                 }
                 b"uiObject" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ui_object = Some(val == "true" || val == "1");
                 }
                 b"autoFill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_fill = Some(val == "true" || val == "1");
                 }
                 b"autoLine" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_line = Some(val == "true" || val == "1");
                 }
                 b"autoPict" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_pict = Some(val == "true" || val == "1");
                 }
                 b"macro" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_macro = Some(val.into_owned());
                 }
                 b"altText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_alt_text = Some(val.into_owned());
                 }
                 b"linkedCell" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_linked_cell = Some(val.into_owned());
                 }
                 b"listFillRange" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_list_fill_range = Some(val.into_owned());
                 }
                 b"cf" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cf = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20355,6 +20504,7 @@ impl FromXml for CTControlPr {
             list_fill_range: f_list_fill_range,
             cf: f_cf,
             anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -20431,51 +20581,46 @@ impl FromXml for IgnoredError {
         let mut f_empty_cell_reference = None;
         let mut f_list_data_validation = None;
         let mut f_calculated_column = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sqref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_square_reference = Some(val.into_owned());
                 }
                 b"evalError" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_eval_error = Some(val == "true" || val == "1");
                 }
                 b"twoDigitTextYear" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_two_digit_text_year = Some(val == "true" || val == "1");
                 }
                 b"numberStoredAsText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_stored_as_text = Some(val == "true" || val == "1");
                 }
                 b"formula" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = Some(val == "true" || val == "1");
                 }
                 b"formulaRange" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula_range = Some(val == "true" || val == "1");
                 }
                 b"unlockedFormula" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unlocked_formula = Some(val == "true" || val == "1");
                 }
                 b"emptyCellReference" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_empty_cell_reference = Some(val == "true" || val == "1");
                 }
                 b"listDataValidation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_list_data_validation = Some(val == "true" || val == "1");
                 }
                 b"calculatedColumn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calculated_column = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20503,6 +20648,7 @@ impl FromXml for IgnoredError {
             empty_cell_reference: f_empty_cell_reference,
             list_data_validation: f_list_data_validation,
             calculated_column: f_calculated_column,
+            extra_attrs,
         })
     }
 }
@@ -20515,15 +20661,19 @@ impl FromXml for TableParts {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_table_part = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20561,6 +20711,7 @@ impl FromXml for TableParts {
         Ok(Self {
             count: f_count,
             table_part: f_table_part,
+            extra_attrs,
         })
     }
 }
@@ -20701,15 +20852,19 @@ impl FromXml for MetadataTypes {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_metadata_type = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20748,6 +20903,7 @@ impl FromXml for MetadataTypes {
         Ok(Self {
             count: f_count,
             metadata_type: f_metadata_type,
+            extra_attrs,
         })
     }
 }
@@ -20786,123 +20942,100 @@ impl FromXml for MetadataType {
         let mut f_coerce = None;
         let mut f_adjust = None;
         let mut f_cell_meta = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"minSupportedVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_min_supported_version = val.parse().ok();
                 }
                 b"ghostRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ghost_row = Some(val == "true" || val == "1");
                 }
                 b"ghostCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ghost_col = Some(val == "true" || val == "1");
                 }
                 b"edit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_edit = Some(val == "true" || val == "1");
                 }
                 b"delete" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_delete = Some(val == "true" || val == "1");
                 }
                 b"copy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_copy = Some(val == "true" || val == "1");
                 }
                 b"pasteAll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_all = Some(val == "true" || val == "1");
                 }
                 b"pasteFormulas" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_formulas = Some(val == "true" || val == "1");
                 }
                 b"pasteValues" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_values = Some(val == "true" || val == "1");
                 }
                 b"pasteFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_formats = Some(val == "true" || val == "1");
                 }
                 b"pasteComments" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_comments = Some(val == "true" || val == "1");
                 }
                 b"pasteDataValidation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_data_validation = Some(val == "true" || val == "1");
                 }
                 b"pasteBorders" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_borders = Some(val == "true" || val == "1");
                 }
                 b"pasteColWidths" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_col_widths = Some(val == "true" || val == "1");
                 }
                 b"pasteNumberFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_paste_number_formats = Some(val == "true" || val == "1");
                 }
                 b"merge" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_merge = Some(val == "true" || val == "1");
                 }
                 b"splitFirst" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_split_first = Some(val == "true" || val == "1");
                 }
                 b"splitAll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_split_all = Some(val == "true" || val == "1");
                 }
                 b"rowColShift" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_row_col_shift = Some(val == "true" || val == "1");
                 }
                 b"clearAll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_clear_all = Some(val == "true" || val == "1");
                 }
                 b"clearFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_clear_formats = Some(val == "true" || val == "1");
                 }
                 b"clearContents" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_clear_contents = Some(val == "true" || val == "1");
                 }
                 b"clearComments" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_clear_comments = Some(val == "true" || val == "1");
                 }
                 b"assign" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_assign = Some(val == "true" || val == "1");
                 }
                 b"coerce" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_coerce = Some(val == "true" || val == "1");
                 }
                 b"adjust" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_adjust = Some(val == "true" || val == "1");
                 }
                 b"cellMeta" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_meta = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -20948,6 +21081,7 @@ impl FromXml for MetadataType {
             coerce: f_coerce,
             adjust: f_adjust,
             cell_meta: f_cell_meta,
+            extra_attrs,
         })
     }
 }
@@ -20960,15 +21094,19 @@ impl FromXml for MetadataBlocks {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_bk = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21005,6 +21143,7 @@ impl FromXml for MetadataBlocks {
         Ok(Self {
             count: f_count,
             bk: f_bk,
+            extra_attrs,
         })
     }
 }
@@ -21059,19 +21198,22 @@ impl FromXml for MetadataRecord {
     ) -> Result<Self, ParseError> {
         let mut f_cell_type: Option<u32> = None;
         let mut f_value: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 b"v" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21090,6 +21232,7 @@ impl FromXml for MetadataRecord {
         Ok(Self {
             cell_type: f_cell_type.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -21104,19 +21247,22 @@ impl FromXml for CTFutureMetadata {
         let mut f_count = None;
         let mut f_bk = Vec::new();
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21165,6 +21311,7 @@ impl FromXml for CTFutureMetadata {
             count: f_count,
             bk: f_bk,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -21223,15 +21370,19 @@ impl FromXml for CTMdxMetadata {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_mdx = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21268,6 +21419,7 @@ impl FromXml for CTMdxMetadata {
         Ok(Self {
             count: f_count,
             mdx: f_mdx,
+            extra_attrs,
         })
     }
 }
@@ -21280,19 +21432,22 @@ impl FromXml for CTMdx {
     ) -> Result<Self, ParseError> {
         let mut f_n: Option<u32> = None;
         let mut f_formula: Option<STMdxFunctionType> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"n" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_n = val.parse().ok();
                 }
                 b"f" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_formula = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21311,6 +21466,7 @@ impl FromXml for CTMdx {
         Ok(Self {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             formula: f_formula.ok_or_else(|| ParseError::MissingAttribute("f".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -21332,51 +21488,46 @@ impl FromXml for CTMdxTuple {
         let mut f_st = None;
         let mut f_b = None;
         let mut f_n = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = val.parse().ok();
                 }
                 b"ct" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ct = Some(val.into_owned());
                 }
                 b"si" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_si = val.parse().ok();
                 }
                 b"fi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fi = val.parse().ok();
                 }
                 b"bc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bc = decode_hex(&val);
                 }
                 b"fc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fc = decode_hex(&val);
                 }
                 b"i" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i = Some(val == "true" || val == "1");
                 }
                 b"u" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_u = Some(val == "true" || val == "1");
                 }
                 b"st" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_st = Some(val == "true" || val == "1");
                 }
                 b"b" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_b = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21424,6 +21575,7 @@ impl FromXml for CTMdxTuple {
             st: f_st,
             b: f_b,
             n: f_n,
+            extra_attrs,
         })
     }
 }
@@ -21438,23 +21590,25 @@ impl FromXml for CTMdxSet {
         let mut f_cells = None;
         let mut f_o = None;
         let mut f_n = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ns" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ns = val.parse().ok();
                 }
                 b"c" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cells = val.parse().ok();
                 }
                 b"o" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_o = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21495,6 +21649,7 @@ impl FromXml for CTMdxSet {
             cells: f_cells,
             o: f_o,
             n: f_n,
+            extra_attrs,
         })
     }
 }
@@ -21507,19 +21662,22 @@ impl FromXml for CTMdxMemeberProp {
     ) -> Result<Self, ParseError> {
         let mut f_n: Option<u32> = None;
         let mut f_np: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"n" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_n = val.parse().ok();
                 }
                 b"np" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_np = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21538,6 +21696,7 @@ impl FromXml for CTMdxMemeberProp {
         Ok(Self {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             np: f_np.ok_or_else(|| ParseError::MissingAttribute("np".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -21551,23 +21710,25 @@ impl FromXml for CTMdxKPI {
         let mut f_n: Option<u32> = None;
         let mut f_np: Option<u32> = None;
         let mut f_p: Option<STMdxKPIProperty> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"n" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_n = val.parse().ok();
                 }
                 b"np" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_np = val.parse().ok();
                 }
                 b"p" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_p = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21587,6 +21748,7 @@ impl FromXml for CTMdxKPI {
             n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
             np: f_np.ok_or_else(|| ParseError::MissingAttribute("np".to_string()))?,
             p: f_p.ok_or_else(|| ParseError::MissingAttribute("p".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -21599,19 +21761,22 @@ impl FromXml for CTMetadataStringIndex {
     ) -> Result<Self, ParseError> {
         let mut f_x: Option<u32> = None;
         let mut f_style_index = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"x" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x = val.parse().ok();
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21630,6 +21795,7 @@ impl FromXml for CTMetadataStringIndex {
         Ok(Self {
             x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
             style_index: f_style_index,
+            extra_attrs,
         })
     }
 }
@@ -21642,15 +21808,19 @@ impl FromXml for MetadataStrings {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_style_index = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21689,6 +21859,7 @@ impl FromXml for MetadataStrings {
         Ok(Self {
             count: f_count,
             style_index: f_style_index,
+            extra_attrs,
         })
     }
 }
@@ -21750,23 +21921,25 @@ impl FromXml for SingleXmlCell {
         let mut f_connection_id: Option<u32> = None;
         let mut f_xml_cell_pr: Option<Box<XmlCellProperties>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"connectionId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21818,6 +21991,7 @@ impl FromXml for SingleXmlCell {
             xml_cell_pr: f_xml_cell_pr
                 .ok_or_else(|| ParseError::MissingAttribute("xmlCellPr".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -21832,19 +22006,22 @@ impl FromXml for XmlCellProperties {
         let mut f_unique_name = None;
         let mut f_xml_pr: Option<Box<XmlProperties>> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21892,6 +22069,7 @@ impl FromXml for XmlCellProperties {
             unique_name: f_unique_name,
             xml_pr: f_xml_pr.ok_or_else(|| ParseError::MissingAttribute("xmlPr".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -21906,23 +22084,25 @@ impl FromXml for XmlProperties {
         let mut f_xpath: Option<XmlString> = None;
         let mut f_xml_data_type: Option<STXmlDataType> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"mapId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_map_id = val.parse().ok();
                 }
                 b"xpath" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xpath = Some(val.into_owned());
                 }
                 b"xmlDataType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xml_data_type = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -21964,6 +22144,7 @@ impl FromXml for XmlProperties {
             xml_data_type: f_xml_data_type
                 .ok_or_else(|| ParseError::MissingAttribute("xmlDataType".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -22163,47 +22344,43 @@ impl FromXml for CellAlignment {
         let mut f_justify_last_line = None;
         let mut f_shrink_to_fit = None;
         let mut f_reading_order = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"horizontal" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_horizontal = val.parse().ok();
                 }
                 b"vertical" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vertical = val.parse().ok();
                 }
                 b"textRotation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_text_rotation = Some(val.into_owned());
                 }
                 b"wrapText" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_wrap_text = Some(val == "true" || val == "1");
                 }
                 b"indent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_indent = val.parse().ok();
                 }
                 b"relativeIndent" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_relative_indent = val.parse().ok();
                 }
                 b"justifyLastLine" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_justify_last_line = Some(val == "true" || val == "1");
                 }
                 b"shrinkToFit" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shrink_to_fit = Some(val == "true" || val == "1");
                 }
                 b"readingOrder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reading_order = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22229,6 +22406,7 @@ impl FromXml for CellAlignment {
             justify_last_line: f_justify_last_line,
             shrink_to_fit: f_shrink_to_fit,
             reading_order: f_reading_order,
+            extra_attrs,
         })
     }
 }
@@ -22241,15 +22419,19 @@ impl FromXml for Borders {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_border = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22286,6 +22468,7 @@ impl FromXml for Borders {
         Ok(Self {
             count: f_count,
             border: f_border,
+            extra_attrs,
         })
     }
 }
@@ -22318,26 +22501,28 @@ impl FromXml for Border {
         let mut f_vertical = None;
         #[cfg(feature = "sml-styling")]
         let mut f_horizontal = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"diagonalUp" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_diagonal_up = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"diagonalDown" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_diagonal_down = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"outline" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_outline = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22469,6 +22654,7 @@ impl FromXml for Border {
             vertical: f_vertical,
             #[cfg(feature = "sml-styling")]
             horizontal: f_horizontal,
+            extra_attrs,
         })
     }
 }
@@ -22481,15 +22667,19 @@ impl FromXml for BorderProperties {
     ) -> Result<Self, ParseError> {
         let mut f_style = None;
         let mut f_color = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"style" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22526,6 +22716,7 @@ impl FromXml for BorderProperties {
         Ok(Self {
             style: f_style,
             color: f_color,
+            extra_attrs,
         })
     }
 }
@@ -22538,19 +22729,22 @@ impl FromXml for CellProtection {
     ) -> Result<Self, ParseError> {
         let mut f_locked = None;
         let mut f_hidden = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"locked" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_locked = Some(val == "true" || val == "1");
                 }
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22569,6 +22763,7 @@ impl FromXml for CellProtection {
         Ok(Self {
             locked: f_locked,
             hidden: f_hidden,
+            extra_attrs,
         })
     }
 }
@@ -22581,15 +22776,19 @@ impl FromXml for Fonts {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_font = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22626,6 +22825,7 @@ impl FromXml for Fonts {
         Ok(Self {
             count: f_count,
             font: f_font,
+            extra_attrs,
         })
     }
 }
@@ -22638,15 +22838,19 @@ impl FromXml for Fills {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_fill = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22683,6 +22887,7 @@ impl FromXml for Fills {
         Ok(Self {
             count: f_count,
             fill: f_fill,
+            extra_attrs,
         })
     }
 }
@@ -22718,15 +22923,19 @@ impl FromXml for PatternFill {
         let mut f_pattern_type = None;
         let mut f_fg_color = None;
         let mut f_bg_color = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"patternType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pattern_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22770,6 +22979,7 @@ impl FromXml for PatternFill {
             pattern_type: f_pattern_type,
             fg_color: f_fg_color,
             bg_color: f_bg_color,
+            extra_attrs,
         })
     }
 }
@@ -22785,31 +22995,31 @@ impl FromXml for Color {
         let mut f_rgb = None;
         let mut f_theme = None;
         let mut f_tint = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"auto" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto = Some(val == "true" || val == "1");
                 }
                 b"indexed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_indexed = val.parse().ok();
                 }
                 b"rgb" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rgb = decode_hex(&val);
                 }
                 b"theme" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_theme = val.parse().ok();
                 }
                 b"tint" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tint = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22831,6 +23041,7 @@ impl FromXml for Color {
             rgb: f_rgb,
             theme: f_theme,
             tint: f_tint,
+            extra_attrs,
         })
     }
 }
@@ -22848,35 +23059,34 @@ impl FromXml for GradientFill {
         let mut f_top = None;
         let mut f_bottom = None;
         let mut f_stop = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"degree" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_degree = val.parse().ok();
                 }
                 b"left" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_left = val.parse().ok();
                 }
                 b"right" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_right = val.parse().ok();
                 }
                 b"top" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_top = val.parse().ok();
                 }
                 b"bottom" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_bottom = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22918,6 +23128,7 @@ impl FromXml for GradientFill {
             top: f_top,
             bottom: f_bottom,
             stop: f_stop,
+            extra_attrs,
         })
     }
 }
@@ -22930,15 +23141,19 @@ impl FromXml for GradientStop {
     ) -> Result<Self, ParseError> {
         let mut f_position: Option<f64> = None;
         let mut f_color: Option<Box<Color>> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"position" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_position = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -22976,6 +23191,7 @@ impl FromXml for GradientStop {
             position: f_position
                 .ok_or_else(|| ParseError::MissingAttribute("position".to_string()))?,
             color: f_color.ok_or_else(|| ParseError::MissingAttribute("color".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -22988,15 +23204,19 @@ impl FromXml for NumberFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_num_fmt = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23034,6 +23254,7 @@ impl FromXml for NumberFormats {
         Ok(Self {
             count: f_count,
             num_fmt: f_num_fmt,
+            extra_attrs,
         })
     }
 }
@@ -23046,19 +23267,22 @@ impl FromXml for NumberFormat {
     ) -> Result<Self, ParseError> {
         let mut f_number_format_id: Option<STNumFmtId> = None;
         let mut f_format_code: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
                 b"formatCode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_code = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23079,6 +23303,7 @@ impl FromXml for NumberFormat {
                 .ok_or_else(|| ParseError::MissingAttribute("numFmtId".to_string()))?,
             format_code: f_format_code
                 .ok_or_else(|| ParseError::MissingAttribute("formatCode".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -23091,15 +23316,19 @@ impl FromXml for CellStyleFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_xf = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23136,6 +23365,7 @@ impl FromXml for CellStyleFormats {
         Ok(Self {
             count: f_count,
             xf: f_xf,
+            extra_attrs,
         })
     }
 }
@@ -23148,15 +23378,19 @@ impl FromXml for CellFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_xf = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23193,6 +23427,7 @@ impl FromXml for CellFormats {
         Ok(Self {
             count: f_count,
             xf: f_xf,
+            extra_attrs,
         })
     }
 }
@@ -23235,76 +23470,68 @@ impl FromXml for Format {
         let mut f_protection = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"numFmtId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_number_format_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"fontId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_font_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"fillId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_fill_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"borderId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_border_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"xfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-styling")]
                 b"quotePrefix" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_quote_prefix = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-pivot")]
                 b"pivotButton" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pivot_button = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyNumberFormat" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_number_format = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyFont" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_font = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyFill" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_fill = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyBorder" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_border = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyAlignment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_alignment = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-styling")]
                 b"applyProtection" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_protection = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23395,6 +23622,7 @@ impl FromXml for Format {
             protection: f_protection,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -23407,15 +23635,19 @@ impl FromXml for CellStyles {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_cell_style = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23453,6 +23685,7 @@ impl FromXml for CellStyles {
         Ok(Self {
             count: f_count,
             cell_style: f_cell_style,
+            extra_attrs,
         })
     }
 }
@@ -23470,35 +23703,34 @@ impl FromXml for CellStyle {
         let mut f_hidden = None;
         let mut f_custom_builtin = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"xfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_format_id = val.parse().ok();
                 }
                 b"builtinId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_builtin_id = val.parse().ok();
                 }
                 b"iLevel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_i_level = val.parse().ok();
                 }
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 b"customBuiltin" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_builtin = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23543,6 +23775,7 @@ impl FromXml for CellStyle {
             hidden: f_hidden,
             custom_builtin: f_custom_builtin,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -23555,15 +23788,19 @@ impl FromXml for DifferentialFormats {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_dxf = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23602,6 +23839,7 @@ impl FromXml for DifferentialFormats {
         Ok(Self {
             count: f_count,
             dxf: f_dxf,
+            extra_attrs,
         })
     }
 }
@@ -23854,15 +24092,19 @@ impl FromXml for RgbColor {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_rgb = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"rgb" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rgb = decode_hex(&val);
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23878,7 +24120,10 @@ impl FromXml for RgbColor {
             }
         }
 
-        Ok(Self { rgb: f_rgb })
+        Ok(Self {
+            rgb: f_rgb,
+            extra_attrs,
+        })
     }
 }
 
@@ -23892,23 +24137,25 @@ impl FromXml for TableStyles {
         let mut f_default_table_style = None;
         let mut f_default_pivot_style = None;
         let mut f_table_style = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
                 b"defaultTableStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_table_style = Some(val.into_owned());
                 }
                 b"defaultPivotStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_pivot_style = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -23948,6 +24195,7 @@ impl FromXml for TableStyles {
             default_table_style: f_default_table_style,
             default_pivot_style: f_default_pivot_style,
             table_style: f_table_style,
+            extra_attrs,
         })
     }
 }
@@ -23963,27 +24211,28 @@ impl FromXml for TableStyle {
         let mut f_table = None;
         let mut f_count = None;
         let mut f_table_style_element = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"pivot" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_pivot = Some(val == "true" || val == "1");
                 }
                 b"table" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_table = Some(val == "true" || val == "1");
                 }
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24026,6 +24275,7 @@ impl FromXml for TableStyle {
             table: f_table,
             count: f_count,
             table_style_element: f_table_style_element,
+            extra_attrs,
         })
     }
 }
@@ -24039,23 +24289,25 @@ impl FromXml for TableStyleElement {
         let mut f_type: Option<STTableStyleType> = None;
         let mut f_size = None;
         let mut f_dxf_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
                 b"size" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_size = val.parse().ok();
                 }
                 b"dxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dxf_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24075,6 +24327,7 @@ impl FromXml for TableStyleElement {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             size: f_size,
             dxf_id: f_dxf_id,
+            extra_attrs,
         })
     }
 }
@@ -24086,15 +24339,19 @@ impl FromXml for BooleanProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24110,7 +24367,10 @@ impl FromXml for BooleanProperty {
             }
         }
 
-        Ok(Self { value: f_value })
+        Ok(Self {
+            value: f_value,
+            extra_attrs,
+        })
     }
 }
 
@@ -24121,15 +24381,19 @@ impl FromXml for FontSize {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<f64> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24147,6 +24411,7 @@ impl FromXml for FontSize {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24158,15 +24423,19 @@ impl FromXml for IntProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<i32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24184,6 +24453,7 @@ impl FromXml for IntProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24195,15 +24465,19 @@ impl FromXml for FontName {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24221,6 +24495,7 @@ impl FromXml for FontName {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24232,15 +24507,19 @@ impl FromXml for VerticalAlignFontProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<VerticalAlignRun> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24258,6 +24537,7 @@ impl FromXml for VerticalAlignFontProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24269,15 +24549,19 @@ impl FromXml for FontSchemeProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<FontScheme> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24295,6 +24579,7 @@ impl FromXml for FontSchemeProperty {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24306,15 +24591,19 @@ impl FromXml for UnderlineProperty {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24330,7 +24619,10 @@ impl FromXml for UnderlineProperty {
             }
         }
 
-        Ok(Self { value: f_value })
+        Ok(Self {
+            value: f_value,
+            extra_attrs,
+        })
     }
 }
 
@@ -24363,15 +24655,19 @@ impl FromXml for FontFamily {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value: Option<STFontFamily> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24389,6 +24685,7 @@ impl FromXml for FontFamily {
 
         Ok(Self {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -24406,39 +24703,37 @@ impl FromXml for SmlAGAutoFormat {
         let mut f_apply_pattern_formats = None;
         let mut f_apply_alignment_formats = None;
         let mut f_apply_width_height_formats = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"autoFormatId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_format_id = val.parse().ok();
                 }
                 b"applyNumberFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_number_formats = Some(val == "true" || val == "1");
                 }
                 b"applyBorderFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_border_formats = Some(val == "true" || val == "1");
                 }
                 b"applyFontFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_font_formats = Some(val == "true" || val == "1");
                 }
                 b"applyPatternFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_pattern_formats = Some(val == "true" || val == "1");
                 }
                 b"applyAlignmentFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_alignment_formats = Some(val == "true" || val == "1");
                 }
                 b"applyWidthHeightFormats" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_apply_width_height_formats = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24462,6 +24757,7 @@ impl FromXml for SmlAGAutoFormat {
             apply_pattern_formats: f_apply_pattern_formats,
             apply_alignment_formats: f_apply_alignment_formats,
             apply_width_height_formats: f_apply_width_height_formats,
+            extra_attrs,
         })
     }
 }
@@ -24636,15 +24932,19 @@ impl FromXml for CTExternalSheetName {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"val" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_value = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24660,7 +24960,10 @@ impl FromXml for CTExternalSheetName {
             }
         }
 
-        Ok(Self { value: f_value })
+        Ok(Self {
+            value: f_value,
+            extra_attrs,
+        })
     }
 }
 
@@ -24720,23 +25023,25 @@ impl FromXml for CTExternalDefinedName {
         let mut f_name: Option<XmlString> = None;
         let mut f_refers_to = None;
         let mut f_sheet_id = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"refersTo" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refers_to = Some(val.into_owned());
                 }
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24756,6 +25061,7 @@ impl FromXml for CTExternalDefinedName {
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             refers_to: f_refers_to,
             sheet_id: f_sheet_id,
+            extra_attrs,
         })
     }
 }
@@ -24816,19 +25122,22 @@ impl FromXml for ExternalSheetData {
         let mut f_sheet_id: Option<u32> = None;
         let mut f_refresh_error = None;
         let mut f_row = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 b"refreshError" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_error = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24867,6 +25176,7 @@ impl FromXml for ExternalSheetData {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             refresh_error: f_refresh_error,
             row: f_row,
+            extra_attrs,
         })
     }
 }
@@ -24879,15 +25189,19 @@ impl FromXml for ExternalRow {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<u32> = None;
         let mut f_cell = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24924,6 +25238,7 @@ impl FromXml for ExternalRow {
         Ok(Self {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             cell: f_cell,
+            extra_attrs,
         })
     }
 }
@@ -24938,23 +25253,25 @@ impl FromXml for ExternalCell {
         let mut f_cell_type = None;
         let mut f_vm = None;
         let mut f_value = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
                 b"vm" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vm = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -24993,6 +25310,7 @@ impl FromXml for ExternalCell {
             cell_type: f_cell_type,
             vm: f_vm,
             value: f_value,
+            extra_attrs,
         })
     }
 }
@@ -25006,19 +25324,22 @@ impl FromXml for DdeLink {
         let mut f_dde_service: Option<XmlString> = None;
         let mut f_dde_topic: Option<XmlString> = None;
         let mut f_dde_items = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ddeService" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dde_service = Some(val.into_owned());
                 }
                 b"ddeTopic" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dde_topic = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25059,6 +25380,7 @@ impl FromXml for DdeLink {
             dde_topic: f_dde_topic
                 .ok_or_else(|| ParseError::MissingAttribute("ddeTopic".to_string()))?,
             dde_items: f_dde_items,
+            extra_attrs,
         })
     }
 }
@@ -25118,27 +25440,28 @@ impl FromXml for DdeItem {
         let mut f_advise = None;
         let mut f_prefer_pic = None;
         let mut f_values = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"ole" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ole = Some(val == "true" || val == "1");
                 }
                 b"advise" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_advise = Some(val == "true" || val == "1");
                 }
                 b"preferPic" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prefer_pic = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25179,6 +25502,7 @@ impl FromXml for DdeItem {
             advise: f_advise,
             prefer_pic: f_prefer_pic,
             values: f_values,
+            extra_attrs,
         })
     }
 }
@@ -25192,19 +25516,22 @@ impl FromXml for CTDdeValues {
         let mut f_rows = None;
         let mut f_cols = None;
         let mut f_value = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"rows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rows = val.parse().ok();
                 }
                 b"cols" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cols = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25242,6 +25569,7 @@ impl FromXml for CTDdeValues {
             rows: f_rows,
             cols: f_cols,
             value: f_value,
+            extra_attrs,
         })
     }
 }
@@ -25254,15 +25582,19 @@ impl FromXml for CTDdeValue {
     ) -> Result<Self, ParseError> {
         let mut f_cell_type = None;
         let mut f_value: Option<XmlString> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25299,6 +25631,7 @@ impl FromXml for CTDdeValue {
         Ok(Self {
             cell_type: f_cell_type,
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -25311,15 +25644,19 @@ impl FromXml for OleLink {
     ) -> Result<Self, ParseError> {
         let mut f_prog_id: Option<XmlString> = None;
         let mut f_ole_items = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"progId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prog_id = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25357,6 +25694,7 @@ impl FromXml for OleLink {
         Ok(Self {
             prog_id: f_prog_id.ok_or_else(|| ParseError::MissingAttribute("progId".to_string()))?,
             ole_items: f_ole_items,
+            extra_attrs,
         })
     }
 }
@@ -25415,27 +25753,28 @@ impl FromXml for OleItem {
         let mut f_icon = None;
         let mut f_advise = None;
         let mut f_prefer_pic = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"icon" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_icon = Some(val == "true" || val == "1");
                 }
                 b"advise" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_advise = Some(val == "true" || val == "1");
                 }
                 b"preferPic" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prefer_pic = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25456,6 +25795,7 @@ impl FromXml for OleItem {
             icon: f_icon,
             advise: f_advise,
             prefer_pic: f_prefer_pic,
+            extra_attrs,
         })
     }
 }
@@ -25520,121 +25860,104 @@ impl FromXml for Table {
         let mut f_table_style_info = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 #[cfg(feature = "sml-tables")]
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"displayName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_display_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"comment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_comment = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"tableType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_table_type = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"headerRowCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_count = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"insertRow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_row = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-tables")]
                 b"insertRowShift" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_insert_row_shift = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-tables")]
                 b"totalsRowCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_count = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"totalsRowShown" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_shown = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-tables")]
                 b"published" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_published = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-tables")]
                 b"headerRowDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"dataDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"totalsRowDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"headerRowBorderDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_border_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"tableBorderDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_table_border_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"totalsRowBorderDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_border_dxf_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-tables")]
                 b"headerRowCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_cell_style = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"dataCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_cell_style = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"totalsRowCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_cell_style = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-tables")]
                 b"connectionId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_connection_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25768,6 +26091,7 @@ impl FromXml for Table {
             table_style_info: f_table_style_info,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -25783,31 +26107,31 @@ impl FromXml for TableStyleInfo {
         let mut f_show_last_column = None;
         let mut f_show_row_stripes = None;
         let mut f_show_column_stripes = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"showFirstColumn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_first_column = Some(val == "true" || val == "1");
                 }
                 b"showLastColumn" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_last_column = Some(val == "true" || val == "1");
                 }
                 b"showRowStripes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_row_stripes = Some(val == "true" || val == "1");
                 }
                 b"showColumnStripes" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_column_stripes = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25829,6 +26153,7 @@ impl FromXml for TableStyleInfo {
             show_last_column: f_show_last_column,
             show_row_stripes: f_show_row_stripes,
             show_column_stripes: f_show_column_stripes,
+            extra_attrs,
         })
     }
 }
@@ -25841,15 +26166,19 @@ impl FromXml for TableColumns {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_table_column = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -25887,6 +26216,7 @@ impl FromXml for TableColumns {
         Ok(Self {
             count: f_count,
             table_column: f_table_column,
+            extra_attrs,
         })
     }
 }
@@ -25913,59 +26243,52 @@ impl FromXml for TableColumn {
         let mut f_totals_row_formula = None;
         let mut f_xml_column_pr = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"uniqueName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_unique_name = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"totalsRowFunction" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_function = val.parse().ok();
                 }
                 b"totalsRowLabel" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_label = Some(val.into_owned());
                 }
                 b"queryTableFieldId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_query_table_field_id = val.parse().ok();
                 }
                 b"headerRowDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_dxf_id = val.parse().ok();
                 }
                 b"dataDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_dxf_id = val.parse().ok();
                 }
                 b"totalsRowDxfId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_dxf_id = val.parse().ok();
                 }
                 b"headerRowCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_header_row_cell_style = Some(val.into_owned());
                 }
                 b"dataCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_cell_style = Some(val.into_owned());
                 }
                 b"totalsRowCellStyle" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_totals_row_cell_style = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26043,6 +26366,7 @@ impl FromXml for TableColumn {
             totals_row_formula: f_totals_row_formula,
             xml_column_pr: f_xml_column_pr,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -26055,15 +26379,19 @@ impl FromXml for TableFormula {
     ) -> Result<Self, ParseError> {
         let mut f_text: Option<String> = None;
         let mut f_array = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"array" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_array = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26097,6 +26425,7 @@ impl FromXml for TableFormula {
         Ok(Self {
             text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
             array: f_array,
+            extra_attrs,
         })
     }
 }
@@ -26112,27 +26441,28 @@ impl FromXml for XmlColumnProperties {
         let mut f_denormalized = None;
         let mut f_xml_data_type: Option<STXmlDataType> = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"mapId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_map_id = val.parse().ok();
                 }
                 b"xpath" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xpath = Some(val.into_owned());
                 }
                 b"denormalized" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_denormalized = Some(val == "true" || val == "1");
                 }
                 b"xmlDataType" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xml_data_type = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26175,6 +26505,7 @@ impl FromXml for XmlColumnProperties {
             xml_data_type: f_xml_data_type
                 .ok_or_else(|| ParseError::MissingAttribute("xmlDataType".to_string()))?,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -26241,15 +26572,19 @@ impl FromXml for CTVolType {
     ) -> Result<Self, ParseError> {
         let mut f_type: Option<STVolDepType> = None;
         let mut f_main = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"type" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26286,6 +26621,7 @@ impl FromXml for CTVolType {
         Ok(Self {
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             main: f_main,
+            extra_attrs,
         })
     }
 }
@@ -26298,15 +26634,19 @@ impl FromXml for CTVolMain {
     ) -> Result<Self, ParseError> {
         let mut f_first: Option<XmlString> = None;
         let mut f_tp = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"first" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26343,6 +26683,7 @@ impl FromXml for CTVolMain {
         Ok(Self {
             first: f_first.ok_or_else(|| ParseError::MissingAttribute("first".to_string()))?,
             tp: f_tp,
+            extra_attrs,
         })
     }
 }
@@ -26357,15 +26698,19 @@ impl FromXml for CTVolTopic {
         let mut f_value: Option<XmlString> = None;
         let mut f_stp = Vec::new();
         let mut f_tr = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"t" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cell_type = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26416,6 +26761,7 @@ impl FromXml for CTVolTopic {
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("v".to_string()))?,
             stp: f_stp,
             tr: f_tr,
+            extra_attrs,
         })
     }
 }
@@ -26428,19 +26774,22 @@ impl FromXml for CTVolTopicRef {
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<CellRef> = None;
         let mut f_style_index: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"r" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
                 b"s" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_style_index = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26460,6 +26809,7 @@ impl FromXml for CTVolTopicRef {
             reference: f_reference.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
             style_index: f_style_index
                 .ok_or_else(|| ParseError::MissingAttribute("s".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -26503,15 +26853,19 @@ impl FromXml for Workbook {
         let mut f_web_publish_objects = None;
         #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"conformance" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_conformance = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26755,6 +27109,7 @@ impl FromXml for Workbook {
             web_publish_objects: f_web_publish_objects,
             #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -26770,31 +27125,31 @@ impl FromXml for FileVersion {
         let mut f_lowest_edited = None;
         let mut f_rup_build = None;
         let mut f_code_name = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"appName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_app_name = Some(val.into_owned());
                 }
                 b"lastEdited" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_last_edited = Some(val.into_owned());
                 }
                 b"lowestEdited" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lowest_edited = Some(val.into_owned());
                 }
                 b"rupBuild" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_rup_build = Some(val.into_owned());
                 }
                 b"codeName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26816,6 +27171,7 @@ impl FromXml for FileVersion {
             lowest_edited: f_lowest_edited,
             rup_build: f_rup_build,
             code_name: f_code_name,
+            extra_attrs,
         })
     }
 }
@@ -26885,63 +27241,55 @@ impl FromXml for BookView {
         let mut f_active_tab = None;
         let mut f_auto_filter_date_grouping = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"visibility" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_visibility = val.parse().ok();
                 }
                 b"minimized" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_minimized = Some(val == "true" || val == "1");
                 }
                 b"showHorizontalScroll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_horizontal_scroll = Some(val == "true" || val == "1");
                 }
                 b"showVerticalScroll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_vertical_scroll = Some(val == "true" || val == "1");
                 }
                 b"showSheetTabs" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_sheet_tabs = Some(val == "true" || val == "1");
                 }
                 b"xWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x_window = val.parse().ok();
                 }
                 b"yWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_y_window = val.parse().ok();
                 }
                 b"windowWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_window_width = val.parse().ok();
                 }
                 b"windowHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_window_height = val.parse().ok();
                 }
                 b"tabRatio" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tab_ratio = val.parse().ok();
                 }
                 b"firstSheet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_first_sheet = val.parse().ok();
                 }
                 b"activeTab" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_tab = val.parse().ok();
                 }
                 b"autoFilterDateGrouping" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_filter_date_grouping = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -26992,6 +27340,7 @@ impl FromXml for BookView {
             active_tab: f_active_tab,
             auto_filter_date_grouping: f_auto_filter_date_grouping,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -27074,107 +27423,88 @@ impl FromXml for CustomWorkbookView {
         let mut f_show_comments = None;
         let mut f_show_objects = None;
         let mut f_extension_list = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"guid" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_guid = Some(val.into_owned());
                 }
                 b"autoUpdate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_update = Some(val == "true" || val == "1");
                 }
                 b"mergeInterval" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_merge_interval = val.parse().ok();
                 }
                 b"changesSavedWin" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_changes_saved_win = Some(val == "true" || val == "1");
                 }
                 b"onlySync" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_only_sync = Some(val == "true" || val == "1");
                 }
                 b"personalView" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_personal_view = Some(val == "true" || val == "1");
                 }
                 b"includePrintSettings" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_include_print_settings = Some(val == "true" || val == "1");
                 }
                 b"includeHiddenRowCol" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_include_hidden_row_col = Some(val == "true" || val == "1");
                 }
                 b"maximized" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_maximized = Some(val == "true" || val == "1");
                 }
                 b"minimized" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_minimized = Some(val == "true" || val == "1");
                 }
                 b"showHorizontalScroll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_horizontal_scroll = Some(val == "true" || val == "1");
                 }
                 b"showVerticalScroll" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_vertical_scroll = Some(val == "true" || val == "1");
                 }
                 b"showSheetTabs" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_sheet_tabs = Some(val == "true" || val == "1");
                 }
                 b"xWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_x_window = val.parse().ok();
                 }
                 b"yWindow" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_y_window = val.parse().ok();
                 }
                 b"windowWidth" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_window_width = val.parse().ok();
                 }
                 b"windowHeight" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_window_height = val.parse().ok();
                 }
                 b"tabRatio" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_tab_ratio = val.parse().ok();
                 }
                 b"activeSheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_active_sheet_id = val.parse().ok();
                 }
                 b"showFormulaBar" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_formula_bar = Some(val == "true" || val == "1");
                 }
                 b"showStatusbar" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_statusbar = Some(val == "true" || val == "1");
                 }
                 b"showComments" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_comments = val.parse().ok();
                 }
                 b"showObjects" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_objects = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27239,6 +27569,7 @@ impl FromXml for CustomWorkbookView {
             show_comments: f_show_comments,
             show_objects: f_show_objects,
             extension_list: f_extension_list,
+            extra_attrs,
         })
     }
 }
@@ -27295,24 +27626,26 @@ impl FromXml for Sheet {
         let mut f_sheet_id: Option<u32> = None;
         #[cfg(feature = "sml-structure")]
         let mut f_state = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"sheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_sheet_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"state" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_state = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27334,6 +27667,7 @@ impl FromXml for Sheet {
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             #[cfg(feature = "sml-structure")]
             state: f_state,
+            extra_attrs,
         })
     }
 }
@@ -27362,83 +27696,70 @@ impl FromXml for WorkbookProperties {
         let mut f_auto_compress_pictures = None;
         let mut f_refresh_all_connections = None;
         let mut f_default_theme_version = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"date1904" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_date1904 = Some(val == "true" || val == "1");
                 }
                 b"showObjects" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_objects = val.parse().ok();
                 }
                 b"showBorderUnselectedTables" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_border_unselected_tables = Some(val == "true" || val == "1");
                 }
                 b"filterPrivacy" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_filter_privacy = Some(val == "true" || val == "1");
                 }
                 b"promptedSolutions" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_prompted_solutions = Some(val == "true" || val == "1");
                 }
                 b"showInkAnnotation" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_ink_annotation = Some(val == "true" || val == "1");
                 }
                 b"backupFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_backup_file = Some(val == "true" || val == "1");
                 }
                 b"saveExternalLinkValues" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_save_external_link_values = Some(val == "true" || val == "1");
                 }
                 b"updateLinks" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_update_links = val.parse().ok();
                 }
                 b"codeName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_name = Some(val.into_owned());
                 }
                 b"hidePivotFieldList" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hide_pivot_field_list = Some(val == "true" || val == "1");
                 }
                 b"showPivotChartFilter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show_pivot_chart_filter = Some(val == "true" || val == "1");
                 }
                 b"allowRefreshQuery" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_allow_refresh_query = Some(val == "true" || val == "1");
                 }
                 b"publishItems" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_publish_items = Some(val == "true" || val == "1");
                 }
                 b"checkCompatibility" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_check_compatibility = Some(val == "true" || val == "1");
                 }
                 b"autoCompressPictures" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_compress_pictures = Some(val == "true" || val == "1");
                 }
                 b"refreshAllConnections" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_refresh_all_connections = Some(val == "true" || val == "1");
                 }
                 b"defaultThemeVersion" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_default_theme_version = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27473,6 +27794,7 @@ impl FromXml for WorkbookProperties {
             auto_compress_pictures: f_auto_compress_pictures,
             refresh_all_connections: f_refresh_all_connections,
             default_theme_version: f_default_theme_version,
+            extra_attrs,
         })
     }
 }
@@ -27485,19 +27807,22 @@ impl FromXml for CTSmartTagPr {
     ) -> Result<Self, ParseError> {
         let mut f_embed = None;
         let mut f_show = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"embed" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_embed = Some(val == "true" || val == "1");
                 }
                 b"show" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_show = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27516,6 +27841,7 @@ impl FromXml for CTSmartTagPr {
         Ok(Self {
             embed: f_embed,
             show: f_show,
+            extra_attrs,
         })
     }
 }
@@ -27575,23 +27901,25 @@ impl FromXml for CTSmartTagType {
         let mut f_namespace_uri = None;
         let mut f_name = None;
         let mut f_url = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"namespaceUri" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_namespace_uri = Some(val.into_owned());
                 }
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"url" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_url = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27611,6 +27939,7 @@ impl FromXml for CTSmartTagType {
             namespace_uri: f_namespace_uri,
             name: f_name,
             url: f_url,
+            extra_attrs,
         })
     }
 }
@@ -27625,27 +27954,28 @@ impl FromXml for FileRecoveryProperties {
         let mut f_crash_save = None;
         let mut f_data_extract_load = None;
         let mut f_repair_load = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"autoRecover" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_recover = Some(val == "true" || val == "1");
                 }
                 b"crashSave" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_crash_save = Some(val == "true" || val == "1");
                 }
                 b"dataExtractLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_data_extract_load = Some(val == "true" || val == "1");
                 }
                 b"repairLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_repair_load = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27666,6 +27996,7 @@ impl FromXml for FileRecoveryProperties {
             crash_save: f_crash_save,
             data_extract_load: f_data_extract_load,
             repair_load: f_repair_load,
+            extra_attrs,
         })
     }
 }
@@ -27689,63 +28020,55 @@ impl FromXml for CalculationProperties {
         let mut f_concurrent_calc = None;
         let mut f_concurrent_manual_count = None;
         let mut f_force_full_calc = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"calcId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calc_id = val.parse().ok();
                 }
                 b"calcMode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calc_mode = val.parse().ok();
                 }
                 b"fullCalcOnLoad" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_full_calc_on_load = Some(val == "true" || val == "1");
                 }
                 b"refMode" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_ref_mode = val.parse().ok();
                 }
                 b"iterate" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_iterate = Some(val == "true" || val == "1");
                 }
                 b"iterateCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_iterate_count = val.parse().ok();
                 }
                 b"iterateDelta" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_iterate_delta = val.parse().ok();
                 }
                 b"fullPrecision" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_full_precision = Some(val == "true" || val == "1");
                 }
                 b"calcCompleted" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calc_completed = Some(val == "true" || val == "1");
                 }
                 b"calcOnSave" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_calc_on_save = Some(val == "true" || val == "1");
                 }
                 b"concurrentCalc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_concurrent_calc = Some(val == "true" || val == "1");
                 }
                 b"concurrentManualCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_concurrent_manual_count = val.parse().ok();
                 }
                 b"forceFullCalc" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_force_full_calc = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27775,6 +28098,7 @@ impl FromXml for CalculationProperties {
             concurrent_calc: f_concurrent_calc,
             concurrent_manual_count: f_concurrent_manual_count,
             force_full_calc: f_force_full_calc,
+            extra_attrs,
         })
     }
 }
@@ -27857,82 +28181,72 @@ impl FromXml for DefinedName {
         let mut f_publish_to_server = None;
         #[cfg(feature = "sml-formulas-advanced")]
         let mut f_workbook_parameter = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
                 b"comment" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_comment = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"customMenu" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_custom_menu = Some(val.into_owned());
                 }
                 b"description" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_description = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"help" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_help = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"statusBar" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_status_bar = Some(val.into_owned());
                 }
                 b"localSheetId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_local_sheet_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-structure")]
                 b"hidden" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hidden = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"function" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_function = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"vbProcedure" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vb_procedure = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"xlm" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_xlm = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"functionGroupId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_function_group_id = val.parse().ok();
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"shortcutKey" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_shortcut_key = Some(val.into_owned());
                 }
                 #[cfg(feature = "sml-external")]
                 b"publishToServer" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_publish_to_server = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "sml-formulas-advanced")]
                 b"workbookParameter" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_parameter = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -27991,6 +28305,7 @@ impl FromXml for DefinedName {
             publish_to_server: f_publish_to_server,
             #[cfg(feature = "sml-formulas-advanced")]
             workbook_parameter: f_workbook_parameter,
+            extra_attrs,
         })
     }
 }
@@ -28138,15 +28453,19 @@ impl FromXml for CTPivotCache {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_cache_id: Option<u32> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"cacheId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_cache_id = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28165,6 +28484,7 @@ impl FromXml for CTPivotCache {
         Ok(Self {
             cache_id: f_cache_id
                 .ok_or_else(|| ParseError::MissingAttribute("cacheId".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -28182,39 +28502,37 @@ impl FromXml for FileSharing {
         let mut f_hash_value = None;
         let mut f_salt_value = None;
         let mut f_spin_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"readOnlyRecommended" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_read_only_recommended = Some(val == "true" || val == "1");
                 }
                 b"userName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_user_name = Some(val.into_owned());
                 }
                 b"reservationPassword" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reservation_password = decode_hex(&val);
                 }
                 b"algorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_hash_value = decode_hex(&val);
                 }
                 b"saltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_salt_value = decode_hex(&val);
                 }
                 b"spinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_spin_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28238,6 +28556,7 @@ impl FromXml for FileSharing {
             hash_value: f_hash_value,
             salt_value: f_salt_value,
             spin_count: f_spin_count,
+            extra_attrs,
         })
     }
 }
@@ -28249,15 +28568,19 @@ impl FromXml for CTOleSize {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_reference: Option<Reference> = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"ref" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_reference = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28276,6 +28599,7 @@ impl FromXml for CTOleSize {
         Ok(Self {
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            extra_attrs,
         })
     }
 }
@@ -28301,71 +28625,61 @@ impl FromXml for WorkbookProtection {
         let mut f_workbook_hash_value = None;
         let mut f_workbook_salt_value = None;
         let mut f_workbook_spin_count = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"workbookPassword" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_password = decode_hex(&val);
                 }
                 b"workbookPasswordCharacterSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_password_character_set = Some(val.into_owned());
                 }
                 b"revisionsPassword" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_password = decode_hex(&val);
                 }
                 b"revisionsPasswordCharacterSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_password_character_set = Some(val.into_owned());
                 }
                 b"lockStructure" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lock_structure = Some(val == "true" || val == "1");
                 }
                 b"lockWindows" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lock_windows = Some(val == "true" || val == "1");
                 }
                 b"lockRevision" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_lock_revision = Some(val == "true" || val == "1");
                 }
                 b"revisionsAlgorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_algorithm_name = Some(val.into_owned());
                 }
                 b"revisionsHashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_hash_value = decode_hex(&val);
                 }
                 b"revisionsSaltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_salt_value = decode_hex(&val);
                 }
                 b"revisionsSpinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_revisions_spin_count = val.parse().ok();
                 }
                 b"workbookAlgorithmName" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_algorithm_name = Some(val.into_owned());
                 }
                 b"workbookHashValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_hash_value = decode_hex(&val);
                 }
                 b"workbookSaltValue" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_salt_value = decode_hex(&val);
                 }
                 b"workbookSpinCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_workbook_spin_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28397,6 +28711,7 @@ impl FromXml for WorkbookProtection {
             workbook_hash_value: f_workbook_hash_value,
             workbook_salt_value: f_workbook_salt_value,
             workbook_spin_count: f_workbook_spin_count,
+            extra_attrs,
         })
     }
 }
@@ -28416,47 +28731,43 @@ impl FromXml for WebPublishing {
         let mut f_dpi = None;
         let mut f_code_page = None;
         let mut f_character_set = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"css" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_css = Some(val == "true" || val == "1");
                 }
                 b"thicket" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_thicket = Some(val == "true" || val == "1");
                 }
                 b"longFileNames" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_long_file_names = Some(val == "true" || val == "1");
                 }
                 b"vml" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_vml = Some(val == "true" || val == "1");
                 }
                 b"allowPng" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_allow_png = Some(val == "true" || val == "1");
                 }
                 b"targetScreenSize" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_target_screen_size = val.parse().ok();
                 }
                 b"dpi" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_dpi = val.parse().ok();
                 }
                 b"codePage" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_code_page = val.parse().ok();
                 }
                 b"characterSet" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_character_set = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28482,6 +28793,7 @@ impl FromXml for WebPublishing {
             dpi: f_dpi,
             code_page: f_code_page,
             character_set: f_character_set,
+            extra_attrs,
         })
     }
 }
@@ -28494,15 +28806,19 @@ impl FromXml for CTFunctionGroups {
     ) -> Result<Self, ParseError> {
         let mut f_built_in_group_count = None;
         let mut f_function_group = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"builtInGroupCount" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_built_in_group_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28541,6 +28857,7 @@ impl FromXml for CTFunctionGroups {
         Ok(Self {
             built_in_group_count: f_built_in_group_count,
             function_group: f_function_group,
+            extra_attrs,
         })
     }
 }
@@ -28552,15 +28869,19 @@ impl FromXml for CTFunctionGroup {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"name" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_name = Some(val.into_owned());
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28576,7 +28897,10 @@ impl FromXml for CTFunctionGroup {
             }
         }
 
-        Ok(Self { name: f_name })
+        Ok(Self {
+            name: f_name,
+            extra_attrs,
+        })
     }
 }
 
@@ -28588,15 +28912,19 @@ impl FromXml for CTWebPublishObjects {
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
         let mut f_web_publish_object = Vec::new();
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"count" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_count = val.parse().ok();
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28636,6 +28964,7 @@ impl FromXml for CTWebPublishObjects {
         Ok(Self {
             count: f_count,
             web_publish_object: f_web_publish_object,
+            extra_attrs,
         })
     }
 }
@@ -28652,35 +28981,34 @@ impl FromXml for CTWebPublishObject {
         let mut f_destination_file: Option<XmlString> = None;
         let mut f_title = None;
         let mut f_auto_republish = None;
+        let mut extra_attrs = std::collections::HashMap::new();
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
             match attr.key.as_ref() {
                 b"id" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_id = val.parse().ok();
                 }
                 b"divId" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_div_id = Some(val.into_owned());
                 }
                 b"sourceObject" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_source_object = Some(val.into_owned());
                 }
                 b"destinationFile" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_destination_file = Some(val.into_owned());
                 }
                 b"title" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_title = Some(val.into_owned());
                 }
                 b"autoRepublish" => {
-                    let val = String::from_utf8_lossy(&attr.value);
                     f_auto_republish = Some(val == "true" || val == "1");
                 }
-                _ => {}
+                _ => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
             }
         }
 
@@ -28704,6 +29032,7 @@ impl FromXml for CTWebPublishObject {
                 .ok_or_else(|| ParseError::MissingAttribute("destinationFile".to_string()))?,
             title: f_title,
             auto_republish: f_auto_republish,
+            extra_attrs,
         })
     }
 }

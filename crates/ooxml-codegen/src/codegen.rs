@@ -601,6 +601,23 @@ impl<'a> Generator<'a> {
                 writeln!(code, "    pub {}: {},", field.name, field_type).unwrap();
             }
 
+            // Add extra_attrs field to capture unknown attributes for roundtrip fidelity
+            let has_attrs = fields.iter().any(|f| f.is_attribute);
+            if has_attrs {
+                writeln!(
+                    code,
+                    "    /// Unknown attributes captured for roundtrip fidelity."
+                )
+                .unwrap();
+                writeln!(code, "    #[serde(flatten)]").unwrap();
+                writeln!(code, "    #[serde(default)]").unwrap();
+                writeln!(
+                    code,
+                    "    pub extra_attrs: std::collections::HashMap<String, String>,"
+                )
+                .unwrap();
+            }
+
             writeln!(code, "}}").unwrap();
         }
 
