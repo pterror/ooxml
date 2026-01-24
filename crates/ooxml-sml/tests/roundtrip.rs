@@ -209,3 +209,203 @@ fn test_full_roundtrip_via_writer() {
     assert_eq!(sheet.number_at("B1"), Some(42.5));
     assert!(sheet.has_merged_cells());
 }
+
+// =============================================================================
+// Serde roundtrip tests: serialize → deserialize
+// =============================================================================
+
+use ooxml_sml::types::*;
+use quick_xml::de::from_str;
+use quick_xml::se::Serializer;
+use serde::Serialize;
+
+/// Serialize a value to XML string.
+fn to_xml_string<T: Serialize>(value: &T) -> String {
+    let mut buffer = String::new();
+    let mut ser = Serializer::new(&mut buffer);
+    ser.indent(' ', 2);
+    value.serialize(ser).expect("serialization should succeed");
+    buffer
+}
+
+#[test]
+fn test_serde_roundtrip_worksheet() {
+    // Parse with event-based parser
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s"><v>0</v></c>
+            <c r="B1"><v>42</v></c>
+        </row>
+    </sheetData>
+</worksheet>"#;
+
+    let ws1 = parse_worksheet_xml(xml).expect("should parse");
+
+    // Serialize with serde
+    let serialized = to_xml_string(&ws1);
+
+    // Deserialize with serde
+    let ws2: Worksheet = from_str(&serialized).expect("serde should deserialize");
+
+    // Compare
+    assert_eq!(ws1.sheet_data.row.len(), ws2.sheet_data.row.len());
+    assert_eq!(
+        ws1.sheet_data.row[0].cells.len(),
+        ws2.sheet_data.row[0].cells.len()
+    );
+}
+
+#[test]
+fn test_serde_roundtrip_cell() {
+    // Parse a cell from worksheet XML
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData>
+        <row r="1">
+            <c r="A1" t="s" s="5"><v>Hello</v></c>
+        </row>
+    </sheetData>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let cell1 = &ws.sheet_data.row[0].cells[0];
+
+    // Serialize
+    let serialized = to_xml_string(cell1);
+
+    // Deserialize
+    let cell2: Cell = from_str(&serialized).expect("serde should deserialize");
+
+    // Compare
+    assert_eq!(cell1.reference, cell2.reference);
+    assert_eq!(cell1.cell_type, cell2.cell_type);
+    assert_eq!(cell1.style_index, cell2.style_index);
+    assert_eq!(cell1.value, cell2.value);
+}
+
+#[test]
+fn test_serde_roundtrip_row() {
+    // Parse a row
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData>
+        <row r="5" spans="1:10" s="2" customFormat="1" ht="20.5" customHeight="1">
+            <c r="A5"><v>100</v></c>
+            <c r="B5" t="s"><v>1</v></c>
+        </row>
+    </sheetData>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let row1 = &ws.sheet_data.row[0];
+
+    // Serialize just the row
+    let serialized = to_xml_string(row1);
+
+    // Deserialize
+    let row2: Row = from_str(&serialized).expect("serde should deserialize row");
+
+    // Compare
+    assert_eq!(row1.reference, row2.reference);
+    assert_eq!(row1.cell_spans, row2.cell_spans);
+    assert_eq!(row1.style_index, row2.style_index);
+    assert_eq!(row1.custom_format, row2.custom_format);
+    assert_eq!(row1.height, row2.height);
+    assert_eq!(row1.custom_height, row2.custom_height);
+    assert_eq!(row1.cells.len(), row2.cells.len());
+}
+
+#[test]
+fn test_serde_roundtrip_merged_cells() {
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData/>
+    <mergeCells count="2">
+        <mergeCell ref="A1:C1"/>
+        <mergeCell ref="D5:F10"/>
+    </mergeCells>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let merged1 = ws.merged_cells.as_ref().expect("should have merged cells");
+
+    // Serialize
+    let serialized = to_xml_string(merged1);
+
+    // Deserialize
+    let merged2: MergedCells = from_str(&serialized).expect("serde should deserialize");
+
+    // Compare
+    assert_eq!(merged1.merge_cell.len(), merged2.merge_cell.len());
+    for (m1, m2) in merged1.merge_cell.iter().zip(merged2.merge_cell.iter()) {
+        assert_eq!(m1.reference, m2.reference);
+    }
+}
+
+#[test]
+fn test_serde_roundtrip_formula() {
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData>
+        <row r="1">
+            <c r="C1"><f>SUM(A1:B1)</f><v>100</v></c>
+        </row>
+    </sheetData>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let formula1 = ws.sheet_data.row[0].cells[0]
+        .formula
+        .as_ref()
+        .expect("should have formula");
+
+    // Serialize
+    let serialized = to_xml_string(formula1);
+
+    // Deserialize
+    let formula2: CellFormula = from_str(&serialized).expect("serde should deserialize");
+
+    // Compare
+    assert_eq!(formula1.text, formula2.text);
+}
+
+#[test]
+fn test_serde_roundtrip_sheet_views() {
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetViews>
+        <sheetView tabSelected="1" workbookViewId="0" zoomScale="85">
+            <pane xSplit="1" ySplit="2" topLeftCell="B3" activePane="bottomRight" state="frozen"/>
+        </sheetView>
+    </sheetViews>
+    <sheetData/>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let views1 = ws.sheet_views.as_ref().expect("should have sheet views");
+
+    // Serialize
+    let serialized = to_xml_string(views1);
+
+    // Deserialize
+    let views2: SheetViews = from_str(&serialized).expect("serde should deserialize");
+
+    // Compare
+    assert_eq!(views1.sheet_view.len(), views2.sheet_view.len());
+    let sv1 = &views1.sheet_view[0];
+    let sv2 = &views2.sheet_view[0];
+    assert_eq!(sv1.tab_selected, sv2.tab_selected);
+    assert_eq!(sv1.workbook_view_id, sv2.workbook_view_id);
+    assert_eq!(sv1.zoom_scale, sv2.zoom_scale);
+
+    // Pane comparison
+    let pane1 = sv1.pane.as_ref().expect("should have pane");
+    let pane2 = sv2.pane.as_ref().expect("should have pane");
+    assert_eq!(pane1.x_split, pane2.x_split);
+    assert_eq!(pane1.y_split, pane2.y_split);
+    assert_eq!(pane1.top_left_cell, pane2.top_left_cell);
+    assert_eq!(pane1.active_pane, pane2.active_pane);
+    assert_eq!(pane1.state, pane2.state);
+}
