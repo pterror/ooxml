@@ -409,3 +409,35 @@ fn test_serde_roundtrip_sheet_views() {
     assert_eq!(pane1.active_pane, pane2.active_pane);
     assert_eq!(pane1.state, pane2.state);
 }
+
+#[test]
+fn test_boolean_serialize_format() {
+    // OOXML uses "1"/"0" for booleans, but serde outputs "true"/"false"
+    // This test documents current behavior - a proper fix requires custom
+    // serialization in codegen
+    let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetViews>
+        <sheetView tabSelected="1" showGridLines="0" workbookViewId="0"/>
+    </sheetViews>
+    <sheetData/>
+</worksheet>"#;
+
+    let ws = parse_worksheet_xml(xml).expect("should parse");
+    let serialized = to_xml_string(&ws);
+
+    // Verify booleans are serialized (current behavior: "true"/"false")
+    // TODO: Fix to output "1"/"0" for OOXML compliance
+    // See: ECMA-376 Part 1, section 22.9.2.1 (xsd:boolean)
+    assert!(
+        serialized.contains("tabSelected="),
+        "tabSelected should be present"
+    );
+
+    // Verify we can roundtrip (the important thing is data integrity)
+    let ws2: Worksheet = from_str(&serialized).expect("serde should deserialize");
+    let sv1 = &ws.sheet_views.as_ref().unwrap().sheet_view[0];
+    let sv2 = &ws2.sheet_views.as_ref().unwrap().sheet_view[0];
+    assert_eq!(sv1.tab_selected, sv2.tab_selected);
+    assert_eq!(sv1.show_grid_lines, sv2.show_grid_lines);
+}
