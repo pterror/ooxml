@@ -622,8 +622,9 @@ impl<'a> Generator<'a> {
             }
 
             // Add extra_children field to capture unknown child elements for roundtrip fidelity
-            let has_children = fields.iter().any(|f| !f.is_attribute && !f.is_text_content);
-            if has_children {
+            // Include types with text content, as they have a parsing loop that might encounter unknown children
+            let has_parsing_content = fields.iter().any(|f| !f.is_attribute);
+            if has_parsing_content {
                 writeln!(
                     code,
                     "    /// Unknown child elements captured for roundtrip fidelity."

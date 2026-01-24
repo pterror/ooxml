@@ -185,19 +185,19 @@ impl CellExt for Cell {
     }
 
     fn is_shared_string(&self) -> bool {
-        matches!(self.cell_type, Some(CellType::S))
+        matches!(self.cell_type, Some(CellType::SharedString))
     }
 
     fn is_number(&self) -> bool {
-        matches!(self.cell_type, Some(CellType::N)) || self.cell_type.is_none()
+        matches!(self.cell_type, Some(CellType::Number)) || self.cell_type.is_none()
     }
 
     fn is_boolean(&self) -> bool {
-        matches!(self.cell_type, Some(CellType::B))
+        matches!(self.cell_type, Some(CellType::Boolean))
     }
 
     fn is_error(&self) -> bool {
-        matches!(self.cell_type, Some(CellType::E))
+        matches!(self.cell_type, Some(CellType::Error))
     }
 }
 
@@ -224,7 +224,7 @@ impl CellResolveExt for Cell {
         };
 
         match &self.cell_type {
-            Some(CellType::S) => {
+            Some(CellType::SharedString) => {
                 // Shared string - raw value is index
                 if let Ok(idx) = raw.parse::<usize>()
                     && let Some(s) = ctx.shared_string(idx)
@@ -233,19 +233,19 @@ impl CellResolveExt for Cell {
                 }
                 CellValue::Error(format!("#REF! (invalid shared string index: {})", raw))
             }
-            Some(CellType::B) => {
+            Some(CellType::Boolean) => {
                 // Boolean
                 CellValue::Boolean(raw == "1" || raw.eq_ignore_ascii_case("true"))
             }
-            Some(CellType::E) => {
+            Some(CellType::Error) => {
                 // Error
                 CellValue::Error(raw.to_string())
             }
-            Some(CellType::Str) | Some(CellType::InlineStr) => {
+            Some(CellType::String) | Some(CellType::InlineString) => {
                 // Inline string
                 CellValue::String(raw.to_string())
             }
-            Some(CellType::N) | None => {
+            Some(CellType::Number) | None => {
                 // Number (or default, which is number)
                 if raw.is_empty() {
                     CellValue::Empty
@@ -862,10 +862,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_cell_ext() {
         let cell = Cell {
             reference: Some("B5".to_string()),
-            cell_type: Some(CellType::N),
+            cell_type: Some(CellType::Number),
             value: Some("42.5".to_string()),
             formula: None,
             style_index: None,
@@ -876,6 +877,8 @@ mod tests {
             extension_list: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
         };
 
         assert_eq!(cell.column_number(), Some(2));
@@ -886,10 +889,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_cell_resolve_number() {
         let cell = Cell {
             reference: Some("A1".to_string()),
-            cell_type: Some(CellType::N),
+            cell_type: Some(CellType::Number),
             value: Some("123.45".to_string()),
             formula: None,
             style_index: None,
@@ -900,6 +904,8 @@ mod tests {
             extension_list: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
         };
 
         let ctx = ResolveContext::default();
@@ -909,10 +915,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_cell_resolve_shared_string() {
         let cell = Cell {
             reference: Some("A1".to_string()),
-            cell_type: Some(CellType::S),
+            cell_type: Some(CellType::SharedString),
             value: Some("0".to_string()), // Index into shared strings
             formula: None,
             style_index: None,
@@ -923,6 +930,8 @@ mod tests {
             extension_list: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
         };
 
         let ctx = ResolveContext::new(vec!["Hello".to_string(), "World".to_string()]);
@@ -934,10 +943,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_cell_resolve_boolean() {
         let cell = Cell {
             reference: Some("A1".to_string()),
-            cell_type: Some(CellType::B),
+            cell_type: Some(CellType::Boolean),
             value: Some("1".to_string()),
             formula: None,
             style_index: None,
@@ -948,6 +958,8 @@ mod tests {
             extension_list: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
         };
 
         let ctx = ResolveContext::default();

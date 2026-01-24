@@ -1,3 +1,6 @@
+// Requires full feature set
+#![cfg(feature = "full")]
+
 //! Integration tests for the ResolvedSheet API.
 //!
 //! These tests verify that the new spec-compliant generated types work correctly

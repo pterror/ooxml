@@ -435,6 +435,88 @@ sml:
     autoFilter: auto_filter
     extLst: extension_list
 
+  variants:
+    # CellType (ST_CellType) - t attribute values
+    s: SharedString
+    b: Boolean
+    n: Number
+    e: Error
+    str: String
+    inlineStr: InlineString
+
+    # FormulaType (ST_CellFormulaType)
+    normal: Normal
+    array: Array
+    dataTable: DataTable
+    shared: Shared
+
+    # HorizontalAlignment (ST_HorizontalAlignment)
+    general: General
+    left: Left
+    center: Center
+    right: Right
+    fill: Fill
+    justify: Justify
+    centerContinuous: CenterContinuous
+    distributed: Distributed
+
+    # VerticalAlignment (ST_VerticalAlignment)
+    top: Top
+    bottom: Bottom
+    # center already defined above
+
+    # BorderStyle (ST_BorderStyle)
+    none: None
+    thin: Thin
+    medium: Medium
+    dashed: Dashed
+    dotted: Dotted
+    thick: Thick
+    double: Double
+    hair: Hair
+    mediumDashed: MediumDashed
+    dashDot: DashDot
+    mediumDashDot: MediumDashDot
+    dashDotDot: DashDotDot
+    mediumDashDotDot: MediumDashDotDot
+    slantDashDot: SlantDashDot
+
+    # PatternType (ST_PatternType)
+    solid: Solid
+    darkGray: DarkGray
+    mediumGray: MediumGray
+    lightGray: LightGray
+    gray125: Gray125
+    gray0625: Gray0625
+    darkHorizontal: DarkHorizontal
+    darkVertical: DarkVertical
+    darkDown: DarkDown
+    darkUp: DarkUp
+    darkGrid: DarkGrid
+    darkTrellis: DarkTrellis
+    lightHorizontal: LightHorizontal
+    lightVertical: LightVertical
+    lightDown: LightDown
+    lightUp: LightUp
+    lightGrid: LightGrid
+    lightTrellis: LightTrellis
+
+    # PaneType (ST_Pane)
+    bottomRight: BottomRight
+    topRight: TopRight
+    bottomLeft: BottomLeft
+    topLeft: TopLeft
+
+    # PaneState (ST_PaneState)
+    split: Split
+    frozen: Frozen
+    frozenSplit: FrozenSplit
+
+    # SheetState (ST_SheetState)
+    visible: Visible
+    hidden: Hidden
+    veryHidden: VeryHidden
+
 # WordprocessingML (Word)
 wml:
   types:

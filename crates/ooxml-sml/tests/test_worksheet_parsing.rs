@@ -3,6 +3,9 @@
 //! These tests verify that the generated `parse_worksheet()` function
 //! produces equivalent results to the hand-written event parser.
 
+// These tests require the full feature set
+#![cfg(feature = "full")]
+
 use ooxml_sml::ext::{
     CellExt, CellResolveExt, ResolveContext, RowExt, WorksheetExt, parse_worksheet,
 };

@@ -130,6 +130,8 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "#[derive(Debug)]").unwrap();
         writeln!(self.output, "pub enum ParseError {{").unwrap();
         writeln!(self.output, "    Xml(quick_xml::Error),").unwrap();
+        writeln!(self.output, "    #[cfg(feature = \"extra-children\")]").unwrap();
+        writeln!(self.output, "    RawXml(ooxml_xml::Error),").unwrap();
         writeln!(self.output, "    UnexpectedElement(String),").unwrap();
         writeln!(self.output, "    MissingAttribute(String),").unwrap();
         writeln!(self.output, "    InvalidValue(String),").unwrap();
@@ -138,6 +140,13 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "impl From<quick_xml::Error> for ParseError {{").unwrap();
         writeln!(self.output, "    fn from(e: quick_xml::Error) -> Self {{").unwrap();
         writeln!(self.output, "        ParseError::Xml(e)").unwrap();
+        writeln!(self.output, "    }}").unwrap();
+        writeln!(self.output, "}}").unwrap();
+        writeln!(self.output).unwrap();
+        writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
+        writeln!(self.output, "impl From<ooxml_xml::Error> for ParseError {{").unwrap();
+        writeln!(self.output, "    fn from(e: ooxml_xml::Error) -> Self {{").unwrap();
+        writeln!(self.output, "        ParseError::RawXml(e)").unwrap();
         writeln!(self.output, "    }}").unwrap();
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
@@ -164,7 +173,8 @@ impl<'a> ParserGenerator<'a> {
         .unwrap();
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
-        // Add skip_element helper
+        // Add skip_element helper (allow dead_code since extra-children feature captures instead)
+        writeln!(self.output, "#[allow(dead_code)]").unwrap();
         writeln!(self.output, "/// Skip an element and all its children.").unwrap();
         writeln!(
             self.output,
@@ -436,7 +446,9 @@ impl<'a> ParserGenerator<'a> {
             .iter()
             .filter(|f| !f.is_attribute && !f.is_text_content)
             .collect();
+        let text_fields: Vec<_> = fields.iter().filter(|f| f.is_text_content).collect();
         let has_children = !elem_fields.is_empty();
+        let has_parsing_loop = has_children || !text_fields.is_empty();
         if has_attrs {
             // Declare extra_attrs for capturing unknown attributes (feature-gated)
             writeln!(code, "        #[cfg(feature = \"extra-attrs\")]").unwrap();
@@ -446,12 +458,12 @@ impl<'a> ParserGenerator<'a> {
             )
             .unwrap();
         }
-        if has_children {
+        if has_parsing_loop {
             // Declare extra_children for capturing unknown child elements (feature-gated)
             writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
             writeln!(code, "        let mut extra_children = Vec::new();").unwrap();
         }
-        if has_attrs || has_children {
+        if has_attrs || has_parsing_loop {
             writeln!(code).unwrap();
         }
         if has_attrs {
@@ -506,8 +518,7 @@ impl<'a> ParserGenerator<'a> {
         }
 
         // Parse child elements and text content (only if not empty element)
-        let text_fields: Vec<_> = fields.iter().filter(|f| f.is_text_content).collect();
-        if has_children || !text_fields.is_empty() {
+        if has_parsing_loop {
             writeln!(code).unwrap();
             writeln!(code, "        // Parse child elements").unwrap();
             writeln!(code, "        if !is_empty {{").unwrap();
@@ -654,7 +665,7 @@ impl<'a> ParserGenerator<'a> {
             .unwrap();
             writeln!(
                 code,
-                "                                let elem = RawXmlElement::from_empty(&e)?;"
+                "                                let elem = RawXmlElement::from_empty(&e);"
             )
             .unwrap();
             writeln!(
@@ -745,8 +756,8 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "            #[cfg(feature = \"extra-attrs\")]").unwrap();
             writeln!(code, "            extra_attrs,").unwrap();
         }
-        // Add extra_children if this struct has child elements (feature-gated)
-        if has_children {
+        // Add extra_children if this struct has a parsing loop (feature-gated)
+        if has_parsing_loop {
             writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
             writeln!(code, "            extra_children,").unwrap();
         }

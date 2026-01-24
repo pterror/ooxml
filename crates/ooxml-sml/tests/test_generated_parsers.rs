@@ -1,3 +1,6 @@
+// Requires full feature set
+#![cfg(feature = "full")]
+
 //! Parity tests for generated event-based parsers vs serde deserialization.
 //!
 //! These tests ensure the generated FromXml parsers produce equivalent results

@@ -50,6 +50,7 @@ serde.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true
+ooxml-corpus.workspace = true
 
 [build-dependencies]
 ooxml-codegen.workspace = true
@@ -57,3 +58,15 @@ ooxml-codegen.workspace = true
 [[bench]]
 name = "parse_benchmark"
 harness = false
+
+[[example]]
+name = "resolved_sheet"
+required-features = ["full"]
+
+[[example]]
+name = "bench_throughput"
+required-features = ["full"]
+
+[[example]]
+name = "create_xlsx"
+required-features = ["full"]

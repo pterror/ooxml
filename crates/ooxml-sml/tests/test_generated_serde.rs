@@ -1,3 +1,6 @@
+// Requires full feature set
+#![cfg(feature = "full")]
+
 use ooxml_sml::types::*;
 use quick_xml::de::from_str;
 

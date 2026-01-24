@@ -772,6 +772,7 @@ version = "0.1.0"
 dependencies = [
  "criterion",
  "ooxml-codegen",
+ "ooxml-corpus",
  "ooxml-opc",
  "ooxml-xml",
  "quick-xml",

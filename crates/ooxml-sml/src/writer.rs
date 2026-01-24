@@ -2447,6 +2447,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_roundtrip_dimensions() {
         use std::io::Cursor;
 
@@ -2502,6 +2503,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_roundtrip_conditional_formatting() {
         use std::io::Cursor;
 
@@ -2544,6 +2546,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "full")]
     fn test_roundtrip_data_validation() {
         use std::io::Cursor;
 

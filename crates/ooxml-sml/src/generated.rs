@@ -2239,28 +2239,28 @@ pub type CellSpans = String;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum CellType {
     #[serde(rename = "b")]
-    B,
+    Boolean,
     #[serde(rename = "n")]
-    N,
+    Number,
     #[serde(rename = "e")]
-    E,
+    Error,
     #[serde(rename = "s")]
-    S,
+    SharedString,
     #[serde(rename = "str")]
-    Str,
+    String,
     #[serde(rename = "inlineStr")]
-    InlineStr,
+    InlineString,
 }
 
 impl std::fmt::Display for CellType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::B => write!(f, "b"),
-            Self::N => write!(f, "n"),
-            Self::E => write!(f, "e"),
-            Self::S => write!(f, "s"),
-            Self::Str => write!(f, "str"),
-            Self::InlineStr => write!(f, "inlineStr"),
+            Self::Boolean => write!(f, "b"),
+            Self::Number => write!(f, "n"),
+            Self::Error => write!(f, "e"),
+            Self::SharedString => write!(f, "s"),
+            Self::String => write!(f, "str"),
+            Self::InlineString => write!(f, "inlineStr"),
         }
     }
 }
@@ -2270,12 +2270,12 @@ impl std::str::FromStr for CellType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "b" => Ok(Self::B),
-            "n" => Ok(Self::N),
-            "e" => Ok(Self::E),
-            "s" => Ok(Self::S),
-            "str" => Ok(Self::Str),
-            "inlineStr" => Ok(Self::InlineStr),
+            "b" => Ok(Self::Boolean),
+            "n" => Ok(Self::Number),
+            "e" => Ok(Self::Error),
+            "s" => Ok(Self::SharedString),
+            "str" => Ok(Self::String),
+            "inlineStr" => Ok(Self::InlineString),
             _ => Err(format!("unknown CellType value: {}", s)),
         }
     }
@@ -3208,7 +3208,7 @@ pub enum STMdxFunctionType {
     #[serde(rename = "v")]
     V,
     #[serde(rename = "s")]
-    S,
+    SharedString,
     #[serde(rename = "c")]
     C,
     #[serde(rename = "r")]
@@ -3224,7 +3224,7 @@ impl std::fmt::Display for STMdxFunctionType {
         match self {
             Self::M => write!(f, "m"),
             Self::V => write!(f, "v"),
-            Self::S => write!(f, "s"),
+            Self::SharedString => write!(f, "s"),
             Self::C => write!(f, "c"),
             Self::R => write!(f, "r"),
             Self::P => write!(f, "p"),
@@ -3240,7 +3240,7 @@ impl std::str::FromStr for STMdxFunctionType {
         match s {
             "m" => Ok(Self::M),
             "v" => Ok(Self::V),
-            "s" => Ok(Self::S),
+            "s" => Ok(Self::SharedString),
             "c" => Ok(Self::C),
             "r" => Ok(Self::R),
             "p" => Ok(Self::P),
@@ -3306,7 +3306,7 @@ pub enum STMdxKPIProperty {
     #[serde(rename = "g")]
     G,
     #[serde(rename = "s")]
-    S,
+    SharedString,
     #[serde(rename = "t")]
     T,
     #[serde(rename = "w")]
@@ -3320,7 +3320,7 @@ impl std::fmt::Display for STMdxKPIProperty {
         match self {
             Self::V => write!(f, "v"),
             Self::G => write!(f, "g"),
-            Self::S => write!(f, "s"),
+            Self::SharedString => write!(f, "s"),
             Self::T => write!(f, "t"),
             Self::W => write!(f, "w"),
             Self::M => write!(f, "m"),
@@ -3335,7 +3335,7 @@ impl std::str::FromStr for STMdxKPIProperty {
         match s {
             "v" => Ok(Self::V),
             "g" => Ok(Self::G),
-            "s" => Ok(Self::S),
+            "s" => Ok(Self::SharedString),
             "t" => Ok(Self::T),
             "w" => Ok(Self::W),
             "m" => Ok(Self::M),
@@ -3869,23 +3869,23 @@ pub enum STDdeValueType {
     #[serde(rename = "nil")]
     Nil,
     #[serde(rename = "b")]
-    B,
+    Boolean,
     #[serde(rename = "n")]
-    N,
+    Number,
     #[serde(rename = "e")]
-    E,
+    Error,
     #[serde(rename = "str")]
-    Str,
+    String,
 }
 
 impl std::fmt::Display for STDdeValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Nil => write!(f, "nil"),
-            Self::B => write!(f, "b"),
-            Self::N => write!(f, "n"),
-            Self::E => write!(f, "e"),
-            Self::Str => write!(f, "str"),
+            Self::Boolean => write!(f, "b"),
+            Self::Number => write!(f, "n"),
+            Self::Error => write!(f, "e"),
+            Self::String => write!(f, "str"),
         }
     }
 }
@@ -3896,10 +3896,10 @@ impl std::str::FromStr for STDdeValueType {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "nil" => Ok(Self::Nil),
-            "b" => Ok(Self::B),
-            "n" => Ok(Self::N),
-            "e" => Ok(Self::E),
-            "str" => Ok(Self::Str),
+            "b" => Ok(Self::Boolean),
+            "n" => Ok(Self::Number),
+            "e" => Ok(Self::Error),
+            "str" => Ok(Self::String),
             _ => Err(format!("unknown STDdeValueType value: {}", s)),
         }
     }
@@ -4033,22 +4033,22 @@ impl std::str::FromStr for STVolDepType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum STVolValueType {
     #[serde(rename = "b")]
-    B,
+    Boolean,
     #[serde(rename = "n")]
-    N,
+    Number,
     #[serde(rename = "e")]
-    E,
+    Error,
     #[serde(rename = "s")]
-    S,
+    SharedString,
 }
 
 impl std::fmt::Display for STVolValueType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::B => write!(f, "b"),
-            Self::N => write!(f, "n"),
-            Self::E => write!(f, "e"),
-            Self::S => write!(f, "s"),
+            Self::Boolean => write!(f, "b"),
+            Self::Number => write!(f, "n"),
+            Self::Error => write!(f, "e"),
+            Self::SharedString => write!(f, "s"),
         }
     }
 }
@@ -4058,10 +4058,10 @@ impl std::str::FromStr for STVolValueType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "b" => Ok(Self::B),
-            "n" => Ok(Self::N),
-            "e" => Ok(Self::E),
-            "s" => Ok(Self::S),
+            "b" => Ok(Self::Boolean),
+            "n" => Ok(Self::Number),
+            "e" => Ok(Self::Error),
+            "s" => Ok(Self::SharedString),
             _ => Err(format!("unknown STVolValueType value: {}", s)),
         }
     }
@@ -4417,6 +4417,11 @@ pub struct AutoFilter {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4462,6 +4467,11 @@ pub struct Filters {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4493,6 +4503,11 @@ pub struct CustomFilters {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4618,6 +4633,11 @@ pub struct SortState {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4732,6 +4752,11 @@ pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default)]
     pub ext: Vec<Box<Extension>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4747,6 +4772,11 @@ pub struct CalcChain {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4788,6 +4818,11 @@ pub struct Comments {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4795,6 +4830,11 @@ pub struct Authors {
     #[serde(rename = "author")]
     #[serde(default)]
     pub author: Vec<XmlString>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4802,6 +4842,11 @@ pub struct CommentList {
     #[serde(rename = "comment")]
     #[serde(default)]
     pub comment: Vec<Box<Comment>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4833,6 +4878,11 @@ pub struct Comment {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4882,6 +4932,11 @@ pub struct CTCommentPr {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlMapInfo = Box<MapInfo>;
@@ -4903,6 +4958,11 @@ pub struct MapInfo {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4940,6 +5000,11 @@ pub struct XmlMap {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4976,6 +5041,11 @@ pub struct Connections {
     #[serde(rename = "connection")]
     #[serde(default)]
     pub connection: Vec<Box<Connection>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5063,6 +5133,11 @@ pub struct Connection {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5176,6 +5251,11 @@ pub struct WebQueryProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5193,6 +5273,11 @@ pub struct Parameters {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5313,6 +5398,11 @@ pub struct TextImportProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5330,6 +5420,11 @@ pub struct TextFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5446,6 +5541,11 @@ pub struct PivotCacheDefinition {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5463,6 +5563,11 @@ pub struct CacheFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5524,6 +5629,11 @@ pub struct CacheField {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5579,6 +5689,11 @@ pub struct Consolidation {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5596,6 +5711,11 @@ pub struct CTPages {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5613,6 +5733,11 @@ pub struct CTPCDSCPage {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5643,6 +5768,11 @@ pub struct CTRangeSets {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5778,6 +5908,11 @@ pub struct CTMissing {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5830,6 +5965,11 @@ pub struct CTNumber {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5858,6 +5998,11 @@ pub struct CTBoolean {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5910,6 +6055,11 @@ pub struct CTError {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5962,6 +6112,11 @@ pub struct CTString {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5990,6 +6145,11 @@ pub struct CTDateTime {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6016,6 +6176,11 @@ pub struct FieldGroup {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6068,6 +6233,11 @@ pub struct CTDiscretePr {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6102,6 +6272,11 @@ pub struct PivotCacheRecords {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6122,6 +6297,11 @@ pub struct CTPCDKPIs {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6181,6 +6361,11 @@ pub struct CTCacheHierarchies {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6265,6 +6450,11 @@ pub struct CTCacheHierarchy {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6282,6 +6472,11 @@ pub struct CTFieldsUsage {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6312,6 +6507,11 @@ pub struct CTGroupLevels {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6339,6 +6539,11 @@ pub struct CTGroupLevel {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6356,6 +6561,11 @@ pub struct CTGroups {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6381,6 +6591,11 @@ pub struct CTLevelGroup {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6398,6 +6613,11 @@ pub struct CTGroupMembers {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6433,6 +6653,11 @@ pub struct CTTupleCache {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6467,6 +6692,11 @@ pub struct CTServerFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6498,6 +6728,11 @@ pub struct CTTuples {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6534,6 +6769,11 @@ pub struct CTSets {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6564,6 +6804,11 @@ pub struct CTSet {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6581,6 +6826,11 @@ pub struct CTQueryCache {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6597,6 +6847,11 @@ pub struct CTQuery {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6614,6 +6869,11 @@ pub struct CTCalculatedItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6636,6 +6896,11 @@ pub struct CTCalculatedItem {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6653,6 +6918,11 @@ pub struct CTCalculatedMembers {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6686,6 +6956,11 @@ pub struct CTCalculatedMember {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6927,6 +7202,11 @@ pub struct CTPivotTableDefinition {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6969,6 +7249,11 @@ pub struct PivotFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7133,6 +7418,11 @@ pub struct PivotField {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type CTAutoSortScope = Box<PivotArea>;
@@ -7152,6 +7442,11 @@ pub struct PivotItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7213,6 +7508,11 @@ pub struct PageFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7241,6 +7541,11 @@ pub struct PageField {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7258,6 +7563,11 @@ pub struct DataFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7292,6 +7602,11 @@ pub struct DataField {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7309,6 +7624,11 @@ pub struct CTRowItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7326,6 +7646,11 @@ pub struct CTColItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7349,6 +7674,11 @@ pub struct CTI {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7380,6 +7710,11 @@ pub struct RowFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7397,6 +7732,11 @@ pub struct ColFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7427,6 +7767,11 @@ pub struct CTFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7449,6 +7794,11 @@ pub struct CTFormat {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7466,6 +7816,11 @@ pub struct CTConditionalFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7490,6 +7845,11 @@ pub struct CTConditionalFormat {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7507,6 +7867,11 @@ pub struct PivotAreas {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7524,6 +7889,11 @@ pub struct CTChartFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7544,6 +7914,11 @@ pub struct CTChartFormat {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7561,6 +7936,11 @@ pub struct CTPivotHierarchies {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7614,6 +7994,11 @@ pub struct CTPivotHierarchy {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7631,6 +8016,11 @@ pub struct CTRowHierarchiesUsage {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7648,6 +8038,11 @@ pub struct CTColHierarchiesUsage {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7678,6 +8073,11 @@ pub struct CTMemberProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7735,6 +8135,11 @@ pub struct CTMembers {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7765,6 +8170,11 @@ pub struct CTDimensions {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7802,6 +8212,11 @@ pub struct CTMeasureGroups {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7819,6 +8234,11 @@ pub struct CTMeasureDimensionMaps {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7897,6 +8317,11 @@ pub struct PivotFilters {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7943,6 +8368,11 @@ pub struct PivotFilter {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7996,6 +8426,11 @@ pub struct PivotArea {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8013,6 +8448,11 @@ pub struct CTPivotAreaReferences {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8081,6 +8521,11 @@ pub struct CTPivotAreaReference {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8156,6 +8601,11 @@ pub struct QueryTable {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8199,6 +8649,11 @@ pub struct QueryTableRefresh {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8216,6 +8671,11 @@ pub struct QueryTableDeletedFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8246,6 +8706,11 @@ pub struct QueryTableFields {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8280,6 +8745,11 @@ pub struct QueryTableField {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlSst = Box<SharedStrings>;
@@ -8305,6 +8775,11 @@ pub struct SharedStrings {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8322,6 +8797,11 @@ pub struct PhoneticRun {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8331,6 +8811,11 @@ pub struct RichTextElement {
     pub r_pr: Option<Box<RichTextRunProperties>>,
     #[serde(rename = "t")]
     pub cell_type: XmlString,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8350,6 +8835,11 @@ pub struct RichString {
     #[serde(rename = "phoneticPr")]
     #[serde(default)]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8422,6 +8912,11 @@ pub struct RevisionHeaders {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8477,6 +8972,11 @@ pub struct RevisionHeader {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8494,6 +8994,11 @@ pub struct CTSheetIdMap {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8524,6 +9029,11 @@ pub struct ReviewedRevisions {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8656,6 +9166,11 @@ pub struct RevisionSheetRename {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8727,6 +9242,11 @@ pub struct RevisionCellChange {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8760,6 +9280,11 @@ pub struct RevisionFormatting {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8897,6 +9422,11 @@ pub struct RevisionDefinedName {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8947,6 +9477,11 @@ pub struct Users {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8969,6 +9504,11 @@ pub struct SharedUser {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlWorksheet = Box<Worksheet>;
@@ -9059,6 +9599,11 @@ pub struct CTMacrosheet {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9111,6 +9656,11 @@ pub struct CTDialogsheet {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9266,6 +9816,11 @@ pub struct Worksheet {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9273,6 +9828,11 @@ pub struct SheetData {
     #[serde(rename = "row")]
     #[serde(default)]
     pub row: Vec<Box<Row>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9331,6 +9891,11 @@ pub struct Columns {
     #[serde(rename = "col")]
     #[serde(default)]
     pub col: Vec<Box<Column>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9443,6 +10008,11 @@ pub struct Row {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9488,6 +10058,11 @@ pub struct Cell {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9535,6 +10110,11 @@ pub struct SheetProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9558,6 +10138,11 @@ pub struct SheetViews {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9653,6 +10238,11 @@ pub struct SheetView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9745,6 +10335,11 @@ pub struct CTPivotSelection {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9788,6 +10383,11 @@ pub struct PageBreaks {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9883,6 +10483,11 @@ pub struct CTDataConsolidate {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9900,6 +10505,11 @@ pub struct CTDataRefs {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9937,6 +10547,11 @@ pub struct MergedCells {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9957,6 +10572,11 @@ pub struct SmartTags {
     #[serde(rename = "cellSmartTags")]
     #[serde(default)]
     pub cell_smart_tags: Vec<Box<CellSmartTags>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9973,6 +10593,11 @@ pub struct CellSmartTags {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9995,6 +10620,11 @@ pub struct CellSmartTag {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10088,6 +10718,11 @@ pub struct CustomSheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
     pub custom_sheet_view: Vec<Box<CustomSheetView>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10188,6 +10823,11 @@ pub struct CustomSheetView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10214,6 +10854,11 @@ pub struct DataValidations {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10284,6 +10929,11 @@ pub struct DataValidation {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10311,6 +10961,11 @@ pub struct ConditionalFormatting {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10393,6 +11048,11 @@ pub struct ConditionalRule {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10400,6 +11060,11 @@ pub struct Hyperlinks {
     #[serde(rename = "hyperlink")]
     #[serde(default)]
     pub hyperlink: Vec<Box<Hyperlink>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10484,6 +11149,11 @@ pub struct CellFormula {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10494,6 +11164,11 @@ pub struct ColorScale {
     #[serde(rename = "color")]
     #[serde(default)]
     pub color: Vec<Box<Color>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10519,6 +11194,11 @@ pub struct DataBar {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10545,6 +11225,11 @@ pub struct IconSet {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10567,6 +11252,11 @@ pub struct ConditionalFormatValue {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10756,6 +11446,11 @@ pub struct HeaderFooter {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10779,6 +11474,11 @@ pub struct Scenarios {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10860,6 +11560,11 @@ pub struct ProtectedRanges {
     #[serde(rename = "protectedRange")]
     #[serde(default)]
     pub protected_range: Vec<Box<ProtectedRange>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10924,6 +11629,11 @@ pub struct Scenario {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10955,6 +11665,11 @@ pub struct CellWatches {
     #[serde(rename = "cellWatch")]
     #[serde(default)]
     pub cell_watch: Vec<Box<CellWatch>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11012,6 +11727,11 @@ pub struct Chartsheet {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11032,6 +11752,11 @@ pub struct ChartsheetProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11042,6 +11767,11 @@ pub struct ChartsheetViews {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11067,6 +11797,11 @@ pub struct ChartsheetView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11153,6 +11888,11 @@ pub struct CustomChartsheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default)]
     pub custom_sheet_view: Vec<Box<CustomChartsheetView>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11184,6 +11924,11 @@ pub struct CustomChartsheetView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11191,6 +11936,11 @@ pub struct CTCustomProperties {
     #[serde(rename = "customPr")]
     #[serde(default)]
     pub custom_pr: Vec<Box<CTCustomProperty>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11211,6 +11961,11 @@ pub struct OleObjects {
     #[serde(rename = "oleObject")]
     #[serde(default)]
     pub ole_object: Vec<Box<OleObject>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11242,6 +11997,11 @@ pub struct OleObject {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11288,6 +12048,11 @@ pub struct ObjectProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11305,6 +12070,11 @@ pub struct WebPublishItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11343,6 +12113,11 @@ pub struct Controls {
     #[serde(rename = "control")]
     #[serde(default)]
     pub control: Vec<Box<Control>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11362,6 +12137,11 @@ pub struct Control {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11417,6 +12197,11 @@ pub struct CTControlPr {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11427,6 +12212,11 @@ pub struct IgnoredErrors {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11484,6 +12274,11 @@ pub struct TableParts {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11514,6 +12309,11 @@ pub struct Metadata {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11531,6 +12331,11 @@ pub struct MetadataTypes {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11641,6 +12446,11 @@ pub struct MetadataBlocks {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11648,6 +12458,11 @@ pub struct MetadataBlock {
     #[serde(rename = "rc")]
     #[serde(default)]
     pub rc: Vec<Box<MetadataRecord>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11685,6 +12500,11 @@ pub struct CTFutureMetadata {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11692,6 +12512,11 @@ pub struct CTFutureMetadataBlock {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11709,6 +12534,11 @@ pub struct CTMdxMetadata {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11768,6 +12598,11 @@ pub struct CTMdxTuple {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11790,6 +12625,11 @@ pub struct CTMdxSet {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11855,6 +12695,11 @@ pub struct MetadataStrings {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlSingleXmlCells = Box<SingleXmlCells>;
@@ -11864,6 +12709,11 @@ pub struct SingleXmlCells {
     #[serde(rename = "singleXmlCell")]
     #[serde(default)]
     pub single_xml_cell: Vec<Box<SingleXmlCell>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11886,6 +12736,11 @@ pub struct SingleXmlCell {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11907,6 +12762,11 @@ pub struct XmlCellProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11927,6 +12787,11 @@ pub struct XmlProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlStyleSheet = Box<Stylesheet>;
@@ -11977,6 +12842,11 @@ pub struct Stylesheet {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12032,6 +12902,11 @@ pub struct Borders {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12089,6 +12964,11 @@ pub struct Border {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12106,6 +12986,11 @@ pub struct BorderProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12140,6 +13025,11 @@ pub struct Fonts {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12157,6 +13047,11 @@ pub struct Fills {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12180,6 +13075,11 @@ pub struct PatternFill {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12238,6 +13138,11 @@ pub struct GradientFill {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12253,6 +13158,11 @@ pub struct GradientStop {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12270,6 +13180,11 @@ pub struct NumberFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12302,6 +13217,11 @@ pub struct CellStyleFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12319,6 +13239,11 @@ pub struct CellFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12394,6 +13319,11 @@ pub struct Format {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12411,6 +13341,11 @@ pub struct CellStyles {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12442,6 +13377,11 @@ pub struct CellStyle {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12459,6 +13399,11 @@ pub struct DifferentialFormats {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12484,6 +13429,11 @@ pub struct DifferentialFormat {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12494,6 +13444,11 @@ pub struct Colors {
     #[serde(rename = "mruColors")]
     #[serde(default)]
     pub mru_colors: Option<Box<MostRecentColors>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12501,6 +13456,11 @@ pub struct IndexedColors {
     #[serde(rename = "rgbColor")]
     #[serde(default)]
     pub rgb_color: Vec<Box<RgbColor>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12508,6 +13468,11 @@ pub struct MostRecentColors {
     #[serde(rename = "color")]
     #[serde(default)]
     pub color: Vec<Box<Color>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12545,6 +13510,11 @@ pub struct TableStyles {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12570,6 +13540,11 @@ pub struct TableStyle {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12739,6 +13714,11 @@ pub struct ExternalLink {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12752,6 +13732,11 @@ pub struct ExternalBook {
     #[serde(rename = "sheetDataSet")]
     #[serde(default)]
     pub sheet_data_set: Option<Box<ExternalSheetDataSet>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12759,6 +13744,11 @@ pub struct CTExternalSheetNames {
     #[serde(rename = "sheetName")]
     #[serde(default)]
     pub sheet_name: Vec<Box<CTExternalSheetName>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12780,6 +13770,11 @@ pub struct CTExternalDefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default)]
     pub defined_name: Vec<Box<CTExternalDefinedName>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12806,6 +13801,11 @@ pub struct ExternalSheetDataSet {
     #[serde(rename = "sheetData")]
     #[serde(default)]
     pub sheet_data: Vec<Box<ExternalSheetData>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12825,6 +13825,11 @@ pub struct ExternalSheetData {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12841,6 +13846,11 @@ pub struct ExternalRow {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12864,6 +13874,11 @@ pub struct ExternalCell {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12882,6 +13897,11 @@ pub struct DdeLink {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12889,6 +13909,11 @@ pub struct DdeItems {
     #[serde(rename = "ddeItem")]
     #[serde(default)]
     pub dde_item: Vec<Box<DdeItem>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12915,6 +13940,11 @@ pub struct DdeItem {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12935,6 +13965,11 @@ pub struct CTDdeValues {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12951,6 +13986,11 @@ pub struct CTDdeValue {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12967,6 +14007,11 @@ pub struct OleLink {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12974,6 +14019,11 @@ pub struct OleItems {
     #[serde(rename = "oleItem")]
     #[serde(default)]
     pub ole_item: Vec<Box<OleItem>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13113,6 +14163,11 @@ pub struct Table {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13156,6 +14211,11 @@ pub struct TableColumns {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13213,6 +14273,11 @@ pub struct TableColumn {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13229,6 +14294,11 @@ pub struct TableFormula {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13252,6 +14322,11 @@ pub struct XmlColumnProperties {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 pub type SmlVolTypes = Box<CTVolTypes>;
@@ -13264,6 +14339,11 @@ pub struct CTVolTypes {
     #[serde(rename = "extLst")]
     #[serde(default)]
     pub extension_list: Option<Box<ExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13280,6 +14360,11 @@ pub struct CTVolType {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13296,6 +14381,11 @@ pub struct CTVolMain {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13318,6 +14408,11 @@ pub struct CTVolTopic {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13418,6 +14513,11 @@ pub struct Workbook {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13451,6 +14551,11 @@ pub struct BookViews {
     #[serde(rename = "workbookView")]
     #[serde(default)]
     pub workbook_view: Vec<Box<BookView>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13504,6 +14609,11 @@ pub struct BookView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13511,6 +14621,11 @@ pub struct CustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
     #[serde(default)]
     pub custom_workbook_view: Vec<Box<CustomWorkbookView>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13592,6 +14707,11 @@ pub struct CustomWorkbookView {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13599,6 +14719,11 @@ pub struct Sheets {
     #[serde(rename = "sheet")]
     #[serde(default)]
     pub sheet: Vec<Box<Sheet>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13707,6 +14832,11 @@ pub struct CTSmartTagTypes {
     #[serde(rename = "smartTagType")]
     #[serde(default)]
     pub smart_tag_type: Vec<Box<CTSmartTagType>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13807,6 +14937,11 @@ pub struct DefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default)]
     pub defined_name: Vec<Box<DefinedName>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13875,6 +15010,11 @@ pub struct DefinedName {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13882,6 +15022,11 @@ pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
     #[serde(default)]
     pub external_reference: Vec<Box<ExternalReference>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13895,6 +15040,11 @@ pub struct PivotCaches {
     #[serde(rename = "pivotCache")]
     #[serde(default)]
     pub pivot_cache: Vec<Box<CTPivotCache>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14064,6 +15214,11 @@ pub struct CTFunctionGroups {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14095,6 +15250,11 @@ pub struct CTWebPublishObjects {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
