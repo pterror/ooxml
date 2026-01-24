@@ -27,7 +27,6 @@
 
 pub mod document;
 pub mod error;
-pub mod raw_xml;
 pub mod styles;
 pub mod writer;
 
@@ -47,7 +46,7 @@ pub use document::{
     ParagraphProperties, Row, Run, RunProperties, Table, TextBoxContent, VmlPicture,
 };
 pub use error::{Error, ParseContext, Result, position_to_line_col};
-pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
+pub use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 pub use styles::{Style, StyleType, Styles};
 pub use writer::{
     CommentBuilder, DocumentBuilder, EndnoteBuilder, FooterBuilder, FootnoteBuilder, HeaderBuilder,

@@ -1,0 +1,11 @@
+[package]
+name = "ooxml-xml"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Shared XML utilities for the ooxml library"
+
+[dependencies]
+quick-xml.workspace = true
+thiserror.workspace = true

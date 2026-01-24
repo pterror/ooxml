@@ -785,8 +785,17 @@ dependencies = [
  "ooxml-codegen",
  "ooxml-omml",
  "ooxml-opc",
+ "ooxml-xml",
  "quick-xml",
  "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "ooxml-xml"
+version = "0.1.0"
+dependencies = [
+ "quick-xml",
  "thiserror",
 ]
 

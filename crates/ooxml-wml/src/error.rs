@@ -46,6 +46,10 @@ pub enum Error {
     /// I/O error.
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
+
+    /// Raw XML parsing error.
+    #[error("raw XML error: {0}")]
+    RawXml(#[from] ooxml_xml::Error),
 }
 
 impl Error {

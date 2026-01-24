@@ -12,9 +12,9 @@ use crate::document::{
     TableProperties, TableWidth, VerticalMerge, VmlPicture, WrapType,
 };
 use crate::error::Result;
-use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlNode};
 use crate::styles::Styles;
 use ooxml_opc::{PackageWriter, Relationship, Relationships, content_type, rel_type};
+use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlNode};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};
@@ -2319,7 +2319,7 @@ fn serialize_raw_xml_node(node: &RawXmlNode, xml: &mut String) {
 }
 
 /// Serialize a RawXmlElement (preserved unknown element) to XML string.
-fn serialize_raw_xml_element(elem: &crate::raw_xml::RawXmlElement, xml: &mut String) {
+fn serialize_raw_xml_element(elem: &ooxml_xml::RawXmlElement, xml: &mut String) {
     xml.push('<');
     xml.push_str(&elem.name);
 

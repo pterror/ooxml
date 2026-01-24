@@ -17,9 +17,9 @@
 //! ```
 
 use crate::error::{Error, Result};
-use crate::raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 use crate::styles::{Styles, merge_run_properties};
 use ooxml_opc::{Package, Relationships, rel_type, rels_path_for};
+use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 use quick_xml::Reader;
 use quick_xml::events::Event;
 use std::fs::File;
@@ -7243,7 +7243,7 @@ mod tests {
         // Check that unknown elements in pPr are preserved
         let ppr = para.properties().unwrap();
         assert_eq!(ppr.unknown_children.len(), 1);
-        if let crate::raw_xml::RawXmlNode::Element(elem) = &ppr.unknown_children[0].node {
+        if let ooxml_xml::RawXmlNode::Element(elem) = &ppr.unknown_children[0].node {
             assert_eq!(elem.name, "w:customElement");
             assert_eq!(
                 elem.attributes,
@@ -7256,7 +7256,7 @@ mod tests {
         // Check that unknown elements in rPr are preserved
         let rpr = para.runs()[0].properties().unwrap();
         assert_eq!(rpr.unknown_children.len(), 1);
-        if let crate::raw_xml::RawXmlNode::Element(elem) = &rpr.unknown_children[0].node {
+        if let ooxml_xml::RawXmlNode::Element(elem) = &rpr.unknown_children[0].node {
             assert_eq!(elem.name, "w:unknownProp");
             assert_eq!(
                 elem.attributes,
@@ -7713,7 +7713,7 @@ mod tests {
 
     #[test]
     fn test_textbox_text_extraction() {
-        use crate::raw_xml::{RawXmlElement, RawXmlNode};
+        use ooxml_xml::{RawXmlElement, RawXmlNode};
 
         // Simulate VML text box structure: v:shape > v:textbox > w:txbxContent > w:p > w:r > w:t
         let text_node = RawXmlNode::Text("Hello from text box!".to_string());

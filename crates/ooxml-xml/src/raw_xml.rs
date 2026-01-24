@@ -129,7 +129,6 @@ impl RawXmlElement {
                     element.children.push(RawXmlNode::Element(child));
                 }
                 Ok(Event::Text(e)) => {
-                    // Use decode() for quick-xml 0.38+
                     let text = e.decode().unwrap_or_default();
                     if !text.is_empty() {
                         element.children.push(RawXmlNode::Text(text.to_string()));

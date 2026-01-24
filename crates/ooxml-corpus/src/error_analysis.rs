@@ -186,6 +186,13 @@ pub fn analyze_error(error: &ooxml_wml::Error) -> AnalyzedError {
             }),
             raw_error,
         },
+        ooxml_wml::Error::RawXml(xml_err) => AnalyzedError {
+            category: ErrorCategory::XmlMalformed,
+            subcategory: Some("raw_xml".to_string()),
+            message: xml_err.to_string(),
+            location: None,
+            raw_error,
+        },
     }
 }
 

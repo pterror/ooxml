@@ -8,6 +8,7 @@ description = "WordprocessingML (DOCX) support for the ooxml library"
 
 [dependencies]
 ooxml-opc.workspace = true
+ooxml-xml.workspace = true
 ooxml-omml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
