@@ -48,6 +48,10 @@ pub use generated as types;
 pub mod generated_parsers;
 pub use generated_parsers as parsers;
 
+// Lazy/streaming API for memory-efficient parsing
+pub mod lazy;
+pub use lazy::{LazyCell, LazyRow, LazyWorksheet};
+
 // Extension traits for generated types (see ADR-003)
 pub mod ext;
 pub use ext::{

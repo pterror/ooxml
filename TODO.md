@@ -42,7 +42,7 @@ DocumentBuilder handles common cases but doesn't expose:
 
 ## Codegen Performance
 
-- [ ] **Lazy/cursor API** - Alternate API that avoids struct materialization for high-performance streaming use cases. Iterator-based access to rows/cells without allocating intermediate structs.
+- [x] **Lazy/cursor API** - `LazyWorksheet` provides streaming row iteration without materializing all rows. `Workbook::sheet_xml()` returns raw XML for lazy parsing.
 - [x] **Feature-gated extra_attrs** - `extra-attrs` feature captures unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Enabled by default.
 - [x] **Feature-gated unknown children** - `extra-children` feature captures unknown child elements in `extra_children: Vec<ooxml_xml::RawXmlNode>`. Uses shared `ooxml-xml` crate.
 - [x] **Per-field feature gating** - Uses `spec/ooxml-features.yaml` to gate non-core fields behind features (sml-styling, sml-formulas, etc.). 265 fields gated, 893 parser locations.

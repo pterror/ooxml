@@ -215,6 +215,61 @@ impl<R: Read + Seek> Workbook<R> {
             .collect()
     }
 
+    /// Get raw worksheet XML bytes for lazy/streaming parsing.
+    ///
+    /// This returns the raw XML data for a worksheet, which can be used with
+    /// `LazyWorksheet` for memory-efficient streaming access without loading
+    /// all rows into memory.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use ooxml_sml::{Workbook, LazyWorksheet};
+    ///
+    /// let mut workbook = Workbook::open("large.xlsx")?;
+    /// let xml = workbook.sheet_xml(0)?;
+    /// let lazy = LazyWorksheet::new(&xml);
+    ///
+    /// // Stream rows without loading all into memory
+    /// for row in lazy.rows() {
+    ///     let row = row?;
+    ///     // Process row...
+    /// }
+    /// ```
+    pub fn sheet_xml(&mut self, index: usize) -> Result<Vec<u8>> {
+        let info = self
+            .sheet_info
+            .get(index)
+            .ok_or_else(|| Error::Invalid(format!("Sheet index {} out of range", index)))?
+            .clone();
+
+        let rel = self.workbook_rels.get(&info.rel_id).ok_or_else(|| {
+            Error::Invalid(format!("Missing relationship for sheet '{}'", info.name))
+        })?;
+
+        let path = resolve_path(&self.workbook_path, &rel.target);
+        Ok(self.package.read_part(&path)?)
+    }
+
+    /// Get raw worksheet XML bytes by sheet name.
+    ///
+    /// See `sheet_xml` for usage with `LazyWorksheet`.
+    pub fn sheet_xml_by_name(&mut self, name: &str) -> Result<Vec<u8>> {
+        let info = self
+            .sheet_info
+            .iter()
+            .find(|s| s.name == name)
+            .ok_or_else(|| Error::Invalid(format!("Sheet '{}' not found", name)))?
+            .clone();
+
+        let rel = self.workbook_rels.get(&info.rel_id).ok_or_else(|| {
+            Error::Invalid(format!("Missing relationship for sheet '{}'", info.name))
+        })?;
+
+        let path = resolve_path(&self.workbook_path, &rel.target);
+        Ok(self.package.read_part(&path)?)
+    }
+
     /// Load a sheet using the generated parser.
     fn load_resolved_sheet(&mut self, info: &SheetInfo) -> Result<ResolvedSheet> {
         // Find the sheet path from relationships
