@@ -412,9 +412,7 @@ fn test_serde_roundtrip_sheet_views() {
 
 #[test]
 fn test_boolean_serialize_format() {
-    // OOXML uses "1"/"0" for booleans, but serde outputs "true"/"false"
-    // This test documents current behavior - a proper fix requires custom
-    // serialization in codegen
+    // OOXML uses "1"/"0" for booleans per ECMA-376 Part 1, section 22.9.2.1
     let xml = br#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
     <sheetViews>
@@ -426,15 +424,24 @@ fn test_boolean_serialize_format() {
     let ws = parse_worksheet_xml(xml).expect("should parse");
     let serialized = to_xml_string(&ws);
 
-    // Verify booleans are serialized (current behavior: "true"/"false")
-    // TODO: Fix to output "1"/"0" for OOXML compliance
-    // See: ECMA-376 Part 1, section 22.9.2.1 (xsd:boolean)
+    // Booleans must serialize as "1"/"0", not "true"/"false"
     assert!(
-        serialized.contains("tabSelected="),
-        "tabSelected should be present"
+        serialized.contains("tabSelected=\"1\""),
+        "tabSelected should be \"1\", got: {}",
+        serialized
+    );
+    assert!(
+        serialized.contains("showGridLines=\"0\""),
+        "showGridLines should be \"0\", got: {}",
+        serialized
+    );
+    assert!(
+        !serialized.contains("\"true\"") && !serialized.contains("\"false\""),
+        "should not contain \"true\" or \"false\", got: {}",
+        serialized
     );
 
-    // Verify we can roundtrip (the important thing is data integrity)
+    // Verify roundtrip preserves data integrity
     let ws2: Worksheet = from_str(&serialized).expect("serde should deserialize");
     let sv1 = &ws.sheet_views.as_ref().unwrap().sheet_view[0];
     let sv2 = &ws2.sheet_views.as_ref().unwrap().sheet_view[0];

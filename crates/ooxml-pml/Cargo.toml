@@ -6,9 +6,23 @@ license.workspace = true
 repository.workspace = true
 description = "PresentationML (PPTX) support for the ooxml library"
 
+[features]
+default = ["full"]
+full = [
+    "pml-transitions",
+    "pml-animations",
+    "extra-attrs",
+    "extra-children",
+]
+pml-transitions = []
+pml-animations = []
+extra-attrs = []
+extra-children = []
+
 [dependencies]
 ooxml-opc.workspace = true
 ooxml-dml.workspace = true
+ooxml-xml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true

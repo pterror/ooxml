@@ -212,6 +212,8 @@ struct Generator<'a> {
     output: String,
     /// Map from definition name to its pattern for resolution.
     definitions: HashMap<&'a str, &'a Pattern>,
+    /// Track generated Rust type names to avoid duplicates from merged schemas.
+    generated_names: std::collections::HashSet<String>,
 }
 
 impl<'a> Generator<'a> {
@@ -227,6 +229,7 @@ impl<'a> Generator<'a> {
             config,
             output: String::new(),
             definitions,
+            generated_names: std::collections::HashSet::new(),
         }
     }
 
@@ -250,6 +253,10 @@ impl<'a> Generator<'a> {
 
         // Generate enums for simple types (string literal choices)
         for def in &simple_types {
+            let rust_name = self.to_rust_type_name(&def.name);
+            if !self.generated_names.insert(rust_name) {
+                continue; // Skip duplicate Rust type names from merged schemas
+            }
             if let Some(code) = self.gen_simple_type(def) {
                 self.output.push_str(&code);
                 self.output.push('\n');
@@ -258,6 +265,10 @@ impl<'a> Generator<'a> {
 
         // Generate enums for element groups (element choice patterns)
         for def in &element_groups {
+            let rust_name = self.to_rust_type_name(&def.name);
+            if !self.generated_names.insert(rust_name) {
+                continue;
+            }
             if let Some(code) = self.gen_element_group(def) {
                 self.output.push_str(&code);
                 self.output.push('\n');
@@ -266,6 +277,10 @@ impl<'a> Generator<'a> {
 
         // Generate structs for complex types
         for def in &complex_types {
+            let rust_name = self.to_rust_type_name(&def.name);
+            if !self.generated_names.insert(rust_name) {
+                continue;
+            }
             if let Some(code) = self.gen_complex_type(def) {
                 self.output.push_str(&code);
                 self.output.push('\n');
@@ -596,6 +611,7 @@ impl<'a> Generator<'a> {
 
             for field in &fields {
                 let inner_type = self.pattern_to_rust_type(&field.pattern, false);
+                let is_bool = inner_type == "bool";
                 let field_type = if field.is_vec {
                     format!("Vec<{}>", inner_type)
                 } else if field.is_optional {
@@ -619,15 +635,31 @@ impl<'a> Generator<'a> {
                     writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
                 }
                 if field.is_optional {
-                    writeln!(
-                        code,
-                        "    #[serde(default, skip_serializing_if = \"Option::is_none\")]"
-                    )
-                    .unwrap();
+                    if is_bool {
+                        // OOXML booleans serialize as "1"/"0", not "true"/"false"
+                        writeln!(
+                            code,
+                            "    #[serde(default, skip_serializing_if = \"Option::is_none\", with = \"ooxml_xml::ooxml_bool\")]"
+                        )
+                        .unwrap();
+                    } else {
+                        writeln!(
+                            code,
+                            "    #[serde(default, skip_serializing_if = \"Option::is_none\")]"
+                        )
+                        .unwrap();
+                    }
                 } else if field.is_vec {
                     writeln!(
                         code,
                         "    #[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
+                    )
+                    .unwrap();
+                } else if is_bool {
+                    // Required booleans also need OOXML format
+                    writeln!(
+                        code,
+                        "    #[serde(with = \"ooxml_xml::ooxml_bool_required\")]"
                     )
                     .unwrap();
                 }

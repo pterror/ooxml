@@ -21,14 +21,14 @@ pub mod ns {
     pub const R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 }
 
-pub type SSTLang = String;
+pub type Language = String;
 
-pub type SSTHexColorRGB = Vec<u8>;
+pub type HexColorRgb = Vec<u8>;
 
-pub type SSTPanose = Vec<u8>;
+pub type Panose = Vec<u8>;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTCalendarType {
+pub enum CalendarType {
     #[serde(rename = "gregorian")]
     Gregorian,
     #[serde(rename = "gregorianUs")]
@@ -59,7 +59,7 @@ pub enum SSTCalendarType {
     None,
 }
 
-impl std::fmt::Display for SSTCalendarType {
+impl std::fmt::Display for CalendarType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Gregorian => write!(f, "gregorian"),
@@ -80,7 +80,7 @@ impl std::fmt::Display for SSTCalendarType {
     }
 }
 
-impl std::str::FromStr for SSTCalendarType {
+impl std::str::FromStr for CalendarType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -99,20 +99,20 @@ impl std::str::FromStr for SSTCalendarType {
             "gregorianXlitEnglish" => Ok(Self::GregorianXlitEnglish),
             "gregorianXlitFrench" => Ok(Self::GregorianXlitFrench),
             "none" => Ok(Self::None),
-            _ => Err(format!("unknown SSTCalendarType value: {}", s)),
+            _ => Err(format!("unknown CalendarType value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTAlgClass {
+pub enum STAlgClass {
     #[serde(rename = "hash")]
     Hash,
     #[serde(rename = "custom")]
     Custom,
 }
 
-impl std::fmt::Display for SSTAlgClass {
+impl std::fmt::Display for STAlgClass {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Hash => write!(f, "hash"),
@@ -121,20 +121,20 @@ impl std::fmt::Display for SSTAlgClass {
     }
 }
 
-impl std::str::FromStr for SSTAlgClass {
+impl std::str::FromStr for STAlgClass {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "hash" => Ok(Self::Hash),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTAlgClass value: {}", s)),
+            _ => Err(format!("unknown STAlgClass value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTCryptProv {
+pub enum STCryptProv {
     #[serde(rename = "rsaAES")]
     RsaAES,
     #[serde(rename = "rsaFull")]
@@ -143,7 +143,7 @@ pub enum SSTCryptProv {
     Custom,
 }
 
-impl std::fmt::Display for SSTCryptProv {
+impl std::fmt::Display for STCryptProv {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::RsaAES => write!(f, "rsaAES"),
@@ -153,7 +153,7 @@ impl std::fmt::Display for SSTCryptProv {
     }
 }
 
-impl std::str::FromStr for SSTCryptProv {
+impl std::str::FromStr for STCryptProv {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -161,20 +161,20 @@ impl std::str::FromStr for SSTCryptProv {
             "rsaAES" => Ok(Self::RsaAES),
             "rsaFull" => Ok(Self::RsaFull),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTCryptProv value: {}", s)),
+            _ => Err(format!("unknown STCryptProv value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTAlgType {
+pub enum STAlgType {
     #[serde(rename = "typeAny")]
     TypeAny,
     #[serde(rename = "custom")]
     Custom,
 }
 
-impl std::fmt::Display for SSTAlgType {
+impl std::fmt::Display for STAlgType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::TypeAny => write!(f, "typeAny"),
@@ -183,33 +183,33 @@ impl std::fmt::Display for SSTAlgType {
     }
 }
 
-impl std::str::FromStr for SSTAlgType {
+impl std::str::FromStr for STAlgType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "typeAny" => Ok(Self::TypeAny),
             "custom" => Ok(Self::Custom),
-            _ => Err(format!("unknown SSTAlgType value: {}", s)),
+            _ => Err(format!("unknown STAlgType value: {}", s)),
         }
     }
 }
 
-pub type SSTColorType = String;
+pub type STColorType = String;
 
-pub type SSTGuid = String;
+pub type Guid = String;
 
-pub type SSTOnOff = String;
+pub type OnOff = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTOnOff1 {
+pub enum STOnOff1 {
     #[serde(rename = "on")]
     On,
     #[serde(rename = "off")]
     Off,
 }
 
-impl std::fmt::Display for SSTOnOff1 {
+impl std::fmt::Display for STOnOff1 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::On => write!(f, "on"),
@@ -218,24 +218,24 @@ impl std::fmt::Display for SSTOnOff1 {
     }
 }
 
-impl std::str::FromStr for SSTOnOff1 {
+impl std::str::FromStr for STOnOff1 {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "on" => Ok(Self::On),
             "off" => Ok(Self::Off),
-            _ => Err(format!("unknown SSTOnOff1 value: {}", s)),
+            _ => Err(format!("unknown STOnOff1 value: {}", s)),
         }
     }
 }
 
-pub type SSTString = String;
+pub type STString = String;
 
-pub type SSTXmlName = String;
+pub type STXmlName = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTTrueFalse {
+pub enum TrueFalse {
     #[serde(rename = "t")]
     T,
     #[serde(rename = "f")]
@@ -246,7 +246,7 @@ pub enum SSTTrueFalse {
     False,
 }
 
-impl std::fmt::Display for SSTTrueFalse {
+impl std::fmt::Display for TrueFalse {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::T => write!(f, "t"),
@@ -257,7 +257,7 @@ impl std::fmt::Display for SSTTrueFalse {
     }
 }
 
-impl std::str::FromStr for SSTTrueFalse {
+impl std::str::FromStr for TrueFalse {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -266,13 +266,13 @@ impl std::str::FromStr for SSTTrueFalse {
             "f" => Ok(Self::F),
             "true" => Ok(Self::True),
             "false" => Ok(Self::False),
-            _ => Err(format!("unknown SSTTrueFalse value: {}", s)),
+            _ => Err(format!("unknown TrueFalse value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTTrueFalseBlank {
+pub enum STTrueFalseBlank {
     #[serde(rename = "t")]
     T,
     #[serde(rename = "f")]
@@ -285,7 +285,7 @@ pub enum SSTTrueFalseBlank {
     Empty,
 }
 
-impl std::fmt::Display for SSTTrueFalseBlank {
+impl std::fmt::Display for STTrueFalseBlank {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::T => write!(f, "t"),
@@ -297,7 +297,7 @@ impl std::fmt::Display for SSTTrueFalseBlank {
     }
 }
 
-impl std::str::FromStr for SSTTrueFalseBlank {
+impl std::str::FromStr for STTrueFalseBlank {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -309,17 +309,17 @@ impl std::str::FromStr for SSTTrueFalseBlank {
             "" => Ok(Self::Empty),
             "True" => Ok(Self::True),
             "False" => Ok(Self::False),
-            _ => Err(format!("unknown SSTTrueFalseBlank value: {}", s)),
+            _ => Err(format!("unknown STTrueFalseBlank value: {}", s)),
         }
     }
 }
 
-pub type SSTUnsignedDecimalNumber = u64;
+pub type STUnsignedDecimalNumber = u64;
 
-pub type SSTTwipsMeasure = String;
+pub type STTwipsMeasure = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTVerticalAlignRun {
+pub enum STVerticalAlignRun {
     #[serde(rename = "baseline")]
     Baseline,
     #[serde(rename = "superscript")]
@@ -328,7 +328,7 @@ pub enum SSTVerticalAlignRun {
     Subscript,
 }
 
-impl std::fmt::Display for SSTVerticalAlignRun {
+impl std::fmt::Display for STVerticalAlignRun {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Baseline => write!(f, "baseline"),
@@ -338,7 +338,7 @@ impl std::fmt::Display for SSTVerticalAlignRun {
     }
 }
 
-impl std::str::FromStr for SSTVerticalAlignRun {
+impl std::str::FromStr for STVerticalAlignRun {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -346,15 +346,15 @@ impl std::str::FromStr for SSTVerticalAlignRun {
             "baseline" => Ok(Self::Baseline),
             "superscript" => Ok(Self::Superscript),
             "subscript" => Ok(Self::Subscript),
-            _ => Err(format!("unknown SSTVerticalAlignRun value: {}", s)),
+            _ => Err(format!("unknown STVerticalAlignRun value: {}", s)),
         }
     }
 }
 
-pub type SSTXstring = String;
+pub type XmlString = String;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTXAlign {
+pub enum STXAlign {
     #[serde(rename = "left")]
     Left,
     #[serde(rename = "center")]
@@ -367,7 +367,7 @@ pub enum SSTXAlign {
     Outside,
 }
 
-impl std::fmt::Display for SSTXAlign {
+impl std::fmt::Display for STXAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Left => write!(f, "left"),
@@ -379,7 +379,7 @@ impl std::fmt::Display for SSTXAlign {
     }
 }
 
-impl std::str::FromStr for SSTXAlign {
+impl std::str::FromStr for STXAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -389,13 +389,13 @@ impl std::str::FromStr for SSTXAlign {
             "right" => Ok(Self::Right),
             "inside" => Ok(Self::Inside),
             "outside" => Ok(Self::Outside),
-            _ => Err(format!("unknown SSTXAlign value: {}", s)),
+            _ => Err(format!("unknown STXAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTYAlign {
+pub enum STYAlign {
     #[serde(rename = "inline")]
     Inline,
     #[serde(rename = "top")]
@@ -410,7 +410,7 @@ pub enum SSTYAlign {
     Outside,
 }
 
-impl std::fmt::Display for SSTYAlign {
+impl std::fmt::Display for STYAlign {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Inline => write!(f, "inline"),
@@ -423,7 +423,7 @@ impl std::fmt::Display for SSTYAlign {
     }
 }
 
-impl std::str::FromStr for SSTYAlign {
+impl std::str::FromStr for STYAlign {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -434,20 +434,20 @@ impl std::str::FromStr for SSTYAlign {
             "bottom" => Ok(Self::Bottom),
             "inside" => Ok(Self::Inside),
             "outside" => Ok(Self::Outside),
-            _ => Err(format!("unknown SSTYAlign value: {}", s)),
+            _ => Err(format!("unknown STYAlign value: {}", s)),
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum SSTConformanceClass {
+pub enum STConformanceClass {
     #[serde(rename = "strict")]
     Strict,
     #[serde(rename = "transitional")]
     Transitional,
 }
 
-impl std::fmt::Display for SSTConformanceClass {
+impl std::fmt::Display for STConformanceClass {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Strict => write!(f, "strict"),
@@ -456,29 +456,29 @@ impl std::fmt::Display for SSTConformanceClass {
     }
 }
 
-impl std::str::FromStr for SSTConformanceClass {
+impl std::str::FromStr for STConformanceClass {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "strict" => Ok(Self::Strict),
             "transitional" => Ok(Self::Transitional),
-            _ => Err(format!("unknown SSTConformanceClass value: {}", s)),
+            _ => Err(format!("unknown STConformanceClass value: {}", s)),
         }
     }
 }
 
-pub type SSTUniversalMeasure = String;
+pub type STUniversalMeasure = String;
 
-pub type SSTPositiveUniversalMeasure = String;
+pub type STPositiveUniversalMeasure = String;
 
-pub type SSTPercentage = String;
+pub type STPercentage = String;
 
-pub type SSTFixedPercentage = String;
+pub type STFixedPercentage = String;
 
-pub type SSTPositivePercentage = String;
+pub type STPositivePercentage = String;
 
-pub type SSTPositiveFixedPercentage = String;
+pub type STPositiveFixedPercentage = String;
 
 pub type STStyleMatrixColumnIndex = u32;
 
@@ -602,19 +602,11 @@ pub type STFixedAngle = i32;
 
 pub type STPositiveFixedAngle = i32;
 
-pub type STPercentage = String;
-
 pub type STPercentageDecimal = i32;
-
-pub type STPositivePercentage = String;
 
 pub type STPositivePercentageDecimal = i32;
 
-pub type STFixedPercentage = String;
-
 pub type STFixedPercentageDecimal = i32;
-
-pub type STPositiveFixedPercentage = String;
 
 pub type STPositiveFixedPercentageDecimal = i32;
 
@@ -5124,15 +5116,15 @@ pub enum EGColorChoice {
     #[serde(rename = "scrgbClr")]
     ScrgbClr(Box<CTScRgbColor>),
     #[serde(rename = "srgbClr")]
-    SrgbClr(Box<CTSRgbColor>),
+    SrgbClr(Box<SrgbColor>),
     #[serde(rename = "hslClr")]
-    HslClr(Box<CTHslColor>),
+    HslClr(Box<HslColor>),
     #[serde(rename = "sysClr")]
-    SysClr(Box<CTSystemColor>),
+    SysClr(Box<SystemColor>),
     #[serde(rename = "schemeClr")]
-    SchemeClr(Box<CTSchemeColor>),
+    SchemeClr(Box<SchemeColor>),
     #[serde(rename = "prstClr")]
-    PrstClr(Box<CTPresetColor>),
+    PrstClr(Box<PresetColor>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5162,15 +5154,15 @@ pub enum EGFillModeProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGFillProperties {
     #[serde(rename = "noFill")]
-    NoFill(Box<CTNoFillProperties>),
+    NoFill(Box<NoFill>),
     #[serde(rename = "solidFill")]
-    SolidFill(Box<CTSolidColorFillProperties>),
+    SolidFill(Box<SolidColorFill>),
     #[serde(rename = "gradFill")]
-    GradFill(Box<CTGradientFillProperties>),
+    GradFill(Box<GradientFill>),
     #[serde(rename = "blipFill")]
-    BlipFill(Box<CTBlipFillProperties>),
+    BlipFill(Box<BlipFillProperties>),
     #[serde(rename = "pattFill")]
-    PattFill(Box<CTPatternFillProperties>),
+    PattFill(Box<PatternFill>),
     #[serde(rename = "grpFill")]
     GrpFill(Box<CTGroupFillProperties>),
 }
@@ -5178,7 +5170,7 @@ pub enum EGFillProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGEffect {
     #[serde(rename = "cont")]
-    Cont(Box<CTEffectContainer>),
+    Cont(Box<EffectContainer>),
     #[serde(rename = "effect")]
     Effect(Box<CTEffectReference>),
     #[serde(rename = "alphaBiLevel")]
@@ -5242,9 +5234,9 @@ pub enum EGEffect {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGEffectProperties {
     #[serde(rename = "effectLst")]
-    EffectLst(Box<CTEffectList>),
+    EffectLst(Box<EffectList>),
     #[serde(rename = "effectDag")]
-    EffectDag(Box<CTEffectContainer>),
+    EffectDag(Box<EffectContainer>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5266,13 +5258,13 @@ pub enum EGTextGeometry {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGLineFillProperties {
     #[serde(rename = "noFill")]
-    NoFill(Box<CTNoFillProperties>),
+    NoFill(Box<NoFill>),
     #[serde(rename = "solidFill")]
-    SolidFill(Box<CTSolidColorFillProperties>),
+    SolidFill(Box<SolidColorFill>),
     #[serde(rename = "gradFill")]
-    GradFill(Box<CTGradientFillProperties>),
+    GradFill(Box<GradientFill>),
     #[serde(rename = "pattFill")]
-    PattFill(Box<CTPatternFillProperties>),
+    PattFill(Box<PatternFill>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5350,7 +5342,7 @@ pub enum EGTextBulletTypeface {
     #[serde(rename = "buFontTx")]
     BuFontTx(Box<CTTextBulletTypefaceFollowText>),
     #[serde(rename = "buFont")]
-    BuFont(Box<CTTextFont>),
+    BuFont(Box<TextFont>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5370,7 +5362,7 @@ pub enum EGTextUnderlineLine {
     #[serde(rename = "uLnTx")]
     ULnTx(Box<CTTextUnderlineLineFollowText>),
     #[serde(rename = "uLn")]
-    ULn(Box<CTLineProperties>),
+    ULn(Box<LineProperties>),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5384,7 +5376,7 @@ pub enum EGTextUnderlineFill {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EGTextRun {
     #[serde(rename = "r")]
-    R(Box<CTRegularTextRun>),
+    R(Box<TextRun>),
     #[serde(rename = "br")]
     Br(Box<CTTextLineBreak>),
     #[serde(rename = "fld")]
@@ -5394,28 +5386,57 @@ pub enum EGTextRun {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAudioFile {
     #[serde(rename = "@contentType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_type: Option<String>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTVideoFile {
     #[serde(rename = "@contentType")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_type: Option<String>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTQuickTimeFile {
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5423,8 +5444,15 @@ pub struct CTAudioCDTime {
     #[serde(rename = "@track")]
     pub track: u8,
     #[serde(rename = "@time")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time: Option<u32>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5434,14 +5462,19 @@ pub struct CTAudioCD {
     #[serde(rename = "end")]
     pub end: Box<CTAudioCDTime>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-pub type VideoFile = Box<CTVideoFile>;
+pub type AVideoFile = Box<CTVideoFile>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTColorScheme {
+pub struct ColorScheme {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "dk1")]
@@ -5469,15 +5502,34 @@ pub struct CTColorScheme {
     #[serde(rename = "folHlink")]
     pub fol_hlink: Box<CTColor>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomColor {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5486,43 +5538,65 @@ pub struct CTSupplementalFont {
     pub script: String,
     #[serde(rename = "@typeface")]
     pub typeface: STTextTypeface,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomColorList {
     #[serde(rename = "custClr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cust_clr: Vec<Box<CTCustomColor>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontCollection {
     #[serde(rename = "latin")]
-    pub latin: Box<CTTextFont>,
+    pub latin: Box<TextFont>,
     #[serde(rename = "ea")]
-    pub ea: Box<CTTextFont>,
+    pub ea: Box<TextFont>,
     #[serde(rename = "cs")]
-    pub cs: Box<CTTextFont>,
+    pub cs: Box<TextFont>,
     #[serde(rename = "font")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub font: Vec<Box<CTSupplementalFont>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEffectStyleItem {
     #[serde(rename = "scene3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
     #[serde(rename = "sp3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp3d: Option<Box<CTShape3D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTFontScheme {
+pub struct FontScheme {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "majorFont")]
@@ -5530,8 +5604,20 @@ pub struct CTFontScheme {
     #[serde(rename = "minorFont")]
     pub minor_font: Box<CTFontCollection>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5540,15 +5626,25 @@ pub struct CTFillStyleList;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLineStyleList {
     #[serde(rename = "ln")]
-    #[serde(default)]
-    pub ln: Vec<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub line: Vec<Box<LineProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEffectStyleList {
     #[serde(rename = "effectStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub effect_style: Vec<Box<CTEffectStyleItem>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5557,7 +5653,7 @@ pub struct CTBackgroundFillStyleList;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStyleMatrix {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "fillStyleLst")]
     pub fill_style_lst: Box<CTFillStyleList>,
@@ -5567,25 +5663,49 @@ pub struct CTStyleMatrix {
     pub effect_style_lst: Box<CTEffectStyleList>,
     #[serde(rename = "bgFillStyleLst")]
     pub bg_fill_style_lst: Box<CTBackgroundFillStyleList>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBaseStyles {
     #[serde(rename = "clrScheme")]
-    pub clr_scheme: Box<CTColorScheme>,
+    pub clr_scheme: Box<ColorScheme>,
     #[serde(rename = "fontScheme")]
-    pub font_scheme: Box<CTFontScheme>,
+    pub font_scheme: Box<FontScheme>,
     #[serde(rename = "fmtScheme")]
     pub fmt_scheme: Box<CTStyleMatrix>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTOfficeArtExtension {
     #[serde(rename = "@uri")]
     pub uri: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTOfficeArtExtensionAny = String;
@@ -5593,37 +5713,79 @@ pub type CTOfficeArtExtensionAny = String;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAngle {
     #[serde(rename = "@val")]
-    pub val: STAngle,
+    pub value: STAngle,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPositiveFixedAngle {
     #[serde(rename = "@val")]
-    pub val: STPositiveFixedAngle,
+    pub value: STPositiveFixedAngle,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPercentage {
     #[serde(rename = "@val")]
-    pub val: STPercentage,
+    pub value: STPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPositivePercentage {
     #[serde(rename = "@val")]
-    pub val: STPositivePercentage,
+    pub value: STPositivePercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFixedPercentage {
     #[serde(rename = "@val")]
-    pub val: STFixedPercentage,
+    pub value: STFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPositiveFixedPercentage {
     #[serde(rename = "@val")]
-    pub val: STPositiveFixedPercentage,
+    pub value: STPositiveFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5632,22 +5794,43 @@ pub struct CTRatio {
     pub n: i64,
     #[serde(rename = "@d")]
     pub d: i64,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPoint2D {
+pub struct Point2D {
     #[serde(rename = "@x")]
     pub x: STCoordinate,
     #[serde(rename = "@y")]
     pub y: STCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPositiveSize2D {
+pub struct PositiveSize2D {
     #[serde(rename = "@cx")]
     pub cx: STPositiveCoordinate,
     #[serde(rename = "@cy")]
     pub cy: STPositiveCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5668,55 +5851,102 @@ pub struct CTInverseGammaTransform;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTScRgbColor {
     #[serde(rename = "@r")]
-    pub r: STPercentage,
+    pub relationship_id: STPercentage,
     #[serde(rename = "@g")]
     pub g: STPercentage,
     #[serde(rename = "@b")]
     pub b: STPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSRgbColor {
+pub struct SrgbColor {
     #[serde(rename = "@val")]
-    pub val: SSTHexColorRGB,
+    pub value: HexColorRgb,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTHslColor {
+pub struct HslColor {
     #[serde(rename = "@hue")]
     pub hue: STPositiveFixedAngle,
     #[serde(rename = "@sat")]
     pub sat: STPercentage,
     #[serde(rename = "@lum")]
     pub lum: STPercentage,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSystemColor {
-    #[serde(rename = "@val")]
-    pub val: STSystemColorVal,
-    #[serde(rename = "@lastClr")]
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub last_clr: Option<SSTHexColorRGB>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTSchemeColor {
+pub struct SystemColor {
     #[serde(rename = "@val")]
-    pub val: STSchemeColorVal,
+    pub value: STSystemColorVal,
+    #[serde(rename = "@lastClr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_clr: Option<HexColorRgb>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPresetColor {
+pub struct SchemeColor {
     #[serde(rename = "@val")]
-    pub val: STPresetColorVal,
+    pub value: STSchemeColorVal,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PresetColor {
+    #[serde(rename = "@val")]
+    pub value: STPresetColorVal,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EGOfficeArtExtensionList {
     #[serde(rename = "ext")]
-    #[serde(default)]
-    pub ext: Vec<Box<CTOfficeArtExtension>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub extents: Vec<Box<CTOfficeArtExtension>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5728,50 +5958,95 @@ pub struct CTScale2D {
     pub sx: Box<CTRatio>,
     #[serde(rename = "sy")]
     pub sy: Box<CTRatio>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTransform2D {
+pub struct Transform2D {
     #[serde(rename = "@rot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<STAngle>,
     #[serde(rename = "@flipH")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub flip_h: Option<bool>,
     #[serde(rename = "@flipV")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub flip_v: Option<bool>,
     #[serde(rename = "off")]
-    #[serde(default)]
-    pub off: Option<Box<CTPoint2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub offset: Option<Box<Point2D>>,
     #[serde(rename = "ext")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extents: Option<Box<PositiveSize2D>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub ext: Option<Box<CTPositiveSize2D>>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupTransform2D {
     #[serde(rename = "@rot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<STAngle>,
     #[serde(rename = "@flipH")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub flip_h: Option<bool>,
     #[serde(rename = "@flipV")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub flip_v: Option<bool>,
     #[serde(rename = "off")]
-    #[serde(default)]
-    pub off: Option<Box<CTPoint2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub offset: Option<Box<Point2D>>,
     #[serde(rename = "ext")]
-    #[serde(default)]
-    pub ext: Option<Box<CTPositiveSize2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extents: Option<Box<PositiveSize2D>>,
     #[serde(rename = "chOff")]
-    #[serde(default)]
-    pub ch_off: Option<Box<CTPoint2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub child_offset: Option<Box<Point2D>>,
     #[serde(rename = "chExt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub child_extents: Option<Box<PositiveSize2D>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub ch_ext: Option<Box<CTPositiveSize2D>>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5782,6 +6057,13 @@ pub struct CTPoint3D {
     pub y: STCoordinate,
     #[serde(rename = "@z")]
     pub z: STCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5792,6 +6074,13 @@ pub struct CTVector3D {
     pub dy: STCoordinate,
     #[serde(rename = "@dz")]
     pub dz: STCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5802,22 +6091,36 @@ pub struct CTSphereCoords {
     pub lon: STPositiveFixedAngle,
     #[serde(rename = "@rev")]
     pub rev: STPositiveFixedAngle,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRelativeRect {
     #[serde(rename = "@l")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub l: Option<STPercentage>,
     #[serde(rename = "@t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t: Option<STPercentage>,
     #[serde(rename = "@r")]
-    #[serde(default)]
-    pub r: Option<STPercentage>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub relationship_id: Option<STPercentage>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<STPercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5827,165 +6130,361 @@ pub struct CTColor;
 pub struct CTColorMRU;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct AGBlob;
+pub struct AAGBlob;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEmbeddedWAVAudioFile {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHyperlink {
     #[serde(rename = "@invalidUrl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub invalid_url: Option<String>,
     #[serde(rename = "@action")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub action: Option<String>,
     #[serde(rename = "@tgtFrame")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tgt_frame: Option<String>,
     #[serde(rename = "@tooltip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tooltip: Option<String>,
     #[serde(rename = "@history")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub history: Option<bool>,
     #[serde(rename = "@highlightClick")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub highlight_click: Option<bool>,
     #[serde(rename = "@endSnd")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub end_snd: Option<bool>,
     #[serde(rename = "snd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snd: Option<Box<CTEmbeddedWAVAudioFile>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AGLocking {
+pub struct AAGLocking {
     #[serde(rename = "@noGrp")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_grp: Option<bool>,
     #[serde(rename = "@noSelect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_select: Option<bool>,
     #[serde(rename = "@noRot")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_rot: Option<bool>,
     #[serde(rename = "@noChangeAspect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_change_aspect: Option<bool>,
     #[serde(rename = "@noMove")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_move: Option<bool>,
     #[serde(rename = "@noResize")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_resize: Option<bool>,
     #[serde(rename = "@noEditPoints")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_edit_points: Option<bool>,
     #[serde(rename = "@noAdjustHandles")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_adjust_handles: Option<bool>,
     #[serde(rename = "@noChangeArrowheads")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_change_arrowheads: Option<bool>,
     #[serde(rename = "@noChangeShapeType")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_change_shape_type: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTConnectorLocking {
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTShapeLocking {
     #[serde(rename = "@noTextEdit")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_text_edit: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPictureLocking {
     #[serde(rename = "@noCrop")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_crop: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupLocking {
     #[serde(rename = "@noGrp")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_grp: Option<bool>,
     #[serde(rename = "@noUngrp")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_ungrp: Option<bool>,
     #[serde(rename = "@noSelect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_select: Option<bool>,
     #[serde(rename = "@noRot")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_rot: Option<bool>,
     #[serde(rename = "@noChangeAspect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_change_aspect: Option<bool>,
     #[serde(rename = "@noMove")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_move: Option<bool>,
     #[serde(rename = "@noResize")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_resize: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGraphicalObjectFrameLocking {
     #[serde(rename = "@noGrp")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_grp: Option<bool>,
     #[serde(rename = "@noDrilldown")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_drilldown: Option<bool>,
     #[serde(rename = "@noSelect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_select: Option<bool>,
     #[serde(rename = "@noChangeAspect")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_change_aspect: Option<bool>,
     #[serde(rename = "@noMove")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_move: Option<bool>,
     #[serde(rename = "@noResize")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_resize: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTContentPartLocking {
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5995,132 +6494,232 @@ pub struct CTNonVisualDrawingProps {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "@descr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub descr: Option<String>,
     #[serde(rename = "@hidden")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[serde(rename = "@title")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
     #[serde(rename = "hlinkClick")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_click: Option<Box<CTHyperlink>>,
     #[serde(rename = "hlinkHover")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_hover: Option<Box<CTHyperlink>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualDrawingShapeProps {
     #[serde(rename = "@txBox")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub tx_box: Option<bool>,
     #[serde(rename = "spLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp_locks: Option<Box<CTShapeLocking>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualConnectorProperties {
     #[serde(rename = "cxnSpLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cxn_sp_locks: Option<Box<CTConnectorLocking>>,
     #[serde(rename = "stCxn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_cxn: Option<Box<CTConnection>>,
     #[serde(rename = "endCxn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_cxn: Option<Box<CTConnection>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualPictureProperties {
     #[serde(rename = "@preferRelativeResize")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub prefer_relative_resize: Option<bool>,
     #[serde(rename = "picLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pic_locks: Option<Box<CTPictureLocking>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualGroupDrawingShapeProps {
     #[serde(rename = "grpSpLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grp_sp_locks: Option<Box<CTGroupLocking>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualGraphicFrameProperties {
     #[serde(rename = "graphicFrameLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub graphic_frame_locks: Option<Box<CTGraphicalObjectFrameLocking>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNonVisualContentPartProperties {
     #[serde(rename = "@isComment")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub is_comment: Option<bool>,
     #[serde(rename = "cpLocks")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cp_locks: Option<Box<CTContentPartLocking>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGraphicalObjectData {
     #[serde(rename = "@uri")]
     pub uri: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTGraphicalObjectDataAny = String;
 
 pub type CTGraphicalObject = Box<CTGraphicalObjectData>;
 
-pub type Graphic = Box<CTGraphicalObject>;
+pub type AGraphic = Box<CTGraphicalObject>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAnimationDgmElement {
     #[serde(rename = "@id")]
-    #[serde(default)]
-    pub id: Option<SSTGuid>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<Guid>,
     #[serde(rename = "@bldStep")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld_step: Option<STDgmBuildStep>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAnimationChartElement {
     #[serde(rename = "@seriesIdx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub series_idx: Option<i32>,
     #[serde(rename = "@categoryIdx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub category_idx: Option<i32>,
     #[serde(rename = "@bldStep")]
     pub bld_step: STChartBuildStep,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6129,21 +6728,43 @@ pub struct CTAnimationElementChoice;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAnimationDgmBuildProperties {
     #[serde(rename = "@bld")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld: Option<STAnimationDgmBuildType>,
     #[serde(rename = "@rev")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rev: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAnimationChartBuildProperties {
     #[serde(rename = "@bld")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld: Option<STAnimationChartBuildType>,
     #[serde(rename = "@animBg")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub anim_bg: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6155,8 +6776,13 @@ pub struct CTBackgroundFormatting;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTWholeE2oFormatting {
     #[serde(rename = "ln")]
-    #[serde(default)]
-    pub ln: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line: Option<Box<LineProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6165,18 +6791,28 @@ pub struct CTGvmlUseShapeRectangle;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlTextShape {
     #[serde(rename = "txBody")]
-    pub tx_body: Box<CTTextBody>,
+    pub tx_body: Box<TextBody>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlShapeNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: Box<CTNonVisualDrawingProps>,
+    pub common_non_visual_properties: Box<CTNonVisualDrawingProps>,
     #[serde(rename = "cNvSpPr")]
-    pub c_nv_sp_pr: Box<CTNonVisualDrawingShapeProps>,
+    pub common_non_visual_shape_properties: Box<CTNonVisualDrawingShapeProps>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6186,22 +6822,32 @@ pub struct CTGvmlShape {
     #[serde(rename = "spPr")]
     pub sp_pr: Box<CTShapeProperties>,
     #[serde(rename = "txSp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx_sp: Option<Box<CTGvmlTextShape>>,
     #[serde(rename = "style")]
-    #[serde(default)]
-    pub style: Option<Box<CTShapeStyle>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlConnectorNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: Box<CTNonVisualDrawingProps>,
+    pub common_non_visual_properties: Box<CTNonVisualDrawingProps>,
     #[serde(rename = "cNvCxnSpPr")]
     pub c_nv_cxn_sp_pr: Box<CTNonVisualConnectorProperties>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6211,19 +6857,29 @@ pub struct CTGvmlConnector {
     #[serde(rename = "spPr")]
     pub sp_pr: Box<CTShapeProperties>,
     #[serde(rename = "style")]
-    #[serde(default)]
-    pub style: Option<Box<CTShapeStyle>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlPictureNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: Box<CTNonVisualDrawingProps>,
+    pub common_non_visual_properties: Box<CTNonVisualDrawingProps>,
     #[serde(rename = "cNvPicPr")]
-    pub c_nv_pic_pr: Box<CTNonVisualPictureProperties>,
+    pub common_non_visual_picture_properties: Box<CTNonVisualPictureProperties>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6231,23 +6887,33 @@ pub struct CTGvmlPicture {
     #[serde(rename = "nvPicPr")]
     pub nv_pic_pr: Box<CTGvmlPictureNonVisual>,
     #[serde(rename = "blipFill")]
-    pub blip_fill: Box<CTBlipFillProperties>,
+    pub blip_fill: Box<BlipFillProperties>,
     #[serde(rename = "spPr")]
     pub sp_pr: Box<CTShapeProperties>,
     #[serde(rename = "style")]
-    #[serde(default)]
-    pub style: Option<Box<CTShapeStyle>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlGraphicFrameNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: Box<CTNonVisualDrawingProps>,
+    pub common_non_visual_properties: Box<CTNonVisualDrawingProps>,
     #[serde(rename = "cNvGraphicFramePr")]
     pub c_nv_graphic_frame_pr: Box<CTNonVisualGraphicFrameProperties>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6255,18 +6921,28 @@ pub struct CTGvmlGraphicalObjectFrame {
     #[serde(rename = "nvGraphicFramePr")]
     pub nv_graphic_frame_pr: Box<CTGvmlGraphicFrameNonVisual>,
     #[serde(rename = "xfrm")]
-    pub xfrm: Box<CTTransform2D>,
+    pub transform: Box<Transform2D>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGvmlGroupShapeNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: Box<CTNonVisualDrawingProps>,
+    pub common_non_visual_properties: Box<CTNonVisualDrawingProps>,
     #[serde(rename = "cNvGrpSpPr")]
     pub c_nv_grp_sp_pr: Box<CTNonVisualGroupDrawingShapeProps>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6276,23 +6952,40 @@ pub struct CTGvmlGroupShape {
     #[serde(rename = "grpSpPr")]
     pub grp_sp_pr: Box<CTGroupShapeProperties>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCamera {
     #[serde(rename = "@prst")]
-    pub prst: STPresetCameraType,
+    pub preset: STPresetCameraType,
     #[serde(rename = "@fov")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fov: Option<STFOVAngle>,
     #[serde(rename = "@zoom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom: Option<STPositivePercentage>,
     #[serde(rename = "rot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<Box<CTSphereCoords>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6302,8 +6995,20 @@ pub struct CTLightRig {
     #[serde(rename = "@dir")]
     pub dir: STLightRigDirection,
     #[serde(rename = "rot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<Box<CTSphereCoords>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6313,11 +7018,16 @@ pub struct CTScene3D {
     #[serde(rename = "lightRig")]
     pub light_rig: Box<CTLightRig>,
     #[serde(rename = "backdrop")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub backdrop: Option<Box<CTBackdrop>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6329,65 +7039,103 @@ pub struct CTBackdrop {
     #[serde(rename = "up")]
     pub up: Box<CTVector3D>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBevel {
     #[serde(rename = "@w")]
-    #[serde(default)]
-    pub w: Option<STPositiveCoordinate>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub width: Option<STPositiveCoordinate>,
     #[serde(rename = "@h")]
-    #[serde(default)]
-    pub h: Option<STPositiveCoordinate>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub height: Option<STPositiveCoordinate>,
     #[serde(rename = "@prst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub preset: Option<STBevelPresetType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub prst: Option<STBevelPresetType>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTShape3D {
     #[serde(rename = "@z")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub z: Option<STCoordinate>,
     #[serde(rename = "@extrusionH")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extrusion_h: Option<STPositiveCoordinate>,
     #[serde(rename = "@contourW")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contour_w: Option<STPositiveCoordinate>,
     #[serde(rename = "@prstMaterial")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_material: Option<STPresetMaterialType>,
     #[serde(rename = "bevelT")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bevel_t: Option<Box<CTBevel>>,
     #[serde(rename = "bevelB")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bevel_b: Option<Box<CTBevel>>,
     #[serde(rename = "extrusionClr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extrusion_clr: Option<Box<CTColor>>,
     #[serde(rename = "contourClr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contour_clr: Option<Box<CTColor>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFlatText {
     #[serde(rename = "@z")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub z: Option<STCoordinate>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAlphaBiLevelEffect {
     #[serde(rename = "@thresh")]
     pub thresh: STPositiveFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6402,48 +7150,103 @@ pub struct CTAlphaInverseEffect;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAlphaModulateFixedEffect {
     #[serde(rename = "@amt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub amt: Option<STPositivePercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAlphaOutsetEffect {
     #[serde(rename = "@rad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rad: Option<STCoordinate>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAlphaReplaceEffect {
     #[serde(rename = "@a")]
-    pub a: STPositiveFixedPercentage,
+    pub anchor: STPositiveFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBiLevelEffect {
     #[serde(rename = "@thresh")]
     pub thresh: STPositiveFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBlurEffect {
     #[serde(rename = "@rad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rad: Option<STPositiveCoordinate>,
     #[serde(rename = "@grow")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grow: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColorChangeEffect {
     #[serde(rename = "@useA")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_a: Option<bool>,
     #[serde(rename = "clrFrom")]
     pub clr_from: Box<CTColor>,
     #[serde(rename = "clrTo")]
     pub clr_to: Box<CTColor>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6455,8 +7258,15 @@ pub struct CTDuotoneEffect;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGlowEffect {
     #[serde(rename = "@rad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rad: Option<STPositiveCoordinate>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6465,297 +7275,478 @@ pub struct CTGrayscaleEffect;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHSLEffect {
     #[serde(rename = "@hue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hue: Option<STPositiveFixedAngle>,
     #[serde(rename = "@sat")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sat: Option<STFixedPercentage>,
     #[serde(rename = "@lum")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lum: Option<STFixedPercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTInnerShadowEffect {
     #[serde(rename = "@blurRad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
     #[serde(rename = "@dist")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
     #[serde(rename = "@dir")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLuminanceEffect {
     #[serde(rename = "@bright")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bright: Option<STFixedPercentage>,
     #[serde(rename = "@contrast")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contrast: Option<STFixedPercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTOuterShadowEffect {
     #[serde(rename = "@blurRad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
     #[serde(rename = "@dist")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
     #[serde(rename = "@dir")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
     #[serde(rename = "@sx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
     #[serde(rename = "@sy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
     #[serde(rename = "@kx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kx: Option<STFixedAngle>,
     #[serde(rename = "@ky")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ky: Option<STFixedAngle>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STRectAlignment>,
     #[serde(rename = "@rotWithShape")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rot_with_shape: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPresetShadowEffect {
     #[serde(rename = "@prst")]
-    pub prst: STPresetShadowVal,
+    pub preset: STPresetShadowVal,
     #[serde(rename = "@dist")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
     #[serde(rename = "@dir")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTReflectionEffect {
     #[serde(rename = "@blurRad")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
     #[serde(rename = "@stA")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_a: Option<STPositiveFixedPercentage>,
     #[serde(rename = "@stPos")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_pos: Option<STPositiveFixedPercentage>,
     #[serde(rename = "@endA")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_a: Option<STPositiveFixedPercentage>,
     #[serde(rename = "@endPos")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_pos: Option<STPositiveFixedPercentage>,
     #[serde(rename = "@dist")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
     #[serde(rename = "@dir")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
     #[serde(rename = "@fadeDir")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fade_dir: Option<STPositiveFixedAngle>,
     #[serde(rename = "@sx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
     #[serde(rename = "@sy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
     #[serde(rename = "@kx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kx: Option<STFixedAngle>,
     #[serde(rename = "@ky")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ky: Option<STFixedAngle>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STRectAlignment>,
     #[serde(rename = "@rotWithShape")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rot_with_shape: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRelativeOffsetEffect {
     #[serde(rename = "@tx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx: Option<STPercentage>,
     #[serde(rename = "@ty")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ty: Option<STPercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSoftEdgesEffect {
     #[serde(rename = "@rad")]
     pub rad: STPositiveCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTintEffect {
     #[serde(rename = "@hue")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hue: Option<STPositiveFixedAngle>,
     #[serde(rename = "@amt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub amt: Option<STFixedPercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTransformEffect {
     #[serde(rename = "@sx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
     #[serde(rename = "@sy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
     #[serde(rename = "@kx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kx: Option<STFixedAngle>,
     #[serde(rename = "@ky")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ky: Option<STFixedAngle>,
     #[serde(rename = "@tx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx: Option<STCoordinate>,
     #[serde(rename = "@ty")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ty: Option<STCoordinate>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTNoFillProperties;
+pub struct NoFill;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTSolidColorFillProperties;
+pub struct SolidColorFill;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLinearShadeProperties {
     #[serde(rename = "@ang")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ang: Option<STPositiveFixedAngle>,
     #[serde(rename = "@scaled")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub scaled: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPathShadeProperties {
     #[serde(rename = "@path")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path: Option<STPathShadeType>,
     #[serde(rename = "fillToRect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_to_rect: Option<Box<CTRelativeRect>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGradientStop {
     #[serde(rename = "@pos")]
     pub pos: STPositiveFixedPercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGradientStopList {
     #[serde(rename = "gs")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub gs: Vec<Box<CTGradientStop>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTGradientFillProperties {
+pub struct GradientFill {
     #[serde(rename = "@flip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flip: Option<STTileFlipMode>,
     #[serde(rename = "@rotWithShape")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rot_with_shape: Option<bool>,
     #[serde(rename = "gsLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gs_lst: Option<Box<CTGradientStopList>>,
     #[serde(rename = "tileRect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tile_rect: Option<Box<CTRelativeRect>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTileInfoProperties {
     #[serde(rename = "@tx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx: Option<STCoordinate>,
     #[serde(rename = "@ty")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ty: Option<STCoordinate>,
     #[serde(rename = "@sx")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
     #[serde(rename = "@sy")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
     #[serde(rename = "@flip")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flip: Option<STTileFlipMode>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STRectAlignment>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStretchInfoProperties {
     #[serde(rename = "fillRect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_rect: Option<Box<CTRelativeRect>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTBlip {
+pub struct Blip {
     #[serde(rename = "@cstate")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cstate: Option<STBlipCompression>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTBlipFillProperties {
+pub struct BlipFillProperties {
     #[serde(rename = "@dpi")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dpi: Option<u32>,
     #[serde(rename = "@rotWithShape")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rot_with_shape: Option<bool>,
     #[serde(rename = "blip")]
-    #[serde(default)]
-    pub blip: Option<Box<CTBlip>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blip: Option<Box<Blip>>,
     #[serde(rename = "srcRect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub src_rect: Option<Box<CTRelativeRect>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTPatternFillProperties {
+pub struct PatternFill {
     #[serde(rename = "@prst")]
-    #[serde(default)]
-    pub prst: Option<STPresetPatternVal>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub preset: Option<STPresetPatternVal>,
     #[serde(rename = "fgClr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fg_clr: Option<Box<CTColor>>,
     #[serde(rename = "bgClr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg_clr: Option<Box<CTColor>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6771,66 +7762,104 @@ pub struct CTFillEffect;
 pub struct CTFillOverlayEffect {
     #[serde(rename = "@blend")]
     pub blend: STBlendMode,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEffectReference {
     #[serde(rename = "@ref")]
     pub r#ref: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTEffectContainer {
+pub struct EffectContainer {
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STEffectContainerType>,
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTAlphaModulateEffect = Box<CTEffectContainer>;
+pub type CTAlphaModulateEffect = Box<EffectContainer>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBlendEffect {
     #[serde(rename = "@blend")]
     pub blend: STBlendMode,
     #[serde(rename = "cont")]
-    pub cont: Box<CTEffectContainer>,
+    pub cont: Box<EffectContainer>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTEffectList {
+pub struct EffectList {
     #[serde(rename = "blur")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur: Option<Box<CTBlurEffect>>,
     #[serde(rename = "fillOverlay")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_overlay: Option<Box<CTFillOverlayEffect>>,
     #[serde(rename = "glow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub glow: Option<Box<CTGlowEffect>>,
     #[serde(rename = "innerShdw")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inner_shdw: Option<Box<CTInnerShadowEffect>>,
     #[serde(rename = "outerShdw")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_shdw: Option<Box<CTOuterShadowEffect>>,
     #[serde(rename = "prstShdw")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_shdw: Option<Box<CTPresetShadowEffect>>,
     #[serde(rename = "reflection")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reflection: Option<Box<CTReflectionEffect>>,
     #[serde(rename = "softEdge")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub soft_edge: Option<Box<CTSoftEdgesEffect>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEffectProperties;
 
-pub type Blip = Box<CTBlip>;
+pub type ABlip = Box<Blip>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGeomGuide {
@@ -6838,13 +7867,25 @@ pub struct CTGeomGuide {
     pub name: STGeomGuideName,
     #[serde(rename = "@fmla")]
     pub fmla: STGeomGuideFormula,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGeomGuideList {
     #[serde(rename = "gd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub gd: Vec<Box<CTGeomGuide>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6853,6 +7894,13 @@ pub struct CTAdjPoint2D {
     pub x: STAdjCoordinate,
     #[serde(rename = "@y")]
     pub y: STAdjCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6862,57 +7910,88 @@ pub struct CTGeomRect {
     #[serde(rename = "@t")]
     pub t: STAdjCoordinate,
     #[serde(rename = "@r")]
-    pub r: STAdjCoordinate,
+    pub relationship_id: STAdjCoordinate,
     #[serde(rename = "@b")]
     pub b: STAdjCoordinate,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTXYAdjustHandle {
     #[serde(rename = "@gdRefX")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gd_ref_x: Option<STGeomGuideName>,
     #[serde(rename = "@minX")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_x: Option<STAdjCoordinate>,
     #[serde(rename = "@maxX")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_x: Option<STAdjCoordinate>,
     #[serde(rename = "@gdRefY")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gd_ref_y: Option<STGeomGuideName>,
     #[serde(rename = "@minY")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_y: Option<STAdjCoordinate>,
     #[serde(rename = "@maxY")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_y: Option<STAdjCoordinate>,
     #[serde(rename = "pos")]
     pub pos: Box<CTAdjPoint2D>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPolarAdjustHandle {
     #[serde(rename = "@gdRefR")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gd_ref_r: Option<STGeomGuideName>,
     #[serde(rename = "@minR")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_r: Option<STAdjCoordinate>,
     #[serde(rename = "@maxR")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_r: Option<STAdjCoordinate>,
     #[serde(rename = "@gdRefAng")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gd_ref_ang: Option<STGeomGuideName>,
     #[serde(rename = "@minAng")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_ang: Option<STAdjAngle>,
     #[serde(rename = "@maxAng")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_ang: Option<STAdjAngle>,
     #[serde(rename = "pos")]
     pub pos: Box<CTAdjPoint2D>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6921,6 +8000,18 @@ pub struct CTConnectionSite {
     pub ang: STAdjAngle,
     #[serde(rename = "pos")]
     pub pos: Box<CTAdjPoint2D>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6929,8 +8020,13 @@ pub struct CTAdjustHandleList;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTConnectionSiteList {
     #[serde(rename = "cxn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cxn: Vec<Box<CTConnectionSite>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6939,6 +8035,13 @@ pub struct CTConnection {
     pub id: STDrawingElementId,
     #[serde(rename = "@idx")]
     pub idx: u32,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type CTPath2DMoveTo = Box<CTAdjPoint2D>;
@@ -6955,20 +8058,37 @@ pub struct CTPath2DArcTo {
     pub st_ang: STAdjAngle,
     #[serde(rename = "@swAng")]
     pub sw_ang: STAdjAngle,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPath2DQuadBezierTo {
     #[serde(rename = "pt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pt: Vec<Box<CTAdjPoint2D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPath2DCubicBezierTo {
     #[serde(rename = "pt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub pt: Vec<Box<CTAdjPoint2D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6977,79 +8097,135 @@ pub struct CTPath2DClose;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPath2D {
     #[serde(rename = "@w")]
-    #[serde(default)]
-    pub w: Option<STPositiveCoordinate>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub width: Option<STPositiveCoordinate>,
     #[serde(rename = "@h")]
-    #[serde(default)]
-    pub h: Option<STPositiveCoordinate>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub height: Option<STPositiveCoordinate>,
     #[serde(rename = "@fill")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<STPathFillMode>,
     #[serde(rename = "@stroke")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub stroke: Option<bool>,
     #[serde(rename = "@extrusionOk")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub extrusion_ok: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPath2DList {
     #[serde(rename = "path")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path: Vec<Box<CTPath2D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPresetGeometry2D {
     #[serde(rename = "@prst")]
-    pub prst: STShapeType,
+    pub preset: STShapeType,
     #[serde(rename = "avLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub av_lst: Option<Box<CTGeomGuideList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPresetTextShape {
     #[serde(rename = "@prst")]
-    pub prst: STTextShapeType,
+    pub preset: STTextShapeType,
     #[serde(rename = "avLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub av_lst: Option<Box<CTGeomGuideList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomGeometry2D {
     #[serde(rename = "avLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub av_lst: Option<Box<CTGeomGuideList>>,
     #[serde(rename = "gdLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gd_lst: Option<Box<CTGeomGuideList>>,
     #[serde(rename = "ahLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ah_lst: Option<Box<CTAdjustHandleList>>,
     #[serde(rename = "cxnLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cxn_lst: Option<Box<CTConnectionSiteList>>,
     #[serde(rename = "rect")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rect: Option<Box<CTGeomRect>>,
     #[serde(rename = "pathLst")]
     pub path_lst: Box<CTPath2DList>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLineEndProperties {
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STLineEndType>,
     #[serde(rename = "@w")]
-    #[serde(default)]
-    pub w: Option<STLineEndWidth>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub width: Option<STLineEndWidth>,
     #[serde(rename = "@len")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub len: Option<STLineEndLength>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7061,15 +8237,29 @@ pub struct CTLineJoinRound;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLineJoinMiterProperties {
     #[serde(rename = "@lim")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lim: Option<STPositivePercentage>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPresetLineDashProperties {
     #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<STPresetLineDashVal>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub val: Option<STPresetLineDashVal>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7078,92 +8268,154 @@ pub struct CTDashStop {
     pub d: STPositivePercentage,
     #[serde(rename = "@sp")]
     pub sp: STPositivePercentage,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDashStopList {
     #[serde(rename = "ds")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ds: Vec<Box<CTDashStop>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTLineProperties {
+pub struct LineProperties {
     #[serde(rename = "@w")]
-    #[serde(default)]
-    pub w: Option<STLineWidth>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub width: Option<STLineWidth>,
     #[serde(rename = "@cap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cap: Option<STLineCap>,
     #[serde(rename = "@cmpd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cmpd: Option<STCompoundLine>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STPenAlignment>,
     #[serde(rename = "headEnd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub head_end: Option<Box<CTLineEndProperties>>,
     #[serde(rename = "tailEnd")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tail_end: Option<Box<CTLineEndProperties>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTShapeProperties {
     #[serde(rename = "@bwMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<STBlackWhiteMode>,
     #[serde(rename = "xfrm")]
-    #[serde(default)]
-    pub xfrm: Option<Box<CTTransform2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transform: Option<Box<Transform2D>>,
     #[serde(rename = "ln")]
-    #[serde(default)]
-    pub ln: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line: Option<Box<LineProperties>>,
     #[serde(rename = "scene3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
     #[serde(rename = "sp3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp3d: Option<Box<CTShape3D>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupShapeProperties {
     #[serde(rename = "@bwMode")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<STBlackWhiteMode>,
     #[serde(rename = "xfrm")]
-    #[serde(default)]
-    pub xfrm: Option<Box<CTGroupTransform2D>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transform: Option<Box<CTGroupTransform2D>>,
     #[serde(rename = "scene3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStyleMatrixReference {
     #[serde(rename = "@idx")]
     pub idx: STStyleMatrixColumnIndex,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontReference {
     #[serde(rename = "@idx")]
     pub idx: STFontCollectionIndex,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTShapeStyle {
+pub struct ShapeStyle {
     #[serde(rename = "lnRef")]
     pub ln_ref: Box<CTStyleMatrixReference>,
     #[serde(rename = "fillRef")]
@@ -7172,6 +8424,11 @@ pub struct CTShapeStyle {
     pub effect_ref: Box<CTStyleMatrixReference>,
     #[serde(rename = "fontRef")]
     pub font_ref: Box<CTFontReference>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7183,27 +8440,37 @@ pub struct CTDefaultShapeDefinition {
     #[serde(rename = "lstStyle")]
     pub lst_style: Box<CTTextListStyle>,
     #[serde(rename = "style")]
-    #[serde(default)]
-    pub style: Option<Box<CTShapeStyle>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style: Option<Box<ShapeStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTObjectStyleDefaults {
     #[serde(rename = "spDef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp_def: Option<Box<CTDefaultShapeDefinition>>,
     #[serde(rename = "lnDef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_def: Option<Box<CTDefaultShapeDefinition>>,
     #[serde(rename = "txDef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx_def: Option<Box<CTDefaultShapeDefinition>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7236,8 +8503,20 @@ pub struct CTColorMapping {
     #[serde(rename = "@folHlink")]
     pub fol_hlink: STColorSchemeIndex,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7246,51 +8525,78 @@ pub struct CTColorMappingOverride;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColorSchemeAndMapping {
     #[serde(rename = "clrScheme")]
-    pub clr_scheme: Box<CTColorScheme>,
+    pub clr_scheme: Box<ColorScheme>,
     #[serde(rename = "clrMap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_map: Option<Box<CTColorMapping>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColorSchemeList {
     #[serde(rename = "extraClrScheme")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub extra_clr_scheme: Vec<Box<CTColorSchemeAndMapping>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTOfficeStyleSheet {
     #[serde(rename = "@name")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "themeElements")]
     pub theme_elements: Box<CTBaseStyles>,
     #[serde(rename = "objectDefaults")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_defaults: Option<Box<CTObjectStyleDefaults>>,
     #[serde(rename = "extraClrSchemeLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extra_clr_scheme_lst: Option<Box<CTColorSchemeList>>,
     #[serde(rename = "custClrLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cust_clr_lst: Option<Box<CTCustomColorList>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBaseStylesOverride {
     #[serde(rename = "clrScheme")]
-    #[serde(default)]
-    pub clr_scheme: Option<Box<CTColorScheme>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_scheme: Option<Box<ColorScheme>>,
     #[serde(rename = "fontScheme")]
-    #[serde(default)]
-    pub font_scheme: Option<Box<CTFontScheme>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub font_scheme: Option<Box<FontScheme>>,
     #[serde(rename = "fmtScheme")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fmt_scheme: Option<Box<CTStyleMatrix>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7299,187 +8605,319 @@ pub struct CTClipboardStyleSheet {
     pub theme_elements: Box<CTBaseStyles>,
     #[serde(rename = "clrMap")]
     pub clr_map: Box<CTColorMapping>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-pub type Theme = Box<CTOfficeStyleSheet>;
+pub type ATheme = Box<CTOfficeStyleSheet>;
 
-pub type ThemeOverride = Box<CTBaseStylesOverride>;
+pub type AThemeOverride = Box<CTBaseStylesOverride>;
 
-pub type ThemeManager = Box<CTEmptyElement>;
+pub type AThemeManager = Box<CTEmptyElement>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableCellProperties {
     #[serde(rename = "@marL")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_l: Option<STCoordinate32>,
     #[serde(rename = "@marR")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_r: Option<STCoordinate32>,
     #[serde(rename = "@marT")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_t: Option<STCoordinate32>,
     #[serde(rename = "@marB")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_b: Option<STCoordinate32>,
     #[serde(rename = "@vert")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<STTextVerticalType>,
     #[serde(rename = "@anchor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STTextAnchoringType>,
     #[serde(rename = "@anchorCtr")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub anchor_ctr: Option<bool>,
     #[serde(rename = "@horzOverflow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_overflow: Option<STTextHorzOverflowType>,
     #[serde(rename = "lnL")]
-    #[serde(default)]
-    pub ln_l: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_l: Option<Box<LineProperties>>,
     #[serde(rename = "lnR")]
-    #[serde(default)]
-    pub ln_r: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_r: Option<Box<LineProperties>>,
     #[serde(rename = "lnT")]
-    #[serde(default)]
-    pub ln_t: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_t: Option<Box<LineProperties>>,
     #[serde(rename = "lnB")]
-    #[serde(default)]
-    pub ln_b: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_b: Option<Box<LineProperties>>,
     #[serde(rename = "lnTlToBr")]
-    #[serde(default)]
-    pub ln_tl_to_br: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_tl_to_br: Option<Box<LineProperties>>,
     #[serde(rename = "lnBlToTr")]
-    #[serde(default)]
-    pub ln_bl_to_tr: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_bl_to_tr: Option<Box<LineProperties>>,
     #[serde(rename = "cell3D")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell3_d: Option<Box<CTCell3D>>,
     #[serde(rename = "headers")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<Box<CTHeaders>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHeaders {
     #[serde(rename = "header")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub header: Vec<String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableCol {
     #[serde(rename = "@w")]
-    pub w: STCoordinate,
+    pub width: STCoordinate,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableGrid {
     #[serde(rename = "gridCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub grid_col: Vec<Box<CTTableCol>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableCell {
     #[serde(rename = "@rowSpan")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_span: Option<i32>,
     #[serde(rename = "@gridSpan")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_span: Option<i32>,
     #[serde(rename = "@hMerge")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub h_merge: Option<bool>,
     #[serde(rename = "@vMerge")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub v_merge: Option<bool>,
     #[serde(rename = "@id")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
     #[serde(rename = "txBody")]
-    #[serde(default)]
-    pub tx_body: Option<Box<CTTextBody>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_body: Option<Box<TextBody>>,
     #[serde(rename = "tcPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_pr: Option<Box<CTTableCellProperties>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableRow {
     #[serde(rename = "@h")]
-    pub h: STCoordinate,
+    pub height: STCoordinate,
     #[serde(rename = "tc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tc: Vec<Box<CTTableCell>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableProperties {
     #[serde(rename = "@rtl")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rtl: Option<bool>,
     #[serde(rename = "@firstRow")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub first_row: Option<bool>,
     #[serde(rename = "@firstCol")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub first_col: Option<bool>,
     #[serde(rename = "@lastRow")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub last_row: Option<bool>,
     #[serde(rename = "@lastCol")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub last_col: Option<bool>,
     #[serde(rename = "@bandRow")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub band_row: Option<bool>,
     #[serde(rename = "@bandCol")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub band_col: Option<bool>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTable {
     #[serde(rename = "tblPr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_pr: Option<Box<CTTableProperties>>,
     #[serde(rename = "tblGrid")]
     pub tbl_grid: Box<CTTableGrid>,
     #[serde(rename = "tr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tr: Vec<Box<CTTableRow>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-pub type Tbl = Box<CTTable>;
+pub type ATbl = Box<CTTable>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCell3D {
     #[serde(rename = "@prstMaterial")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_material: Option<STPresetMaterialType>,
     #[serde(rename = "bevel")]
     pub bevel: Box<CTBevel>,
     #[serde(rename = "lightRig")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub light_rig: Option<Box<CTLightRig>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7488,45 +8926,62 @@ pub struct CTThemeableLineStyle;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableStyleTextStyle {
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b: Option<STOnOffStyleType>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<STOnOffStyleType>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableCellBorderStyle {
     #[serde(rename = "left")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "right")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "top")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "bottom")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "insideH")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_h: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "insideV")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inside_v: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "tl2br")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tl2br: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "tr2bl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tr2bl: Option<Box<CTThemeableLineStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7535,142 +8990,193 @@ pub struct CTTableBackgroundStyle;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableStyleCellStyle {
     #[serde(rename = "tcBdr")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_bdr: Option<Box<CTTableCellBorderStyle>>,
     #[serde(rename = "cell3D")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell3_d: Option<Box<CTCell3D>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTablePartStyle {
     #[serde(rename = "tcTxStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_tx_style: Option<Box<CTTableStyleTextStyle>>,
     #[serde(rename = "tcStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_style: Option<Box<CTTableStyleCellStyle>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableStyle {
     #[serde(rename = "@styleId")]
-    pub style_id: SSTGuid,
+    pub style_id: Guid,
     #[serde(rename = "@styleName")]
     pub style_name: String,
     #[serde(rename = "tblBg")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_bg: Option<Box<CTTableBackgroundStyle>>,
     #[serde(rename = "wholeTbl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub whole_tbl: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "band1H")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub band1_h: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "band2H")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub band2_h: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "band1V")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub band1_v: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "band2V")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub band2_v: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "lastCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_col: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "firstCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_col: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "lastRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "seCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub se_cell: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "swCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sw_cell: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "firstRow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "neCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ne_cell: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "nwCell")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nw_cell: Option<Box<CTTablePartStyle>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableStyleList {
     #[serde(rename = "@def")]
-    pub def: SSTGuid,
+    pub def: Guid,
     #[serde(rename = "tblStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tbl_style: Vec<Box<CTTableStyle>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-pub type TblStyleLst = Box<CTTableStyleList>;
+pub type ATblStyleLst = Box<CTTableStyleList>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextParagraph {
+pub struct TextParagraph {
     #[serde(rename = "pPr")]
-    #[serde(default)]
-    pub p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "endParaRPr")]
-    #[serde(default)]
-    pub end_para_r_pr: Option<Box<CTTextCharacterProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub end_para_r_pr: Option<Box<TextCharacterProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextListStyle {
     #[serde(rename = "defPPr")]
-    #[serde(default)]
-    pub def_p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub def_p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl1pPr")]
-    #[serde(default)]
-    pub lvl1p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl1p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl2pPr")]
-    #[serde(default)]
-    pub lvl2p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl2p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl3pPr")]
-    #[serde(default)]
-    pub lvl3p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl3p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl4pPr")]
-    #[serde(default)]
-    pub lvl4p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl4p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl5pPr")]
-    #[serde(default)]
-    pub lvl5p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl5p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl6pPr")]
-    #[serde(default)]
-    pub lvl6p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl6p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl7pPr")]
-    #[serde(default)]
-    pub lvl7p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl7p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl8pPr")]
-    #[serde(default)]
-    pub lvl8p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl8p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "lvl9pPr")]
-    #[serde(default)]
-    pub lvl9p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lvl9p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextNormalAutofit {
     #[serde(rename = "@fontScale")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_scale: Option<STTextFontScalePercentOrPercentString>,
     #[serde(rename = "@lnSpcReduction")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_spc_reduction: Option<STTextSpacingPercentOrPercentString>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7682,83 +9188,128 @@ pub struct CTTextNoAutofit;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextBodyProperties {
     #[serde(rename = "@rot")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<STAngle>,
     #[serde(rename = "@spcFirstLastPara")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub spc_first_last_para: Option<bool>,
     #[serde(rename = "@vertOverflow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_overflow: Option<STTextVertOverflowType>,
     #[serde(rename = "@horzOverflow")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_overflow: Option<STTextHorzOverflowType>,
     #[serde(rename = "@vert")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<STTextVerticalType>,
     #[serde(rename = "@wrap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap: Option<STTextWrappingType>,
     #[serde(rename = "@lIns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub l_ins: Option<STCoordinate32>,
     #[serde(rename = "@tIns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t_ins: Option<STCoordinate32>,
     #[serde(rename = "@rIns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_ins: Option<STCoordinate32>,
     #[serde(rename = "@bIns")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b_ins: Option<STCoordinate32>,
     #[serde(rename = "@numCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_col: Option<STTextColumnCount>,
     #[serde(rename = "@spcCol")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_col: Option<STPositiveCoordinate32>,
     #[serde(rename = "@rtlCol")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rtl_col: Option<bool>,
     #[serde(rename = "@fromWordArt")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub from_word_art: Option<bool>,
     #[serde(rename = "@anchor")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STTextAnchoringType>,
     #[serde(rename = "@anchorCtr")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub anchor_ctr: Option<bool>,
     #[serde(rename = "@forceAA")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub force_a_a: Option<bool>,
     #[serde(rename = "@upright")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub upright: Option<bool>,
     #[serde(rename = "@compatLnSpc")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub compat_ln_spc: Option<bool>,
     #[serde(rename = "prstTxWarp")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_tx_warp: Option<Box<CTPresetTextShape>>,
     #[serde(rename = "scene3d")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextBody {
+pub struct TextBody {
     #[serde(rename = "bodyPr")]
     pub body_pr: Box<CTTextBodyProperties>,
     #[serde(rename = "lstStyle")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lst_style: Option<Box<CTTextListStyle>>,
     #[serde(rename = "p")]
-    #[serde(default)]
-    pub p: Vec<Box<CTTextParagraph>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub p: Vec<Box<TextParagraph>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7770,13 +9321,27 @@ pub struct CTTextBulletSizeFollowText;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextBulletSizePercent {
     #[serde(rename = "@val")]
-    pub val: STTextBulletSizePercent,
+    pub value: STTextBulletSizePercent,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextBulletSizePoint {
     #[serde(rename = "@val")]
-    pub val: STTextFontSize,
+    pub value: STTextFontSize,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7787,34 +9352,55 @@ pub struct CTTextAutonumberBullet {
     #[serde(rename = "@type")]
     pub r#type: STTextAutonumberScheme,
     #[serde(rename = "@startAt")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_at: Option<STTextBulletStartAtNum>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextCharBullet {
     #[serde(rename = "@char")]
     pub char: String,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-pub type CTTextBlipBullet = Box<CTBlip>;
+pub type CTTextBlipBullet = Box<Blip>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextNoBullet;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextFont {
+pub struct TextFont {
     #[serde(rename = "@typeface")]
     pub typeface: STTextTypeface,
     #[serde(rename = "@panose")]
-    #[serde(default)]
-    pub panose: Option<SSTPanose>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub panose: Option<Panose>,
     #[serde(rename = "@pitchFamily")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pitch_family: Option<STPitchFamily>,
     #[serde(rename = "@charset")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub charset: Option<i8>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7827,220 +9413,347 @@ pub struct CTTextUnderlineFillFollowText;
 pub struct CTTextUnderlineFillGroupWrapper;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextCharacterProperties {
+pub struct TextCharacterProperties {
     #[serde(rename = "@kumimoji")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub kumimoji: Option<bool>,
     #[serde(rename = "@lang")]
-    #[serde(default)]
-    pub lang: Option<SSTLang>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lang: Option<Language>,
     #[serde(rename = "@altLang")]
-    #[serde(default)]
-    pub alt_lang: Option<SSTLang>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alt_lang: Option<Language>,
     #[serde(rename = "@sz")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sz: Option<STTextFontSize>,
     #[serde(rename = "@b")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "@i")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@u")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<STTextUnderlineType>,
     #[serde(rename = "@strike")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub strike: Option<STTextStrikeType>,
     #[serde(rename = "@kern")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kern: Option<STTextNonNegativePoint>,
     #[serde(rename = "@cap")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cap: Option<STTextCapsType>,
     #[serde(rename = "@spc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc: Option<STTextPoint>,
     #[serde(rename = "@normalizeH")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub normalize_h: Option<bool>,
     #[serde(rename = "@baseline")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub baseline: Option<STPercentage>,
     #[serde(rename = "@noProof")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub no_proof: Option<bool>,
     #[serde(rename = "@dirty")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub dirty: Option<bool>,
     #[serde(rename = "@err")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub err: Option<bool>,
     #[serde(rename = "@smtClean")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub smt_clean: Option<bool>,
     #[serde(rename = "@smtId")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smt_id: Option<u32>,
     #[serde(rename = "@bmk")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bmk: Option<String>,
     #[serde(rename = "ln")]
-    #[serde(default)]
-    pub ln: Option<Box<CTLineProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line: Option<Box<LineProperties>>,
     #[serde(rename = "highlight")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTColor>>,
     #[serde(rename = "latin")]
-    #[serde(default)]
-    pub latin: Option<Box<CTTextFont>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub latin: Option<Box<TextFont>>,
     #[serde(rename = "ea")]
-    #[serde(default)]
-    pub ea: Option<Box<CTTextFont>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ea: Option<Box<TextFont>>,
     #[serde(rename = "cs")]
-    #[serde(default)]
-    pub cs: Option<Box<CTTextFont>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cs: Option<Box<TextFont>>,
     #[serde(rename = "sym")]
-    #[serde(default)]
-    pub sym: Option<Box<CTTextFont>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sym: Option<Box<TextFont>>,
     #[serde(rename = "hlinkClick")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_click: Option<Box<CTHyperlink>>,
     #[serde(rename = "hlinkMouseOver")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_mouse_over: Option<Box<CTHyperlink>>,
     #[serde(rename = "rtl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rtl: Option<Box<CTBoolean>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBoolean {
     #[serde(rename = "@val")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<OnOff>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
     #[serde(default)]
-    pub val: Option<SSTOnOff>,
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextSpacingPercent {
     #[serde(rename = "@val")]
-    pub val: STTextSpacingPercentOrPercentString,
+    pub value: STTextSpacingPercentOrPercentString,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextSpacingPoint {
     #[serde(rename = "@val")]
-    pub val: STTextSpacingPoint,
+    pub value: STTextSpacingPoint,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextTabStop {
     #[serde(rename = "@pos")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pos: Option<STCoordinate32>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STTextTabAlignType>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextTabStopList {
     #[serde(rename = "tab")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tab: Vec<Box<CTTextTabStop>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextLineBreak {
     #[serde(rename = "rPr")]
-    #[serde(default)]
-    pub r_pr: Option<Box<CTTextCharacterProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_pr: Option<Box<TextCharacterProperties>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextSpacing;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTTextParagraphProperties {
+pub struct TextParagraphProperties {
     #[serde(rename = "@marL")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_l: Option<STTextMargin>,
     #[serde(rename = "@marR")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_r: Option<STTextMargin>,
     #[serde(rename = "@lvl")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl: Option<STTextIndentLevelType>,
     #[serde(rename = "@indent")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<STTextIndent>,
     #[serde(rename = "@algn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STTextAlignType>,
     #[serde(rename = "@defTabSz")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_tab_sz: Option<STCoordinate32>,
     #[serde(rename = "@rtl")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub rtl: Option<bool>,
     #[serde(rename = "@eaLnBrk")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ea_ln_brk: Option<bool>,
     #[serde(rename = "@fontAlgn")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_algn: Option<STTextFontAlignType>,
     #[serde(rename = "@latinLnBrk")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub latin_ln_brk: Option<bool>,
     #[serde(rename = "@hangingPunct")]
-    #[serde(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hanging_punct: Option<bool>,
     #[serde(rename = "lnSpc")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_spc: Option<Box<CTTextSpacing>>,
     #[serde(rename = "spcBef")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_bef: Option<Box<CTTextSpacing>>,
     #[serde(rename = "spcAft")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_aft: Option<Box<CTTextSpacing>>,
     #[serde(rename = "tabLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_lst: Option<Box<CTTextTabStopList>>,
     #[serde(rename = "defRPr")]
-    #[serde(default)]
-    pub def_r_pr: Option<Box<CTTextCharacterProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub def_r_pr: Option<Box<TextCharacterProperties>>,
     #[serde(rename = "extLst")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextField {
     #[serde(rename = "@id")]
-    pub id: SSTGuid,
+    pub id: Guid,
     #[serde(rename = "@type")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<String>,
     #[serde(rename = "rPr")]
-    #[serde(default)]
-    pub r_pr: Option<Box<CTTextCharacterProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_pr: Option<Box<TextCharacterProperties>>,
     #[serde(rename = "pPr")]
-    #[serde(default)]
-    pub p_pr: Option<Box<CTTextParagraphProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(rename = "t")]
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t: Option<String>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CTRegularTextRun {
+pub struct TextRun {
     #[serde(rename = "rPr")]
-    #[serde(default)]
-    pub r_pr: Option<Box<CTTextCharacterProperties>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_pr: Option<Box<TextCharacterProperties>>,
     #[serde(rename = "t")]
     pub t: String,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }

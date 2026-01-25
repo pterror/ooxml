@@ -4,8 +4,10 @@
 //! for features like roundtrip fidelity (preserving unknown elements/attributes).
 
 mod raw_xml;
+pub mod serde_helpers;
 
 pub use raw_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
+pub use serde_helpers::{ooxml_bool, ooxml_bool_required};
 
 /// Error type for XML operations.
 #[derive(Debug, thiserror::Error)]

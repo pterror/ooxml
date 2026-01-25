@@ -4433,11 +4433,19 @@ pub struct FilterColumn {
     pub column_id: u32,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@hiddenButton")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_button: Option<bool>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@showButton")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_button: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -4452,7 +4460,11 @@ pub struct FilterColumn {
 #[serde(rename = "filters")]
 pub struct Filters {
     #[serde(rename = "@blank")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub blank: Option<bool>,
     #[serde(rename = "@calendarType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4495,7 +4507,11 @@ pub struct Filter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CustomFilters {
     #[serde(rename = "@and")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub and: Option<bool>,
     #[serde(rename = "customFilter")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4534,10 +4550,18 @@ pub struct CustomFilter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Top10Filter {
     #[serde(rename = "@top")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub top: Option<bool>,
     #[serde(rename = "@percent")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub percent: Option<bool>,
     #[serde(rename = "@val")]
     pub value: f64,
@@ -4559,7 +4583,11 @@ pub struct ColorFilter {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxf_id: Option<STDxfId>,
     #[serde(rename = "@cellColor")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cell_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -4615,10 +4643,18 @@ pub struct DynamicFilter {
 #[serde(rename = "sortState")]
 pub struct SortState {
     #[serde(rename = "@columnSort")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub column_sort: Option<bool>,
     #[serde(rename = "@caseSensitive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub case_sensitive: Option<bool>,
     #[serde(rename = "@sortMethod")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4649,7 +4685,11 @@ pub struct SortState {
 #[serde(rename = "sortCondition")]
 pub struct SortCondition {
     #[serde(rename = "@descending")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub descending: Option<bool>,
     #[serde(rename = "@sortBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4740,10 +4780,18 @@ pub type CTExtensionAny = String;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ObjectAnchor {
     #[serde(rename = "@moveWithCells")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub move_with_cells: Option<bool>,
     #[serde(rename = "@sizeWithCells")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub size_with_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -4796,16 +4844,32 @@ pub struct CalcCell {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<i32>,
     #[serde(rename = "@s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub style_index: Option<bool>,
     #[serde(rename = "@l")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub l: Option<bool>,
     #[serde(rename = "@t")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cell_type: Option<bool>,
     #[serde(rename = "@a")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub a: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -4901,22 +4965,46 @@ pub struct Comment {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCommentPr {
     #[serde(rename = "@locked")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disabled: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_line: Option<bool>,
     #[serde(rename = "@altText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4928,13 +5016,25 @@ pub struct CTCommentPr {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_v_align: Option<STTextVAlign>,
     #[serde(rename = "@lockText")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub lock_text: Option<bool>,
     #[serde(rename = "@justLastX")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub just_last_x: Option<bool>,
     #[serde(rename = "@autoScale")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_scale: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
@@ -4994,14 +5094,19 @@ pub struct XmlMap {
     #[serde(rename = "@SchemaID")]
     pub schema_i_d: String,
     #[serde(rename = "@ShowImportExportValidationErrors")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub show_import_export_validation_errors: bool,
     #[serde(rename = "@AutoFit")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub auto_fit: bool,
     #[serde(rename = "@Append")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub append: bool,
     #[serde(rename = "@PreserveSortAFLayout")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub preserve_sort_a_f_layout: bool,
     #[serde(rename = "@PreserveFormat")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub preserve_format: bool,
     #[serde(rename = "DataBinding")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5026,7 +5131,11 @@ pub struct DataBinding {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_binding_name: Option<String>,
     #[serde(rename = "@FileBinding")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub file_binding: Option<bool>,
     #[serde(rename = "@ConnectionID")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5072,7 +5181,11 @@ pub struct Connection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odc_file: Option<XmlString>,
     #[serde(rename = "@keepAlive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub keep_alive: Option<bool>,
     #[serde(rename = "@interval")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5095,25 +5208,53 @@ pub struct Connection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_refreshable_version: Option<u8>,
     #[serde(rename = "@savePassword")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub save_password: Option<bool>,
     #[serde(rename = "@new")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub new: Option<bool>,
     #[serde(rename = "@deleted")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub deleted: Option<bool>,
     #[serde(rename = "@onlyUseConnectionFile")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub only_use_connection_file: Option<bool>,
     #[serde(rename = "@background")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub background: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@saveData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub save_data: Option<bool>,
     #[serde(rename = "@credentials")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5178,31 +5319,59 @@ pub struct DatabaseProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OlapProperties {
     #[serde(rename = "@local")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub local: Option<bool>,
     #[serde(rename = "@localConnection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_connection: Option<XmlString>,
     #[serde(rename = "@localRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub local_refresh: Option<bool>,
     #[serde(rename = "@sendLocale")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub send_locale: Option<bool>,
     #[serde(rename = "@rowDrillCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_drill_count: Option<u32>,
     #[serde(rename = "@serverFill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_fill: Option<bool>,
     #[serde(rename = "@serverNumberFormat")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_number_format: Option<bool>,
     #[serde(rename = "@serverFont")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_font: Option<bool>,
     #[serde(rename = "@serverFontColor")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_font_color: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5216,28 +5385,60 @@ pub struct OlapProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebQueryProperties {
     #[serde(rename = "@xml")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xml: Option<bool>,
     #[serde(rename = "@sourceData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub source_data: Option<bool>,
     #[serde(rename = "@parsePre")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub parse_pre: Option<bool>,
     #[serde(rename = "@consecutive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub consecutive: Option<bool>,
     #[serde(rename = "@firstRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub first_row: Option<bool>,
     #[serde(rename = "@xl97")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xl97: Option<bool>,
     #[serde(rename = "@textDates")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub text_dates: Option<bool>,
     #[serde(rename = "@xl2000")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xl2000: Option<bool>,
     #[serde(rename = "@url")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5246,7 +5447,11 @@ pub struct WebQueryProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub post: Option<XmlString>,
     #[serde(rename = "@htmlTables")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub html_tables: Option<bool>,
     #[serde(rename = "@htmlFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5305,13 +5510,21 @@ pub struct Parameter {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub parameter_type: Option<STParameterType>,
     #[serde(rename = "@refreshOnChange")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_on_change: Option<bool>,
     #[serde(rename = "@prompt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prompt: Option<XmlString>,
     #[serde(rename = "@boolean")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub boolean: Option<bool>,
     #[serde(rename = "@double")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5354,7 +5567,11 @@ pub struct TableMissing;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextImportProperties {
     #[serde(rename = "@prompt")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub prompt: Option<bool>,
     #[serde(rename = "@fileType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5372,7 +5589,11 @@ pub struct TextImportProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_file: Option<XmlString>,
     #[serde(rename = "@delimited")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub delimited: Option<bool>,
     #[serde(rename = "@decimal")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5381,19 +5602,39 @@ pub struct TextImportProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub thousands: Option<XmlString>,
     #[serde(rename = "@tab")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub tab: Option<bool>,
     #[serde(rename = "@space")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub space: Option<bool>,
     #[serde(rename = "@comma")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub comma: Option<bool>,
     #[serde(rename = "@semicolon")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub semicolon: Option<bool>,
     #[serde(rename = "@consecutive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub consecutive: Option<bool>,
     #[serde(rename = "@qualifier")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5466,19 +5707,39 @@ pub type SmlPivotTableDefinition = Box<CTPivotTableDefinition>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCacheDefinition {
     #[serde(rename = "@invalid")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub invalid: Option<bool>,
     #[serde(rename = "@saveData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub save_data: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@optimizeMemory")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub optimize_memory: Option<bool>,
     #[serde(rename = "@enableRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub enable_refresh: Option<bool>,
     #[serde(rename = "@refreshedBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5490,7 +5751,11 @@ pub struct PivotCacheDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub refreshed_date_iso: Option<String>,
     #[serde(rename = "@backgroundQuery")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub background_query: Option<bool>,
     #[serde(rename = "@missingItemsLimit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5508,16 +5773,32 @@ pub struct PivotCacheDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub record_count: Option<u32>,
     #[serde(rename = "@upgradeOnRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub upgrade_on_refresh: Option<bool>,
     #[serde(rename = "@tupleCache")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub tuple_cache: Option<bool>,
     #[serde(rename = "@supportSubquery")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub support_subquery: Option<bool>,
     #[serde(rename = "@supportAdvancedDrill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub support_advanced_drill: Option<bool>,
     #[serde(rename = "cacheSource")]
     pub cache_source: Box<CacheSource>,
@@ -5594,10 +5875,18 @@ pub struct CacheField {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub property_name: Option<XmlString>,
     #[serde(rename = "@serverField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_field: Option<bool>,
     #[serde(rename = "@uniqueList")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub unique_list: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5615,13 +5904,21 @@ pub struct CacheField {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub level: Option<u32>,
     #[serde(rename = "@databaseField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub database_field: Option<bool>,
     #[serde(rename = "@mappingCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mapping_count: Option<u32>,
     #[serde(rename = "@memberPropertyField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub member_property_field: Option<bool>,
     #[serde(rename = "sharedItems")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5688,7 +5985,11 @@ pub struct WorksheetSource {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Consolidation {
     #[serde(rename = "@autoPage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_page: Option<bool>,
     #[serde(rename = "pages")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5823,28 +6124,60 @@ pub struct CTRangeSet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SharedItems {
     #[serde(rename = "@containsSemiMixedTypes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_semi_mixed_types: Option<bool>,
     #[serde(rename = "@containsNonDate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_non_date: Option<bool>,
     #[serde(rename = "@containsDate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_date: Option<bool>,
     #[serde(rename = "@containsString")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_string: Option<bool>,
     #[serde(rename = "@containsBlank")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_blank: Option<bool>,
     #[serde(rename = "@containsMixedTypes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_mixed_types: Option<bool>,
     #[serde(rename = "@containsNumber")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_number: Option<bool>,
     #[serde(rename = "@containsInteger")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub contains_integer: Option<bool>,
     #[serde(rename = "@minValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5862,7 +6195,11 @@ pub struct SharedItems {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@longText")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub long_text: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5876,10 +6213,18 @@ pub struct SharedItems {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMissing {
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5897,16 +6242,32 @@ pub struct CTMissing {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5933,10 +6294,18 @@ pub struct CTNumber {
     #[serde(rename = "@v")]
     pub value: f64,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5954,16 +6323,32 @@ pub struct CTNumber {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5988,12 +6373,21 @@ pub struct CTNumber {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBoolean {
     #[serde(rename = "@v")]
+    #[serde(with = "ooxml_xml::ooxml_bool_required")]
     pub value: bool,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6023,10 +6417,18 @@ pub struct CTError {
     #[serde(rename = "@v")]
     pub value: XmlString,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6044,16 +6446,32 @@ pub struct CTError {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6080,10 +6498,18 @@ pub struct CTString {
     #[serde(rename = "@v")]
     pub value: XmlString,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6101,16 +6527,32 @@ pub struct CTString {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@un")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub un: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -6137,10 +6579,18 @@ pub struct CTDateTime {
     #[serde(rename = "@v")]
     pub value: String,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6199,10 +6649,18 @@ pub struct FieldGroup {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRangePr {
     #[serde(rename = "@autoStart")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_start: Option<bool>,
     #[serde(rename = "@autoEnd")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_end: Option<bool>,
     #[serde(rename = "@groupBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6389,10 +6847,18 @@ pub struct CTCacheHierarchy {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub caption: Option<XmlString>,
     #[serde(rename = "@measure")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub measure: Option<bool>,
     #[serde(rename = "@set")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub set: Option<bool>,
     #[serde(rename = "@parentSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6401,13 +6867,25 @@ pub struct CTCacheHierarchy {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<i32>,
     #[serde(rename = "@attribute")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub attribute: Option<bool>,
     #[serde(rename = "@time")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub time: Option<bool>,
     #[serde(rename = "@keyAttribute")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub key_attribute: Option<bool>,
     #[serde(rename = "@defaultMemberUniqueName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6428,24 +6906,44 @@ pub struct CTCacheHierarchy {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub measure_group: Option<XmlString>,
     #[serde(rename = "@measures")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub measures: Option<bool>,
     #[serde(rename = "@count")]
     pub count: u32,
     #[serde(rename = "@oneField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub one_field: Option<bool>,
     #[serde(rename = "@memberValueDatatype")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub member_value_datatype: Option<u16>,
     #[serde(rename = "@unbalanced")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub unbalanced: Option<bool>,
     #[serde(rename = "@unbalancedGroup")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub unbalanced_group: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[serde(rename = "fieldsUsage")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6534,10 +7032,18 @@ pub struct CTGroupLevel {
     #[serde(rename = "@caption")]
     pub caption: XmlString,
     #[serde(rename = "@user")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub user: Option<bool>,
     #[serde(rename = "@customRollUp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_roll_up: Option<bool>,
     #[serde(rename = "groups")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6638,7 +7144,11 @@ pub struct CTGroupMember {
     #[serde(rename = "@uniqueName")]
     pub unique_name: XmlString,
     #[serde(rename = "@group")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub group: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6802,7 +7312,11 @@ pub struct CTSet {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_type: Option<STSortType>,
     #[serde(rename = "@queryFailed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub query_failed: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -6957,7 +7471,11 @@ pub struct CTCalculatedMember {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solve_order: Option<i32>,
     #[serde(rename = "@set")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub set: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6983,7 +7501,11 @@ pub struct CTPivotTableDefinition {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
     #[serde(rename = "@dataOnRows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_on_rows: Option<bool>,
     #[serde(rename = "@dataPosition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6997,13 +7519,21 @@ pub struct CTPivotTableDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error_caption: Option<XmlString>,
     #[serde(rename = "@showError")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_error: Option<bool>,
     #[serde(rename = "@missingCaption")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub missing_caption: Option<XmlString>,
     #[serde(rename = "@showMissing")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_missing: Option<bool>,
     #[serde(rename = "@pageStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7024,82 +7554,182 @@ pub struct CTPivotTableDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_refreshable_version: Option<u8>,
     #[serde(rename = "@asteriskTotals")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub asterisk_totals: Option<bool>,
     #[serde(rename = "@showItems")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_items: Option<bool>,
     #[serde(rename = "@editData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub edit_data: Option<bool>,
     #[serde(rename = "@disableFieldList")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disable_field_list: Option<bool>,
     #[serde(rename = "@showCalcMbrs")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_calc_mbrs: Option<bool>,
     #[serde(rename = "@visualTotals")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub visual_totals: Option<bool>,
     #[serde(rename = "@showMultipleLabel")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_multiple_label: Option<bool>,
     #[serde(rename = "@showDataDropDown")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_data_drop_down: Option<bool>,
     #[serde(rename = "@showDrill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_drill: Option<bool>,
     #[serde(rename = "@printDrill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub print_drill: Option<bool>,
     #[serde(rename = "@showMemberPropertyTips")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_member_property_tips: Option<bool>,
     #[serde(rename = "@showDataTips")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_data_tips: Option<bool>,
     #[serde(rename = "@enableWizard")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub enable_wizard: Option<bool>,
     #[serde(rename = "@enableDrill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub enable_drill: Option<bool>,
     #[serde(rename = "@enableFieldProperties")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub enable_field_properties: Option<bool>,
     #[serde(rename = "@preserveFormatting")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub preserve_formatting: Option<bool>,
     #[serde(rename = "@useAutoFormatting")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_auto_formatting: Option<bool>,
     #[serde(rename = "@pageWrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_wrap: Option<u32>,
     #[serde(rename = "@pageOverThenDown")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub page_over_then_down: Option<bool>,
     #[serde(rename = "@subtotalHiddenItems")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub subtotal_hidden_items: Option<bool>,
     #[serde(rename = "@rowGrandTotals")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub row_grand_totals: Option<bool>,
     #[serde(rename = "@colGrandTotals")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub col_grand_totals: Option<bool>,
     #[serde(rename = "@fieldPrintTitles")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub field_print_titles: Option<bool>,
     #[serde(rename = "@itemPrintTitles")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub item_print_titles: Option<bool>,
     #[serde(rename = "@mergeItem")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub merge_item: Option<bool>,
     #[serde(rename = "@showDropZones")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_drop_zones: Option<bool>,
     #[serde(rename = "@createdVersion")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7108,37 +7738,81 @@ pub struct CTPivotTableDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<u32>,
     #[serde(rename = "@showEmptyRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_empty_row: Option<bool>,
     #[serde(rename = "@showEmptyCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_empty_col: Option<bool>,
     #[serde(rename = "@showHeaders")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_headers: Option<bool>,
     #[serde(rename = "@compact")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub compact: Option<bool>,
     #[serde(rename = "@outline")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline: Option<bool>,
     #[serde(rename = "@outlineData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline_data: Option<bool>,
     #[serde(rename = "@compactData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub compact_data: Option<bool>,
     #[serde(rename = "@published")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub published: Option<bool>,
     #[serde(rename = "@gridDropZones")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grid_drop_zones: Option<bool>,
     #[serde(rename = "@immersive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub immersive: Option<bool>,
     #[serde(rename = "@multipleFieldFilters")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub multiple_field_filters: Option<bool>,
     #[serde(rename = "@chartFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7150,13 +7824,25 @@ pub struct CTPivotTableDefinition {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_header_caption: Option<XmlString>,
     #[serde(rename = "@fieldListSortAscending")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub field_list_sort_ascending: Option<bool>,
     #[serde(rename = "@mdxSubqueries")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub mdx_subqueries: Option<bool>,
     #[serde(rename = "@customListSort")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_list_sort: Option<bool>,
     #[serde(rename = "location")]
     pub location: Box<PivotLocation>,
@@ -7278,79 +7964,167 @@ pub struct PivotField {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub axis: Option<STAxis>,
     #[serde(rename = "@dataField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_field: Option<bool>,
     #[serde(rename = "@subtotalCaption")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subtotal_caption: Option<XmlString>,
     #[serde(rename = "@showDropDowns")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_drop_downs: Option<bool>,
     #[serde(rename = "@hiddenLevel")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_level: Option<bool>,
     #[serde(rename = "@uniqueMemberProperty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unique_member_property: Option<XmlString>,
     #[serde(rename = "@compact")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub compact: Option<bool>,
     #[serde(rename = "@allDrilled")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub all_drilled: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@outline")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline: Option<bool>,
     #[serde(rename = "@subtotalTop")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub subtotal_top: Option<bool>,
     #[serde(rename = "@dragToRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_row: Option<bool>,
     #[serde(rename = "@dragToCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_col: Option<bool>,
     #[serde(rename = "@multipleItemSelectionAllowed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub multiple_item_selection_allowed: Option<bool>,
     #[serde(rename = "@dragToPage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_page: Option<bool>,
     #[serde(rename = "@dragToData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_data: Option<bool>,
     #[serde(rename = "@dragOff")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_off: Option<bool>,
     #[serde(rename = "@showAll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_all: Option<bool>,
     #[serde(rename = "@insertBlankRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_blank_row: Option<bool>,
     #[serde(rename = "@serverField")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub server_field: Option<bool>,
     #[serde(rename = "@insertPageBreak")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_page_break: Option<bool>,
     #[serde(rename = "@autoShow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_show: Option<bool>,
     #[serde(rename = "@topAutoShow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub top_auto_show: Option<bool>,
     #[serde(rename = "@hideNewItems")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hide_new_items: Option<bool>,
     #[serde(rename = "@measureFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub measure_filter: Option<bool>,
     #[serde(rename = "@includeNewItemsInFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub include_new_items_in_filter: Option<bool>,
     #[serde(rename = "@itemPageCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7359,61 +8133,133 @@ pub struct PivotField {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_type: Option<STFieldSortType>,
     #[serde(rename = "@dataSourceSort")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_source_sort: Option<bool>,
     #[serde(rename = "@nonAutoSortDefault")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub non_auto_sort_default: Option<bool>,
     #[serde(rename = "@rankBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rank_by: Option<u32>,
     #[serde(rename = "@defaultSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_subtotal: Option<bool>,
     #[serde(rename = "@sumSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sum_subtotal: Option<bool>,
     #[serde(rename = "@countASubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub count_a_subtotal: Option<bool>,
     #[serde(rename = "@avgSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub avg_subtotal: Option<bool>,
     #[serde(rename = "@maxSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub max_subtotal: Option<bool>,
     #[serde(rename = "@minSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub min_subtotal: Option<bool>,
     #[serde(rename = "@productSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub product_subtotal: Option<bool>,
     #[serde(rename = "@countSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub count_subtotal: Option<bool>,
     #[serde(rename = "@stdDevSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub std_dev_subtotal: Option<bool>,
     #[serde(rename = "@stdDevPSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub std_dev_p_subtotal: Option<bool>,
     #[serde(rename = "@varSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub var_subtotal: Option<bool>,
     #[serde(rename = "@varPSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "@showPropCell")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_prop_cell: Option<bool>,
     #[serde(rename = "@showPropTip")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_prop_tip: Option<bool>,
     #[serde(rename = "@showPropAsCaption")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_prop_as_caption: Option<bool>,
     #[serde(rename = "@defaultAttributeDrillState")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_attribute_drill_state: Option<bool>,
     #[serde(rename = "items")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7471,31 +8317,63 @@ pub struct PivotItem {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<STItemType>,
     #[serde(rename = "@h")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub height: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub style_index: Option<bool>,
     #[serde(rename = "@sd")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sd: Option<bool>,
     #[serde(rename = "@f")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub m: Option<bool>,
     #[serde(rename = "@c")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cells: Option<bool>,
     #[serde(rename = "@x")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x: Option<u32>,
     #[serde(rename = "@d")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub d: Option<bool>,
     #[serde(rename = "@e")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub e: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -7916,7 +8794,11 @@ pub struct CTChartFormat {
     #[serde(rename = "@format")]
     pub format: u32,
     #[serde(rename = "@series")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub series: Option<bool>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
@@ -7959,34 +8841,74 @@ pub struct CTPivotHierarchies {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotHierarchy {
     #[serde(rename = "@outline")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline: Option<bool>,
     #[serde(rename = "@multipleItemSelectionAllowed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub multiple_item_selection_allowed: Option<bool>,
     #[serde(rename = "@subtotalTop")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub subtotal_top: Option<bool>,
     #[serde(rename = "@showInFieldList")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_in_field_list: Option<bool>,
     #[serde(rename = "@dragToRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_row: Option<bool>,
     #[serde(rename = "@dragToCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_col: Option<bool>,
     #[serde(rename = "@dragToPage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_page: Option<bool>,
     #[serde(rename = "@dragToData")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_to_data: Option<bool>,
     #[serde(rename = "@dragOff")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub drag_off: Option<bool>,
     #[serde(rename = "@includeNewItemsInFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub include_new_items_in_filter: Option<bool>,
     #[serde(rename = "@caption")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8099,13 +9021,25 @@ pub struct CTMemberProperty {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@showCell")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_cell: Option<bool>,
     #[serde(rename = "@showTip")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_tip: Option<bool>,
     #[serde(rename = "@showAsCaption")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_as_caption: Option<bool>,
     #[serde(rename = "@nameLen")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8193,7 +9127,11 @@ pub struct CTDimensions {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPivotDimension {
     #[serde(rename = "@measure")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub measure: Option<bool>,
     #[serde(rename = "@name")]
     pub name: XmlString,
@@ -8292,19 +9230,39 @@ pub struct CTPivotTableStyle {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(rename = "@showRowHeaders")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_row_headers: Option<bool>,
     #[serde(rename = "@showColHeaders")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_col_headers: Option<bool>,
     #[serde(rename = "@showRowStripes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_row_stripes: Option<bool>,
     #[serde(rename = "@showColStripes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_col_stripes: Option<bool>,
     #[serde(rename = "@showLastColumn")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_last_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8397,28 +9355,56 @@ pub struct PivotArea {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STPivotAreaType>,
     #[serde(rename = "@dataOnly")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_only: Option<bool>,
     #[serde(rename = "@labelOnly")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub label_only: Option<bool>,
     #[serde(rename = "@grandRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grand_row: Option<bool>,
     #[serde(rename = "@grandCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grand_col: Option<bool>,
     #[serde(rename = "@cacheIndex")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cache_index: Option<bool>,
     #[serde(rename = "@outline")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline: Option<bool>,
     #[serde(rename = "@offset")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub offset: Option<Reference>,
     #[serde(rename = "@collapsedLevelsAreSubtotals")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub collapsed_levels_are_subtotals: Option<bool>,
     #[serde(rename = "@axis")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8477,49 +9463,109 @@ pub struct CTPivotAreaReference {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "@selected")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub selected: Option<bool>,
     #[serde(rename = "@byPosition")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub by_position: Option<bool>,
     #[serde(rename = "@relative")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub relative: Option<bool>,
     #[serde(rename = "@defaultSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_subtotal: Option<bool>,
     #[serde(rename = "@sumSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sum_subtotal: Option<bool>,
     #[serde(rename = "@countASubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub count_a_subtotal: Option<bool>,
     #[serde(rename = "@avgSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub avg_subtotal: Option<bool>,
     #[serde(rename = "@maxSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub max_subtotal: Option<bool>,
     #[serde(rename = "@minSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub min_subtotal: Option<bool>,
     #[serde(rename = "@productSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub product_subtotal: Option<bool>,
     #[serde(rename = "@countSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub count_subtotal: Option<bool>,
     #[serde(rename = "@stdDevSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub std_dev_subtotal: Option<bool>,
     #[serde(rename = "@stdDevPSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub std_dev_p_subtotal: Option<bool>,
     #[serde(rename = "@varSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub var_subtotal: Option<bool>,
     #[serde(rename = "@varPSubtotal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -8561,43 +9607,91 @@ pub struct QueryTable {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@headers")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub headers: Option<bool>,
     #[serde(rename = "@rowNumbers")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub row_numbers: Option<bool>,
     #[serde(rename = "@disableRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disable_refresh: Option<bool>,
     #[serde(rename = "@backgroundRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub background_refresh: Option<bool>,
     #[serde(rename = "@firstBackgroundRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub first_background_refresh: Option<bool>,
     #[serde(rename = "@refreshOnLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_on_load: Option<bool>,
     #[serde(rename = "@growShrinkType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grow_shrink_type: Option<STGrowShrinkType>,
     #[serde(rename = "@fillFormulas")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub fill_formulas: Option<bool>,
     #[serde(rename = "@removeDataOnSave")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub remove_data_on_save: Option<bool>,
     #[serde(rename = "@disableEdit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disable_edit: Option<bool>,
     #[serde(rename = "@preserveFormatting")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub preserve_formatting: Option<bool>,
     #[serde(rename = "@adjustColumnWidth")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub adjust_column_width: Option<bool>,
     #[serde(rename = "@intermediate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub intermediate: Option<bool>,
     #[serde(rename = "@connectionId")]
     pub connection_id: u32,
@@ -8624,13 +9718,25 @@ pub struct QueryTable {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QueryTableRefresh {
     #[serde(rename = "@preserveSortFilterLayout")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub preserve_sort_filter_layout: Option<bool>,
     #[serde(rename = "@fieldIdWrapped")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub field_id_wrapped: Option<bool>,
     #[serde(rename = "@headersInLastRefresh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub headers_in_last_refresh: Option<bool>,
     #[serde(rename = "@minimumVersion")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8734,16 +9840,32 @@ pub struct QueryTableField {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@dataBound")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_bound: Option<bool>,
     #[serde(rename = "@rowNumbers")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub row_numbers: Option<bool>,
     #[serde(rename = "@fillFormulas")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub fill_formulas: Option<bool>,
     #[serde(rename = "@clipped")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub clipped: Option<bool>,
     #[serde(rename = "@tableColumnId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8890,19 +10012,39 @@ pub struct RevisionHeaders {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_guid: Option<Guid>,
     #[serde(rename = "@shared")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub shared: Option<bool>,
     #[serde(rename = "@diskRevisions")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disk_revisions: Option<bool>,
     #[serde(rename = "@history")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub history: Option<bool>,
     #[serde(rename = "@trackRevisions")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub track_revisions: Option<bool>,
     #[serde(rename = "@exclusive")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub exclusive: Option<bool>,
     #[serde(rename = "@revisionId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8911,10 +10053,18 @@ pub struct RevisionHeaders {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub version: Option<i32>,
     #[serde(rename = "@keepChangeHistory")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub keep_change_history: Option<bool>,
     #[serde(rename = "@protected")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub protected: Option<bool>,
     #[serde(rename = "@preserveHistory")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8944,10 +10094,18 @@ pub struct SmlAGRevData {
     #[serde(rename = "@rId")]
     pub r_id: u32,
     #[serde(rename = "@ua")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ua: Option<bool>,
     #[serde(rename = "@ra")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ra: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -9073,19 +10231,39 @@ pub struct UndoInfo {
     #[serde(rename = "@exp")]
     pub exp: STFormulaExpression,
     #[serde(rename = "@ref3D")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ref3_d: Option<bool>,
     #[serde(rename = "@array")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub array: Option<bool>,
     #[serde(rename = "@v")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub value: Option<bool>,
     #[serde(rename = "@nf")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub nf: Option<bool>,
     #[serde(rename = "@cs")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cs: Option<bool>,
     #[serde(rename = "@dr")]
     pub dr: STRefA,
@@ -9112,14 +10290,22 @@ pub struct RevisionRowColumn {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@eol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub eol: Option<bool>,
     #[serde(rename = "@ref")]
     pub reference: Reference,
     #[serde(rename = "@action")]
     pub action: STRwColActionType,
     #[serde(rename = "@edge")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub edge: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -9212,34 +10398,70 @@ pub struct RevisionCellChange {
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@odxf")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub odxf: Option<bool>,
     #[serde(rename = "@xfDxf")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub style_index: Option<bool>,
     #[serde(rename = "@dxf")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub dxf: Option<bool>,
     #[serde(rename = "@numFmtId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub number_format_id: Option<STNumFmtId>,
     #[serde(rename = "@quotePrefix")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub quote_prefix: Option<bool>,
     #[serde(rename = "@oldQuotePrefix")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub old_quote_prefix: Option<bool>,
     #[serde(rename = "@ph")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub placeholder: Option<bool>,
     #[serde(rename = "@oldPh")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub old_ph: Option<bool>,
     #[serde(rename = "@endOfListFormulaUpdate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub end_of_list_formula_update: Option<bool>,
     #[serde(rename = "oc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9271,10 +10493,18 @@ pub struct RevisionFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@xfDxf")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xf_dxf: Option<bool>,
     #[serde(rename = "@s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub style_index: Option<bool>,
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
@@ -9331,16 +10561,32 @@ pub struct RevisionComment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub action: Option<STRevisionAction>,
     #[serde(rename = "@alwaysShow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub always_show: Option<bool>,
     #[serde(rename = "@old")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub old: Option<bool>,
     #[serde(rename = "@hiddenRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_row: Option<bool>,
     #[serde(rename = "@hiddenColumn")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_column: Option<bool>,
     #[serde(rename = "@author")]
     pub author: XmlString,
@@ -9365,15 +10611,27 @@ pub struct RevisionDefinedName {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_sheet_id: Option<u32>,
     #[serde(rename = "@customView")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_view: Option<bool>,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@function")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub function: Option<bool>,
     #[serde(rename = "@oldFunction")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub old_function: Option<bool>,
     #[serde(rename = "@functionGroupId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9388,10 +10646,18 @@ pub struct RevisionDefinedName {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_shortcut_key: Option<u8>,
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[serde(rename = "@oldHidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub old_hidden: Option<bool>,
     #[serde(rename = "@customMenu")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9857,7 +11123,11 @@ pub struct SheetData {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SheetCalcProperties {
     #[serde(rename = "@fullCalcOnLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub full_calc_on_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -9880,16 +11150,32 @@ pub struct SheetFormat {
     #[serde(rename = "@defaultRowHeight")]
     pub default_row_height: f64,
     #[serde(rename = "@customHeight")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_height: Option<bool>,
     #[serde(rename = "@zeroHeight")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub zero_height: Option<bool>,
     #[serde(rename = "@thickTop")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub thick_top: Option<bool>,
     #[serde(rename = "@thickBottom")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub thick_bottom: Option<bool>,
     #[serde(rename = "@outlineLevelRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9938,19 +11224,35 @@ pub struct Column {
     pub style: Option<u32>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bestFit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub best_fit: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customWidth")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_width: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@phonetic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub phonetic: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
@@ -9958,7 +11260,11 @@ pub struct Column {
     pub outline_level: Option<u8>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub collapsed: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -9983,7 +11289,11 @@ pub struct Row {
     pub style_index: Option<u32>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customFormat")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_format: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@ht")]
@@ -9991,11 +11301,19 @@ pub struct Row {
     pub height: Option<f64>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@customHeight")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_height: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@outlineLevel")]
@@ -10003,19 +11321,35 @@ pub struct Row {
     pub outline_level: Option<u8>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@collapsed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub collapsed: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickTop")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub thick_top: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@thickBot")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub thick_bot: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub placeholder: Option<bool>,
     #[serde(rename = "c")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -10060,7 +11394,11 @@ pub struct Cell {
     pub vm: Option<u32>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@ph")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub placeholder: Option<bool>,
     #[serde(rename = "f")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10093,31 +11431,59 @@ pub struct Cell {
 #[serde(rename = "sheetPr")]
 pub struct SheetProperties {
     #[serde(rename = "@syncHorizontal")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sync_horizontal: Option<bool>,
     #[serde(rename = "@syncVertical")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sync_vertical: Option<bool>,
     #[serde(rename = "@syncRef")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sync_ref: Option<Reference>,
     #[serde(rename = "@transitionEvaluation")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub transition_evaluation: Option<bool>,
     #[serde(rename = "@transitionEntry")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub transition_entry: Option<bool>,
     #[serde(rename = "@published")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub published: Option<bool>,
     #[serde(rename = "@codeName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
     #[serde(rename = "@filterMode")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub filter_mode: Option<bool>,
     #[serde(rename = "@enableFormatConditionsCalculation")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub enable_format_conditions_calculation: Option<bool>,
     #[serde(rename = "tabColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10177,46 +11543,90 @@ pub struct SheetViews {
 pub struct SheetView {
     #[cfg(feature = "sml-protection")]
     #[serde(rename = "@windowProtection")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub window_protection: Option<bool>,
     #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@showFormulas")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_formulas: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showGridLines")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_grid_lines: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showRowColHeaders")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_row_col_headers: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showZeros")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_zeros: Option<bool>,
     #[cfg(feature = "sml-i18n")]
     #[serde(rename = "@rightToLeft")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub right_to_left: Option<bool>,
     #[serde(rename = "@tabSelected")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub tab_selected: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showRuler")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_ruler: Option<bool>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showOutlineSymbols")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_outline_symbols: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@defaultGridColor")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_grid_color: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@showWhiteSpace")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_white_space: Option<bool>,
     #[serde(rename = "@view")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10311,16 +11721,32 @@ pub struct CTPivotSelection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pane: Option<PaneType>,
     #[serde(rename = "@showHeader")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_header: Option<bool>,
     #[serde(rename = "@label")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub label: Option<bool>,
     #[serde(rename = "@data")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data: Option<bool>,
     #[serde(rename = "@extendable")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub extendable: Option<bool>,
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10433,10 +11859,18 @@ pub struct PageBreak {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_column: Option<u32>,
     #[serde(rename = "@man")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub man: Option<bool>,
     #[serde(rename = "@pt")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub pt: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -10450,16 +11884,32 @@ pub struct PageBreak {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OutlineProperties {
     #[serde(rename = "@applyStyles")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_styles: Option<bool>,
     #[serde(rename = "@summaryBelow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub summary_below: Option<bool>,
     #[serde(rename = "@summaryRight")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub summary_right: Option<bool>,
     #[serde(rename = "@showOutlineSymbols")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_outline_symbols: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -10473,10 +11923,18 @@ pub struct OutlineProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageSetupProperties {
     #[serde(rename = "@autoPageBreaks")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_page_breaks: Option<bool>,
     #[serde(rename = "@fitToPage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub fit_to_page: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -10493,16 +11951,32 @@ pub struct CTDataConsolidate {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub function: Option<STDataConsolidateFunction>,
     #[serde(rename = "@startLabels")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub start_labels: Option<bool>,
     #[serde(rename = "@leftLabels")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub left_labels: Option<bool>,
     #[serde(rename = "@topLabels")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub top_labels: Option<bool>,
     #[serde(rename = "@link")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub link: Option<bool>,
     #[serde(rename = "dataRefs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10638,10 +12112,18 @@ pub struct CellSmartTag {
     #[serde(rename = "@type")]
     pub r#type: u32,
     #[serde(rename = "@deleted")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub deleted: Option<bool>,
     #[serde(rename = "@xmlBased")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xml_based: Option<bool>,
     #[serde(rename = "cellSmartTagPr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -10769,52 +12251,108 @@ pub struct CustomSheetView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color_id: Option<u32>,
     #[serde(rename = "@showPageBreaks")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_page_breaks: Option<bool>,
     #[serde(rename = "@showFormulas")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_formulas: Option<bool>,
     #[serde(rename = "@showGridLines")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_grid_lines: Option<bool>,
     #[serde(rename = "@showRowCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_row_col: Option<bool>,
     #[serde(rename = "@outlineSymbols")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline_symbols: Option<bool>,
     #[serde(rename = "@zeroValues")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub zero_values: Option<bool>,
     #[serde(rename = "@fitToPage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub fit_to_page: Option<bool>,
     #[serde(rename = "@printArea")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub print_area: Option<bool>,
     #[serde(rename = "@filter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub filter: Option<bool>,
     #[serde(rename = "@showAutoFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_auto_filter: Option<bool>,
     #[serde(rename = "@hiddenRows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_rows: Option<bool>,
     #[serde(rename = "@hiddenColumns")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden_columns: Option<bool>,
     #[serde(rename = "@state")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
     #[serde(rename = "@filterUnique")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub filter_unique: Option<bool>,
     #[serde(rename = "@view")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub view: Option<SheetViewType>,
     #[serde(rename = "@showRuler")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_ruler: Option<bool>,
     #[serde(rename = "@topLeftCell")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10867,7 +12405,11 @@ pub struct CustomSheetView {
 #[serde(rename = "dataValidations")]
 pub struct DataValidations {
     #[serde(rename = "@disablePrompts")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disable_prompts: Option<bool>,
     #[serde(rename = "@xWindow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10916,19 +12458,35 @@ pub struct DataValidation {
     pub operator: Option<ValidationOperator>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@allowBlank")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub allow_blank: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showDropDown")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_drop_down: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showInputMessage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_input_message: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@showErrorMessage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_error_message: Option<bool>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "@errorTitle")]
@@ -10976,7 +12534,11 @@ pub struct DataValidation {
 pub struct ConditionalFormatting {
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivot")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub pivot: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@sqref")]
@@ -11020,19 +12582,35 @@ pub struct ConditionalRule {
     pub priority: i32,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@stopIfTrue")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub stop_if_true: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@aboveAverage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub above_average: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@percent")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub percent: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@bottom")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub bottom: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@operator")]
@@ -11056,7 +12634,11 @@ pub struct ConditionalRule {
     pub std_dev: Option<i32>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@equalAverage")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub equal_average: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "formula")]
@@ -11143,26 +12725,46 @@ pub struct CellFormula {
     pub cell_type: Option<FormulaType>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@aca")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub aca: Option<bool>,
     #[serde(rename = "@ref")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reference: Option<Reference>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dt2D")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub dt2_d: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@dtr")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub dtr: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del1")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub del1: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@del2")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub del2: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@r1")]
@@ -11174,14 +12776,22 @@ pub struct CellFormula {
     pub r2: Option<CellRef>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@ca")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ca: Option<bool>,
     #[serde(rename = "@si")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub si: Option<u32>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@bx")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub bx: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11223,7 +12833,11 @@ pub struct DataBar {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_length: Option<u32>,
     #[serde(rename = "@showValue")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_value: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -11251,13 +12865,25 @@ pub struct IconSet {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<IconSetType>,
     #[serde(rename = "@showValue")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_value: Option<bool>,
     #[serde(rename = "@percent")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub percent: Option<bool>,
     #[serde(rename = "@reverse")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub reverse: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -11285,7 +12911,11 @@ pub struct ConditionalFormatValue {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
     #[serde(rename = "@gte")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub gte: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11338,19 +12968,39 @@ pub struct PageMargins {
 #[serde(rename = "printOptions")]
 pub struct PrintOptions {
     #[serde(rename = "@horizontalCentered")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub horizontal_centered: Option<bool>,
     #[serde(rename = "@verticalCentered")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub vertical_centered: Option<bool>,
     #[serde(rename = "@headings")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub headings: Option<bool>,
     #[serde(rename = "@gridLines")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grid_lines: Option<bool>,
     #[serde(rename = "@gridLinesSet")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub grid_lines_set: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11402,15 +13052,27 @@ pub struct PageSetup {
     pub orientation: Option<STOrientation>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@usePrinterDefaults")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_printer_defaults: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@blackAndWhite")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub black_and_white: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@draft")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub draft: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@cellComments")]
@@ -11418,7 +13080,11 @@ pub struct PageSetup {
     pub cell_comments: Option<STCellComments>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@useFirstPageNumber")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_first_page_number: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@errors")]
@@ -11450,19 +13116,35 @@ pub struct PageSetup {
 pub struct HeaderFooter {
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentOddEven")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub different_odd_even: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@differentFirst")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub different_first: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@scaleWithDoc")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub scale_with_doc: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "@alignWithMargins")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub align_with_margins: Option<bool>,
     #[cfg(feature = "sml-layout")]
     #[serde(rename = "oddHeader")]
@@ -11549,52 +13231,116 @@ pub struct SheetProtection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     #[serde(rename = "@sheet")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sheet: Option<bool>,
     #[serde(rename = "@objects")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub objects: Option<bool>,
     #[serde(rename = "@scenarios")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub scenarios: Option<bool>,
     #[serde(rename = "@formatCells")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub format_cells: Option<bool>,
     #[serde(rename = "@formatColumns")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub format_columns: Option<bool>,
     #[serde(rename = "@formatRows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub format_rows: Option<bool>,
     #[serde(rename = "@insertColumns")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_columns: Option<bool>,
     #[serde(rename = "@insertRows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_rows: Option<bool>,
     #[serde(rename = "@insertHyperlinks")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_hyperlinks: Option<bool>,
     #[serde(rename = "@deleteColumns")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub delete_columns: Option<bool>,
     #[serde(rename = "@deleteRows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub delete_rows: Option<bool>,
     #[serde(rename = "@selectLockedCells")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub select_locked_cells: Option<bool>,
     #[serde(rename = "@sort")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub sort: Option<bool>,
     #[serde(rename = "@autoFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_filter: Option<bool>,
     #[serde(rename = "@pivotTables")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub pivot_tables: Option<bool>,
     #[serde(rename = "@selectUnlockedCells")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub select_unlocked_cells: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11657,10 +13403,18 @@ pub struct Scenario {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@locked")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub locked: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11693,10 +13447,18 @@ pub struct InputCells {
     #[serde(rename = "@r")]
     pub reference: CellRef,
     #[serde(rename = "@deleted")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub deleted: Option<bool>,
     #[serde(rename = "@undone")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub undone: Option<bool>,
     #[serde(rename = "@val")]
     pub value: XmlString,
@@ -11789,7 +13551,11 @@ pub struct Chartsheet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetProperties {
     #[serde(rename = "@published")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub published: Option<bool>,
     #[serde(rename = "@codeName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11829,7 +13595,11 @@ pub struct ChartsheetViews {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChartsheetView {
     #[serde(rename = "@tabSelected")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub tab_selected: Option<bool>,
     #[serde(rename = "@zoomScale")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11837,7 +13607,11 @@ pub struct ChartsheetView {
     #[serde(rename = "@workbookViewId")]
     pub workbook_view_id: u32,
     #[serde(rename = "@zoomToFit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11874,10 +13648,18 @@ pub struct ChartsheetProtection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<u32>,
     #[serde(rename = "@content")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub content: Option<bool>,
     #[serde(rename = "@objects")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub objects: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11906,16 +13688,32 @@ pub struct ChartsheetPageSetup {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub orientation: Option<STOrientation>,
     #[serde(rename = "@usePrinterDefaults")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_printer_defaults: Option<bool>,
     #[serde(rename = "@blackAndWhite")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub black_and_white: Option<bool>,
     #[serde(rename = "@draft")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub draft: Option<bool>,
     #[serde(rename = "@useFirstPageNumber")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub use_first_page_number: Option<bool>,
     #[serde(rename = "@horizontalDpi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11958,7 +13756,11 @@ pub struct CustomChartsheetView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
     #[serde(rename = "@zoomToFit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub zoom_to_fit: Option<bool>,
     #[serde(rename = "pageMargins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12035,7 +13837,11 @@ pub struct OleObject {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ole_update: Option<STOleUpdate>,
     #[serde(rename = "@autoLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_load: Option<bool>,
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
@@ -12059,28 +13865,60 @@ pub struct OleObject {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ObjectProperties {
     #[serde(rename = "@locked")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disabled: Option<bool>,
     #[serde(rename = "@uiObject")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ui_object: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_line: Option<bool>,
     #[serde(rename = "@autoPict")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12089,7 +13927,11 @@ pub struct ObjectProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_text: Option<XmlString>,
     #[serde(rename = "@dde")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub dde: Option<bool>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
@@ -12149,7 +13991,11 @@ pub struct WebPublishItem {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12199,31 +14045,67 @@ pub struct Control {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTControlPr {
     #[serde(rename = "@locked")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub locked: Option<bool>,
     #[serde(rename = "@defaultSize")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub default_size: Option<bool>,
     #[serde(rename = "@print")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub print: Option<bool>,
     #[serde(rename = "@disabled")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub disabled: Option<bool>,
     #[serde(rename = "@recalcAlways")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub recalc_always: Option<bool>,
     #[serde(rename = "@uiObject")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ui_object: Option<bool>,
     #[serde(rename = "@autoFill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_fill: Option<bool>,
     #[serde(rename = "@autoLine")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_line: Option<bool>,
     #[serde(rename = "@autoPict")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_pict: Option<bool>,
     #[serde(rename = "@macro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12276,31 +14158,67 @@ pub struct IgnoredError {
     #[serde(rename = "@sqref")]
     pub square_reference: SquareRef,
     #[serde(rename = "@evalError")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub eval_error: Option<bool>,
     #[serde(rename = "@twoDigitTextYear")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub two_digit_text_year: Option<bool>,
     #[serde(rename = "@numberStoredAsText")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub number_stored_as_text: Option<bool>,
     #[serde(rename = "@formula")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula: Option<bool>,
     #[serde(rename = "@formulaRange")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub formula_range: Option<bool>,
     #[serde(rename = "@unlockedFormula")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub unlocked_formula: Option<bool>,
     #[serde(rename = "@emptyCellReference")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub empty_cell_reference: Option<bool>,
     #[serde(rename = "@listDataValidation")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub list_data_validation: Option<bool>,
     #[serde(rename = "@calculatedColumn")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub calculated_column: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12399,82 +14317,186 @@ pub struct MetadataType {
     #[serde(rename = "@minSupportedVersion")]
     pub min_supported_version: u32,
     #[serde(rename = "@ghostRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ghost_row: Option<bool>,
     #[serde(rename = "@ghostCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ghost_col: Option<bool>,
     #[serde(rename = "@edit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub edit: Option<bool>,
     #[serde(rename = "@delete")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub delete: Option<bool>,
     #[serde(rename = "@copy")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub copy: Option<bool>,
     #[serde(rename = "@pasteAll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_all: Option<bool>,
     #[serde(rename = "@pasteFormulas")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_formulas: Option<bool>,
     #[serde(rename = "@pasteValues")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_values: Option<bool>,
     #[serde(rename = "@pasteFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_formats: Option<bool>,
     #[serde(rename = "@pasteComments")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_comments: Option<bool>,
     #[serde(rename = "@pasteDataValidation")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_data_validation: Option<bool>,
     #[serde(rename = "@pasteBorders")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_borders: Option<bool>,
     #[serde(rename = "@pasteColWidths")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_col_widths: Option<bool>,
     #[serde(rename = "@pasteNumberFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub paste_number_formats: Option<bool>,
     #[serde(rename = "@merge")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub merge: Option<bool>,
     #[serde(rename = "@splitFirst")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub split_first: Option<bool>,
     #[serde(rename = "@splitAll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub split_all: Option<bool>,
     #[serde(rename = "@rowColShift")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub row_col_shift: Option<bool>,
     #[serde(rename = "@clearAll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub clear_all: Option<bool>,
     #[serde(rename = "@clearFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub clear_formats: Option<bool>,
     #[serde(rename = "@clearContents")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub clear_contents: Option<bool>,
     #[serde(rename = "@clearComments")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub clear_comments: Option<bool>,
     #[serde(rename = "@assign")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub assign: Option<bool>,
     #[serde(rename = "@coerce")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub coerce: Option<bool>,
     #[serde(rename = "@adjust")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub adjust: Option<bool>,
     #[serde(rename = "@cellMeta")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub cell_meta: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12631,16 +14653,32 @@ pub struct CTMdxTuple {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fc: Option<STUnsignedIntHex>,
     #[serde(rename = "@i")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub i: Option<bool>,
     #[serde(rename = "@u")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub u: Option<bool>,
     #[serde(rename = "@st")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub st: Option<bool>,
     #[serde(rename = "@b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub b: Option<bool>,
     #[serde(rename = "n")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -12723,7 +14761,11 @@ pub struct CTMetadataStringIndex {
     #[serde(rename = "@x")]
     pub x: u32,
     #[serde(rename = "@s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub style_index: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12917,7 +14959,11 @@ pub struct CellAlignment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_rotation: Option<STTextRotation>,
     #[serde(rename = "@wrapText")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub wrap_text: Option<bool>,
     #[serde(rename = "@indent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12926,10 +14972,18 @@ pub struct CellAlignment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub relative_indent: Option<i32>,
     #[serde(rename = "@justifyLastLine")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub justify_last_line: Option<bool>,
     #[serde(rename = "@shrinkToFit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub shrink_to_fit: Option<bool>,
     #[serde(rename = "@readingOrder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12971,15 +15025,27 @@ pub struct Borders {
 pub struct Border {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalUp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub diagonal_up: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@diagonalDown")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub diagonal_down: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@outline")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub outline: Option<bool>,
     #[serde(rename = "start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13056,10 +15122,18 @@ pub struct BorderProperties {
 #[serde(rename = "protection")]
 pub struct CellProtection {
     #[serde(rename = "@locked")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub locked: Option<bool>,
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13150,7 +15224,11 @@ pub struct PatternFill {
 #[serde(rename = "color")]
 pub struct Color {
     #[serde(rename = "@auto")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto: Option<bool>,
     #[serde(rename = "@indexed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13342,35 +15420,67 @@ pub struct Format {
     pub format_id: Option<STCellStyleXfId>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@quotePrefix")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub quote_prefix: Option<bool>,
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "@pivotButton")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub pivot_button: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyNumberFormat")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_number_format: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFont")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_font: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyFill")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_fill: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyBorder")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_border: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyAlignment")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_alignment: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "@applyProtection")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_protection: Option<bool>,
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "alignment")]
@@ -13436,10 +15546,18 @@ pub struct CellStyle {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i_level: Option<u32>,
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[serde(rename = "@customBuiltin")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub custom_builtin: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13599,10 +15717,18 @@ pub struct TableStyle {
     #[serde(rename = "@name")]
     pub name: String,
     #[serde(rename = "@pivot")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub pivot: Option<bool>,
     #[serde(rename = "@table")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub table: Option<bool>,
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13646,7 +15772,11 @@ pub struct TableStyleElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BooleanProperty {
     #[serde(rename = "@val")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub value: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13759,22 +15889,46 @@ pub struct SmlAGAutoFormat {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_format_id: Option<u32>,
     #[serde(rename = "@applyNumberFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_number_formats: Option<bool>,
     #[serde(rename = "@applyBorderFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_border_formats: Option<bool>,
     #[serde(rename = "@applyFontFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_font_formats: Option<bool>,
     #[serde(rename = "@applyPatternFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_pattern_formats: Option<bool>,
     #[serde(rename = "@applyAlignmentFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_alignment_formats: Option<bool>,
     #[serde(rename = "@applyWidthHeightFormats")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub apply_width_height_formats: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13891,7 +16045,11 @@ pub struct ExternalSheetData {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@refreshError")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_error: Option<bool>,
     #[serde(rename = "row")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -14000,13 +16158,25 @@ pub struct DdeItem {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@ole")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub ole: Option<bool>,
     #[serde(rename = "@advise")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub advise: Option<bool>,
     #[serde(rename = "@preferPic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub prefer_pic: Option<bool>,
     #[serde(rename = "values")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14109,13 +16279,25 @@ pub struct OleItem {
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@icon")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub icon: Option<bool>,
     #[serde(rename = "@advise")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub advise: Option<bool>,
     #[serde(rename = "@preferPic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub prefer_pic: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -14158,11 +16340,19 @@ pub struct Table {
     pub header_row_count: Option<u32>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRow")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_row: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@insertRowShift")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub insert_row_shift: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowCount")]
@@ -14170,11 +16360,19 @@ pub struct Table {
     pub totals_row_count: Option<u32>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@totalsRowShown")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub totals_row_shown: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@published")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub published: Option<bool>,
     #[cfg(feature = "sml-tables")]
     #[serde(rename = "@headerRowDxfId")]
@@ -14255,16 +16453,32 @@ pub struct TableStyleInfo {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<XmlString>,
     #[serde(rename = "@showFirstColumn")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_first_column: Option<bool>,
     #[serde(rename = "@showLastColumn")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_last_column: Option<bool>,
     #[serde(rename = "@showRowStripes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_row_stripes: Option<bool>,
     #[serde(rename = "@showColumnStripes")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_column_stripes: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -14367,7 +16581,11 @@ pub struct TableFormula {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
     #[serde(rename = "@array")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub array: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -14390,7 +16608,11 @@ pub struct XmlColumnProperties {
     #[serde(rename = "@xpath")]
     pub xpath: XmlString,
     #[serde(rename = "@denormalized")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub denormalized: Option<bool>,
     #[serde(rename = "@xmlDataType")]
     pub xml_data_type: STXmlDataType,
@@ -14649,16 +16871,32 @@ pub struct BookView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visibility: Option<Visibility>,
     #[serde(rename = "@minimized")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub minimized: Option<bool>,
     #[serde(rename = "@showHorizontalScroll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_horizontal_scroll: Option<bool>,
     #[serde(rename = "@showVerticalScroll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_vertical_scroll: Option<bool>,
     #[serde(rename = "@showSheetTabs")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_sheet_tabs: Option<bool>,
     #[serde(rename = "@xWindow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14682,7 +16920,11 @@ pub struct BookView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_tab: Option<u32>,
     #[serde(rename = "@autoFilterDateGrouping")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_filter_date_grouping: Option<bool>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14720,40 +16962,84 @@ pub struct CustomWorkbookView {
     #[serde(rename = "@guid")]
     pub guid: Guid,
     #[serde(rename = "@autoUpdate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_update: Option<bool>,
     #[serde(rename = "@mergeInterval")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merge_interval: Option<u32>,
     #[serde(rename = "@changesSavedWin")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub changes_saved_win: Option<bool>,
     #[serde(rename = "@onlySync")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub only_sync: Option<bool>,
     #[serde(rename = "@personalView")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub personal_view: Option<bool>,
     #[serde(rename = "@includePrintSettings")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub include_print_settings: Option<bool>,
     #[serde(rename = "@includeHiddenRowCol")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub include_hidden_row_col: Option<bool>,
     #[serde(rename = "@maximized")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub maximized: Option<bool>,
     #[serde(rename = "@minimized")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub minimized: Option<bool>,
     #[serde(rename = "@showHorizontalScroll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_horizontal_scroll: Option<bool>,
     #[serde(rename = "@showVerticalScroll")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_vertical_scroll: Option<bool>,
     #[serde(rename = "@showSheetTabs")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_sheet_tabs: Option<bool>,
     #[serde(rename = "@xWindow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14771,10 +17057,18 @@ pub struct CustomWorkbookView {
     #[serde(rename = "@activeSheetId")]
     pub active_sheet_id: u32,
     #[serde(rename = "@showFormulaBar")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_formula_bar: Option<bool>,
     #[serde(rename = "@showStatusbar")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_statusbar: Option<bool>,
     #[serde(rename = "@showComments")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14836,28 +17130,56 @@ pub struct Sheet {
 #[serde(rename = "workbookPr")]
 pub struct WorkbookProperties {
     #[serde(rename = "@date1904")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub date1904: Option<bool>,
     #[serde(rename = "@showObjects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_objects: Option<ObjectVisibility>,
     #[serde(rename = "@showBorderUnselectedTables")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_border_unselected_tables: Option<bool>,
     #[serde(rename = "@filterPrivacy")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub filter_privacy: Option<bool>,
     #[serde(rename = "@promptedSolutions")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub prompted_solutions: Option<bool>,
     #[serde(rename = "@showInkAnnotation")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_ink_annotation: Option<bool>,
     #[serde(rename = "@backupFile")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub backup_file: Option<bool>,
     #[serde(rename = "@saveExternalLinkValues")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub save_external_link_values: Option<bool>,
     #[serde(rename = "@updateLinks")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14866,25 +17188,53 @@ pub struct WorkbookProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
     #[serde(rename = "@hidePivotFieldList")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hide_pivot_field_list: Option<bool>,
     #[serde(rename = "@showPivotChartFilter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub show_pivot_chart_filter: Option<bool>,
     #[serde(rename = "@allowRefreshQuery")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub allow_refresh_query: Option<bool>,
     #[serde(rename = "@publishItems")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub publish_items: Option<bool>,
     #[serde(rename = "@checkCompatibility")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub check_compatibility: Option<bool>,
     #[serde(rename = "@autoCompressPictures")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_compress_pictures: Option<bool>,
     #[serde(rename = "@refreshAllConnections")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub refresh_all_connections: Option<bool>,
     #[serde(rename = "@defaultThemeVersion")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14901,7 +17251,11 @@ pub struct WorkbookProperties {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagPr {
     #[serde(rename = "@embed")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub embed: Option<bool>,
     #[serde(rename = "@show")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14950,16 +17304,32 @@ pub struct CTSmartTagType {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileRecoveryProperties {
     #[serde(rename = "@autoRecover")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_recover: Option<bool>,
     #[serde(rename = "@crashSave")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub crash_save: Option<bool>,
     #[serde(rename = "@dataExtractLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub data_extract_load: Option<bool>,
     #[serde(rename = "@repairLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub repair_load: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -14980,13 +17350,21 @@ pub struct CalculationProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_mode: Option<CalculationMode>,
     #[serde(rename = "@fullCalcOnLoad")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub full_calc_on_load: Option<bool>,
     #[serde(rename = "@refMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ref_mode: Option<ReferenceMode>,
     #[serde(rename = "@iterate")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub iterate: Option<bool>,
     #[serde(rename = "@iterateCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14995,22 +17373,42 @@ pub struct CalculationProperties {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate_delta: Option<f64>,
     #[serde(rename = "@fullPrecision")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub full_precision: Option<bool>,
     #[serde(rename = "@calcCompleted")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub calc_completed: Option<bool>,
     #[serde(rename = "@calcOnSave")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub calc_on_save: Option<bool>,
     #[serde(rename = "@concurrentCalc")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub concurrent_calc: Option<bool>,
     #[serde(rename = "@concurrentManualCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub concurrent_manual_count: Option<u32>,
     #[serde(rename = "@forceFullCalc")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub force_full_calc: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -15065,19 +17463,35 @@ pub struct DefinedName {
     pub local_sheet_id: Option<u32>,
     #[cfg(feature = "sml-structure")]
     #[serde(rename = "@hidden")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub hidden: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@function")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub function: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@vbProcedure")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub vb_procedure: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@xlm")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub xlm: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@functionGroupId")]
@@ -15089,11 +17503,19 @@ pub struct DefinedName {
     pub shortcut_key: Option<XmlString>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "@publishToServer")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub publish_to_server: Option<bool>,
     #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@workbookParameter")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub workbook_parameter: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -15155,7 +17577,11 @@ pub struct CTPivotCache {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileSharing {
     #[serde(rename = "@readOnlyRecommended")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub read_only_recommended: Option<bool>,
     #[serde(rename = "@userName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15213,13 +17639,25 @@ pub struct WorkbookProtection {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub revisions_password_character_set: Option<String>,
     #[serde(rename = "@lockStructure")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub lock_structure: Option<bool>,
     #[serde(rename = "@lockWindows")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub lock_windows: Option<bool>,
     #[serde(rename = "@lockRevision")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub lock_revision: Option<bool>,
     #[serde(rename = "@revisionsAlgorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15257,19 +17695,39 @@ pub struct WorkbookProtection {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WebPublishing {
     #[serde(rename = "@css")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub css: Option<bool>,
     #[serde(rename = "@thicket")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub thicket: Option<bool>,
     #[serde(rename = "@longFileNames")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub long_file_names: Option<bool>,
     #[serde(rename = "@vml")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub vml: Option<bool>,
     #[serde(rename = "@allowPng")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub allow_png: Option<bool>,
     #[serde(rename = "@targetScreenSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15365,7 +17823,11 @@ pub struct CTWebPublishObject {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<XmlString>,
     #[serde(rename = "@autoRepublish")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
     pub auto_republish: Option<bool>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]

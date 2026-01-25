@@ -1,0 +1,32 @@
+[package]
+name = "ooxml-sml-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[workspace]
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+quick-xml = "0.39"
+
+[dependencies.ooxml-sml]
+path = ".."
+features = ["full"]
+
+[[bin]]
+name = "fuzz_worksheet_xml"
+path = "fuzz_targets/fuzz_worksheet_xml.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_serde_deserialize"
+path = "fuzz_targets/fuzz_serde_deserialize.rs"
+test = false
+doc = false
+bench = false

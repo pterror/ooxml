@@ -6,6 +6,25 @@ license.workspace = true
 repository.workspace = true
 description = "WordprocessingML (DOCX) support for the ooxml library"
 
+[features]
+default = ["full"]
+full = [
+    "wml-styling",
+    "wml-tables",
+    "wml-layout",
+    "wml-hyperlinks",
+    "wml-drawings",
+    "extra-attrs",
+    "extra-children",
+]
+wml-styling = []
+wml-tables = []
+wml-layout = []
+wml-hyperlinks = []
+wml-drawings = []
+extra-attrs = []
+extra-children = []
+
 [dependencies]
 ooxml-opc.workspace = true
 ooxml-xml.workspace = true

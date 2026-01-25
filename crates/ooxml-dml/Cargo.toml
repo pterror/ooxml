@@ -6,7 +6,17 @@ license.workspace = true
 repository.workspace = true
 description = "DrawingML support for the ooxml library (shared by Word, Excel, PowerPoint)"
 
+[features]
+default = ["full"]
+full = [
+    "extra-attrs",
+    "extra-children",
+]
+extra-attrs = []
+extra-children = []
+
 [dependencies]
+ooxml-xml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true

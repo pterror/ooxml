@@ -8,4 +8,5 @@ description = "Shared XML utilities for the ooxml library"
 
 [dependencies]
 quick-xml.workspace = true
+serde.workspace = true
 thiserror.workspace = true
