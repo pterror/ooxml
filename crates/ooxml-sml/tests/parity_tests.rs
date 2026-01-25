@@ -186,7 +186,7 @@ fn test_parity_formulas() {
     let cell_c1 = &row1.cells[2];
     assert!(cell_c1.formula.is_some());
     let formula = cell_c1.formula.as_ref().unwrap();
-    assert_eq!(formula.text.as_str(), "A1+B1");
+    assert_eq!(formula.text.as_deref(), Some("A1+B1"));
 
     // Check array formula - field is cell_type of type FormulaType
     let row2 = &ws.sheet_data.row[1];

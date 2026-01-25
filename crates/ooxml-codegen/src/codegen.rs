@@ -750,7 +750,8 @@ impl<'a> Generator<'a> {
                 if let Some(pattern) = self.definitions.get(name.as_str())
                     && self.is_string_type(pattern)
                 {
-                    // This is text content - add as a "text" field
+                    // This is text content - always optional since elements
+                    // can be self-closing (e.g. shared formula refs: <f t="shared" si="0"/>)
                     fields.push(Field {
                         name: "text".to_string(),
                         xml_name: "$text".to_string(),
@@ -759,7 +760,7 @@ impl<'a> Generator<'a> {
                             name: "string".to_string(),
                             params: vec![],
                         },
-                        is_optional,
+                        is_optional: true,
                         is_attribute: false,
                         is_vec: false,
                         is_text_content: true,

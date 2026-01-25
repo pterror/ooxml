@@ -21361,7 +21361,7 @@ impl FromXml for CellFormula {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_text: Option<String> = None;
+        let mut f_text = None;
         let mut f_cell_type = None;
         #[cfg(feature = "sml-formulas-advanced")]
         let mut f_aca = None;
@@ -21491,7 +21491,7 @@ impl FromXml for CellFormula {
         }
 
         Ok(Self {
-            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
+            text: f_text,
             cell_type: f_cell_type,
             #[cfg(feature = "sml-formulas-advanced")]
             aca: f_aca,
@@ -32256,7 +32256,7 @@ impl FromXml for TableFormula {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_text: Option<String> = None;
+        let mut f_text = None;
         let mut f_array = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -32324,7 +32324,7 @@ impl FromXml for TableFormula {
         }
 
         Ok(Self {
-            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
+            text: f_text,
             array: f_array,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -34402,7 +34402,7 @@ impl FromXml for DefinedName {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_text: Option<String> = None;
+        let mut f_text = None;
         let mut f_name: Option<XmlString> = None;
         let mut f_comment = None;
         #[cfg(feature = "sml-formulas-advanced")]
@@ -34548,7 +34548,7 @@ impl FromXml for DefinedName {
         }
 
         Ok(Self {
-            text: f_text.ok_or_else(|| ParseError::MissingAttribute("$text".to_string()))?,
+            text: f_text,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             comment: f_comment,
             #[cfg(feature = "sml-formulas-advanced")]

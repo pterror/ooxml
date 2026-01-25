@@ -173,7 +173,7 @@ impl CellExt for Cell {
     }
 
     fn formula_text(&self) -> Option<&str> {
-        self.formula.as_ref().map(|f| f.text.as_str())
+        self.formula.as_ref().and_then(|f| f.text.as_deref())
     }
 
     fn raw_value(&self) -> Option<&str> {

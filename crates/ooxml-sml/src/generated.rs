@@ -11136,7 +11136,8 @@ pub struct Hyperlink {
 #[serde(rename = "f")]
 pub struct CellFormula {
     #[serde(rename = "$text")]
-    pub text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
     #[serde(rename = "@t")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_type: Option<FormulaType>,
@@ -14363,7 +14364,8 @@ pub struct TableColumn {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TableFormula {
     #[serde(rename = "$text")]
-    pub text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
     #[serde(rename = "@array")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub array: Option<bool>,
@@ -15036,7 +15038,8 @@ pub struct DefinedNames {
 #[serde(rename = "definedName")]
 pub struct DefinedName {
     #[serde(rename = "$text")]
-    pub text: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
     #[serde(rename = "@name")]
     pub name: XmlString,
     #[serde(rename = "@comment")]

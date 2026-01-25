@@ -96,13 +96,22 @@ fn test_fixture_formulas() {
     let cell_c1 = &row1.cells[2];
     assert!(cell_c1.formula.is_some());
     let formula = cell_c1.formula.as_ref().unwrap();
-    assert_eq!(formula.text.as_str(), "A1+B1");
+    assert_eq!(formula.text.as_deref(), Some("A1+B1"));
     assert_eq!(cell_c1.value.as_deref(), Some("30"));
 
     // D1 has cross-sheet reference
     let cell_d1 = &row1.cells[3];
     assert!(cell_d1.formula.is_some());
-    assert!(cell_d1.formula.as_ref().unwrap().text.contains("Sheet2"));
+    assert!(
+        cell_d1
+            .formula
+            .as_ref()
+            .unwrap()
+            .text
+            .as_deref()
+            .unwrap()
+            .contains("Sheet2")
+    );
 }
 
 #[test]

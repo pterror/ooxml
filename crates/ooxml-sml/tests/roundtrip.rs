@@ -114,7 +114,7 @@ fn test_parse_worksheet_with_formula() {
     let cell_c1 = &row.cells[2];
     assert_eq!(cell_c1.reference.as_deref(), Some("C1"));
     let formula = cell_c1.formula.as_ref().expect("should have formula");
-    assert_eq!(formula.text.as_str(), "A1+B1");
+    assert_eq!(formula.text.as_deref(), Some("A1+B1"));
     assert_eq!(cell_c1.value.as_deref(), Some("30"));
 }
 
