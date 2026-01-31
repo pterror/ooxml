@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Running cargo fmt check..."
-cargo fmt --all -- --check
+echo "Running cargo fmt..."
+cargo fmt --all
+git add -u
 
 echo "Running cargo clippy..."
 cargo clippy --all-targets --all-features -- -D warnings
