@@ -51,6 +51,8 @@ After editing multiple files, run the full check once — not after each edit. F
 
 **When making the same change across multiple crates**, edit all files first, then build once.
 
+**Minimize file churn.** When editing a file, read it once, plan all changes, and apply them in one pass. Avoid read-edit-build-fail-read-fix cycles by thinking through the complete change before starting.
+
 **Use `normalize view` for structural exploration:**
 ```bash
 ~/git/rhizone/normalize/target/debug/normalize view <file>    # outline with line numbers
