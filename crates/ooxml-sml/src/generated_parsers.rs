@@ -70,6 +70,7 @@ fn skip_element<R: BufRead>(reader: &mut Reader<R>) -> Result<(), ParseError> {
     Ok(())
 }
 
+#[allow(dead_code)]
 /// Read the text content of an element until its end tag.
 fn read_text_content<R: BufRead>(reader: &mut Reader<R>) -> Result<String, ParseError> {
     let mut text = String::new();
@@ -87,6 +88,7 @@ fn read_text_content<R: BufRead>(reader: &mut Reader<R>) -> Result<String, Parse
     Ok(text)
 }
 
+#[allow(dead_code)]
 /// Decode a hex string to bytes.
 fn decode_hex(s: &str) -> Option<Vec<u8>> {
     let s = s.trim();
@@ -121,14 +123,14 @@ impl FromXml for AutoFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-filtering")]
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -142,7 +144,7 @@ impl FromXml for AutoFilter {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-filtering")]
                             b"filterColumn" => {
                                 f_filter_column
@@ -172,7 +174,7 @@ impl FromXml for AutoFilter {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-filtering")]
                             b"filterColumn" => {
                                 f_filter_column
@@ -241,7 +243,7 @@ impl FromXml for FilterColumn {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-filtering")]
                 b"colId" => {
                     f_column_id = val.parse().ok();
@@ -256,7 +258,7 @@ impl FromXml for FilterColumn {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -308,7 +310,7 @@ impl FromXml for Filters {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"blank" => {
                     f_blank = Some(val == "true" || val == "1");
                 }
@@ -317,7 +319,7 @@ impl FromXml for Filters {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -331,7 +333,7 @@ impl FromXml for Filters {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(Filter::from_xml(reader, &e, false)?));
                             }
@@ -353,7 +355,7 @@ impl FromXml for Filters {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(Filter::from_xml(reader, &e, true)?));
                             }
@@ -405,13 +407,13 @@ impl FromXml for Filter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -455,13 +457,13 @@ impl FromXml for CustomFilters {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"and" => {
                     f_and = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -475,7 +477,7 @@ impl FromXml for CustomFilters {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customFilter" => {
                                 f_custom_filter
                                     .push(Box::new(CustomFilter::from_xml(reader, &e, false)?));
@@ -494,7 +496,7 @@ impl FromXml for CustomFilters {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customFilter" => {
                                 f_custom_filter
                                     .push(Box::new(CustomFilter::from_xml(reader, &e, true)?));
@@ -542,7 +544,7 @@ impl FromXml for CustomFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"operator" => {
                     f_operator = val.parse().ok();
                 }
@@ -551,7 +553,7 @@ impl FromXml for CustomFilter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -596,7 +598,7 @@ impl FromXml for Top10Filter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"top" => {
                     f_top = Some(val == "true" || val == "1");
                 }
@@ -611,7 +613,7 @@ impl FromXml for Top10Filter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -656,7 +658,7 @@ impl FromXml for ColorFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"dxfId" => {
                     f_dxf_id = val.parse().ok();
                 }
@@ -665,7 +667,7 @@ impl FromXml for ColorFilter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -708,7 +710,7 @@ impl FromXml for IconFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"iconSet" => {
                     f_icon_set = val.parse().ok();
                 }
@@ -717,7 +719,7 @@ impl FromXml for IconFilter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -764,7 +766,7 @@ impl FromXml for DynamicFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -782,7 +784,7 @@ impl FromXml for DynamicFilter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -834,7 +836,7 @@ impl FromXml for SortState {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"columnSort" => {
                     f_column_sort = Some(val == "true" || val == "1");
                 }
@@ -849,7 +851,7 @@ impl FromXml for SortState {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -863,7 +865,7 @@ impl FromXml for SortState {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sortCondition" => {
                                 f_sort_condition
                                     .push(Box::new(SortCondition::from_xml(reader, &e, false)?));
@@ -886,7 +888,7 @@ impl FromXml for SortState {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sortCondition" => {
                                 f_sort_condition
                                     .push(Box::new(SortCondition::from_xml(reader, &e, true)?));
@@ -948,7 +950,7 @@ impl FromXml for SortCondition {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"descending" => {
                     f_descending = Some(val == "true" || val == "1");
                 }
@@ -972,7 +974,7 @@ impl FromXml for SortCondition {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1026,7 +1028,7 @@ impl FromXml for DateGroupItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"year" => {
                     f_year = val.parse().ok();
                 }
@@ -1050,7 +1052,7 @@ impl FromXml for DateGroupItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1098,13 +1100,13 @@ impl FromXml for CTXStringElement {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1145,13 +1147,13 @@ impl FromXml for Extension {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"uri" => {
                     f_uri = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1193,7 +1195,7 @@ impl FromXml for ObjectAnchor {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"moveWithCells" => {
                     f_move_with_cells = Some(val == "true" || val == "1");
                 }
@@ -1202,7 +1204,7 @@ impl FromXml for ObjectAnchor {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1247,7 +1249,7 @@ impl FromXml for EGExtensionList {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, false)?));
                             }
@@ -1265,7 +1267,7 @@ impl FromXml for EGExtensionList {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, true)?));
                             }
@@ -1298,29 +1300,64 @@ impl FromXml for EGExtensionList {
 impl FromXml for ExtensionList {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_ext = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+
+        // Parse child elements
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_ext.push(Box::new(Extension::from_xml(reader, &e, false)?));
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(RawXmlNode::Element(elem));
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
                         }
                     }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_ext.push(Box::new(Extension::from_xml(reader, &e, true)?));
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(RawXmlNode::Element(elem));
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+
+        Ok(Self {
+            ext: f_ext,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -1341,7 +1378,7 @@ impl FromXml for CalcChain {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(CalcCell::from_xml(reader, &e, false)?));
                             }
@@ -1363,7 +1400,7 @@ impl FromXml for CalcChain {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(CalcCell::from_xml(reader, &e, true)?));
                             }
@@ -1416,7 +1453,7 @@ impl FromXml for CalcCell {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"_any" => {
                     f_any = Some(val.into_owned());
                 }
@@ -1437,7 +1474,7 @@ impl FromXml for CalcCell {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1488,7 +1525,7 @@ impl FromXml for Comments {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"authors" => {
                                 f_authors = Some(Box::new(Authors::from_xml(reader, &e, false)?));
                             }
@@ -1514,7 +1551,7 @@ impl FromXml for Comments {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"authors" => {
                                 f_authors = Some(Box::new(Authors::from_xml(reader, &e, true)?));
                             }
@@ -1572,7 +1609,7 @@ impl FromXml for Authors {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"author" => {
                                 f_author.push(read_text_content(reader)?);
                             }
@@ -1590,7 +1627,7 @@ impl FromXml for Authors {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"author" => {
                                 f_author.push(String::new());
                             }
@@ -1636,7 +1673,7 @@ impl FromXml for CommentList {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"comment" => {
                                 f_comment.push(Box::new(Comment::from_xml(reader, &e, false)?));
                             }
@@ -1654,7 +1691,7 @@ impl FromXml for CommentList {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"comment" => {
                                 f_comment.push(Box::new(Comment::from_xml(reader, &e, true)?));
                             }
@@ -1709,7 +1746,7 @@ impl FromXml for Comment {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-comments")]
                 b"ref" => {
                     f_reference = Some(val.into_owned());
@@ -1728,7 +1765,7 @@ impl FromXml for Comment {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1742,7 +1779,7 @@ impl FromXml for Comment {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-comments")]
                             b"text" => {
                                 f_text = Some(Box::new(RichString::from_xml(reader, &e, false)?));
@@ -1765,7 +1802,7 @@ impl FromXml for Comment {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-comments")]
                             b"text" => {
                                 f_text = Some(Box::new(RichString::from_xml(reader, &e, true)?));
@@ -1841,7 +1878,7 @@ impl FromXml for CTCommentPr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"locked" => {
                     f_locked = Some(val == "true" || val == "1");
                 }
@@ -1880,7 +1917,7 @@ impl FromXml for CTCommentPr {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1894,7 +1931,7 @@ impl FromXml for CTCommentPr {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
@@ -1913,7 +1950,7 @@ impl FromXml for CTCommentPr {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
@@ -1975,13 +2012,13 @@ impl FromXml for MapInfo {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"SelectionNamespaces" => {
                     f_selection_namespaces = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -1995,7 +2032,7 @@ impl FromXml for MapInfo {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"Schema" => {
                                 f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, false)?));
                             }
@@ -2016,7 +2053,7 @@ impl FromXml for MapInfo {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"Schema" => {
                                 f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, true)?));
                             }
@@ -2107,7 +2144,7 @@ impl FromXml for XmlMap {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ID" => {
                     f_i_d = val.parse().ok();
                 }
@@ -2137,7 +2174,7 @@ impl FromXml for XmlMap {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2151,7 +2188,7 @@ impl FromXml for XmlMap {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"DataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(DataBinding::from_xml(reader, &e, false)?));
@@ -2170,7 +2207,7 @@ impl FromXml for XmlMap {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"DataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(DataBinding::from_xml(reader, &e, true)?));
@@ -2237,7 +2274,7 @@ impl FromXml for DataBinding {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"DataBindingName" => {
                     f_data_binding_name = Some(val.into_owned());
                 }
@@ -2255,7 +2292,7 @@ impl FromXml for DataBinding {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2304,7 +2341,7 @@ impl FromXml for Connections {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"connection" => {
                                 f_connection
                                     .push(Box::new(Connection::from_xml(reader, &e, false)?));
@@ -2323,7 +2360,7 @@ impl FromXml for Connections {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"connection" => {
                                 f_connection
                                     .push(Box::new(Connection::from_xml(reader, &e, true)?));
@@ -2394,7 +2431,7 @@ impl FromXml for Connection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -2457,7 +2494,7 @@ impl FromXml for Connection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2471,7 +2508,7 @@ impl FromXml for Connection {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dbPr" => {
                                 f_db_pr = Some(Box::new(DatabaseProperties::from_xml(
                                     reader, &e, false,
@@ -2513,7 +2550,7 @@ impl FromXml for Connection {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dbPr" => {
                                 f_db_pr =
                                     Some(Box::new(DatabaseProperties::from_xml(reader, &e, true)?));
@@ -2609,7 +2646,7 @@ impl FromXml for DatabaseProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"connection" => {
                     f_connection = Some(val.into_owned());
                 }
@@ -2624,7 +2661,7 @@ impl FromXml for DatabaseProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2677,7 +2714,7 @@ impl FromXml for OlapProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"local" => {
                     f_local = Some(val == "true" || val == "1");
                 }
@@ -2707,7 +2744,7 @@ impl FromXml for OlapProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2771,7 +2808,7 @@ impl FromXml for WebQueryProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"xml" => {
                     f_xml = Some(val == "true" || val == "1");
                 }
@@ -2813,7 +2850,7 @@ impl FromXml for WebQueryProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2827,7 +2864,7 @@ impl FromXml for WebQueryProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tables" => {
                                 f_tables = Some(Box::new(DataTables::from_xml(reader, &e, false)?));
                             }
@@ -2845,7 +2882,7 @@ impl FromXml for WebQueryProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tables" => {
                                 f_tables = Some(Box::new(DataTables::from_xml(reader, &e, true)?));
                             }
@@ -2906,13 +2943,13 @@ impl FromXml for Parameters {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -2926,7 +2963,7 @@ impl FromXml for Parameters {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"parameter" => {
                                 f_parameter.push(Box::new(Parameter::from_xml(reader, &e, false)?));
                             }
@@ -2944,7 +2981,7 @@ impl FromXml for Parameters {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"parameter" => {
                                 f_parameter.push(Box::new(Parameter::from_xml(reader, &e, true)?));
                             }
@@ -2999,7 +3036,7 @@ impl FromXml for Parameter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -3032,7 +3069,7 @@ impl FromXml for Parameter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3082,13 +3119,13 @@ impl FromXml for DataTables {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3176,7 +3213,7 @@ impl FromXml for TextImportProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"prompt" => {
                     f_prompt = Some(val == "true" || val == "1");
                 }
@@ -3227,7 +3264,7 @@ impl FromXml for TextImportProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3241,7 +3278,7 @@ impl FromXml for TextImportProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"textFields" => {
                                 f_text_fields =
                                     Some(Box::new(TextFields::from_xml(reader, &e, false)?));
@@ -3260,7 +3297,7 @@ impl FromXml for TextImportProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"textFields" => {
                                 f_text_fields =
                                     Some(Box::new(TextFields::from_xml(reader, &e, true)?));
@@ -3325,13 +3362,13 @@ impl FromXml for TextFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3345,7 +3382,7 @@ impl FromXml for TextFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"textField" => {
                                 f_text_field
                                     .push(Box::new(TextField::from_xml(reader, &e, false)?));
@@ -3364,7 +3401,7 @@ impl FromXml for TextFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"textField" => {
                                 f_text_field.push(Box::new(TextField::from_xml(reader, &e, true)?));
                             }
@@ -3411,7 +3448,7 @@ impl FromXml for TextField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -3420,7 +3457,7 @@ impl FromXml for TextField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3491,7 +3528,7 @@ impl FromXml for PivotCacheDefinition {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"invalid" => {
                     f_invalid = Some(val == "true" || val == "1");
                 }
@@ -3548,7 +3585,7 @@ impl FromXml for PivotCacheDefinition {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3562,7 +3599,7 @@ impl FromXml for PivotCacheDefinition {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheSource" => {
                                 f_cache_source =
                                     Some(Box::new(CacheSource::from_xml(reader, &e, false)?));
@@ -3619,7 +3656,7 @@ impl FromXml for PivotCacheDefinition {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheSource" => {
                                 f_cache_source =
                                     Some(Box::new(CacheSource::from_xml(reader, &e, true)?));
@@ -3734,13 +3771,13 @@ impl FromXml for CacheFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3754,7 +3791,7 @@ impl FromXml for CacheFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheField" => {
                                 f_cache_field
                                     .push(Box::new(CacheField::from_xml(reader, &e, false)?));
@@ -3773,7 +3810,7 @@ impl FromXml for CacheFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheField" => {
                                 f_cache_field
                                     .push(Box::new(CacheField::from_xml(reader, &e, true)?));
@@ -3838,7 +3875,7 @@ impl FromXml for CacheField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -3880,7 +3917,7 @@ impl FromXml for CacheField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -3894,7 +3931,7 @@ impl FromXml for CacheField {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sharedItems" => {
                                 f_shared_items =
                                     Some(Box::new(SharedItems::from_xml(reader, &e, false)?));
@@ -3924,7 +3961,7 @@ impl FromXml for CacheField {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sharedItems" => {
                                 f_shared_items =
                                     Some(Box::new(SharedItems::from_xml(reader, &e, true)?));
@@ -3998,7 +4035,7 @@ impl FromXml for CacheSource {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -4007,7 +4044,7 @@ impl FromXml for CacheSource {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4051,7 +4088,7 @@ impl FromXml for WorksheetSource {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -4063,7 +4100,7 @@ impl FromXml for WorksheetSource {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4110,13 +4147,13 @@ impl FromXml for Consolidation {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"autoPage" => {
                     f_auto_page = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4130,7 +4167,7 @@ impl FromXml for Consolidation {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pages" => {
                                 f_pages = Some(Box::new(CTPages::from_xml(reader, &e, false)?));
                             }
@@ -4152,7 +4189,7 @@ impl FromXml for Consolidation {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pages" => {
                                 f_pages = Some(Box::new(CTPages::from_xml(reader, &e, true)?));
                             }
@@ -4207,13 +4244,13 @@ impl FromXml for CTPages {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4227,7 +4264,7 @@ impl FromXml for CTPages {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"page" => {
                                 f_page.push(Box::new(CTPCDSCPage::from_xml(reader, &e, false)?));
                             }
@@ -4245,7 +4282,7 @@ impl FromXml for CTPages {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"page" => {
                                 f_page.push(Box::new(CTPCDSCPage::from_xml(reader, &e, true)?));
                             }
@@ -4294,13 +4331,13 @@ impl FromXml for CTPCDSCPage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4314,7 +4351,7 @@ impl FromXml for CTPCDSCPage {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageItem" => {
                                 f_page_item
                                     .push(Box::new(CTPageItem::from_xml(reader, &e, false)?));
@@ -4333,7 +4370,7 @@ impl FromXml for CTPCDSCPage {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageItem" => {
                                 f_page_item.push(Box::new(CTPageItem::from_xml(reader, &e, true)?));
                             }
@@ -4379,13 +4416,13 @@ impl FromXml for CTPageItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4429,13 +4466,13 @@ impl FromXml for CTRangeSets {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4449,7 +4486,7 @@ impl FromXml for CTRangeSets {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rangeSet" => {
                                 f_range_set
                                     .push(Box::new(CTRangeSet::from_xml(reader, &e, false)?));
@@ -4468,7 +4505,7 @@ impl FromXml for CTRangeSets {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rangeSet" => {
                                 f_range_set.push(Box::new(CTRangeSet::from_xml(reader, &e, true)?));
                             }
@@ -4520,7 +4557,7 @@ impl FromXml for CTRangeSet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"i1" => {
                     f_i1 = val.parse().ok();
                 }
@@ -4544,7 +4581,7 @@ impl FromXml for CTRangeSet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4604,7 +4641,7 @@ impl FromXml for SharedItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"containsSemiMixedTypes" => {
                     f_contains_semi_mixed_types = Some(val == "true" || val == "1");
                 }
@@ -4649,7 +4686,7 @@ impl FromXml for SharedItems {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4717,7 +4754,7 @@ impl FromXml for CTMissing {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"u" => {
                     f_u = Some(val == "true" || val == "1");
                 }
@@ -4753,7 +4790,7 @@ impl FromXml for CTMissing {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4767,7 +4804,7 @@ impl FromXml for CTMissing {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -4788,7 +4825,7 @@ impl FromXml for CTMissing {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -4863,7 +4900,7 @@ impl FromXml for CTNumber {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
@@ -4902,7 +4939,7 @@ impl FromXml for CTNumber {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -4916,7 +4953,7 @@ impl FromXml for CTNumber {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -4937,7 +4974,7 @@ impl FromXml for CTNumber {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -5005,7 +5042,7 @@ impl FromXml for CTBoolean {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = Some(val == "true" || val == "1");
                 }
@@ -5023,7 +5060,7 @@ impl FromXml for CTBoolean {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5037,7 +5074,7 @@ impl FromXml for CTBoolean {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
                             }
@@ -5055,7 +5092,7 @@ impl FromXml for CTBoolean {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
                             }
@@ -5120,7 +5157,7 @@ impl FromXml for CTError {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = Some(val.into_owned());
                 }
@@ -5159,7 +5196,7 @@ impl FromXml for CTError {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5173,7 +5210,7 @@ impl FromXml for CTError {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -5194,7 +5231,7 @@ impl FromXml for CTError {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -5270,7 +5307,7 @@ impl FromXml for CTString {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = Some(val.into_owned());
                 }
@@ -5309,7 +5346,7 @@ impl FromXml for CTString {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5323,7 +5360,7 @@ impl FromXml for CTString {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -5344,7 +5381,7 @@ impl FromXml for CTString {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -5412,7 +5449,7 @@ impl FromXml for CTDateTime {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = Some(val.into_owned());
                 }
@@ -5430,7 +5467,7 @@ impl FromXml for CTDateTime {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5444,7 +5481,7 @@ impl FromXml for CTDateTime {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
                             }
@@ -5462,7 +5499,7 @@ impl FromXml for CTDateTime {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
                             }
@@ -5518,7 +5555,7 @@ impl FromXml for FieldGroup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"par" => {
                     f_par = val.parse().ok();
                 }
@@ -5527,7 +5564,7 @@ impl FromXml for FieldGroup {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5541,7 +5578,7 @@ impl FromXml for FieldGroup {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rangePr" => {
                                 f_range_pr =
                                     Some(Box::new(CTRangePr::from_xml(reader, &e, false)?));
@@ -5568,7 +5605,7 @@ impl FromXml for FieldGroup {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rangePr" => {
                                 f_range_pr = Some(Box::new(CTRangePr::from_xml(reader, &e, true)?));
                             }
@@ -5632,7 +5669,7 @@ impl FromXml for CTRangePr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"autoStart" => {
                     f_auto_start = Some(val == "true" || val == "1");
                 }
@@ -5659,7 +5696,7 @@ impl FromXml for CTRangePr {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5710,13 +5747,13 @@ impl FromXml for CTDiscretePr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5730,7 +5767,7 @@ impl FromXml for CTDiscretePr {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, false)?));
                             }
@@ -5748,7 +5785,7 @@ impl FromXml for CTDiscretePr {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, true)?));
                             }
@@ -5794,13 +5831,13 @@ impl FromXml for GroupItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5845,13 +5882,13 @@ impl FromXml for PivotCacheRecords {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5865,7 +5902,7 @@ impl FromXml for PivotCacheRecords {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"r" => {
                                 f_reference.push(Box::new(CTRecord::from_xml(reader, &e, false)?));
                             }
@@ -5887,7 +5924,7 @@ impl FromXml for PivotCacheRecords {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"r" => {
                                 f_reference.push(Box::new(CTRecord::from_xml(reader, &e, true)?));
                             }
@@ -5970,13 +6007,13 @@ impl FromXml for CTPCDKPIs {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -5990,7 +6027,7 @@ impl FromXml for CTPCDKPIs {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"kpi" => {
                                 f_kpi.push(Box::new(CTPCDKPI::from_xml(reader, &e, false)?));
                             }
@@ -6008,7 +6045,7 @@ impl FromXml for CTPCDKPIs {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"kpi" => {
                                 f_kpi.push(Box::new(CTPCDKPI::from_xml(reader, &e, true)?));
                             }
@@ -6064,7 +6101,7 @@ impl FromXml for CTPCDKPI {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"uniqueName" => {
                     f_unique_name = Some(val.into_owned());
                 }
@@ -6100,7 +6137,7 @@ impl FromXml for CTPCDKPI {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6155,13 +6192,13 @@ impl FromXml for CTCacheHierarchies {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6175,7 +6212,7 @@ impl FromXml for CTCacheHierarchies {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheHierarchy" => {
                                 f_cache_hierarchy
                                     .push(Box::new(CTCacheHierarchy::from_xml(reader, &e, false)?));
@@ -6194,7 +6231,7 @@ impl FromXml for CTCacheHierarchies {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cacheHierarchy" => {
                                 f_cache_hierarchy
                                     .push(Box::new(CTCacheHierarchy::from_xml(reader, &e, true)?));
@@ -6267,7 +6304,7 @@ impl FromXml for CTCacheHierarchy {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"uniqueName" => {
                     f_unique_name = Some(val.into_owned());
                 }
@@ -6336,7 +6373,7 @@ impl FromXml for CTCacheHierarchy {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6350,7 +6387,7 @@ impl FromXml for CTCacheHierarchy {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fieldsUsage" => {
                                 f_fields_usage =
                                     Some(Box::new(CTFieldsUsage::from_xml(reader, &e, false)?));
@@ -6377,7 +6414,7 @@ impl FromXml for CTCacheHierarchy {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fieldsUsage" => {
                                 f_fields_usage =
                                     Some(Box::new(CTFieldsUsage::from_xml(reader, &e, true)?));
@@ -6459,13 +6496,13 @@ impl FromXml for CTFieldsUsage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6479,7 +6516,7 @@ impl FromXml for CTFieldsUsage {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fieldUsage" => {
                                 f_field_usage
                                     .push(Box::new(CTFieldUsage::from_xml(reader, &e, false)?));
@@ -6498,7 +6535,7 @@ impl FromXml for CTFieldsUsage {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fieldUsage" => {
                                 f_field_usage
                                     .push(Box::new(CTFieldUsage::from_xml(reader, &e, true)?));
@@ -6545,13 +6582,13 @@ impl FromXml for CTFieldUsage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"x" => {
                     f_x = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6595,13 +6632,13 @@ impl FromXml for CTGroupLevels {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6615,7 +6652,7 @@ impl FromXml for CTGroupLevels {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupLevel" => {
                                 f_group_level
                                     .push(Box::new(CTGroupLevel::from_xml(reader, &e, false)?));
@@ -6634,7 +6671,7 @@ impl FromXml for CTGroupLevels {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupLevel" => {
                                 f_group_level
                                     .push(Box::new(CTGroupLevel::from_xml(reader, &e, true)?));
@@ -6688,7 +6725,7 @@ impl FromXml for CTGroupLevel {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"uniqueName" => {
                     f_unique_name = Some(val.into_owned());
                 }
@@ -6703,7 +6740,7 @@ impl FromXml for CTGroupLevel {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6717,7 +6754,7 @@ impl FromXml for CTGroupLevel {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groups" => {
                                 f_groups = Some(Box::new(CTGroups::from_xml(reader, &e, false)?));
                             }
@@ -6739,7 +6776,7 @@ impl FromXml for CTGroupLevel {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groups" => {
                                 f_groups = Some(Box::new(CTGroups::from_xml(reader, &e, true)?));
                             }
@@ -6798,13 +6835,13 @@ impl FromXml for CTGroups {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6818,7 +6855,7 @@ impl FromXml for CTGroups {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"group" => {
                                 f_group.push(Box::new(CTLevelGroup::from_xml(reader, &e, false)?));
                             }
@@ -6836,7 +6873,7 @@ impl FromXml for CTGroups {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"group" => {
                                 f_group.push(Box::new(CTLevelGroup::from_xml(reader, &e, true)?));
                             }
@@ -6889,7 +6926,7 @@ impl FromXml for CTLevelGroup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -6907,7 +6944,7 @@ impl FromXml for CTLevelGroup {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -6921,7 +6958,7 @@ impl FromXml for CTLevelGroup {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupMembers" => {
                                 f_group_members =
                                     Some(Box::new(CTGroupMembers::from_xml(reader, &e, false)?));
@@ -6940,7 +6977,7 @@ impl FromXml for CTLevelGroup {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupMembers" => {
                                 f_group_members =
                                     Some(Box::new(CTGroupMembers::from_xml(reader, &e, true)?));
@@ -6997,13 +7034,13 @@ impl FromXml for CTGroupMembers {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7017,7 +7054,7 @@ impl FromXml for CTGroupMembers {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupMember" => {
                                 f_group_member
                                     .push(Box::new(CTGroupMember::from_xml(reader, &e, false)?));
@@ -7036,7 +7073,7 @@ impl FromXml for CTGroupMembers {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"groupMember" => {
                                 f_group_member
                                     .push(Box::new(CTGroupMember::from_xml(reader, &e, true)?));
@@ -7084,7 +7121,7 @@ impl FromXml for CTGroupMember {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"uniqueName" => {
                     f_unique_name = Some(val.into_owned());
                 }
@@ -7093,7 +7130,7 @@ impl FromXml for CTGroupMember {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7143,7 +7180,7 @@ impl FromXml for CTTupleCache {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"entries" => {
                                 f_entries =
                                     Some(Box::new(CTPCDSDTCEntries::from_xml(reader, &e, false)?));
@@ -7177,7 +7214,7 @@ impl FromXml for CTTupleCache {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"entries" => {
                                 f_entries =
                                     Some(Box::new(CTPCDSDTCEntries::from_xml(reader, &e, true)?));
@@ -7241,7 +7278,7 @@ impl FromXml for CTServerFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"culture" => {
                     f_culture = Some(val.into_owned());
                 }
@@ -7250,7 +7287,7 @@ impl FromXml for CTServerFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7295,13 +7332,13 @@ impl FromXml for CTServerFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7315,7 +7352,7 @@ impl FromXml for CTServerFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"serverFormat" => {
                                 f_server_format
                                     .push(Box::new(CTServerFormat::from_xml(reader, &e, false)?));
@@ -7334,7 +7371,7 @@ impl FromXml for CTServerFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"serverFormat" => {
                                 f_server_format
                                     .push(Box::new(CTServerFormat::from_xml(reader, &e, true)?));
@@ -7381,13 +7418,13 @@ impl FromXml for CTPCDSDTCEntries {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7431,13 +7468,13 @@ impl FromXml for CTTuples {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"c" => {
                     f_cells = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7451,7 +7488,7 @@ impl FromXml for CTTuples {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpl" => {
                                 f_tpl.push(Box::new(CTTuple::from_xml(reader, &e, false)?));
                             }
@@ -7469,7 +7506,7 @@ impl FromXml for CTTuples {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpl" => {
                                 f_tpl.push(Box::new(CTTuple::from_xml(reader, &e, true)?));
                             }
@@ -7517,7 +7554,7 @@ impl FromXml for CTTuple {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"fld" => {
                     f_fld = val.parse().ok();
                 }
@@ -7529,7 +7566,7 @@ impl FromXml for CTTuple {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7575,13 +7612,13 @@ impl FromXml for CTSets {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7595,7 +7632,7 @@ impl FromXml for CTSets {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"set" => {
                                 f_set.push(Box::new(CTSet::from_xml(reader, &e, false)?));
                             }
@@ -7613,7 +7650,7 @@ impl FromXml for CTSets {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"set" => {
                                 f_set.push(Box::new(CTSet::from_xml(reader, &e, true)?));
                             }
@@ -7667,7 +7704,7 @@ impl FromXml for CTSet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -7685,7 +7722,7 @@ impl FromXml for CTSet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7699,7 +7736,7 @@ impl FromXml for CTSet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -7721,7 +7758,7 @@ impl FromXml for CTSet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -7781,13 +7818,13 @@ impl FromXml for CTQueryCache {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7801,7 +7838,7 @@ impl FromXml for CTQueryCache {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"query" => {
                                 f_query.push(Box::new(CTQuery::from_xml(reader, &e, false)?));
                             }
@@ -7819,7 +7856,7 @@ impl FromXml for CTQueryCache {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"query" => {
                                 f_query.push(Box::new(CTQuery::from_xml(reader, &e, true)?));
                             }
@@ -7868,13 +7905,13 @@ impl FromXml for CTQuery {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"mdx" => {
                     f_mdx = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7888,7 +7925,7 @@ impl FromXml for CTQuery {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, false)?));
                             }
@@ -7906,7 +7943,7 @@ impl FromXml for CTQuery {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, true)?));
                             }
@@ -7955,13 +7992,13 @@ impl FromXml for CTCalculatedItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -7975,7 +8012,7 @@ impl FromXml for CTCalculatedItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedItem" => {
                                 f_calculated_item
                                     .push(Box::new(CTCalculatedItem::from_xml(reader, &e, false)?));
@@ -7994,7 +8031,7 @@ impl FromXml for CTCalculatedItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedItem" => {
                                 f_calculated_item
                                     .push(Box::new(CTCalculatedItem::from_xml(reader, &e, true)?));
@@ -8046,7 +8083,7 @@ impl FromXml for CTCalculatedItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"field" => {
                     f_field = val.parse().ok();
                 }
@@ -8055,7 +8092,7 @@ impl FromXml for CTCalculatedItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -8069,7 +8106,7 @@ impl FromXml for CTCalculatedItem {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
@@ -8092,7 +8129,7 @@ impl FromXml for CTCalculatedItem {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
@@ -8149,13 +8186,13 @@ impl FromXml for CTCalculatedMembers {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -8169,7 +8206,7 @@ impl FromXml for CTCalculatedMembers {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedMember" => {
                                 f_calculated_member.push(Box::new(CTCalculatedMember::from_xml(
                                     reader, &e, false,
@@ -8189,7 +8226,7 @@ impl FromXml for CTCalculatedMembers {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedMember" => {
                                 f_calculated_member.push(Box::new(CTCalculatedMember::from_xml(
                                     reader, &e, true,
@@ -8246,7 +8283,7 @@ impl FromXml for CTCalculatedMember {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -8270,7 +8307,7 @@ impl FromXml for CTCalculatedMember {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -8284,7 +8321,7 @@ impl FromXml for CTCalculatedMember {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -8303,7 +8340,7 @@ impl FromXml for CTCalculatedMember {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -8353,6 +8390,13 @@ impl FromXml for CTPivotTableDefinition {
         let mut f_cache_id: Option<u32> = None;
         let mut f_data_on_rows = None;
         let mut f_data_position = None;
+        let mut f_auto_format_id = None;
+        let mut f_apply_number_formats = None;
+        let mut f_apply_border_formats = None;
+        let mut f_apply_font_formats = None;
+        let mut f_apply_pattern_formats = None;
+        let mut f_apply_alignment_formats = None;
+        let mut f_apply_width_height_formats = None;
         let mut f_data_caption: Option<XmlString> = None;
         let mut f_grand_total_caption = None;
         let mut f_error_caption = None;
@@ -8435,7 +8479,7 @@ impl FromXml for CTPivotTableDefinition {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -8447,6 +8491,27 @@ impl FromXml for CTPivotTableDefinition {
                 }
                 b"dataPosition" => {
                     f_data_position = val.parse().ok();
+                }
+                b"autoFormatId" => {
+                    f_auto_format_id = val.parse().ok();
+                }
+                b"applyNumberFormats" => {
+                    f_apply_number_formats = Some(val == "true" || val == "1");
+                }
+                b"applyBorderFormats" => {
+                    f_apply_border_formats = Some(val == "true" || val == "1");
+                }
+                b"applyFontFormats" => {
+                    f_apply_font_formats = Some(val == "true" || val == "1");
+                }
+                b"applyPatternFormats" => {
+                    f_apply_pattern_formats = Some(val == "true" || val == "1");
+                }
+                b"applyAlignmentFormats" => {
+                    f_apply_alignment_formats = Some(val == "true" || val == "1");
+                }
+                b"applyWidthHeightFormats" => {
+                    f_apply_width_height_formats = Some(val == "true" || val == "1");
                 }
                 b"dataCaption" => {
                     f_data_caption = Some(val.into_owned());
@@ -8621,7 +8686,7 @@ impl FromXml for CTPivotTableDefinition {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -8635,7 +8700,7 @@ impl FromXml for CTPivotTableDefinition {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"location" => {
                                 f_location =
                                     Some(Box::new(PivotLocation::from_xml(reader, &e, false)?));
@@ -8721,7 +8786,7 @@ impl FromXml for CTPivotTableDefinition {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"location" => {
                                 f_location =
                                     Some(Box::new(PivotLocation::from_xml(reader, &e, true)?));
@@ -8816,6 +8881,13 @@ impl FromXml for CTPivotTableDefinition {
                 .ok_or_else(|| ParseError::MissingAttribute("cacheId".to_string()))?,
             data_on_rows: f_data_on_rows,
             data_position: f_data_position,
+            auto_format_id: f_auto_format_id,
+            apply_number_formats: f_apply_number_formats,
+            apply_border_formats: f_apply_border_formats,
+            apply_font_formats: f_apply_font_formats,
+            apply_pattern_formats: f_apply_pattern_formats,
+            apply_alignment_formats: f_apply_alignment_formats,
+            apply_width_height_formats: f_apply_width_height_formats,
             data_caption: f_data_caption
                 .ok_or_else(|| ParseError::MissingAttribute("dataCaption".to_string()))?,
             grand_total_caption: f_grand_total_caption,
@@ -8918,7 +8990,7 @@ impl FromXml for PivotLocation {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -8939,7 +9011,7 @@ impl FromXml for PivotLocation {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -8992,13 +9064,13 @@ impl FromXml for PivotFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9012,7 +9084,7 @@ impl FromXml for PivotFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotField" => {
                                 f_pivot_field
                                     .push(Box::new(PivotField::from_xml(reader, &e, false)?));
@@ -9031,7 +9103,7 @@ impl FromXml for PivotFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotField" => {
                                 f_pivot_field
                                     .push(Box::new(PivotField::from_xml(reader, &e, true)?));
@@ -9130,7 +9202,7 @@ impl FromXml for PivotField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -9277,7 +9349,7 @@ impl FromXml for PivotField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9291,7 +9363,7 @@ impl FromXml for PivotField {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"items" => {
                                 f_items = Some(Box::new(PivotItems::from_xml(reader, &e, false)?));
                             }
@@ -9318,7 +9390,7 @@ impl FromXml for PivotField {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"items" => {
                                 f_items = Some(Box::new(PivotItems::from_xml(reader, &e, true)?));
                             }
@@ -9425,13 +9497,13 @@ impl FromXml for PivotItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9445,7 +9517,7 @@ impl FromXml for PivotItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"item" => {
                                 f_item.push(Box::new(PivotItem::from_xml(reader, &e, false)?));
                             }
@@ -9463,7 +9535,7 @@ impl FromXml for PivotItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"item" => {
                                 f_item.push(Box::new(PivotItem::from_xml(reader, &e, true)?));
                             }
@@ -9519,7 +9591,7 @@ impl FromXml for PivotItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"n" => {
                     f_n = Some(val.into_owned());
                 }
@@ -9555,7 +9627,7 @@ impl FromXml for PivotItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9609,13 +9681,13 @@ impl FromXml for PageFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9629,7 +9701,7 @@ impl FromXml for PageFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageField" => {
                                 f_page_field
                                     .push(Box::new(PageField::from_xml(reader, &e, false)?));
@@ -9648,7 +9720,7 @@ impl FromXml for PageFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageField" => {
                                 f_page_field.push(Box::new(PageField::from_xml(reader, &e, true)?));
                             }
@@ -9701,7 +9773,7 @@ impl FromXml for PageField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"fld" => {
                     f_fld = val.parse().ok();
                 }
@@ -9719,7 +9791,7 @@ impl FromXml for PageField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9733,7 +9805,7 @@ impl FromXml for PageField {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -9752,7 +9824,7 @@ impl FromXml for PageField {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -9806,13 +9878,13 @@ impl FromXml for DataFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9826,7 +9898,7 @@ impl FromXml for DataFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataField" => {
                                 f_data_field
                                     .push(Box::new(DataField::from_xml(reader, &e, false)?));
@@ -9845,7 +9917,7 @@ impl FromXml for DataFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataField" => {
                                 f_data_field.push(Box::new(DataField::from_xml(reader, &e, true)?));
                             }
@@ -9900,7 +9972,7 @@ impl FromXml for DataField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -9924,7 +9996,7 @@ impl FromXml for DataField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -9938,7 +10010,7 @@ impl FromXml for DataField {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -9957,7 +10029,7 @@ impl FromXml for DataField {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -10013,13 +10085,13 @@ impl FromXml for CTRowItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10033,7 +10105,7 @@ impl FromXml for CTRowItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, false)?));
                             }
@@ -10051,7 +10123,7 @@ impl FromXml for CTRowItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, true)?));
                             }
@@ -10100,13 +10172,13 @@ impl FromXml for CTColItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10120,7 +10192,7 @@ impl FromXml for CTColItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, false)?));
                             }
@@ -10138,7 +10210,7 @@ impl FromXml for CTColItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, true)?));
                             }
@@ -10189,7 +10261,7 @@ impl FromXml for CTI {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
@@ -10201,7 +10273,7 @@ impl FromXml for CTI {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10215,7 +10287,7 @@ impl FromXml for CTI {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
                             }
@@ -10233,7 +10305,7 @@ impl FromXml for CTI {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
                             }
@@ -10281,13 +10353,13 @@ impl FromXml for CTX {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10331,13 +10403,13 @@ impl FromXml for RowFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10351,7 +10423,7 @@ impl FromXml for RowFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, false)?));
                             }
@@ -10369,7 +10441,7 @@ impl FromXml for RowFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, true)?));
                             }
@@ -10418,13 +10490,13 @@ impl FromXml for ColFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10438,7 +10510,7 @@ impl FromXml for ColFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, false)?));
                             }
@@ -10456,7 +10528,7 @@ impl FromXml for ColFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, true)?));
                             }
@@ -10502,13 +10574,13 @@ impl FromXml for CTField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"x" => {
                     f_x = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10552,13 +10624,13 @@ impl FromXml for CTFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10572,7 +10644,7 @@ impl FromXml for CTFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"format" => {
                                 f_format.push(Box::new(CTFormat::from_xml(reader, &e, false)?));
                             }
@@ -10590,7 +10662,7 @@ impl FromXml for CTFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"format" => {
                                 f_format.push(Box::new(CTFormat::from_xml(reader, &e, true)?));
                             }
@@ -10641,7 +10713,7 @@ impl FromXml for CTFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"action" => {
                     f_action = val.parse().ok();
                 }
@@ -10650,7 +10722,7 @@ impl FromXml for CTFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10664,7 +10736,7 @@ impl FromXml for CTFormat {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
@@ -10687,7 +10759,7 @@ impl FromXml for CTFormat {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
@@ -10744,13 +10816,13 @@ impl FromXml for CTConditionalFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10764,7 +10836,7 @@ impl FromXml for CTConditionalFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"conditionalFormat" => {
                                 f_conditional_format.push(Box::new(CTConditionalFormat::from_xml(
                                     reader, &e, false,
@@ -10784,7 +10856,7 @@ impl FromXml for CTConditionalFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"conditionalFormat" => {
                                 f_conditional_format.push(Box::new(CTConditionalFormat::from_xml(
                                     reader, &e, true,
@@ -10838,7 +10910,7 @@ impl FromXml for CTConditionalFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"scope" => {
                     f_scope = val.parse().ok();
                 }
@@ -10850,7 +10922,7 @@ impl FromXml for CTConditionalFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10864,7 +10936,7 @@ impl FromXml for CTConditionalFormat {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotAreas" => {
                                 f_pivot_areas =
                                     Some(Box::new(PivotAreas::from_xml(reader, &e, false)?));
@@ -10887,7 +10959,7 @@ impl FromXml for CTConditionalFormat {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotAreas" => {
                                 f_pivot_areas =
                                     Some(Box::new(PivotAreas::from_xml(reader, &e, true)?));
@@ -10946,13 +11018,13 @@ impl FromXml for PivotAreas {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -10966,7 +11038,7 @@ impl FromXml for PivotAreas {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area
                                     .push(Box::new(PivotArea::from_xml(reader, &e, false)?));
@@ -10985,7 +11057,7 @@ impl FromXml for PivotAreas {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area.push(Box::new(PivotArea::from_xml(reader, &e, true)?));
                             }
@@ -11034,13 +11106,13 @@ impl FromXml for CTChartFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11054,7 +11126,7 @@ impl FromXml for CTChartFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"chartFormat" => {
                                 f_chart_format
                                     .push(Box::new(CTChartFormat::from_xml(reader, &e, false)?));
@@ -11073,7 +11145,7 @@ impl FromXml for CTChartFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"chartFormat" => {
                                 f_chart_format
                                     .push(Box::new(CTChartFormat::from_xml(reader, &e, true)?));
@@ -11125,7 +11197,7 @@ impl FromXml for CTChartFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"chart" => {
                     f_chart = val.parse().ok();
                 }
@@ -11137,7 +11209,7 @@ impl FromXml for CTChartFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11151,7 +11223,7 @@ impl FromXml for CTChartFormat {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
@@ -11170,7 +11242,7 @@ impl FromXml for CTChartFormat {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
@@ -11223,13 +11295,13 @@ impl FromXml for CTPivotHierarchies {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11243,7 +11315,7 @@ impl FromXml for CTPivotHierarchies {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotHierarchy" => {
                                 f_pivot_hierarchy
                                     .push(Box::new(CTPivotHierarchy::from_xml(reader, &e, false)?));
@@ -11262,7 +11334,7 @@ impl FromXml for CTPivotHierarchies {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotHierarchy" => {
                                 f_pivot_hierarchy
                                     .push(Box::new(CTPivotHierarchy::from_xml(reader, &e, true)?));
@@ -11324,7 +11396,7 @@ impl FromXml for CTPivotHierarchy {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"outline" => {
                     f_outline = Some(val == "true" || val == "1");
                 }
@@ -11360,7 +11432,7 @@ impl FromXml for CTPivotHierarchy {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11374,7 +11446,7 @@ impl FromXml for CTPivotHierarchy {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mps" => {
                                 f_mps = Some(Box::new(CTMemberProperties::from_xml(
                                     reader, &e, false,
@@ -11401,7 +11473,7 @@ impl FromXml for CTPivotHierarchy {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mps" => {
                                 f_mps =
                                     Some(Box::new(CTMemberProperties::from_xml(reader, &e, true)?));
@@ -11470,13 +11542,13 @@ impl FromXml for CTRowHierarchiesUsage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11490,7 +11562,7 @@ impl FromXml for CTRowHierarchiesUsage {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rowHierarchyUsage" => {
                                 f_row_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, false)?));
@@ -11509,7 +11581,7 @@ impl FromXml for CTRowHierarchiesUsage {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rowHierarchyUsage" => {
                                 f_row_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, true)?));
@@ -11559,13 +11631,13 @@ impl FromXml for CTColHierarchiesUsage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11579,7 +11651,7 @@ impl FromXml for CTColHierarchiesUsage {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"colHierarchyUsage" => {
                                 f_col_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, false)?));
@@ -11598,7 +11670,7 @@ impl FromXml for CTColHierarchiesUsage {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"colHierarchyUsage" => {
                                 f_col_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, true)?));
@@ -11645,13 +11717,13 @@ impl FromXml for CTHierarchyUsage {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"hierarchyUsage" => {
                     f_hierarchy_usage = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11696,13 +11768,13 @@ impl FromXml for CTMemberProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11716,7 +11788,7 @@ impl FromXml for CTMemberProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mp" => {
                                 f_mp.push(Box::new(CTMemberProperty::from_xml(reader, &e, false)?));
                             }
@@ -11734,7 +11806,7 @@ impl FromXml for CTMemberProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mp" => {
                                 f_mp.push(Box::new(CTMemberProperty::from_xml(reader, &e, true)?));
                             }
@@ -11788,7 +11860,7 @@ impl FromXml for CTMemberProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -11818,7 +11890,7 @@ impl FromXml for CTMemberProperty {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11871,7 +11943,7 @@ impl FromXml for CTMembers {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -11880,7 +11952,7 @@ impl FromXml for CTMembers {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -11894,7 +11966,7 @@ impl FromXml for CTMembers {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"member" => {
                                 f_member.push(Box::new(CTMember::from_xml(reader, &e, false)?));
                             }
@@ -11912,7 +11984,7 @@ impl FromXml for CTMembers {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"member" => {
                                 f_member.push(Box::new(CTMember::from_xml(reader, &e, true)?));
                             }
@@ -11959,13 +12031,13 @@ impl FromXml for CTMember {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12009,13 +12081,13 @@ impl FromXml for CTDimensions {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12029,7 +12101,7 @@ impl FromXml for CTDimensions {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dimension" => {
                                 f_dimension
                                     .push(Box::new(CTPivotDimension::from_xml(reader, &e, false)?));
@@ -12048,7 +12120,7 @@ impl FromXml for CTDimensions {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dimension" => {
                                 f_dimension
                                     .push(Box::new(CTPivotDimension::from_xml(reader, &e, true)?));
@@ -12098,7 +12170,7 @@ impl FromXml for CTPivotDimension {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"measure" => {
                     f_measure = Some(val == "true" || val == "1");
                 }
@@ -12113,7 +12185,7 @@ impl FromXml for CTPivotDimension {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12162,13 +12234,13 @@ impl FromXml for CTMeasureGroups {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12182,7 +12254,7 @@ impl FromXml for CTMeasureGroups {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"measureGroup" => {
                                 f_measure_group
                                     .push(Box::new(CTMeasureGroup::from_xml(reader, &e, false)?));
@@ -12201,7 +12273,7 @@ impl FromXml for CTMeasureGroups {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"measureGroup" => {
                                 f_measure_group
                                     .push(Box::new(CTMeasureGroup::from_xml(reader, &e, true)?));
@@ -12251,13 +12323,13 @@ impl FromXml for CTMeasureDimensionMaps {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12271,7 +12343,7 @@ impl FromXml for CTMeasureDimensionMaps {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"map" => {
                                 f_map.push(Box::new(CTMeasureDimensionMap::from_xml(
                                     reader, &e, false,
@@ -12291,7 +12363,7 @@ impl FromXml for CTMeasureDimensionMaps {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"map" => {
                                 f_map.push(Box::new(CTMeasureDimensionMap::from_xml(
                                     reader, &e, true,
@@ -12340,7 +12412,7 @@ impl FromXml for CTMeasureGroup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -12349,7 +12421,7 @@ impl FromXml for CTMeasureGroup {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12393,7 +12465,7 @@ impl FromXml for CTMeasureDimensionMap {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"measureGroup" => {
                     f_measure_group = val.parse().ok();
                 }
@@ -12402,7 +12474,7 @@ impl FromXml for CTMeasureDimensionMap {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12449,7 +12521,7 @@ impl FromXml for CTPivotTableStyle {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -12470,7 +12542,7 @@ impl FromXml for CTPivotTableStyle {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12519,13 +12591,13 @@ impl FromXml for PivotFilters {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12539,7 +12611,7 @@ impl FromXml for PivotFilters {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, false)?));
                             }
@@ -12557,7 +12629,7 @@ impl FromXml for PivotFilters {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, true)?));
                             }
@@ -12617,7 +12689,7 @@ impl FromXml for PivotFilter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"fld" => {
                     f_fld = val.parse().ok();
                 }
@@ -12653,7 +12725,7 @@ impl FromXml for PivotFilter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12667,7 +12739,7 @@ impl FromXml for PivotFilter {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
@@ -12690,7 +12762,7 @@ impl FromXml for PivotFilter {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
@@ -12768,7 +12840,7 @@ impl FromXml for PivotArea {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"field" => {
                     f_field = val.parse().ok();
                 }
@@ -12807,7 +12879,7 @@ impl FromXml for PivotArea {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12821,7 +12893,7 @@ impl FromXml for PivotArea {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"references" => {
                                 f_references = Some(Box::new(CTPivotAreaReferences::from_xml(
                                     reader, &e, false,
@@ -12845,7 +12917,7 @@ impl FromXml for PivotArea {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"references" => {
                                 f_references = Some(Box::new(CTPivotAreaReferences::from_xml(
                                     reader, &e, true,
@@ -12912,13 +12984,13 @@ impl FromXml for CTPivotAreaReferences {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -12932,7 +13004,7 @@ impl FromXml for CTPivotAreaReferences {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"reference" => {
                                 f_reference.push(Box::new(CTPivotAreaReference::from_xml(
                                     reader, &e, false,
@@ -12952,7 +13024,7 @@ impl FromXml for CTPivotAreaReferences {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"reference" => {
                                 f_reference.push(Box::new(CTPivotAreaReference::from_xml(
                                     reader, &e, true,
@@ -13020,7 +13092,7 @@ impl FromXml for CTPivotAreaReference {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"field" => {
                     f_field = val.parse().ok();
                 }
@@ -13074,7 +13146,7 @@ impl FromXml for CTPivotAreaReference {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13088,7 +13160,7 @@ impl FromXml for CTPivotAreaReference {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, false)?));
                             }
@@ -13110,7 +13182,7 @@ impl FromXml for CTPivotAreaReference {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, true)?));
                             }
@@ -13177,13 +13249,13 @@ impl FromXml for CTIndex {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"v" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13232,6 +13304,13 @@ impl FromXml for QueryTable {
         let mut f_adjust_column_width = None;
         let mut f_intermediate = None;
         let mut f_connection_id: Option<u32> = None;
+        let mut f_auto_format_id = None;
+        let mut f_apply_number_formats = None;
+        let mut f_apply_border_formats = None;
+        let mut f_apply_font_formats = None;
+        let mut f_apply_pattern_formats = None;
+        let mut f_apply_alignment_formats = None;
+        let mut f_apply_width_height_formats = None;
         let mut f_query_table_refresh = None;
         let mut f_extension_list = None;
         #[cfg(feature = "extra-attrs")]
@@ -13242,7 +13321,7 @@ impl FromXml for QueryTable {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -13288,9 +13367,30 @@ impl FromXml for QueryTable {
                 b"connectionId" => {
                     f_connection_id = val.parse().ok();
                 }
+                b"autoFormatId" => {
+                    f_auto_format_id = val.parse().ok();
+                }
+                b"applyNumberFormats" => {
+                    f_apply_number_formats = Some(val == "true" || val == "1");
+                }
+                b"applyBorderFormats" => {
+                    f_apply_border_formats = Some(val == "true" || val == "1");
+                }
+                b"applyFontFormats" => {
+                    f_apply_font_formats = Some(val == "true" || val == "1");
+                }
+                b"applyPatternFormats" => {
+                    f_apply_pattern_formats = Some(val == "true" || val == "1");
+                }
+                b"applyAlignmentFormats" => {
+                    f_apply_alignment_formats = Some(val == "true" || val == "1");
+                }
+                b"applyWidthHeightFormats" => {
+                    f_apply_width_height_formats = Some(val == "true" || val == "1");
+                }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13304,7 +13404,7 @@ impl FromXml for QueryTable {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableRefresh" => {
                                 f_query_table_refresh =
                                     Some(Box::new(QueryTableRefresh::from_xml(reader, &e, false)?));
@@ -13327,7 +13427,7 @@ impl FromXml for QueryTable {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableRefresh" => {
                                 f_query_table_refresh =
                                     Some(Box::new(QueryTableRefresh::from_xml(reader, &e, true)?));
@@ -13371,6 +13471,13 @@ impl FromXml for QueryTable {
             intermediate: f_intermediate,
             connection_id: f_connection_id
                 .ok_or_else(|| ParseError::MissingAttribute("connectionId".to_string()))?,
+            auto_format_id: f_auto_format_id,
+            apply_number_formats: f_apply_number_formats,
+            apply_border_formats: f_apply_border_formats,
+            apply_font_formats: f_apply_font_formats,
+            apply_pattern_formats: f_apply_pattern_formats,
+            apply_alignment_formats: f_apply_alignment_formats,
+            apply_width_height_formats: f_apply_width_height_formats,
             query_table_refresh: f_query_table_refresh,
             extension_list: f_extension_list,
             #[cfg(feature = "extra-attrs")]
@@ -13406,7 +13513,7 @@ impl FromXml for QueryTableRefresh {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"preserveSortFilterLayout" => {
                     f_preserve_sort_filter_layout = Some(val == "true" || val == "1");
                 }
@@ -13430,7 +13537,7 @@ impl FromXml for QueryTableRefresh {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13444,7 +13551,7 @@ impl FromXml for QueryTableRefresh {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableFields" => {
                                 f_query_table_fields =
                                     Some(Box::new(QueryTableFields::from_xml(reader, &e, false)?));
@@ -13476,7 +13583,7 @@ impl FromXml for QueryTableRefresh {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableFields" => {
                                 f_query_table_fields =
                                     Some(Box::new(QueryTableFields::from_xml(reader, &e, true)?));
@@ -13549,13 +13656,13 @@ impl FromXml for QueryTableDeletedFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13569,7 +13676,7 @@ impl FromXml for QueryTableDeletedFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"deletedField" => {
                                 f_deleted_field
                                     .push(Box::new(CTDeletedField::from_xml(reader, &e, false)?));
@@ -13588,7 +13695,7 @@ impl FromXml for QueryTableDeletedFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"deletedField" => {
                                 f_deleted_field
                                     .push(Box::new(CTDeletedField::from_xml(reader, &e, true)?));
@@ -13635,13 +13742,13 @@ impl FromXml for CTDeletedField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13685,13 +13792,13 @@ impl FromXml for QueryTableFields {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13705,7 +13812,7 @@ impl FromXml for QueryTableFields {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableField" => {
                                 f_query_table_field
                                     .push(Box::new(QueryTableField::from_xml(reader, &e, false)?));
@@ -13724,7 +13831,7 @@ impl FromXml for QueryTableFields {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"queryTableField" => {
                                 f_query_table_field
                                     .push(Box::new(QueryTableField::from_xml(reader, &e, true)?));
@@ -13780,7 +13887,7 @@ impl FromXml for QueryTableField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -13804,7 +13911,7 @@ impl FromXml for QueryTableField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13818,7 +13925,7 @@ impl FromXml for QueryTableField {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -13837,7 +13944,7 @@ impl FromXml for QueryTableField {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -13895,7 +14002,7 @@ impl FromXml for SharedStrings {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -13904,7 +14011,7 @@ impl FromXml for SharedStrings {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -13918,7 +14025,7 @@ impl FromXml for SharedStrings {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"si" => {
                                 f_si.push(Box::new(RichString::from_xml(reader, &e, false)?));
                             }
@@ -13940,7 +14047,7 @@ impl FromXml for SharedStrings {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"si" => {
                                 f_si.push(Box::new(RichString::from_xml(reader, &e, true)?));
                             }
@@ -13996,7 +14103,7 @@ impl FromXml for PhoneticRun {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sb" => {
                     f_sb = val.parse().ok();
                 }
@@ -14005,7 +14112,7 @@ impl FromXml for PhoneticRun {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14019,7 +14126,7 @@ impl FromXml for PhoneticRun {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
                             }
@@ -14037,7 +14144,7 @@ impl FromXml for PhoneticRun {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(String::new());
                             }
@@ -14088,7 +14195,7 @@ impl FromXml for RichTextElement {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RichTextRunProperties::from_xml(
                                     reader, &e, false,
@@ -14111,7 +14218,7 @@ impl FromXml for RichTextElement {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RichTextRunProperties::from_xml(
                                     reader, &e, true,
@@ -14195,7 +14302,7 @@ impl FromXml for RichString {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
                             }
@@ -14225,7 +14332,7 @@ impl FromXml for RichString {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(String::new());
                             }
@@ -14284,7 +14391,7 @@ impl FromXml for PhoneticProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"fontId" => {
                     f_font_id = val.parse().ok();
                 }
@@ -14296,7 +14403,7 @@ impl FromXml for PhoneticProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14353,7 +14460,7 @@ impl FromXml for RevisionHeaders {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -14392,7 +14499,7 @@ impl FromXml for RevisionHeaders {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14406,7 +14513,7 @@ impl FromXml for RevisionHeaders {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"header" => {
                                 f_header
                                     .push(Box::new(RevisionHeader::from_xml(reader, &e, false)?));
@@ -14425,7 +14532,7 @@ impl FromXml for RevisionHeaders {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"header" => {
                                 f_header
                                     .push(Box::new(RevisionHeader::from_xml(reader, &e, true)?));
@@ -14514,7 +14621,7 @@ impl FromXml for SmlAGRevData {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"rId" => {
                     f_r_id = val.parse().ok();
                 }
@@ -14526,7 +14633,7 @@ impl FromXml for SmlAGRevData {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14579,7 +14686,7 @@ impl FromXml for RevisionHeader {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -14600,7 +14707,7 @@ impl FromXml for RevisionHeader {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14614,7 +14721,7 @@ impl FromXml for RevisionHeader {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetIdMap" => {
                                 f_sheet_id_map =
                                     Some(Box::new(CTSheetIdMap::from_xml(reader, &e, false)?));
@@ -14641,7 +14748,7 @@ impl FromXml for RevisionHeader {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetIdMap" => {
                                 f_sheet_id_map =
                                     Some(Box::new(CTSheetIdMap::from_xml(reader, &e, true)?));
@@ -14710,13 +14817,13 @@ impl FromXml for CTSheetIdMap {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14730,7 +14837,7 @@ impl FromXml for CTSheetIdMap {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetId" => {
                                 f_sheet_id.push(Box::new(CTSheetId::from_xml(reader, &e, false)?));
                             }
@@ -14748,7 +14855,7 @@ impl FromXml for CTSheetIdMap {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetId" => {
                                 f_sheet_id.push(Box::new(CTSheetId::from_xml(reader, &e, true)?));
                             }
@@ -14794,13 +14901,13 @@ impl FromXml for CTSheetId {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14844,13 +14951,13 @@ impl FromXml for ReviewedRevisions {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14864,7 +14971,7 @@ impl FromXml for ReviewedRevisions {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"reviewed" => {
                                 f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, false)?));
                             }
@@ -14882,7 +14989,7 @@ impl FromXml for ReviewedRevisions {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"reviewed" => {
                                 f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, true)?));
                             }
@@ -14928,13 +15035,13 @@ impl FromXml for Reviewed {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"rId" => {
                     f_r_id = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -14985,7 +15092,7 @@ impl FromXml for UndoInfo {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"index" => {
                     f_index = val.parse().ok();
                 }
@@ -15021,7 +15128,7 @@ impl FromXml for UndoInfo {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15065,6 +15172,9 @@ impl FromXml for RevisionRowColumn {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_s_id: Option<u32> = None;
         let mut f_eol = None;
         let mut f_reference: Option<Reference> = None;
@@ -15076,7 +15186,16 @@ impl FromXml for RevisionRowColumn {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sId" => {
                     f_s_id = val.parse().ok();
                 }
@@ -15094,7 +15213,7 @@ impl FromXml for RevisionRowColumn {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15115,6 +15234,9 @@ impl FromXml for RevisionRowColumn {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             s_id: f_s_id.ok_or_else(|| ParseError::MissingAttribute("sId".to_string()))?,
             eol: f_eol,
             reference: f_reference
@@ -15133,6 +15255,9 @@ impl FromXml for RevisionMove {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_sheet_id: Option<u32> = None;
         let mut f_source: Option<Reference> = None;
         let mut f_destination: Option<Reference> = None;
@@ -15143,7 +15268,16 @@ impl FromXml for RevisionMove {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -15158,7 +15292,7 @@ impl FromXml for RevisionMove {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15179,6 +15313,9 @@ impl FromXml for RevisionMove {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             sheet_id: f_sheet_id
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             source: f_source.ok_or_else(|| ParseError::MissingAttribute("source".to_string()))?,
@@ -15205,7 +15342,7 @@ impl FromXml for RevisionCustomView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -15214,7 +15351,7 @@ impl FromXml for RevisionCustomView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15249,6 +15386,9 @@ impl FromXml for RevisionSheetRename {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_sheet_id: Option<u32> = None;
         let mut f_old_name: Option<XmlString> = None;
         let mut f_new_name: Option<XmlString> = None;
@@ -15261,7 +15401,16 @@ impl FromXml for RevisionSheetRename {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -15273,7 +15422,7 @@ impl FromXml for RevisionSheetRename {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15287,7 +15436,7 @@ impl FromXml for RevisionSheetRename {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -15306,7 +15455,7 @@ impl FromXml for RevisionSheetRename {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -15330,6 +15479,9 @@ impl FromXml for RevisionSheetRename {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             sheet_id: f_sheet_id
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             old_name: f_old_name
@@ -15351,6 +15503,9 @@ impl FromXml for RevisionInsertSheet {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_sheet_id: Option<u32> = None;
         let mut f_name: Option<XmlString> = None;
         let mut f_sheet_position: Option<u32> = None;
@@ -15360,7 +15515,16 @@ impl FromXml for RevisionInsertSheet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -15372,7 +15536,7 @@ impl FromXml for RevisionInsertSheet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15393,6 +15557,9 @@ impl FromXml for RevisionInsertSheet {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             sheet_id: f_sheet_id
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
@@ -15410,6 +15577,9 @@ impl FromXml for RevisionCellChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_s_id: Option<u32> = None;
         let mut f_odxf = None;
         let mut f_xf_dxf = None;
@@ -15433,7 +15603,16 @@ impl FromXml for RevisionCellChange {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sId" => {
                     f_s_id = val.parse().ok();
                 }
@@ -15469,7 +15648,7 @@ impl FromXml for RevisionCellChange {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15483,7 +15662,7 @@ impl FromXml for RevisionCellChange {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oc" => {
                                 f_oc = Some(Box::new(Cell::from_xml(reader, &e, false)?));
                             }
@@ -15513,7 +15692,7 @@ impl FromXml for RevisionCellChange {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oc" => {
                                 f_oc = Some(Box::new(Cell::from_xml(reader, &e, true)?));
                             }
@@ -15547,6 +15726,9 @@ impl FromXml for RevisionCellChange {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             s_id: f_s_id.ok_or_else(|| ParseError::MissingAttribute("sId".to_string()))?,
             odxf: f_odxf,
             xf_dxf: f_xf_dxf,
@@ -15592,7 +15774,7 @@ impl FromXml for RevisionFormatting {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -15613,7 +15795,7 @@ impl FromXml for RevisionFormatting {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15627,7 +15809,7 @@ impl FromXml for RevisionFormatting {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dxf" => {
                                 f_dxf = Some(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, false,
@@ -15651,7 +15833,7 @@ impl FromXml for RevisionFormatting {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dxf" => {
                                 f_dxf =
                                     Some(Box::new(DifferentialFormat::from_xml(reader, &e, true)?));
@@ -15704,6 +15886,13 @@ impl FromXml for RevisionAutoFormatting {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_sheet_id: Option<u32> = None;
+        let mut f_auto_format_id = None;
+        let mut f_apply_number_formats = None;
+        let mut f_apply_border_formats = None;
+        let mut f_apply_font_formats = None;
+        let mut f_apply_pattern_formats = None;
+        let mut f_apply_alignment_formats = None;
+        let mut f_apply_width_height_formats = None;
         let mut f_reference: Option<Reference> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -15711,16 +15900,37 @@ impl FromXml for RevisionAutoFormatting {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
+                }
+                b"autoFormatId" => {
+                    f_auto_format_id = val.parse().ok();
+                }
+                b"applyNumberFormats" => {
+                    f_apply_number_formats = Some(val == "true" || val == "1");
+                }
+                b"applyBorderFormats" => {
+                    f_apply_border_formats = Some(val == "true" || val == "1");
+                }
+                b"applyFontFormats" => {
+                    f_apply_font_formats = Some(val == "true" || val == "1");
+                }
+                b"applyPatternFormats" => {
+                    f_apply_pattern_formats = Some(val == "true" || val == "1");
+                }
+                b"applyAlignmentFormats" => {
+                    f_apply_alignment_formats = Some(val == "true" || val == "1");
+                }
+                b"applyWidthHeightFormats" => {
+                    f_apply_width_height_formats = Some(val == "true" || val == "1");
                 }
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15743,6 +15953,13 @@ impl FromXml for RevisionAutoFormatting {
         Ok(Self {
             sheet_id: f_sheet_id
                 .ok_or_else(|| ParseError::MissingAttribute("sheetId".to_string()))?,
+            auto_format_id: f_auto_format_id,
+            apply_number_formats: f_apply_number_formats,
+            apply_border_formats: f_apply_border_formats,
+            apply_font_formats: f_apply_font_formats,
+            apply_pattern_formats: f_apply_pattern_formats,
+            apply_alignment_formats: f_apply_alignment_formats,
+            apply_width_height_formats: f_apply_width_height_formats,
             reference: f_reference
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -15774,7 +15991,7 @@ impl FromXml for RevisionComment {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -15810,7 +16027,7 @@ impl FromXml for RevisionComment {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15855,6 +16072,9 @@ impl FromXml for RevisionDefinedName {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_local_sheet_id = None;
         let mut f_custom_view = None;
         let mut f_name: Option<XmlString> = None;
@@ -15887,7 +16107,16 @@ impl FromXml for RevisionDefinedName {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"localSheetId" => {
                     f_local_sheet_id = val.parse().ok();
                 }
@@ -15953,7 +16182,7 @@ impl FromXml for RevisionDefinedName {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -15967,7 +16196,7 @@ impl FromXml for RevisionDefinedName {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"formula" => {
                                 f_formula = Some(read_text_content(reader)?);
                             }
@@ -15992,7 +16221,7 @@ impl FromXml for RevisionDefinedName {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"formula" => {
                                 f_formula = Some(String::new());
                             }
@@ -16022,6 +16251,9 @@ impl FromXml for RevisionDefinedName {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             local_sheet_id: f_local_sheet_id,
             custom_view: f_custom_view,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
@@ -16060,6 +16292,9 @@ impl FromXml for RevisionConflict {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_r_id: Option<u32> = None;
+        let mut f_ua = None;
+        let mut f_ra = None;
         let mut f_sheet_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16067,13 +16302,22 @@ impl FromXml for RevisionConflict {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
+                b"rId" => {
+                    f_r_id = val.parse().ok();
+                }
+                b"ua" => {
+                    f_ua = Some(val == "true" || val == "1");
+                }
+                b"ra" => {
+                    f_ra = Some(val == "true" || val == "1");
+                }
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -16094,6 +16338,9 @@ impl FromXml for RevisionConflict {
         }
 
         Ok(Self {
+            r_id: f_r_id.ok_or_else(|| ParseError::MissingAttribute("rId".to_string()))?,
+            ua: f_ua,
+            ra: f_ra,
             sheet_id: f_sheet_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16116,7 +16363,7 @@ impl FromXml for RevisionQueryTableField {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -16128,7 +16375,7 @@ impl FromXml for RevisionQueryTableField {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -16177,13 +16424,13 @@ impl FromXml for Users {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -16197,7 +16444,7 @@ impl FromXml for Users {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"userInfo" => {
                                 f_user_info
                                     .push(Box::new(SharedUser::from_xml(reader, &e, false)?));
@@ -16216,7 +16463,7 @@ impl FromXml for Users {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"userInfo" => {
                                 f_user_info.push(Box::new(SharedUser::from_xml(reader, &e, true)?));
                             }
@@ -16268,7 +16515,7 @@ impl FromXml for SharedUser {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -16283,7 +16530,7 @@ impl FromXml for SharedUser {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -16297,7 +16544,7 @@ impl FromXml for SharedUser {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -16316,7 +16563,7 @@ impl FromXml for SharedUser {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -16396,7 +16643,7 @@ impl FromXml for CTMacrosheet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, false)?));
@@ -16522,7 +16769,7 @@ impl FromXml for CTMacrosheet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, true)?));
@@ -16716,7 +16963,7 @@ impl FromXml for CTDialogsheet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, false)?));
@@ -16794,7 +17041,7 @@ impl FromXml for CTDialogsheet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, true)?));
@@ -16988,7 +17235,7 @@ impl FromXml for Worksheet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"sheetPr" => {
                                 f_sheet_properties =
@@ -17197,7 +17444,7 @@ impl FromXml for Worksheet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"sheetPr" => {
                                 f_sheet_properties =
@@ -17506,7 +17753,7 @@ impl FromXml for SheetData {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(Row::from_xml(reader, &e, false)?));
                             }
@@ -17524,7 +17771,7 @@ impl FromXml for SheetData {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(Row::from_xml(reader, &e, true)?));
                             }
@@ -17567,13 +17814,13 @@ impl FromXml for SheetCalcProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"fullCalcOnLoad" => {
                     f_full_calc_on_load = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -17622,7 +17869,7 @@ impl FromXml for SheetFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"baseColWidth" => {
                     f_base_col_width = val.parse().ok();
                 }
@@ -17652,7 +17899,7 @@ impl FromXml for SheetFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -17705,7 +17952,7 @@ impl FromXml for Columns {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"col" => {
                                 f_col.push(Box::new(Column::from_xml(reader, &e, false)?));
                             }
@@ -17723,7 +17970,7 @@ impl FromXml for Columns {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"col" => {
                                 f_col.push(Box::new(Column::from_xml(reader, &e, true)?));
                             }
@@ -17785,7 +18032,7 @@ impl FromXml for Column {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"min" => {
                     f_start_column = val.parse().ok();
@@ -17828,7 +18075,7 @@ impl FromXml for Column {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -17915,7 +18162,7 @@ impl FromXml for Row {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = val.parse().ok();
                 }
@@ -17963,7 +18210,7 @@ impl FromXml for Row {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -17977,7 +18224,7 @@ impl FromXml for Row {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(Cell::from_xml(reader, &e, false)?));
                             }
@@ -18000,7 +18247,7 @@ impl FromXml for Row {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(Cell::from_xml(reader, &e, true)?));
                             }
@@ -18088,7 +18335,7 @@ impl FromXml for Cell {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -18112,7 +18359,7 @@ impl FromXml for Cell {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18126,7 +18373,7 @@ impl FromXml for Cell {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"f" => {
                                 f_formula =
                                     Some(Box::new(CellFormula::from_xml(reader, &e, false)?));
@@ -18156,7 +18403,7 @@ impl FromXml for Cell {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"f" => {
                                 f_formula =
                                     Some(Box::new(CellFormula::from_xml(reader, &e, true)?));
@@ -18239,7 +18486,7 @@ impl FromXml for SheetProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"syncHorizontal" => {
                     f_sync_horizontal = Some(val == "true" || val == "1");
                 }
@@ -18269,7 +18516,7 @@ impl FromXml for SheetProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18283,7 +18530,7 @@ impl FromXml for SheetProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -18310,7 +18557,7 @@ impl FromXml for SheetProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -18375,13 +18622,13 @@ impl FromXml for SheetDimension {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18427,7 +18674,7 @@ impl FromXml for SheetViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(SheetView::from_xml(reader, &e, false)?));
@@ -18450,7 +18697,7 @@ impl FromXml for SheetViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view.push(Box::new(SheetView::from_xml(reader, &e, true)?));
                             }
@@ -18538,7 +18785,7 @@ impl FromXml for SheetView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-protection")]
                 b"windowProtection" => {
                     f_window_protection = Some(val == "true" || val == "1");
@@ -18611,7 +18858,7 @@ impl FromXml for SheetView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18625,7 +18872,7 @@ impl FromXml for SheetView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-structure")]
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, false)?));
@@ -18657,7 +18904,7 @@ impl FromXml for SheetView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-structure")]
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, true)?));
@@ -18764,7 +19011,7 @@ impl FromXml for Pane {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-structure")]
                 b"xSplit" => {
                     f_x_split = val.parse().ok();
@@ -18787,7 +19034,7 @@ impl FromXml for Pane {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18855,7 +19102,7 @@ impl FromXml for CTPivotSelection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"pane" => {
                     f_pane = val.parse().ok();
                 }
@@ -18906,7 +19153,7 @@ impl FromXml for CTPivotSelection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -18920,7 +19167,7 @@ impl FromXml for CTPivotSelection {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
@@ -18939,7 +19186,7 @@ impl FromXml for CTPivotSelection {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
@@ -19005,7 +19252,7 @@ impl FromXml for Selection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"pane" => {
                     f_pane = val.parse().ok();
                 }
@@ -19020,7 +19267,7 @@ impl FromXml for Selection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19068,7 +19315,7 @@ impl FromXml for PageBreaks {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -19077,7 +19324,7 @@ impl FromXml for PageBreaks {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19091,7 +19338,7 @@ impl FromXml for PageBreaks {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"brk" => {
                                 f_brk.push(Box::new(PageBreak::from_xml(reader, &e, false)?));
                             }
@@ -19109,7 +19356,7 @@ impl FromXml for PageBreaks {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"brk" => {
                                 f_brk.push(Box::new(PageBreak::from_xml(reader, &e, true)?));
                             }
@@ -19160,7 +19407,7 @@ impl FromXml for PageBreak {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -19178,7 +19425,7 @@ impl FromXml for PageBreak {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19226,7 +19473,7 @@ impl FromXml for OutlineProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"applyStyles" => {
                     f_apply_styles = Some(val == "true" || val == "1");
                 }
@@ -19241,7 +19488,7 @@ impl FromXml for OutlineProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19286,7 +19533,7 @@ impl FromXml for PageSetupProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"autoPageBreaks" => {
                     f_auto_page_breaks = Some(val == "true" || val == "1");
                 }
@@ -19295,7 +19542,7 @@ impl FromXml for PageSetupProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19344,7 +19591,7 @@ impl FromXml for CTDataConsolidate {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"function" => {
                     f_function = val.parse().ok();
                 }
@@ -19362,7 +19609,7 @@ impl FromXml for CTDataConsolidate {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19376,7 +19623,7 @@ impl FromXml for CTDataConsolidate {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataRefs" => {
                                 f_data_refs =
                                     Some(Box::new(CTDataRefs::from_xml(reader, &e, false)?));
@@ -19395,7 +19642,7 @@ impl FromXml for CTDataConsolidate {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataRefs" => {
                                 f_data_refs =
                                     Some(Box::new(CTDataRefs::from_xml(reader, &e, true)?));
@@ -19449,13 +19696,13 @@ impl FromXml for CTDataRefs {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19469,7 +19716,7 @@ impl FromXml for CTDataRefs {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataRef" => {
                                 f_data_ref.push(Box::new(CTDataRef::from_xml(reader, &e, false)?));
                             }
@@ -19487,7 +19734,7 @@ impl FromXml for CTDataRefs {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataRef" => {
                                 f_data_ref.push(Box::new(CTDataRef::from_xml(reader, &e, true)?));
                             }
@@ -19535,7 +19782,7 @@ impl FromXml for CTDataRef {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -19547,7 +19794,7 @@ impl FromXml for CTDataRef {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19593,13 +19840,13 @@ impl FromXml for MergedCells {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19613,7 +19860,7 @@ impl FromXml for MergedCells {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mergeCell" => {
                                 f_merge_cell
                                     .push(Box::new(MergedCell::from_xml(reader, &e, false)?));
@@ -19632,7 +19879,7 @@ impl FromXml for MergedCells {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mergeCell" => {
                                 f_merge_cell
                                     .push(Box::new(MergedCell::from_xml(reader, &e, true)?));
@@ -19679,13 +19926,13 @@ impl FromXml for MergedCell {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19730,7 +19977,7 @@ impl FromXml for SmartTags {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTags" => {
                                 f_cell_smart_tags
                                     .push(Box::new(CellSmartTags::from_xml(reader, &e, false)?));
@@ -19749,7 +19996,7 @@ impl FromXml for SmartTags {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTags" => {
                                 f_cell_smart_tags
                                     .push(Box::new(CellSmartTags::from_xml(reader, &e, true)?));
@@ -19796,13 +20043,13 @@ impl FromXml for CellSmartTags {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19816,7 +20063,7 @@ impl FromXml for CellSmartTags {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTag" => {
                                 f_cell_smart_tag
                                     .push(Box::new(CellSmartTag::from_xml(reader, &e, false)?));
@@ -19835,7 +20082,7 @@ impl FromXml for CellSmartTags {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTag" => {
                                 f_cell_smart_tag
                                     .push(Box::new(CellSmartTag::from_xml(reader, &e, true)?));
@@ -19887,7 +20134,7 @@ impl FromXml for CellSmartTag {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -19899,7 +20146,7 @@ impl FromXml for CellSmartTag {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -19913,7 +20160,7 @@ impl FromXml for CellSmartTag {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTagPr" => {
                                 f_cell_smart_tag_pr
                                     .push(Box::new(CTCellSmartTagPr::from_xml(reader, &e, false)?));
@@ -19932,7 +20179,7 @@ impl FromXml for CellSmartTag {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellSmartTagPr" => {
                                 f_cell_smart_tag_pr
                                     .push(Box::new(CTCellSmartTagPr::from_xml(reader, &e, true)?));
@@ -19982,7 +20229,7 @@ impl FromXml for CTCellSmartTagPr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"key" => {
                     f_key = Some(val.into_owned());
                 }
@@ -19991,7 +20238,7 @@ impl FromXml for CTCellSmartTagPr {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20108,7 +20355,7 @@ impl FromXml for DrawingHeaderFooter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"lho" => {
                     f_lho = val.parse().ok();
                 }
@@ -20165,7 +20412,7 @@ impl FromXml for DrawingHeaderFooter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20226,7 +20473,7 @@ impl FromXml for CustomSheetViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customSheetView" => {
                                 f_custom_sheet_view
                                     .push(Box::new(CustomSheetView::from_xml(reader, &e, false)?));
@@ -20245,7 +20492,7 @@ impl FromXml for CustomSheetViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customSheetView" => {
                                 f_custom_sheet_view
                                     .push(Box::new(CustomSheetView::from_xml(reader, &e, true)?));
@@ -20320,7 +20567,7 @@ impl FromXml for CustomSheetView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -20383,7 +20630,7 @@ impl FromXml for CustomSheetView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20397,7 +20644,7 @@ impl FromXml for CustomSheetView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, false)?));
                             }
@@ -20451,7 +20698,7 @@ impl FromXml for CustomSheetView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, true)?));
                             }
@@ -20567,7 +20814,7 @@ impl FromXml for DataValidations {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"disablePrompts" => {
                     f_disable_prompts = Some(val == "true" || val == "1");
                 }
@@ -20582,7 +20829,7 @@ impl FromXml for DataValidations {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20596,7 +20843,7 @@ impl FromXml for DataValidations {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataValidation" => {
                                 f_data_validation
                                     .push(Box::new(DataValidation::from_xml(reader, &e, false)?));
@@ -20615,7 +20862,7 @@ impl FromXml for DataValidations {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dataValidation" => {
                                 f_data_validation
                                     .push(Box::new(DataValidation::from_xml(reader, &e, true)?));
@@ -20696,7 +20943,7 @@ impl FromXml for DataValidation {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-validation")]
                 b"type" => {
                     f_type = val.parse().ok();
@@ -20751,7 +20998,7 @@ impl FromXml for DataValidation {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20765,7 +21012,7 @@ impl FromXml for DataValidation {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-validation")]
                             b"formula1" => {
                                 f_formula1 = Some(read_text_content(reader)?);
@@ -20788,7 +21035,7 @@ impl FromXml for DataValidation {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-validation")]
                             b"formula1" => {
                                 f_formula1 = Some(String::new());
@@ -20877,7 +21124,7 @@ impl FromXml for ConditionalFormatting {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-pivot")]
                 b"pivot" => {
                     f_pivot = Some(val == "true" || val == "1");
@@ -20888,7 +21135,7 @@ impl FromXml for ConditionalFormatting {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -20902,7 +21149,7 @@ impl FromXml for ConditionalFormatting {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"cfRule" => {
                                 f_cf_rule
@@ -20927,7 +21174,7 @@ impl FromXml for ConditionalFormatting {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"cfRule" => {
                                 f_cf_rule
@@ -21023,7 +21270,7 @@ impl FromXml for ConditionalRule {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"type" => {
                     f_type = val.parse().ok();
@@ -21078,7 +21325,7 @@ impl FromXml for ConditionalRule {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21092,7 +21339,7 @@ impl FromXml for ConditionalRule {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"formula" => {
                                 f_formula.push(read_text_content(reader)?);
@@ -21129,7 +21376,7 @@ impl FromXml for ConditionalRule {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"formula" => {
                                 f_formula.push(String::new());
@@ -21232,7 +21479,7 @@ impl FromXml for Hyperlinks {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"hyperlink" => {
                                 f_hyperlink.push(Box::new(Hyperlink::from_xml(reader, &e, false)?));
                             }
@@ -21250,7 +21497,7 @@ impl FromXml for Hyperlinks {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"hyperlink" => {
                                 f_hyperlink.push(Box::new(Hyperlink::from_xml(reader, &e, true)?));
                             }
@@ -21300,7 +21547,7 @@ impl FromXml for Hyperlink {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-hyperlinks")]
                 b"ref" => {
                     f_reference = Some(val.into_owned());
@@ -21319,7 +21566,7 @@ impl FromXml for Hyperlink {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21391,7 +21638,7 @@ impl FromXml for CellFormula {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
@@ -21439,7 +21686,7 @@ impl FromXml for CellFormula {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21453,7 +21700,7 @@ impl FromXml for CellFormula {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
@@ -21468,7 +21715,7 @@ impl FromXml for CellFormula {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
@@ -21538,7 +21785,7 @@ impl FromXml for ColorScale {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
@@ -21561,7 +21808,7 @@ impl FromXml for ColorScale {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
@@ -21616,7 +21863,7 @@ impl FromXml for DataBar {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"minLength" => {
                     f_min_length = val.parse().ok();
                 }
@@ -21628,7 +21875,7 @@ impl FromXml for DataBar {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21642,7 +21889,7 @@ impl FromXml for DataBar {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
@@ -21665,7 +21912,7 @@ impl FromXml for DataBar {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
@@ -21725,7 +21972,7 @@ impl FromXml for IconSet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"iconSet" => {
                     f_icon_set = val.parse().ok();
                 }
@@ -21740,7 +21987,7 @@ impl FromXml for IconSet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21754,7 +22001,7 @@ impl FromXml for IconSet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
@@ -21774,7 +22021,7 @@ impl FromXml for IconSet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cfvo" => {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
@@ -21830,7 +22077,7 @@ impl FromXml for ConditionalFormatValue {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -21842,7 +22089,7 @@ impl FromXml for ConditionalFormatValue {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -21856,7 +22103,7 @@ impl FromXml for ConditionalFormatValue {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -21875,7 +22122,7 @@ impl FromXml for ConditionalFormatValue {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -21935,7 +22182,7 @@ impl FromXml for PageMargins {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"left" => {
                     f_left = val.parse().ok();
@@ -21962,7 +22209,7 @@ impl FromXml for PageMargins {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22018,7 +22265,7 @@ impl FromXml for PrintOptions {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"horizontalCentered" => {
                     f_horizontal_centered = Some(val == "true" || val == "1");
                 }
@@ -22036,7 +22283,7 @@ impl FromXml for PrintOptions {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22116,7 +22363,7 @@ impl FromXml for PageSetup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"paperSize" => {
                     f_paper_size = val.parse().ok();
@@ -22191,7 +22438,7 @@ impl FromXml for PageSetup {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22288,7 +22535,7 @@ impl FromXml for HeaderFooter {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-layout")]
                 b"differentOddEven" => {
                     f_different_odd_even = Some(val == "true" || val == "1");
@@ -22307,7 +22554,7 @@ impl FromXml for HeaderFooter {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22321,7 +22568,7 @@ impl FromXml for HeaderFooter {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-layout")]
                             b"oddHeader" => {
                                 f_odd_header = Some(read_text_content(reader)?);
@@ -22360,7 +22607,7 @@ impl FromXml for HeaderFooter {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-layout")]
                             b"oddHeader" => {
                                 f_odd_header = Some(String::new());
@@ -22450,7 +22697,7 @@ impl FromXml for Scenarios {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"current" => {
                     f_current = val.parse().ok();
                 }
@@ -22462,7 +22709,7 @@ impl FromXml for Scenarios {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22476,7 +22723,7 @@ impl FromXml for Scenarios {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"scenario" => {
                                 f_scenario.push(Box::new(Scenario::from_xml(reader, &e, false)?));
                             }
@@ -22494,7 +22741,7 @@ impl FromXml for Scenarios {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"scenario" => {
                                 f_scenario.push(Box::new(Scenario::from_xml(reader, &e, true)?));
                             }
@@ -22562,7 +22809,7 @@ impl FromXml for SheetProtection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"password" => {
                     f_password = decode_hex(&val);
                 }
@@ -22628,7 +22875,7 @@ impl FromXml for SheetProtection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22692,7 +22939,7 @@ impl FromXml for ProtectedRanges {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"protectedRange" => {
                                 f_protected_range
                                     .push(Box::new(ProtectedRange::from_xml(reader, &e, false)?));
@@ -22711,7 +22958,7 @@ impl FromXml for ProtectedRanges {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"protectedRange" => {
                                 f_protected_range
                                     .push(Box::new(ProtectedRange::from_xml(reader, &e, true)?));
@@ -22762,7 +23009,7 @@ impl FromXml for ProtectedRange {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"password" => {
                     f_password = decode_hex(&val);
                 }
@@ -22789,7 +23036,7 @@ impl FromXml for ProtectedRange {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22846,7 +23093,7 @@ impl FromXml for Scenario {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -22867,7 +23114,7 @@ impl FromXml for Scenario {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -22881,7 +23128,7 @@ impl FromXml for Scenario {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"inputCells" => {
                                 f_input_cells
                                     .push(Box::new(InputCells::from_xml(reader, &e, false)?));
@@ -22900,7 +23147,7 @@ impl FromXml for Scenario {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"inputCells" => {
                                 f_input_cells
                                     .push(Box::new(InputCells::from_xml(reader, &e, true)?));
@@ -22956,7 +23203,7 @@ impl FromXml for InputCells {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -22974,7 +23221,7 @@ impl FromXml for InputCells {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23022,7 +23269,7 @@ impl FromXml for CellWatches {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellWatch" => {
                                 f_cell_watch
                                     .push(Box::new(CellWatch::from_xml(reader, &e, false)?));
@@ -23041,7 +23288,7 @@ impl FromXml for CellWatches {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellWatch" => {
                                 f_cell_watch.push(Box::new(CellWatch::from_xml(reader, &e, true)?));
                             }
@@ -23084,13 +23331,13 @@ impl FromXml for CellWatch {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23147,7 +23394,7 @@ impl FromXml for Chartsheet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties = Some(Box::new(
                                     ChartsheetProperties::from_xml(reader, &e, false)?,
@@ -23223,7 +23470,7 @@ impl FromXml for Chartsheet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetPr" => {
                                 f_sheet_properties = Some(Box::new(
                                     ChartsheetProperties::from_xml(reader, &e, true)?,
@@ -23343,7 +23590,7 @@ impl FromXml for ChartsheetProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"published" => {
                     f_published = Some(val == "true" || val == "1");
                 }
@@ -23352,7 +23599,7 @@ impl FromXml for ChartsheetProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23366,7 +23613,7 @@ impl FromXml for ChartsheetProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -23384,7 +23631,7 @@ impl FromXml for ChartsheetProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -23435,7 +23682,7 @@ impl FromXml for ChartsheetViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(ChartsheetView::from_xml(reader, &e, false)?));
@@ -23458,7 +23705,7 @@ impl FromXml for ChartsheetViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(ChartsheetView::from_xml(reader, &e, true)?));
@@ -23513,7 +23760,7 @@ impl FromXml for ChartsheetView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"tabSelected" => {
                     f_tab_selected = Some(val == "true" || val == "1");
                 }
@@ -23528,7 +23775,7 @@ impl FromXml for ChartsheetView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23542,7 +23789,7 @@ impl FromXml for ChartsheetView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -23561,7 +23808,7 @@ impl FromXml for ChartsheetView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -23618,7 +23865,7 @@ impl FromXml for ChartsheetProtection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"password" => {
                     f_password = decode_hex(&val);
                 }
@@ -23642,7 +23889,7 @@ impl FromXml for ChartsheetProtection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23700,7 +23947,7 @@ impl FromXml for ChartsheetPageSetup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"paperSize" => {
                     f_paper_size = val.parse().ok();
                 }
@@ -23739,7 +23986,7 @@ impl FromXml for ChartsheetPageSetup {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23794,7 +24041,7 @@ impl FromXml for CustomChartsheetViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customSheetView" => {
                                 f_custom_sheet_view.push(Box::new(CustomChartsheetView::from_xml(
                                     reader, &e, false,
@@ -23814,7 +24061,7 @@ impl FromXml for CustomChartsheetViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customSheetView" => {
                                 f_custom_sheet_view.push(Box::new(CustomChartsheetView::from_xml(
                                     reader, &e, true,
@@ -23867,7 +24114,7 @@ impl FromXml for CustomChartsheetView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"guid" => {
                     f_guid = Some(val.into_owned());
                 }
@@ -23882,7 +24129,7 @@ impl FromXml for CustomChartsheetView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -23896,7 +24143,7 @@ impl FromXml for CustomChartsheetView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
@@ -23924,7 +24171,7 @@ impl FromXml for CustomChartsheetView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
@@ -23988,7 +24235,7 @@ impl FromXml for CTCustomProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customPr" => {
                                 f_custom_pr
                                     .push(Box::new(CTCustomProperty::from_xml(reader, &e, false)?));
@@ -24007,7 +24254,7 @@ impl FromXml for CTCustomProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customPr" => {
                                 f_custom_pr
                                     .push(Box::new(CTCustomProperty::from_xml(reader, &e, true)?));
@@ -24051,13 +24298,13 @@ impl FromXml for CTCustomProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24101,7 +24348,7 @@ impl FromXml for OleObjects {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleObject" => {
                                 f_ole_object
                                     .push(Box::new(OleObject::from_xml(reader, &e, false)?));
@@ -24120,7 +24367,7 @@ impl FromXml for OleObjects {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleObject" => {
                                 f_ole_object.push(Box::new(OleObject::from_xml(reader, &e, true)?));
                             }
@@ -24171,7 +24418,7 @@ impl FromXml for OleObject {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
                 }
@@ -24192,7 +24439,7 @@ impl FromXml for OleObject {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24206,7 +24453,7 @@ impl FromXml for OleObject {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"objectPr" => {
                                 f_object_pr =
                                     Some(Box::new(ObjectProperties::from_xml(reader, &e, false)?));
@@ -24225,7 +24472,7 @@ impl FromXml for OleObject {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"objectPr" => {
                                 f_object_pr =
                                     Some(Box::new(ObjectProperties::from_xml(reader, &e, true)?));
@@ -24291,7 +24538,7 @@ impl FromXml for ObjectProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"locked" => {
                     f_locked = Some(val == "true" || val == "1");
                 }
@@ -24327,7 +24574,7 @@ impl FromXml for ObjectProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24341,7 +24588,7 @@ impl FromXml for ObjectProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
@@ -24360,7 +24607,7 @@ impl FromXml for ObjectProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
@@ -24420,13 +24667,13 @@ impl FromXml for WebPublishItems {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24440,7 +24687,7 @@ impl FromXml for WebPublishItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"webPublishItem" => {
                                 f_web_publish_item
                                     .push(Box::new(WebPublishItem::from_xml(reader, &e, false)?));
@@ -24459,7 +24706,7 @@ impl FromXml for WebPublishItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"webPublishItem" => {
                                 f_web_publish_item
                                     .push(Box::new(WebPublishItem::from_xml(reader, &e, true)?));
@@ -24513,7 +24760,7 @@ impl FromXml for WebPublishItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -24540,7 +24787,7 @@ impl FromXml for WebPublishItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24593,7 +24840,7 @@ impl FromXml for Controls {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"control" => {
                                 f_control.push(Box::new(Control::from_xml(reader, &e, false)?));
                             }
@@ -24611,7 +24858,7 @@ impl FromXml for Controls {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"control" => {
                                 f_control.push(Box::new(Control::from_xml(reader, &e, true)?));
                             }
@@ -24658,7 +24905,7 @@ impl FromXml for Control {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"shapeId" => {
                     f_shape_id = val.parse().ok();
                 }
@@ -24667,7 +24914,7 @@ impl FromXml for Control {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24681,7 +24928,7 @@ impl FromXml for Control {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"controlPr" => {
                                 f_control_pr =
                                     Some(Box::new(CTControlPr::from_xml(reader, &e, false)?));
@@ -24700,7 +24947,7 @@ impl FromXml for Control {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"controlPr" => {
                                 f_control_pr =
                                     Some(Box::new(CTControlPr::from_xml(reader, &e, true)?));
@@ -24765,7 +25012,7 @@ impl FromXml for CTControlPr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"locked" => {
                     f_locked = Some(val == "true" || val == "1");
                 }
@@ -24810,7 +25057,7 @@ impl FromXml for CTControlPr {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -24824,7 +25071,7 @@ impl FromXml for CTControlPr {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
@@ -24843,7 +25090,7 @@ impl FromXml for CTControlPr {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
@@ -24907,7 +25154,7 @@ impl FromXml for IgnoredErrors {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ignoredError" => {
                                 f_ignored_error
                                     .push(Box::new(IgnoredError::from_xml(reader, &e, false)?));
@@ -24930,7 +25177,7 @@ impl FromXml for IgnoredErrors {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ignoredError" => {
                                 f_ignored_error
                                     .push(Box::new(IgnoredError::from_xml(reader, &e, true)?));
@@ -24988,7 +25235,7 @@ impl FromXml for IgnoredError {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sqref" => {
                     f_square_reference = Some(val.into_owned());
                 }
@@ -25021,7 +25268,7 @@ impl FromXml for IgnoredError {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25075,13 +25322,13 @@ impl FromXml for TableParts {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25095,7 +25342,7 @@ impl FromXml for TableParts {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tablePart" => {
                                 f_table_part
                                     .push(Box::new(TablePart::from_xml(reader, &e, false)?));
@@ -25114,7 +25361,7 @@ impl FromXml for TableParts {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tablePart" => {
                                 f_table_part.push(Box::new(TablePart::from_xml(reader, &e, true)?));
                             }
@@ -25198,7 +25445,7 @@ impl FromXml for Metadata {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"metadataTypes" => {
                                 f_metadata_types =
                                     Some(Box::new(MetadataTypes::from_xml(reader, &e, false)?));
@@ -25241,7 +25488,7 @@ impl FromXml for Metadata {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"metadataTypes" => {
                                 f_metadata_types =
                                     Some(Box::new(MetadataTypes::from_xml(reader, &e, true)?));
@@ -25318,13 +25565,13 @@ impl FromXml for MetadataTypes {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25338,7 +25585,7 @@ impl FromXml for MetadataTypes {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"metadataType" => {
                                 f_metadata_type
                                     .push(Box::new(MetadataType::from_xml(reader, &e, false)?));
@@ -25357,7 +25604,7 @@ impl FromXml for MetadataTypes {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"metadataType" => {
                                 f_metadata_type
                                     .push(Box::new(MetadataType::from_xml(reader, &e, true)?));
@@ -25431,7 +25678,7 @@ impl FromXml for MetadataType {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -25518,7 +25765,7 @@ impl FromXml for MetadataType {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25590,13 +25837,13 @@ impl FromXml for MetadataBlocks {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25610,7 +25857,7 @@ impl FromXml for MetadataBlocks {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, false)?));
                             }
@@ -25628,7 +25875,7 @@ impl FromXml for MetadataBlocks {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, true)?));
                             }
@@ -25677,7 +25924,7 @@ impl FromXml for MetadataBlock {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rc" => {
                                 f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, false)?));
                             }
@@ -25695,7 +25942,7 @@ impl FromXml for MetadataBlock {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rc" => {
                                 f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, true)?));
                             }
@@ -25739,7 +25986,7 @@ impl FromXml for MetadataRecord {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
@@ -25748,7 +25995,7 @@ impl FromXml for MetadataRecord {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25795,7 +26042,7 @@ impl FromXml for CTFutureMetadata {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -25804,7 +26051,7 @@ impl FromXml for CTFutureMetadata {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25818,7 +26065,7 @@ impl FromXml for CTFutureMetadata {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(CTFutureMetadataBlock::from_xml(
                                     reader, &e, false,
@@ -25842,7 +26089,7 @@ impl FromXml for CTFutureMetadata {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(CTFutureMetadataBlock::from_xml(
                                     reader, &e, true,
@@ -25899,7 +26146,7 @@ impl FromXml for CTFutureMetadataBlock {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -25918,7 +26165,7 @@ impl FromXml for CTFutureMetadataBlock {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -25965,13 +26212,13 @@ impl FromXml for CTMdxMetadata {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -25985,7 +26232,7 @@ impl FromXml for CTMdxMetadata {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mdx" => {
                                 f_mdx.push(Box::new(CTMdx::from_xml(reader, &e, false)?));
                             }
@@ -26003,7 +26250,7 @@ impl FromXml for CTMdxMetadata {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"mdx" => {
                                 f_mdx.push(Box::new(CTMdx::from_xml(reader, &e, true)?));
                             }
@@ -26050,7 +26297,7 @@ impl FromXml for CTMdx {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"n" => {
                     f_n = val.parse().ok();
                 }
@@ -26059,7 +26306,7 @@ impl FromXml for CTMdx {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26113,7 +26360,7 @@ impl FromXml for CTMdxTuple {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"c" => {
                     f_cells = val.parse().ok();
                 }
@@ -26146,7 +26393,7 @@ impl FromXml for CTMdxTuple {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26160,7 +26407,7 @@ impl FromXml for CTMdxTuple {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"n" => {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, false,
@@ -26180,7 +26427,7 @@ impl FromXml for CTMdxTuple {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"n" => {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, true,
@@ -26242,7 +26489,7 @@ impl FromXml for CTMdxSet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ns" => {
                     f_ns = val.parse().ok();
                 }
@@ -26254,7 +26501,7 @@ impl FromXml for CTMdxSet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26268,7 +26515,7 @@ impl FromXml for CTMdxSet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"n" => {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, false,
@@ -26288,7 +26535,7 @@ impl FromXml for CTMdxSet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"n" => {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, true,
@@ -26339,7 +26586,7 @@ impl FromXml for CTMdxMemeberProp {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"n" => {
                     f_n = val.parse().ok();
                 }
@@ -26348,7 +26595,7 @@ impl FromXml for CTMdxMemeberProp {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26392,7 +26639,7 @@ impl FromXml for CTMdxKPI {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"n" => {
                     f_n = val.parse().ok();
                 }
@@ -26404,7 +26651,7 @@ impl FromXml for CTMdxKPI {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26448,7 +26695,7 @@ impl FromXml for CTMetadataStringIndex {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"x" => {
                     f_x = val.parse().ok();
                 }
@@ -26457,7 +26704,7 @@ impl FromXml for CTMetadataStringIndex {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26502,13 +26749,13 @@ impl FromXml for MetadataStrings {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26522,7 +26769,7 @@ impl FromXml for MetadataStrings {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"s" => {
                                 f_style_index
                                     .push(Box::new(CTXStringElement::from_xml(reader, &e, false)?));
@@ -26541,7 +26788,7 @@ impl FromXml for MetadataStrings {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"s" => {
                                 f_style_index
                                     .push(Box::new(CTXStringElement::from_xml(reader, &e, true)?));
@@ -26591,7 +26838,7 @@ impl FromXml for SingleXmlCells {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"singleXmlCell" => {
                                 f_single_xml_cell
                                     .push(Box::new(SingleXmlCell::from_xml(reader, &e, false)?));
@@ -26610,7 +26857,7 @@ impl FromXml for SingleXmlCells {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"singleXmlCell" => {
                                 f_single_xml_cell
                                     .push(Box::new(SingleXmlCell::from_xml(reader, &e, true)?));
@@ -26660,7 +26907,7 @@ impl FromXml for SingleXmlCell {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -26672,7 +26919,7 @@ impl FromXml for SingleXmlCell {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26686,7 +26933,7 @@ impl FromXml for SingleXmlCell {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xmlCellPr" => {
                                 f_xml_cell_pr =
                                     Some(Box::new(XmlCellProperties::from_xml(reader, &e, false)?));
@@ -26709,7 +26956,7 @@ impl FromXml for SingleXmlCell {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xmlCellPr" => {
                                 f_xml_cell_pr =
                                     Some(Box::new(XmlCellProperties::from_xml(reader, &e, true)?));
@@ -26770,7 +27017,7 @@ impl FromXml for XmlCellProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -26779,7 +27026,7 @@ impl FromXml for XmlCellProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26793,7 +27040,7 @@ impl FromXml for XmlCellProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xmlPr" => {
                                 f_xml_pr =
                                     Some(Box::new(XmlProperties::from_xml(reader, &e, false)?));
@@ -26816,7 +27063,7 @@ impl FromXml for XmlCellProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xmlPr" => {
                                 f_xml_pr =
                                     Some(Box::new(XmlProperties::from_xml(reader, &e, true)?));
@@ -26874,7 +27121,7 @@ impl FromXml for XmlProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"mapId" => {
                     f_map_id = val.parse().ok();
                 }
@@ -26886,7 +27133,7 @@ impl FromXml for XmlProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -26900,7 +27147,7 @@ impl FromXml for XmlProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -26919,7 +27166,7 @@ impl FromXml for XmlProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -26993,7 +27240,7 @@ impl FromXml for Stylesheet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"numFmts" => {
                                 f_num_fmts =
@@ -27060,7 +27307,7 @@ impl FromXml for Stylesheet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"numFmts" => {
                                 f_num_fmts =
@@ -27181,7 +27428,7 @@ impl FromXml for CellAlignment {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"horizontal" => {
                     f_horizontal = val.parse().ok();
                 }
@@ -27211,7 +27458,7 @@ impl FromXml for CellAlignment {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27263,13 +27510,13 @@ impl FromXml for Borders {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27283,7 +27530,7 @@ impl FromXml for Borders {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"border" => {
                                 f_border.push(Box::new(Border::from_xml(reader, &e, false)?));
                             }
@@ -27301,7 +27548,7 @@ impl FromXml for Borders {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"border" => {
                                 f_border.push(Box::new(Border::from_xml(reader, &e, true)?));
                             }
@@ -27370,7 +27617,7 @@ impl FromXml for Border {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"diagonalUp" => {
                     f_diagonal_up = Some(val == "true" || val == "1");
@@ -27385,7 +27632,7 @@ impl FromXml for Border {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27399,7 +27646,7 @@ impl FromXml for Border {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"start" => {
                                 f_start =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
@@ -27457,7 +27704,7 @@ impl FromXml for Border {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"start" => {
                                 f_start =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
@@ -27566,13 +27813,13 @@ impl FromXml for BorderProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"style" => {
                     f_style = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27586,7 +27833,7 @@ impl FromXml for BorderProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -27604,7 +27851,7 @@ impl FromXml for BorderProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -27651,7 +27898,7 @@ impl FromXml for CellProtection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"locked" => {
                     f_locked = Some(val == "true" || val == "1");
                 }
@@ -27660,7 +27907,7 @@ impl FromXml for CellProtection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27705,13 +27952,13 @@ impl FromXml for Fonts {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27725,7 +27972,7 @@ impl FromXml for Fonts {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"font" => {
                                 f_font.push(Box::new(Font::from_xml(reader, &e, false)?));
                             }
@@ -27743,7 +27990,7 @@ impl FromXml for Fonts {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"font" => {
                                 f_font.push(Box::new(Font::from_xml(reader, &e, true)?));
                             }
@@ -27792,13 +28039,13 @@ impl FromXml for Fills {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27812,7 +28059,7 @@ impl FromXml for Fills {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fill" => {
                                 f_fill.push(Box::new(Fill::from_xml(reader, &e, false)?));
                             }
@@ -27830,7 +28077,7 @@ impl FromXml for Fills {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fill" => {
                                 f_fill.push(Box::new(Fill::from_xml(reader, &e, true)?));
                             }
@@ -27909,13 +28156,13 @@ impl FromXml for PatternFill {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"patternType" => {
                     f_pattern_type = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -27929,7 +28176,7 @@ impl FromXml for PatternFill {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fgColor" => {
                                 f_fg_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -27950,7 +28197,7 @@ impl FromXml for PatternFill {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fgColor" => {
                                 f_fg_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -28004,7 +28251,7 @@ impl FromXml for Color {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"auto" => {
                     f_auto = Some(val == "true" || val == "1");
                 }
@@ -28022,7 +28269,7 @@ impl FromXml for Color {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28075,7 +28322,7 @@ impl FromXml for GradientFill {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -28096,7 +28343,7 @@ impl FromXml for GradientFill {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28110,7 +28357,7 @@ impl FromXml for GradientFill {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"stop" => {
                                 f_stop.push(Box::new(GradientStop::from_xml(reader, &e, false)?));
                             }
@@ -28128,7 +28375,7 @@ impl FromXml for GradientFill {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"stop" => {
                                 f_stop.push(Box::new(GradientStop::from_xml(reader, &e, true)?));
                             }
@@ -28182,13 +28429,13 @@ impl FromXml for GradientStop {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"position" => {
                     f_position = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28202,7 +28449,7 @@ impl FromXml for GradientStop {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -28220,7 +28467,7 @@ impl FromXml for GradientStop {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -28270,13 +28517,13 @@ impl FromXml for NumberFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28290,7 +28537,7 @@ impl FromXml for NumberFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"numFmt" => {
                                 f_num_fmt
                                     .push(Box::new(NumberFormat::from_xml(reader, &e, false)?));
@@ -28309,7 +28556,7 @@ impl FromXml for NumberFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"numFmt" => {
                                 f_num_fmt.push(Box::new(NumberFormat::from_xml(reader, &e, true)?));
                             }
@@ -28356,7 +28603,7 @@ impl FromXml for NumberFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"numFmtId" => {
                     f_number_format_id = val.parse().ok();
                 }
@@ -28365,7 +28612,7 @@ impl FromXml for NumberFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28412,13 +28659,13 @@ impl FromXml for CellStyleFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28432,7 +28679,7 @@ impl FromXml for CellStyleFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, false)?));
                             }
@@ -28450,7 +28697,7 @@ impl FromXml for CellStyleFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, true)?));
                             }
@@ -28499,13 +28746,13 @@ impl FromXml for CellFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28519,7 +28766,7 @@ impl FromXml for CellFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, false)?));
                             }
@@ -28537,7 +28784,7 @@ impl FromXml for CellFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, true)?));
                             }
@@ -28616,7 +28863,7 @@ impl FromXml for Format {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-styling")]
                 b"numFmtId" => {
                     f_number_format_id = val.parse().ok();
@@ -28671,7 +28918,7 @@ impl FromXml for Format {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28685,7 +28932,7 @@ impl FromXml for Format {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"alignment" => {
                                 f_alignment =
@@ -28715,7 +28962,7 @@ impl FromXml for Format {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-styling")]
                             b"alignment" => {
                                 f_alignment =
@@ -28806,13 +29053,13 @@ impl FromXml for CellStyles {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28826,7 +29073,7 @@ impl FromXml for CellStyles {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellStyle" => {
                                 f_cell_style
                                     .push(Box::new(CellStyle::from_xml(reader, &e, false)?));
@@ -28845,7 +29092,7 @@ impl FromXml for CellStyles {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cellStyle" => {
                                 f_cell_style.push(Box::new(CellStyle::from_xml(reader, &e, true)?));
                             }
@@ -28899,7 +29146,7 @@ impl FromXml for CellStyle {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -28920,7 +29167,7 @@ impl FromXml for CellStyle {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -28934,7 +29181,7 @@ impl FromXml for CellStyle {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -28953,7 +29200,7 @@ impl FromXml for CellStyle {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -29009,13 +29256,13 @@ impl FromXml for DifferentialFormats {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29029,7 +29276,7 @@ impl FromXml for DifferentialFormats {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dxf" => {
                                 f_dxf.push(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, false,
@@ -29049,7 +29296,7 @@ impl FromXml for DifferentialFormats {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"dxf" => {
                                 f_dxf.push(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, true,
@@ -29106,7 +29353,7 @@ impl FromXml for DifferentialFormat {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"font" => {
                                 f_font = Some(Box::new(Font::from_xml(reader, &e, false)?));
                             }
@@ -29146,7 +29393,7 @@ impl FromXml for DifferentialFormat {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"font" => {
                                 f_font = Some(Box::new(Font::from_xml(reader, &e, true)?));
                             }
@@ -29221,7 +29468,7 @@ impl FromXml for Colors {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, false)?));
@@ -29244,7 +29491,7 @@ impl FromXml for Colors {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, true)?));
@@ -29296,7 +29543,7 @@ impl FromXml for IndexedColors {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rgbColor" => {
                                 f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, false)?));
                             }
@@ -29314,7 +29561,7 @@ impl FromXml for IndexedColors {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"rgbColor" => {
                                 f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, true)?));
                             }
@@ -29360,7 +29607,7 @@ impl FromXml for MostRecentColors {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, false)?));
                             }
@@ -29378,7 +29625,7 @@ impl FromXml for MostRecentColors {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, true)?));
                             }
@@ -29421,13 +29668,13 @@ impl FromXml for RgbColor {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"rgb" => {
                     f_rgb = decode_hex(&val);
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29473,7 +29720,7 @@ impl FromXml for TableStyles {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
@@ -29485,7 +29732,7 @@ impl FromXml for TableStyles {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29499,7 +29746,7 @@ impl FromXml for TableStyles {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableStyle" => {
                                 f_table_style
                                     .push(Box::new(TableStyle::from_xml(reader, &e, false)?));
@@ -29518,7 +29765,7 @@ impl FromXml for TableStyles {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableStyle" => {
                                 f_table_style
                                     .push(Box::new(TableStyle::from_xml(reader, &e, true)?));
@@ -29573,7 +29820,7 @@ impl FromXml for TableStyle {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -29588,7 +29835,7 @@ impl FromXml for TableStyle {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29602,7 +29849,7 @@ impl FromXml for TableStyle {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableStyleElement" => {
                                 f_table_style_element.push(Box::new(TableStyleElement::from_xml(
                                     reader, &e, false,
@@ -29622,7 +29869,7 @@ impl FromXml for TableStyle {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableStyleElement" => {
                                 f_table_style_element
                                     .push(Box::new(TableStyleElement::from_xml(reader, &e, true)?));
@@ -29674,7 +29921,7 @@ impl FromXml for TableStyleElement {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -29686,7 +29933,7 @@ impl FromXml for TableStyleElement {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29729,13 +29976,13 @@ impl FromXml for BooleanProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29776,13 +30023,13 @@ impl FromXml for FontSize {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29823,13 +30070,13 @@ impl FromXml for IntProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29870,13 +30117,13 @@ impl FromXml for FontName {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29917,13 +30164,13 @@ impl FromXml for VerticalAlignFontProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -29964,13 +30211,13 @@ impl FromXml for FontSchemeProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30011,13 +30258,13 @@ impl FromXml for UnderlineProperty {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30087,13 +30334,13 @@ impl FromXml for FontFamily {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30140,7 +30387,7 @@ impl FromXml for SmlAGAutoFormat {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"autoFormatId" => {
                     f_auto_format_id = val.parse().ok();
                 }
@@ -30164,7 +30411,7 @@ impl FromXml for SmlAGAutoFormat {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30214,7 +30461,7 @@ impl FromXml for ExternalLink {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -30233,7 +30480,7 @@ impl FromXml for ExternalLink {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -30282,7 +30529,7 @@ impl FromXml for ExternalBook {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetNames" => {
                                 f_sheet_names = Some(Box::new(CTExternalSheetNames::from_xml(
                                     reader, &e, false,
@@ -30312,7 +30559,7 @@ impl FromXml for ExternalBook {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetNames" => {
                                 f_sheet_names = Some(Box::new(CTExternalSheetNames::from_xml(
                                     reader, &e, true,
@@ -30372,7 +30619,7 @@ impl FromXml for CTExternalSheetNames {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetName" => {
                                 f_sheet_name.push(Box::new(CTExternalSheetName::from_xml(
                                     reader, &e, false,
@@ -30392,7 +30639,7 @@ impl FromXml for CTExternalSheetNames {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetName" => {
                                 f_sheet_name.push(Box::new(CTExternalSheetName::from_xml(
                                     reader, &e, true,
@@ -30437,13 +30684,13 @@ impl FromXml for CTExternalSheetName {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30487,7 +30734,7 @@ impl FromXml for CTExternalDefinedNames {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"definedName" => {
                                 f_defined_name.push(Box::new(CTExternalDefinedName::from_xml(
                                     reader, &e, false,
@@ -30507,7 +30754,7 @@ impl FromXml for CTExternalDefinedNames {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"definedName" => {
                                 f_defined_name.push(Box::new(CTExternalDefinedName::from_xml(
                                     reader, &e, true,
@@ -30554,7 +30801,7 @@ impl FromXml for CTExternalDefinedName {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -30566,7 +30813,7 @@ impl FromXml for CTExternalDefinedName {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30612,7 +30859,7 @@ impl FromXml for ExternalSheetDataSet {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetData" => {
                                 f_sheet_data.push(Box::new(ExternalSheetData::from_xml(
                                     reader, &e, false,
@@ -30632,7 +30879,7 @@ impl FromXml for ExternalSheetDataSet {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheetData" => {
                                 f_sheet_data
                                     .push(Box::new(ExternalSheetData::from_xml(reader, &e, true)?));
@@ -30680,7 +30927,7 @@ impl FromXml for ExternalSheetData {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"sheetId" => {
                     f_sheet_id = val.parse().ok();
                 }
@@ -30689,7 +30936,7 @@ impl FromXml for ExternalSheetData {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30703,7 +30950,7 @@ impl FromXml for ExternalSheetData {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(ExternalRow::from_xml(reader, &e, false)?));
                             }
@@ -30721,7 +30968,7 @@ impl FromXml for ExternalSheetData {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(ExternalRow::from_xml(reader, &e, true)?));
                             }
@@ -30772,13 +31019,13 @@ impl FromXml for ExternalRow {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30792,7 +31039,7 @@ impl FromXml for ExternalRow {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cell" => {
                                 f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, false)?));
                             }
@@ -30810,7 +31057,7 @@ impl FromXml for ExternalRow {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"cell" => {
                                 f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, true)?));
                             }
@@ -30861,7 +31108,7 @@ impl FromXml for ExternalCell {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -30873,7 +31120,7 @@ impl FromXml for ExternalCell {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30887,7 +31134,7 @@ impl FromXml for ExternalCell {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(read_text_content(reader)?);
                             }
@@ -30905,7 +31152,7 @@ impl FromXml for ExternalCell {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(String::new());
                             }
@@ -30957,7 +31204,7 @@ impl FromXml for DdeLink {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ddeService" => {
                     f_dde_service = Some(val.into_owned());
                 }
@@ -30966,7 +31213,7 @@ impl FromXml for DdeLink {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -30980,7 +31227,7 @@ impl FromXml for DdeLink {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ddeItems" => {
                                 f_dde_items =
                                     Some(Box::new(DdeItems::from_xml(reader, &e, false)?));
@@ -30999,7 +31246,7 @@ impl FromXml for DdeLink {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ddeItems" => {
                                 f_dde_items = Some(Box::new(DdeItems::from_xml(reader, &e, true)?));
                             }
@@ -31051,7 +31298,7 @@ impl FromXml for DdeItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ddeItem" => {
                                 f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, false)?));
                             }
@@ -31069,7 +31316,7 @@ impl FromXml for DdeItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"ddeItem" => {
                                 f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, true)?));
                             }
@@ -31118,7 +31365,7 @@ impl FromXml for DdeItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -31133,7 +31380,7 @@ impl FromXml for DdeItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31147,7 +31394,7 @@ impl FromXml for DdeItem {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"values" => {
                                 f_values =
                                     Some(Box::new(CTDdeValues::from_xml(reader, &e, false)?));
@@ -31166,7 +31413,7 @@ impl FromXml for DdeItem {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"values" => {
                                 f_values = Some(Box::new(CTDdeValues::from_xml(reader, &e, true)?));
                             }
@@ -31219,7 +31466,7 @@ impl FromXml for CTDdeValues {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"rows" => {
                     f_rows = val.parse().ok();
                 }
@@ -31228,7 +31475,7 @@ impl FromXml for CTDdeValues {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31242,7 +31489,7 @@ impl FromXml for CTDdeValues {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"value" => {
                                 f_value.push(Box::new(CTDdeValue::from_xml(reader, &e, false)?));
                             }
@@ -31260,7 +31507,7 @@ impl FromXml for CTDdeValues {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"value" => {
                                 f_value.push(Box::new(CTDdeValue::from_xml(reader, &e, true)?));
                             }
@@ -31310,13 +31557,13 @@ impl FromXml for CTDdeValue {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31330,7 +31577,7 @@ impl FromXml for CTDdeValue {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"val" => {
                                 f_value = Some(read_text_content(reader)?);
                             }
@@ -31348,7 +31595,7 @@ impl FromXml for CTDdeValue {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"val" => {
                                 f_value = Some(String::new());
                             }
@@ -31397,13 +31644,13 @@ impl FromXml for OleLink {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31417,7 +31664,7 @@ impl FromXml for OleLink {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleItems" => {
                                 f_ole_items =
                                     Some(Box::new(OleItems::from_xml(reader, &e, false)?));
@@ -31436,7 +31683,7 @@ impl FromXml for OleLink {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleItems" => {
                                 f_ole_items = Some(Box::new(OleItems::from_xml(reader, &e, true)?));
                             }
@@ -31485,7 +31732,7 @@ impl FromXml for OleItems {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleItem" => {
                                 f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, false)?));
                             }
@@ -31503,7 +31750,7 @@ impl FromXml for OleItems {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"oleItem" => {
                                 f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, true)?));
                             }
@@ -31549,7 +31796,7 @@ impl FromXml for OleItem {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -31564,7 +31811,7 @@ impl FromXml for OleItem {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31663,7 +31910,7 @@ impl FromXml for Table {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 #[cfg(feature = "sml-tables")]
                 b"id" => {
                     f_id = val.parse().ok();
@@ -31754,7 +32001,7 @@ impl FromXml for Table {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -31768,7 +32015,7 @@ impl FromXml for Table {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-tables")]
                             b"autoFilter" => {
                                 f_auto_filter =
@@ -31808,7 +32055,7 @@ impl FromXml for Table {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "sml-tables")]
                             b"autoFilter" => {
                                 f_auto_filter =
@@ -31935,7 +32182,7 @@ impl FromXml for TableStyleInfo {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -31953,7 +32200,7 @@ impl FromXml for TableStyleInfo {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32001,13 +32248,13 @@ impl FromXml for TableColumns {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32021,7 +32268,7 @@ impl FromXml for TableColumns {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableColumn" => {
                                 f_table_column
                                     .push(Box::new(TableColumn::from_xml(reader, &e, false)?));
@@ -32040,7 +32287,7 @@ impl FromXml for TableColumns {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tableColumn" => {
                                 f_table_column
                                     .push(Box::new(TableColumn::from_xml(reader, &e, true)?));
@@ -32104,7 +32351,7 @@ impl FromXml for TableColumn {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -32143,7 +32390,7 @@ impl FromXml for TableColumn {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32157,7 +32404,7 @@ impl FromXml for TableColumn {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedColumnFormula" => {
                                 f_calculated_column_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, false)?));
@@ -32189,7 +32436,7 @@ impl FromXml for TableColumn {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"calculatedColumnFormula" => {
                                 f_calculated_column_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, true)?));
@@ -32266,13 +32513,13 @@ impl FromXml for TableFormula {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"array" => {
                     f_array = Some(val == "true" || val == "1");
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32286,7 +32533,7 @@ impl FromXml for TableFormula {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
@@ -32301,7 +32548,7 @@ impl FromXml for TableFormula {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
@@ -32353,7 +32600,7 @@ impl FromXml for XmlColumnProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"mapId" => {
                     f_map_id = val.parse().ok();
                 }
@@ -32368,7 +32615,7 @@ impl FromXml for XmlColumnProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32382,7 +32629,7 @@ impl FromXml for XmlColumnProperties {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -32401,7 +32648,7 @@ impl FromXml for XmlColumnProperties {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -32456,7 +32703,7 @@ impl FromXml for CTVolTypes {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"volType" => {
                                 f_vol_type.push(Box::new(CTVolType::from_xml(reader, &e, false)?));
                             }
@@ -32478,7 +32725,7 @@ impl FromXml for CTVolTypes {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"volType" => {
                                 f_vol_type.push(Box::new(CTVolType::from_xml(reader, &e, true)?));
                             }
@@ -32529,13 +32776,13 @@ impl FromXml for CTVolType {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"type" => {
                     f_type = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32549,7 +32796,7 @@ impl FromXml for CTVolType {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"main" => {
                                 f_main.push(Box::new(CTVolMain::from_xml(reader, &e, false)?));
                             }
@@ -32567,7 +32814,7 @@ impl FromXml for CTVolType {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"main" => {
                                 f_main.push(Box::new(CTVolMain::from_xml(reader, &e, true)?));
                             }
@@ -32616,13 +32863,13 @@ impl FromXml for CTVolMain {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"first" => {
                     f_first = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32636,7 +32883,7 @@ impl FromXml for CTVolMain {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tp" => {
                                 f_tp.push(Box::new(CTVolTopic::from_xml(reader, &e, false)?));
                             }
@@ -32654,7 +32901,7 @@ impl FromXml for CTVolMain {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"tp" => {
                                 f_tp.push(Box::new(CTVolTopic::from_xml(reader, &e, true)?));
                             }
@@ -32705,13 +32952,13 @@ impl FromXml for CTVolTopic {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"t" => {
                     f_cell_type = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32725,7 +32972,7 @@ impl FromXml for CTVolTopic {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(read_text_content(reader)?);
                             }
@@ -32749,7 +32996,7 @@ impl FromXml for CTVolTopic {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(String::new());
                             }
@@ -32804,7 +33051,7 @@ impl FromXml for CTVolTopicRef {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"r" => {
                     f_reference = Some(val.into_owned());
                 }
@@ -32813,7 +33060,7 @@ impl FromXml for CTVolTopicRef {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32890,13 +33137,13 @@ impl FromXml for Workbook {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"conformance" => {
                     f_conformance = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -32910,7 +33157,7 @@ impl FromXml for Workbook {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fileVersion" => {
                                 f_file_version =
                                     Some(Box::new(FileVersion::from_xml(reader, &e, false)?));
@@ -33020,7 +33267,7 @@ impl FromXml for Workbook {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"fileVersion" => {
                                 f_file_version =
                                     Some(Box::new(FileVersion::from_xml(reader, &e, true)?));
@@ -33189,7 +33436,7 @@ impl FromXml for FileVersion {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"appName" => {
                     f_app_name = Some(val.into_owned());
                 }
@@ -33207,7 +33454,7 @@ impl FromXml for FileVersion {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -33255,7 +33502,7 @@ impl FromXml for BookViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"workbookView" => {
                                 f_workbook_view
                                     .push(Box::new(BookView::from_xml(reader, &e, false)?));
@@ -33274,7 +33521,7 @@ impl FromXml for BookViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"workbookView" => {
                                 f_workbook_view
                                     .push(Box::new(BookView::from_xml(reader, &e, true)?));
@@ -33333,7 +33580,7 @@ impl FromXml for BookView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"visibility" => {
                     f_visibility = val.parse().ok();
                 }
@@ -33375,7 +33622,7 @@ impl FromXml for BookView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -33389,7 +33636,7 @@ impl FromXml for BookView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -33408,7 +33655,7 @@ impl FromXml for BookView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -33470,7 +33717,7 @@ impl FromXml for CustomWorkbookViews {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customWorkbookView" => {
                                 f_custom_workbook_view.push(Box::new(
                                     CustomWorkbookView::from_xml(reader, &e, false)?,
@@ -33490,7 +33737,7 @@ impl FromXml for CustomWorkbookViews {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"customWorkbookView" => {
                                 f_custom_workbook_view.push(Box::new(
                                     CustomWorkbookView::from_xml(reader, &e, true)?,
@@ -33561,7 +33808,7 @@ impl FromXml for CustomWorkbookView {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -33636,7 +33883,7 @@ impl FromXml for CustomWorkbookView {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -33650,7 +33897,7 @@ impl FromXml for CustomWorkbookView {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -33669,7 +33916,7 @@ impl FromXml for CustomWorkbookView {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -33745,7 +33992,7 @@ impl FromXml for Sheets {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheet" => {
                                 f_sheet.push(Box::new(Sheet::from_xml(reader, &e, false)?));
                             }
@@ -33763,7 +34010,7 @@ impl FromXml for Sheets {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"sheet" => {
                                 f_sheet.push(Box::new(Sheet::from_xml(reader, &e, true)?));
                             }
@@ -33809,7 +34056,7 @@ impl FromXml for Sheet {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -33822,7 +34069,7 @@ impl FromXml for Sheet {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -33884,7 +34131,7 @@ impl FromXml for WorkbookProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"date1904" => {
                     f_date1904 = Some(val == "true" || val == "1");
                 }
@@ -33941,7 +34188,7 @@ impl FromXml for WorkbookProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34000,7 +34247,7 @@ impl FromXml for CTSmartTagPr {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"embed" => {
                     f_embed = Some(val == "true" || val == "1");
                 }
@@ -34009,7 +34256,7 @@ impl FromXml for CTSmartTagPr {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34054,7 +34301,7 @@ impl FromXml for CTSmartTagTypes {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"smartTagType" => {
                                 f_smart_tag_type
                                     .push(Box::new(CTSmartTagType::from_xml(reader, &e, false)?));
@@ -34073,7 +34320,7 @@ impl FromXml for CTSmartTagTypes {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"smartTagType" => {
                                 f_smart_tag_type
                                     .push(Box::new(CTSmartTagType::from_xml(reader, &e, true)?));
@@ -34119,7 +34366,7 @@ impl FromXml for CTSmartTagType {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"namespaceUri" => {
                     f_namespace_uri = Some(val.into_owned());
                 }
@@ -34131,7 +34378,7 @@ impl FromXml for CTSmartTagType {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34177,7 +34424,7 @@ impl FromXml for FileRecoveryProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"autoRecover" => {
                     f_auto_recover = Some(val == "true" || val == "1");
                 }
@@ -34192,7 +34439,7 @@ impl FromXml for FileRecoveryProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34248,7 +34495,7 @@ impl FromXml for CalculationProperties {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"calcId" => {
                     f_calc_id = val.parse().ok();
                 }
@@ -34290,7 +34537,7 @@ impl FromXml for CalculationProperties {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34346,7 +34593,7 @@ impl FromXml for DefinedNames {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"definedName" => {
                                 f_defined_name
                                     .push(Box::new(DefinedName::from_xml(reader, &e, false)?));
@@ -34365,7 +34612,7 @@ impl FromXml for DefinedNames {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"definedName" => {
                                 f_defined_name
                                     .push(Box::new(DefinedName::from_xml(reader, &e, true)?));
@@ -34437,7 +34684,7 @@ impl FromXml for DefinedName {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -34496,7 +34743,7 @@ impl FromXml for DefinedName {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34510,7 +34757,7 @@ impl FromXml for DefinedName {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
@@ -34525,7 +34772,7 @@ impl FromXml for DefinedName {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
@@ -34599,7 +34846,7 @@ impl FromXml for ExternalReferences {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"externalReference" => {
                                 f_external_reference.push(Box::new(ExternalReference::from_xml(
                                     reader, &e, false,
@@ -34619,7 +34866,7 @@ impl FromXml for ExternalReferences {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"externalReference" => {
                                 f_external_reference
                                     .push(Box::new(ExternalReference::from_xml(reader, &e, true)?));
@@ -34724,7 +34971,7 @@ impl FromXml for PivotCaches {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotCache" => {
                                 f_pivot_cache
                                     .push(Box::new(CTPivotCache::from_xml(reader, &e, false)?));
@@ -34743,7 +34990,7 @@ impl FromXml for PivotCaches {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"pivotCache" => {
                                 f_pivot_cache
                                     .push(Box::new(CTPivotCache::from_xml(reader, &e, true)?));
@@ -34787,13 +35034,13 @@ impl FromXml for CTPivotCache {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"cacheId" => {
                     f_cache_id = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34841,7 +35088,7 @@ impl FromXml for FileSharing {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"readOnlyRecommended" => {
                     f_read_only_recommended = Some(val == "true" || val == "1");
                 }
@@ -34865,7 +35112,7 @@ impl FromXml for FileSharing {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34912,13 +35159,13 @@ impl FromXml for CTOleSize {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"ref" => {
                     f_reference = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -34974,7 +35221,7 @@ impl FromXml for WorkbookProtection {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"workbookPassword" => {
                     f_workbook_password = decode_hex(&val);
                 }
@@ -35022,7 +35269,7 @@ impl FromXml for WorkbookProtection {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -35085,7 +35332,7 @@ impl FromXml for WebPublishing {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"css" => {
                     f_css = Some(val == "true" || val == "1");
                 }
@@ -35115,7 +35362,7 @@ impl FromXml for WebPublishing {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -35167,13 +35414,13 @@ impl FromXml for CTFunctionGroups {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"builtInGroupCount" => {
                     f_built_in_group_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -35187,7 +35434,7 @@ impl FromXml for CTFunctionGroups {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"functionGroup" => {
                                 f_function_group
                                     .push(Box::new(CTFunctionGroup::from_xml(reader, &e, false)?));
@@ -35206,7 +35453,7 @@ impl FromXml for CTFunctionGroups {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"functionGroup" => {
                                 f_function_group
                                     .push(Box::new(CTFunctionGroup::from_xml(reader, &e, true)?));
@@ -35253,13 +35500,13 @@ impl FromXml for CTFunctionGroup {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -35303,13 +35550,13 @@ impl FromXml for CTWebPublishObjects {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"count" => {
                     f_count = val.parse().ok();
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
@@ -35323,7 +35570,7 @@ impl FromXml for CTWebPublishObjects {
             loop {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"webPublishObject" => {
                                 f_web_publish_object.push(Box::new(CTWebPublishObject::from_xml(
                                     reader, &e, false,
@@ -35343,7 +35590,7 @@ impl FromXml for CTWebPublishObjects {
                         }
                     }
                     Event::Empty(e) => {
-                        match e.name().as_ref() {
+                        match e.local_name().as_ref() {
                             b"webPublishObject" => {
                                 f_web_publish_object.push(Box::new(CTWebPublishObject::from_xml(
                                     reader, &e, true,
@@ -35396,7 +35643,7 @@ impl FromXml for CTWebPublishObject {
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
-            match attr.key.as_ref() {
+            match attr.key.local_name().as_ref() {
                 b"id" => {
                     f_id = val.parse().ok();
                 }
@@ -35417,7 +35664,7 @@ impl FromXml for CTWebPublishObject {
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
-                    let key = String::from_utf8_lossy(unknown).into_owned();
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
                     extra_attrs.insert(key, val.into_owned());
                 }
                 #[cfg(not(feature = "extra-attrs"))]
