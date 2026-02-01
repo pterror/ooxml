@@ -48,20 +48,50 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] **Per-field feature gating** - Uses `spec/ooxml-features.yaml` to gate non-core fields behind features (sml-styling, sml-formulas, etc.). 265 fields gated, 893 parser locations.
 - [x] **Extension trait cfg attrs** - Feature-gated WorksheetExt and ResolvedSheet methods for `--no-default-features` support.
 
-## Codegen Migration
+## WML Codegen Migration
 
-Replace handwritten types with generated equivalents. **Requires extensive test fixtures first** to ensure no regressions.
+Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with codegen'd types and FromXml parsers.
 
-### Prerequisites
-- [ ] **Comprehensive roundtrip test suite** - Parse real documents, serialize, compare output. Cover all element types.
-- [ ] **Fixture corpus** - Curated set of DOCX/XLSX/PPTX files exercising edge cases (from corpus analysis + synthetic).
-- [ ] **Parity tests** - For each handwritten type, verify generated equivalent produces identical XML output.
+### Phase 1: Fix codegen to compose element groups ✅
+- [x] **Fix `collect_fields()` for EG_\* refs** - Element choice groups become `Vec<Box<EGType>>` fields; struct-like groups inline their fields.
+- [x] **Flatten element group enums** - `collect_element_variants()` recursively follows EG_\* refs with cycle detection.
+- [x] **Handle AG_\* attribute groups** - Inline attribute group fields into parent structs.
+- [x] **Regenerate WML types** - Body, Paragraph, Run, RunProperties, SectionProperties, Table, CTRow, TableCell all now complete.
 
-### WML (Word)
-- [ ] **Port feature flags to WML** - Add ooxml-features.yaml mappings for WML elements, feature-gate non-core fields.
-- [ ] **Port extra-attrs/extra-children to WML** - Already has `unknown_children`, unify with codegen approach.
-- [ ] **Replace handwritten WML types** - Swap document.rs/paragraph.rs/etc with generated types, update ext traits.
-- [ ] **Delete handwritten WML code** - Remove old implementations once tests pass.
+### Phase 2: Expand WML feature mappings
+- [ ] **Expand ooxml-features.yaml WML section** - Currently ~20 lines covering 5 types. Use element constants in document.rs:3753-3915 as checklist. Map to feature tags (core, wml-styling, wml-tables, wml-layout, wml-hyperlinks, wml-drawings).
+- [ ] **Regenerate and verify** - Check `#[cfg(feature = "...")]` annotations appear on the right fields.
+
+### Phase 3: Generate FromXml parsers for WML
+- [ ] **Add `generate_parsers()` to WML build.rs** - Copy SML's pattern (OOXML_GENERATE_PARSERS env var).
+- [ ] **Generate `src/generated_parsers.rs`** - FromXml trait impls using parser_gen.rs infrastructure.
+- [ ] **Add `pub mod generated_parsers` to lib.rs**.
+- [ ] **Unit tests** - Parse XML snippets with `FromXml::from_xml()` for Document, Paragraph, Run, RunProperties, Table.
+
+### Phase 4: Extension traits (ext.rs)
+- [ ] **Pure traits** - `BodyExt` (iterate paragraphs/tables, extract text), `ParagraphExt` (iterate runs, get style/alignment), `RunExt` (get text, check bold/italic/underline, font size/color), `TableExt` (iterate rows, get properties), `SectionPropertiesExt` (page size, margins).
+- [ ] **Resolve traits** - `WmlResolveContext` (holds Styles, Numbering), `ParagraphResolveExt` (resolve effective style via basedOn chain), `RunResolveExt` (resolve effective run properties). Port style inheritance logic from styles.rs (basedOn chain walking, depth-limit cycle detection, property merging).
+- [ ] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml.
+
+### Phase 5: Parity tests
+- [ ] **Parser parity tests** - Parse same XML with both handwritten and generated parsers, compare results via extension traits. Cover: simple docs, formatted text, tables (basic/merged/nested), section properties, hyperlinks, comments, footnotes.
+- [ ] **Fixture parity** - All `.docx` files in `tests/fixtures/` parsed by both paths.
+
+### Phase 6: Migrate writer + public API
+- [ ] **Update writer.rs** - Change serialize functions to accept generated types.
+- [ ] **Update lib.rs exports** - Re-export generated types + extension traits instead of handwritten types.
+- [ ] **Type aliases** - Add backward-compat aliases where names differ (Cell → TableCell, Row → CTRow).
+
+### Phase 7: Remove handwritten parsing
+- [ ] **Gut document.rs** - Remove ~6,000+ lines of parsing code and type definitions; keep Document struct + OPC loading.
+- [ ] **Delete styles.rs** - Logic moved to ext.rs resolve traits.
+- [ ] **Expected result** - ~6,000+ lines removed, replaced by generated code + ~800-1000 lines of extension traits.
+
+## Other Codegen Migrations
+
+### SML (Spreadsheet)
+- [ ] **Regenerate SML types with EG_\*/AG_\* inlining** - Codegen now supports it; requires regenerating generated_parsers.rs too.
+- [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
 - [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
