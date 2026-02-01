@@ -36,6 +36,10 @@ DocumentBuilder handles common cases but doesn't expose:
 - [ ] API documentation improvements
 - [ ] Consider using Default + field assignment instead of with_ builder methods for simpler configuration structs
 
+## Critical: Generated Parsers Don't Handle Namespace Prefixes
+
+- [ ] **Fix codegen parsers to use `local_name()` instead of `name()`** - Generated `FromXml` parsers match on unprefixed element names (e.g., `b"body"`) using `e.name().as_ref()`. Real OOXML documents use namespace prefixes (`<w:body>`, `<x:row>`) so `e.name().as_ref()` returns `b"w:body"` which does NOT match. This affects ALL generated parsers (WML, SML). Must switch to `e.local_name().as_ref()` in `parser_gen.rs` element matching and attribute matching. Without this fix, `parse_document()`, `parse_worksheet()`, etc. only work on namespace-stripped XML, not on real document content extracted from .docx/.xlsx files.
+
 ## Technical Debt
 
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
@@ -70,10 +74,10 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Fix parser_gen.rs for EG_\*/AG_\* composition** - Handle element group content fields, attribute group inlining, recursive variant flattening, overlapping variant dedup, hexBinary types, CT_Empty strategy.
 - [ ] **Unit tests** - Parse XML snippets with `FromXml::from_xml()` for Document, Paragraph, Run, RunProperties, Table.
 
-### Phase 4: Extension traits (ext.rs)
-- [ ] **Pure traits** - `BodyExt` (iterate paragraphs/tables, extract text), `ParagraphExt` (iterate runs, get style/alignment), `RunExt` (get text, check bold/italic/underline, font size/color), `TableExt` (iterate rows, get properties), `SectionPropertiesExt` (page size, margins).
-- [ ] **Resolve traits** - `WmlResolveContext` (holds Styles, Numbering), `ParagraphResolveExt` (resolve effective style via basedOn chain), `RunResolveExt` (resolve effective run properties). Port style inheritance logic from styles.rs (basedOn chain walking, depth-limit cycle detection, property merging).
-- [ ] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml.
+### Phase 4: Extension traits (ext.rs) ✅
+- [x] **Pure traits** - `DocumentExt`, `BodyExt`, `ParagraphExt`, `RunExt`, `RunPropertiesExt` (wml-styling gated), `HyperlinkExt`, `TableExt`, `RowExt`, `CellExt`, `SectionPropertiesExt` (wml-layout gated).
+- [x] **Resolve traits** - `StyleContext` (holds styles + docDefaults), `RunResolveExt` (resolve bold/italic/font size/font/color via basedOn chain, depth-limit 20). `ResolvedDocument` wrapper.
+- [x] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml. Note: currently only works on unprefixed XML due to codegen namespace limitation (see Critical section above).
 
 ### Phase 5: Parity tests
 - [ ] **Parser parity tests** - Parse same XML with both handwritten and generated parsers, compare results via extension traits. Cover: simple docs, formatted text, tables (basic/merged/nested), section properties, hyperlinks, comments, footnotes.
