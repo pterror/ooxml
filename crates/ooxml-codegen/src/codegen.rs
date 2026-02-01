@@ -381,7 +381,9 @@ impl<'a> Generator<'a> {
     fn is_direct_element_variant(pattern: &Pattern) -> bool {
         match pattern {
             Pattern::Element { .. } => true,
-            Pattern::Optional(inner) => Self::is_direct_element_variant(inner),
+            Pattern::Optional(inner) | Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
+                Self::is_direct_element_variant(inner)
+            }
             _ => false,
         }
     }
@@ -523,15 +525,15 @@ impl<'a> Generator<'a> {
     fn gen_element_group(&self, def: &Definition) -> Option<String> {
         let rust_name = self.to_rust_type_name(&def.name);
 
-        let Pattern::Choice(variants) = &def.pattern else {
-            return None;
-        };
+        // Recursively collect all element variants, flattening nested EG_* refs
+        let mut element_variants = Vec::new();
+        let mut visited = std::collections::HashSet::new();
+        visited.insert(def.name.clone()); // prevent self-recursion
+        self.collect_element_variants(&def.pattern, &mut element_variants, &mut visited);
 
-        // Collect element variants
-        let element_variants: Vec<_> = variants
-            .iter()
-            .filter_map(|v| self.extract_element_variant(v))
-            .collect();
+        // Deduplicate by xml_name (keep first occurrence)
+        let mut seen = std::collections::HashSet::new();
+        element_variants.retain(|(xml_name, _)| seen.insert(xml_name.clone()));
 
         if element_variants.is_empty() {
             // Fallback to type alias
@@ -555,21 +557,61 @@ impl<'a> Generator<'a> {
         Some(code)
     }
 
-    /// Extract element info from a choice variant: (xml_name, rust_type)
-    /// Only extracts direct Element patterns, not refs to other EG_* groups.
-    fn extract_element_variant(&self, pattern: &Pattern) -> Option<(String, String)> {
+    /// Recursively collect all element variants from a pattern, following EG_* refs.
+    /// Used for generating flattened element group enums.
+    fn collect_element_variants(
+        &self,
+        pattern: &Pattern,
+        variants: &mut Vec<(String, String)>,
+        visited: &mut std::collections::HashSet<String>,
+    ) {
         match pattern {
             Pattern::Element { name, pattern } => {
                 let inner_type = self.pattern_to_rust_type(pattern, false);
-                Some((name.local.clone(), inner_type))
+                variants.push((name.local.clone(), inner_type));
             }
-            Pattern::Optional(inner) => self.extract_element_variant(inner),
-            Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
-                // For repeated elements in a choice, still extract but mark the type
-                self.extract_element_variant(inner)
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner) => {
+                self.collect_element_variants(inner, variants, visited);
             }
-            _ => None,
+            Pattern::Ref(name) => {
+                // Follow EG_* refs recursively to flatten nested element groups
+                if name.contains("_EG_")
+                    && visited.insert(name.clone())
+                    && let Some(def_pattern) = self.definitions.get(name.as_str())
+                {
+                    self.collect_element_variants(def_pattern, variants, visited);
+                }
+            }
+            Pattern::Choice(items) | Pattern::Sequence(items) | Pattern::Interleave(items) => {
+                for item in items {
+                    self.collect_element_variants(item, variants, visited);
+                }
+            }
+            _ => {}
         }
+    }
+
+    /// Check if a field holds element group content (needs serde skip).
+    fn is_eg_content_field(&self, field: &Field) -> bool {
+        if let Pattern::Ref(name) = &field.pattern
+            && name.contains("_EG_")
+            && let Some(pattern) = self.definitions.get(name.as_str())
+        {
+            return self.is_element_choice(pattern);
+        }
+        false
+    }
+
+    /// Convert an EG_* reference name to a snake_case field name.
+    /// e.g., "w_EG_BlockLevelElts" → "block_level_elts"
+    fn eg_ref_to_field_name(&self, name: &str) -> String {
+        let spec_name = strip_namespace_prefix(name);
+        // Strip "EG_" prefix
+        let short = spec_name.strip_prefix("EG_").unwrap_or(spec_name);
+        to_snake_case(short)
     }
 
     fn gen_complex_type(&self, def: &Definition) -> Option<String> {
@@ -603,13 +645,26 @@ impl<'a> Generator<'a> {
             }
             writeln!(code, "pub struct {};", rust_name).unwrap();
         } else {
-            writeln!(code, "#[derive(Debug, Clone, Serialize, Deserialize)]").unwrap();
+            // Derive Default when all fields are optional or vec (common for OOXML types)
+            let all_defaultable = fields
+                .iter()
+                .all(|f| f.is_optional || f.is_vec || self.is_eg_content_field(f));
+            if all_defaultable {
+                writeln!(
+                    code,
+                    "#[derive(Debug, Clone, Default, Serialize, Deserialize)]"
+                )
+                .unwrap();
+            } else {
+                writeln!(code, "#[derive(Debug, Clone, Serialize, Deserialize)]").unwrap();
+            }
             if let Some(xml_name) = &element_rename {
                 writeln!(code, "#[serde(rename = \"{}\")]", xml_name).unwrap();
             }
             writeln!(code, "pub struct {} {{", rust_name).unwrap();
 
             for field in &fields {
+                let is_eg_content = self.is_eg_content_field(field);
                 let inner_type = self.pattern_to_rust_type(&field.pattern, false);
                 let is_bool = inner_type == "bool";
                 let field_type = if field.is_vec {
@@ -625,14 +680,20 @@ impl<'a> Generator<'a> {
                     writeln!(code, "    #[cfg(feature = \"{}\")]", feature).unwrap();
                 }
 
-                // Add serde attributes
-                let xml_name = &field.xml_name;
-                if field.is_text_content {
-                    writeln!(code, "    #[serde(rename = \"$text\")]").unwrap();
-                } else if field.is_attribute {
-                    writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
+                if is_eg_content {
+                    // EG content fields use serde skip — populated by FromXml parsers
+                    writeln!(code, "    #[serde(skip)]").unwrap();
+                    writeln!(code, "    #[serde(default)]").unwrap();
                 } else {
-                    writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
+                    // Add serde attributes
+                    let xml_name = &field.xml_name;
+                    if field.is_text_content {
+                        writeln!(code, "    #[serde(rename = \"$text\")]").unwrap();
+                    } else if field.is_attribute {
+                        writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
+                    } else {
+                        writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
+                    }
                 }
                 if field.is_optional {
                     if is_bool {
@@ -642,14 +703,14 @@ impl<'a> Generator<'a> {
                             "    #[serde(default, skip_serializing_if = \"Option::is_none\", with = \"ooxml_xml::ooxml_bool\")]"
                         )
                         .unwrap();
-                    } else {
+                    } else if !is_eg_content {
                         writeln!(
                             code,
                             "    #[serde(default, skip_serializing_if = \"Option::is_none\")]"
                         )
                         .unwrap();
                     }
-                } else if field.is_vec {
+                } else if field.is_vec && !is_eg_content {
                     writeln!(
                         code,
                         "    #[serde(default, skip_serializing_if = \"Vec::is_empty\")]"
@@ -764,8 +825,23 @@ impl<'a> Generator<'a> {
                         });
                     }
                     Pattern::Ref(name) if name.contains("_EG_") => {
-                        // EG_* element group references skipped - need mixed content handling
-                        let _ = name;
+                        if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                            if self.is_element_choice(def_pattern) {
+                                // Element group choice → add Vec<Box<EGType>> field
+                                fields.push(Field {
+                                    name: self.eg_ref_to_field_name(name),
+                                    xml_name: name.clone(),
+                                    pattern: Pattern::Ref(name.clone()),
+                                    is_optional: false,
+                                    is_attribute: false,
+                                    is_vec: true,
+                                    is_text_content: false,
+                                });
+                            } else {
+                                // Struct-like property group → inline its fields
+                                self.collect_fields(def_pattern, fields, true);
+                            }
+                        }
                     }
                     Pattern::Choice(_) | Pattern::Ref(_) => {
                         // Complex repeated content - recurse but don't add directly
@@ -797,12 +873,37 @@ impl<'a> Generator<'a> {
                         is_vec: false,
                         is_text_content: true,
                     });
+                } else if name.contains("_EG_") {
+                    // Element group reference
+                    if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                        if self.is_element_choice(def_pattern) {
+                            // Element group choice → add as content field
+                            fields.push(Field {
+                                name: self.eg_ref_to_field_name(name),
+                                xml_name: name.clone(),
+                                pattern: Pattern::Ref(name.clone()),
+                                is_optional,
+                                is_attribute: false,
+                                is_vec: false,
+                                is_text_content: false,
+                            });
+                        } else {
+                            // Struct-like property group → inline its fields
+                            self.collect_fields(def_pattern, fields, is_optional);
+                        }
+                    }
+                } else if name.contains("_AG_") {
+                    // Attribute group reference → inline its attribute fields
+                    if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                        self.collect_fields(def_pattern, fields, is_optional);
+                    }
                 }
-                // EG_* element group references and complex refs are skipped
+                // Other bare refs (CT_* mixins, etc.) are skipped for now
             }
             Pattern::Choice(_) => {
-                // Choice patterns are complex - for now, skip them
-                // TODO: Generate enum variants or handle differently
+                // Choice patterns at the field level represent variant content.
+                // For now, these are handled when the parent is an element group (enum).
+                // TODO: Handle inline choice patterns as content fields
             }
             _ => {}
         }
