@@ -38,7 +38,8 @@ DocumentBuilder handles common cases but doesn't expose:
 
 ## Critical: Generated Parsers Don't Handle Namespace Prefixes
 
-- [ ] **Fix codegen parsers to use `local_name()` instead of `name()`** - Generated `FromXml` parsers match on unprefixed element names (e.g., `b"body"`) using `e.name().as_ref()`. Real OOXML documents use namespace prefixes (`<w:body>`, `<x:row>`) so `e.name().as_ref()` returns `b"w:body"` which does NOT match. This affects ALL generated parsers (WML, SML). Must switch to `e.local_name().as_ref()` in `parser_gen.rs` element matching and attribute matching. Without this fix, `parse_document()`, `parse_worksheet()`, etc. only work on namespace-stripped XML, not on real document content extracted from .docx/.xlsx files.
+- [x] **Fix codegen parsers to use `local_name()` instead of `name()`** - Generated `FromXml` parsers now use `local_name().as_ref()` for element and attribute matching, so namespace prefixes (`w:body`, `x:row`) are handled correctly.
+- [ ] **Full namespace URI validation** - `local_name()` matching ignores namespace URIs entirely. Full validation would require switching from `quick_xml::Reader` to `NsReader` (yields `(ResolvedNamespace, Event)` tuples) and restructuring all generated parser event loops. Not needed in practice since each OOXML part has a single primary namespace and the parser is type-scoped, but worth tracking as a future correctness improvement.
 
 ## Technical Debt
 
@@ -77,7 +78,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ### Phase 4: Extension traits (ext.rs) ✅
 - [x] **Pure traits** - `DocumentExt`, `BodyExt`, `ParagraphExt`, `RunExt`, `RunPropertiesExt` (wml-styling gated), `HyperlinkExt`, `TableExt`, `RowExt`, `CellExt`, `SectionPropertiesExt` (wml-layout gated).
 - [x] **Resolve traits** - `StyleContext` (holds styles + docDefaults), `RunResolveExt` (resolve bold/italic/font size/font/color via basedOn chain, depth-limit 20). `ResolvedDocument` wrapper.
-- [x] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml. Note: currently only works on unprefixed XML due to codegen namespace limitation (see Critical section above).
+- [x] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml. Now works on real prefixed OOXML content.
 
 ### Phase 5: Parity tests
 - [ ] **Parser parity tests** - Parse same XML with both handwritten and generated parsers, compare results via extension traits. Cover: simple docs, formatted text, tables (basic/merged/nested), section properties, hyperlinks, comments, footnotes.

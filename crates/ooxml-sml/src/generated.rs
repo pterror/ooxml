@@ -4392,7 +4392,7 @@ impl std::str::FromStr for STTargetScreenSize {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "autoFilter")]
 pub struct AutoFilter {
     #[cfg(feature = "sml-filtering")]
@@ -4456,7 +4456,7 @@ pub struct FilterColumn {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "filters")]
 pub struct Filters {
     #[serde(rename = "@blank")]
@@ -4489,7 +4489,7 @@ pub struct Filters {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "filter")]
 pub struct Filter {
     #[serde(rename = "@val")]
@@ -4504,7 +4504,7 @@ pub struct Filter {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CustomFilters {
     #[serde(rename = "@and")]
     #[serde(
@@ -4530,7 +4530,7 @@ pub struct CustomFilters {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CustomFilter {
     #[serde(rename = "@operator")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4577,7 +4577,7 @@ pub struct Top10Filter {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ColorFilter {
     #[serde(rename = "@dxfId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4760,7 +4760,7 @@ pub struct CTXStringElement {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "ext")]
 pub struct Extension {
     #[serde(rename = "@uri")]
@@ -4777,7 +4777,7 @@ pub struct Extension {
 
 pub type CTExtensionAny = String;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ObjectAnchor {
     #[serde(rename = "@moveWithCells")]
     #[serde(
@@ -4802,7 +4802,7 @@ pub struct ObjectAnchor {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4816,11 +4816,20 @@ pub struct EGExtensionList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "extLst")]
-pub struct ExtensionList;
+pub struct ExtensionList {
+    #[serde(rename = "ext")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ext: Vec<Box<Extension>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 pub type SmlCalcChain = Box<CalcChain>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "calcChain")]
 pub struct CalcChain {
     #[serde(rename = "c")]
@@ -4899,7 +4908,7 @@ pub struct Comments {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "authors")]
 pub struct Authors {
     #[serde(rename = "author")]
@@ -4912,7 +4921,7 @@ pub struct Authors {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "commentList")]
 pub struct CommentList {
     #[serde(rename = "comment")]
@@ -5158,7 +5167,7 @@ pub type CTDataBindingAny = String;
 
 pub type SmlConnections = Box<Connections>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Connections {
     #[serde(rename = "connection")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5316,7 +5325,7 @@ pub struct DatabaseProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct OlapProperties {
     #[serde(rename = "@local")]
     #[serde(
@@ -5382,7 +5391,7 @@ pub struct OlapProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WebQueryProperties {
     #[serde(rename = "@xml")]
     #[serde(
@@ -5476,7 +5485,7 @@ pub struct WebQueryProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Parameters {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5498,7 +5507,7 @@ pub struct Parameters {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Parameter {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5547,7 +5556,7 @@ pub struct Parameter {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DataTables {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5564,7 +5573,7 @@ pub struct DataTables {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableMissing;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextImportProperties {
     #[serde(rename = "@prompt")]
     #[serde(
@@ -5659,7 +5668,7 @@ pub struct TextImportProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5681,7 +5690,7 @@ pub struct TextFields {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextField {
     #[serde(rename = "@type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5842,7 +5851,7 @@ pub struct PivotCacheDefinition {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CacheFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5962,7 +5971,7 @@ pub struct CacheSource {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WorksheetSource {
     #[serde(rename = "@ref")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6010,7 +6019,7 @@ pub struct Consolidation {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPages {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6032,7 +6041,7 @@ pub struct CTPages {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPCDSCPage {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6067,7 +6076,7 @@ pub struct CTPageItem {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRangeSets {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6089,7 +6098,7 @@ pub struct CTRangeSets {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRangeSet {
     #[serde(rename = "@i1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6121,7 +6130,7 @@ pub struct CTRangeSet {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SharedItems {
     #[serde(rename = "@containsSemiMixedTypes")]
     #[serde(
@@ -6210,7 +6219,7 @@ pub struct SharedItems {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMissing {
     #[serde(rename = "@u")]
     #[serde(
@@ -6615,7 +6624,7 @@ pub struct CTDateTime {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FieldGroup {
     #[serde(rename = "@par")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6646,7 +6655,7 @@ pub struct FieldGroup {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRangePr {
     #[serde(rename = "@autoStart")]
     #[serde(
@@ -6689,7 +6698,7 @@ pub struct CTRangePr {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDiscretePr {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6711,7 +6720,7 @@ pub struct CTDiscretePr {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct GroupItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6725,7 +6734,7 @@ pub struct GroupItems {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotCacheRecords {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6753,7 +6762,7 @@ pub struct PivotCacheRecords {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRecord;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPCDKPIs {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6817,7 +6826,7 @@ pub struct CTPCDKPI {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCacheHierarchies {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -6968,7 +6977,7 @@ pub struct CTCacheHierarchy {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFieldsUsage {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7003,7 +7012,7 @@ pub struct CTFieldUsage {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGroupLevels {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7065,7 +7074,7 @@ pub struct CTGroupLevel {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGroups {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7117,7 +7126,7 @@ pub struct CTLevelGroup {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGroupMembers {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7159,7 +7168,7 @@ pub struct CTGroupMember {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTupleCache {
     #[serde(rename = "entries")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7183,7 +7192,7 @@ pub struct CTTupleCache {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTServerFormat {
     #[serde(rename = "@culture")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7200,7 +7209,7 @@ pub struct CTServerFormat {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTServerFormats {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7222,7 +7231,7 @@ pub struct CTServerFormats {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPCDSDTCEntries {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7236,7 +7245,7 @@ pub struct CTPCDSDTCEntries {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTuples {
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7277,7 +7286,7 @@ pub struct CTTuple {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSets {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7338,7 +7347,7 @@ pub struct CTSet {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTQueryCache {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7381,7 +7390,7 @@ pub struct CTQuery {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCalculatedItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7430,7 +7439,7 @@ pub struct CTCalculatedItem {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCalculatedMembers {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7510,6 +7519,51 @@ pub struct CTPivotTableDefinition {
     #[serde(rename = "@dataPosition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub data_position: Option<u32>,
+    #[serde(rename = "@autoFormatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_format_id: Option<u32>,
+    #[serde(rename = "@applyNumberFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_number_formats: Option<bool>,
+    #[serde(rename = "@applyBorderFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_border_formats: Option<bool>,
+    #[serde(rename = "@applyFontFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_font_formats: Option<bool>,
+    #[serde(rename = "@applyPatternFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_pattern_formats: Option<bool>,
+    #[serde(rename = "@applyAlignmentFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_alignment_formats: Option<bool>,
+    #[serde(rename = "@applyWidthHeightFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_width_height_formats: Option<bool>,
     #[serde(rename = "@dataCaption")]
     pub data_caption: XmlString,
     #[serde(rename = "@grandTotalCaption")]
@@ -7933,7 +7987,7 @@ pub struct PivotLocation {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -7955,7 +8009,7 @@ pub struct PivotFields {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotField {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8286,7 +8340,7 @@ pub struct PivotField {
 
 pub type CTAutoSortScope = Box<PivotArea>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8308,7 +8362,7 @@ pub struct PivotItems {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotItem {
     #[serde(rename = "@n")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8384,7 +8438,7 @@ pub struct PivotItem {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PageFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8439,7 +8493,7 @@ pub struct PageField {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DataFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8500,7 +8554,7 @@ pub struct DataField {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRowItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8522,7 +8576,7 @@ pub struct CTRowItems {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8544,7 +8598,7 @@ pub struct CTColItems {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTI {
     #[serde(rename = "@t")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8572,7 +8626,7 @@ pub struct CTI {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTX {
     #[serde(rename = "@v")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8586,7 +8640,7 @@ pub struct CTX {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RowFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8608,7 +8662,7 @@ pub struct RowFields {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ColFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8643,7 +8697,7 @@ pub struct CTField {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFormats {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8692,7 +8746,7 @@ pub struct CTFormat {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTConditionalFormats {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8743,7 +8797,7 @@ pub struct CTConditionalFormat {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotAreas {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8765,7 +8819,7 @@ pub struct PivotAreas {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTChartFormats {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8816,7 +8870,7 @@ pub struct CTChartFormat {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPivotHierarchies {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8838,7 +8892,7 @@ pub struct CTPivotHierarchies {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPivotHierarchy {
     #[serde(rename = "@outline")]
     #[serde(
@@ -8936,7 +8990,7 @@ pub struct CTPivotHierarchy {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRowHierarchiesUsage {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8958,7 +9012,7 @@ pub struct CTRowHierarchiesUsage {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColHierarchiesUsage {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8993,7 +9047,7 @@ pub struct CTHierarchyUsage {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMemberProperties {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9064,7 +9118,7 @@ pub struct CTMemberProperty {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMembers {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9102,7 +9156,7 @@ pub struct CTMember {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDimensions {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9148,7 +9202,7 @@ pub struct CTPivotDimension {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMeasureGroups {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9170,7 +9224,7 @@ pub struct CTMeasureGroups {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMeasureDimensionMaps {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9207,7 +9261,7 @@ pub struct CTMeasureGroup {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMeasureDimensionMap {
     #[serde(rename = "@measureGroup")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9224,7 +9278,7 @@ pub struct CTMeasureDimensionMap {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPivotTableStyle {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9273,7 +9327,7 @@ pub struct CTPivotTableStyle {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotFilters {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9346,7 +9400,7 @@ pub struct PivotFilter {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotArea {
     #[serde(rename = "@field")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9432,7 +9486,7 @@ pub struct PivotArea {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPivotAreaReferences {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9454,7 +9508,7 @@ pub struct CTPivotAreaReferences {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPivotAreaReference {
     #[serde(rename = "@field")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9695,6 +9749,51 @@ pub struct QueryTable {
     pub intermediate: Option<bool>,
     #[serde(rename = "@connectionId")]
     pub connection_id: u32,
+    #[serde(rename = "@autoFormatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_format_id: Option<u32>,
+    #[serde(rename = "@applyNumberFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_number_formats: Option<bool>,
+    #[serde(rename = "@applyBorderFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_border_formats: Option<bool>,
+    #[serde(rename = "@applyFontFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_font_formats: Option<bool>,
+    #[serde(rename = "@applyPatternFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_pattern_formats: Option<bool>,
+    #[serde(rename = "@applyAlignmentFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_alignment_formats: Option<bool>,
+    #[serde(rename = "@applyWidthHeightFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_width_height_formats: Option<bool>,
     #[serde(rename = "queryTableRefresh")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub query_table_refresh: Option<Box<QueryTableRefresh>>,
@@ -9775,7 +9874,7 @@ pub struct QueryTableRefresh {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct QueryTableDeletedFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9810,7 +9909,7 @@ pub struct CTDeletedField {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct QueryTableFields {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -9889,7 +9988,7 @@ pub struct QueryTableField {
 
 pub type SmlSst = Box<SharedStrings>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sst")]
 pub struct SharedStrings {
     #[serde(rename = "@count")]
@@ -9959,7 +10058,7 @@ pub struct RichTextElement {
 #[serde(rename = "rPr")]
 pub struct RichTextRunProperties;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "is")]
 pub struct RichString {
     #[serde(rename = "t")]
@@ -10154,7 +10253,7 @@ pub struct RevisionHeader {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSheetIdMap {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10189,7 +10288,7 @@ pub struct CTSheetId {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ReviewedRevisions {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10287,6 +10386,22 @@ pub struct UndoInfo {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionRowColumn {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@eol")]
@@ -10318,6 +10433,22 @@ pub struct RevisionRowColumn {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionMove {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@source")]
@@ -10353,6 +10484,22 @@ pub struct RevisionCustomView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionSheetRename {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@oldName")]
@@ -10378,6 +10525,22 @@ pub struct RevisionSheetRename {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionInsertSheet {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
     #[serde(rename = "@name")]
@@ -10395,6 +10558,22 @@ pub struct RevisionInsertSheet {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionCellChange {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sId")]
     pub s_id: u32,
     #[serde(rename = "@odxf")]
@@ -10538,6 +10717,51 @@ pub struct RevisionFormatting {
 pub struct RevisionAutoFormatting {
     #[serde(rename = "@sheetId")]
     pub sheet_id: u32,
+    #[serde(rename = "@autoFormatId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_format_id: Option<u32>,
+    #[serde(rename = "@applyNumberFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_number_formats: Option<bool>,
+    #[serde(rename = "@applyBorderFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_border_formats: Option<bool>,
+    #[serde(rename = "@applyFontFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_font_formats: Option<bool>,
+    #[serde(rename = "@applyPatternFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_pattern_formats: Option<bool>,
+    #[serde(rename = "@applyAlignmentFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_alignment_formats: Option<bool>,
+    #[serde(rename = "@applyWidthHeightFormats")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub apply_width_height_formats: Option<bool>,
     #[serde(rename = "@ref")]
     pub reference: Reference,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10607,6 +10831,22 @@ pub struct RevisionComment {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionDefinedName {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@localSheetId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub local_sheet_id: Option<u32>,
@@ -10714,6 +10954,22 @@ pub struct RevisionDefinedName {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RevisionConflict {
+    #[serde(rename = "@rId")]
+    pub r_id: u32,
+    #[serde(rename = "@ua")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ua: Option<bool>,
+    #[serde(rename = "@ra")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ra: Option<bool>,
     #[serde(rename = "@sheetId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_id: Option<u32>,
@@ -10745,7 +11001,7 @@ pub struct RevisionQueryTableField {
 
 pub type SmlUsers = Box<Users>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Users {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10889,7 +11145,7 @@ pub struct CTMacrosheet {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDialogsheet {
     #[serde(rename = "sheetPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11107,7 +11363,7 @@ pub struct Worksheet {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheetData")]
 pub struct SheetData {
     #[serde(rename = "row")]
@@ -11120,7 +11376,7 @@ pub struct SheetData {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SheetCalcProperties {
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(
@@ -11192,7 +11448,7 @@ pub struct SheetFormat {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "cols")]
 pub struct Columns {
     #[serde(rename = "col")]
@@ -11275,7 +11531,7 @@ pub struct Column {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "row")]
 pub struct Row {
     #[serde(rename = "@r")]
@@ -11372,7 +11628,7 @@ pub struct Row {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "c")]
 pub struct Cell {
     #[serde(rename = "@r")]
@@ -11427,7 +11683,7 @@ pub struct Cell {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheetPr")]
 pub struct SheetProperties {
     #[serde(rename = "@syncHorizontal")]
@@ -11522,7 +11778,7 @@ pub struct SheetDimension {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheetViews")]
 pub struct SheetViews {
     #[serde(rename = "sheetView")]
@@ -11683,7 +11939,7 @@ pub struct SheetView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "pane")]
 pub struct Pane {
     #[cfg(feature = "sml-structure")]
@@ -11797,7 +12053,7 @@ pub struct CTPivotSelection {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "selection")]
 pub struct Selection {
     #[serde(rename = "@pane")]
@@ -11821,7 +12077,7 @@ pub struct Selection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "rowBreaks")]
 pub struct PageBreaks {
     #[serde(rename = "@count")]
@@ -11847,7 +12103,7 @@ pub struct PageBreaks {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PageBreak {
     #[serde(rename = "@id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11881,7 +12137,7 @@ pub struct PageBreak {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct OutlineProperties {
     #[serde(rename = "@applyStyles")]
     #[serde(
@@ -11920,7 +12176,7 @@ pub struct OutlineProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PageSetupProperties {
     #[serde(rename = "@autoPageBreaks")]
     #[serde(
@@ -11945,7 +12201,7 @@ pub struct PageSetupProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDataConsolidate {
     #[serde(rename = "@function")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11995,7 +12251,7 @@ pub struct CTDataConsolidate {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDataRefs {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12017,7 +12273,7 @@ pub struct CTDataRefs {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDataRef {
     #[serde(rename = "@ref")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12037,7 +12293,7 @@ pub struct CTDataRef {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "mergeCells")]
 pub struct MergedCells {
     #[serde(rename = "@count")]
@@ -12074,7 +12330,7 @@ pub struct MergedCell {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SmartTags {
     #[serde(rename = "cellSmartTags")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -12163,7 +12419,7 @@ pub struct Drawing;
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct LegacyDrawing;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DrawingHeaderFooter {
     #[serde(rename = "@lho")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12228,7 +12484,7 @@ pub struct DrawingHeaderFooter {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CustomSheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -12401,7 +12657,7 @@ pub struct CustomSheetView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "dataValidations")]
 pub struct DataValidations {
     #[serde(rename = "@disablePrompts")]
@@ -12529,7 +12785,7 @@ pub struct DataValidation {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "conditionalFormatting")]
 pub struct ConditionalFormatting {
     #[cfg(feature = "sml-pivot")]
@@ -12674,7 +12930,7 @@ pub struct ConditionalRule {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "hyperlinks")]
 pub struct Hyperlinks {
     #[serde(rename = "hyperlink")]
@@ -12714,7 +12970,7 @@ pub struct Hyperlink {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "f")]
 pub struct CellFormula {
     #[serde(rename = "$text")]
@@ -12807,7 +13063,7 @@ pub struct CellFormula {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "colorScale")]
 pub struct ColorScale {
     #[serde(rename = "cfvo")]
@@ -12858,7 +13114,7 @@ pub struct DataBar {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "iconSet")]
 pub struct IconSet {
     #[serde(rename = "@iconSet")]
@@ -12964,7 +13220,7 @@ pub struct PageMargins {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "printOptions")]
 pub struct PrintOptions {
     #[serde(rename = "@horizontalCentered")]
@@ -13011,7 +13267,7 @@ pub struct PrintOptions {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "pageSetup")]
 pub struct PageSetup {
     #[cfg(feature = "sml-layout")]
@@ -13111,7 +13367,7 @@ pub struct PageSetup {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "headerFooter")]
 pub struct HeaderFooter {
     #[cfg(feature = "sml-layout")]
@@ -13184,7 +13440,7 @@ pub struct HeaderFooter {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Scenarios {
     #[serde(rename = "@current")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13212,7 +13468,7 @@ pub struct Scenarios {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheetProtection")]
 pub struct SheetProtection {
     #[serde(rename = "@password")]
@@ -13351,7 +13607,7 @@ pub struct SheetProtection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "protectedRanges")]
 pub struct ProtectedRanges {
     #[serde(rename = "protectedRange")]
@@ -13474,7 +13730,7 @@ pub struct InputCells {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CellWatches {
     #[serde(rename = "cellWatch")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13548,7 +13804,7 @@ pub struct Chartsheet {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ChartsheetProperties {
     #[serde(rename = "@published")]
     #[serde(
@@ -13577,7 +13833,7 @@ pub struct ChartsheetProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ChartsheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13630,7 +13886,7 @@ pub struct ChartsheetView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ChartsheetProtection {
     #[serde(rename = "@password")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13670,7 +13926,7 @@ pub struct ChartsheetProtection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ChartsheetPageSetup {
     #[serde(rename = "@paperSize")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13733,7 +13989,7 @@ pub struct ChartsheetPageSetup {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CustomChartsheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13785,7 +14041,7 @@ pub struct CustomChartsheetView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCustomProperties {
     #[serde(rename = "customPr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13810,7 +14066,7 @@ pub struct CTCustomProperty {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct OleObjects {
     #[serde(rename = "oleObject")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -13949,7 +14205,7 @@ pub struct ObjectProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WebPublishItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14006,7 +14262,7 @@ pub struct WebPublishItem {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Controls {
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -14138,7 +14394,7 @@ pub struct CTControlPr {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct IgnoredErrors {
     #[serde(rename = "ignoredError")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -14229,7 +14485,7 @@ pub struct IgnoredError {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "tableParts")]
 pub struct TableParts {
     #[serde(rename = "@count")]
@@ -14258,7 +14514,7 @@ pub struct TablePart;
 
 pub type SmlMetadata = Box<Metadata>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Metadata {
     #[serde(rename = "metadataTypes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14288,7 +14544,7 @@ pub struct Metadata {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MetadataTypes {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14507,7 +14763,7 @@ pub struct MetadataType {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MetadataBlocks {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14529,7 +14785,7 @@ pub struct MetadataBlocks {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MetadataBlock {
     #[serde(rename = "rc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -14583,7 +14839,7 @@ pub struct CTFutureMetadata {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFutureMetadataBlock {
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14595,7 +14851,7 @@ pub struct CTFutureMetadataBlock {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMdxMetadata {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14632,7 +14888,7 @@ pub struct CTMdx {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTMdxTuple {
     #[serde(rename = "@c")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14776,7 +15032,7 @@ pub struct CTMetadataStringIndex {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MetadataStrings {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -14800,7 +15056,7 @@ pub struct MetadataStrings {
 
 pub type SmlSingleXmlCells = Box<SingleXmlCells>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SingleXmlCells {
     #[serde(rename = "singleXmlCell")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -14892,7 +15148,7 @@ pub struct XmlProperties {
 
 pub type SmlStyleSheet = Box<Stylesheet>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "styleSheet")]
 pub struct Stylesheet {
     #[cfg(feature = "sml-styling")]
@@ -14946,7 +15202,7 @@ pub struct Stylesheet {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "alignment")]
 pub struct CellAlignment {
     #[serde(rename = "@horizontal")]
@@ -14997,7 +15253,7 @@ pub struct CellAlignment {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "borders")]
 pub struct Borders {
     #[serde(rename = "@count")]
@@ -15020,7 +15276,7 @@ pub struct Borders {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "border")]
 pub struct Border {
     #[cfg(feature = "sml-styling")]
@@ -15095,7 +15351,7 @@ pub struct Border {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "left")]
 pub struct BorderProperties {
     #[serde(rename = "@style")]
@@ -15118,7 +15374,7 @@ pub struct BorderProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "protection")]
 pub struct CellProtection {
     #[serde(rename = "@locked")]
@@ -15144,7 +15400,7 @@ pub struct CellProtection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "fonts")]
 pub struct Fonts {
     #[serde(rename = "@count")]
@@ -15167,7 +15423,7 @@ pub struct Fonts {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "fills")]
 pub struct Fills {
     #[serde(rename = "@count")]
@@ -15194,7 +15450,7 @@ pub struct Fills {
 #[serde(rename = "fill")]
 pub struct Fill;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "patternFill")]
 pub struct PatternFill {
     #[serde(rename = "@patternType")]
@@ -15220,7 +15476,7 @@ pub struct PatternFill {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "color")]
 pub struct Color {
     #[serde(rename = "@auto")]
@@ -15251,7 +15507,7 @@ pub struct Color {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "gradientFill")]
 pub struct GradientFill {
     #[serde(rename = "@type")]
@@ -15310,7 +15566,7 @@ pub struct GradientStop {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "numFmts")]
 pub struct NumberFormats {
     #[serde(rename = "@count")]
@@ -15349,7 +15605,7 @@ pub struct NumberFormat {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "cellStyleXfs")]
 pub struct CellStyleFormats {
     #[serde(rename = "@count")]
@@ -15372,7 +15628,7 @@ pub struct CellStyleFormats {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "cellXfs")]
 pub struct CellFormats {
     #[serde(rename = "@count")]
@@ -15395,7 +15651,7 @@ pub struct CellFormats {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "xf")]
 pub struct Format {
     #[cfg(feature = "sml-styling")]
@@ -15508,7 +15764,7 @@ pub struct Format {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "cellStyles")]
 pub struct CellStyles {
     #[serde(rename = "@count")]
@@ -15576,7 +15832,7 @@ pub struct CellStyle {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "dxfs")]
 pub struct DifferentialFormats {
     #[serde(rename = "@count")]
@@ -15599,7 +15855,7 @@ pub struct DifferentialFormats {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "dxf")]
 pub struct DifferentialFormat {
     #[serde(rename = "font")]
@@ -15630,7 +15886,7 @@ pub struct DifferentialFormat {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "colors")]
 pub struct Colors {
     #[serde(rename = "indexedColors")]
@@ -15646,7 +15902,7 @@ pub struct Colors {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct IndexedColors {
     #[serde(rename = "rgbColor")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -15658,7 +15914,7 @@ pub struct IndexedColors {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MostRecentColors {
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -15670,7 +15926,7 @@ pub struct MostRecentColors {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct RgbColor {
     #[serde(rename = "@rgb")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15684,7 +15940,7 @@ pub struct RgbColor {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableStyles {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15769,7 +16025,7 @@ pub struct TableStyleElement {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct BooleanProperty {
     #[serde(rename = "@val")]
     #[serde(
@@ -15852,7 +16108,7 @@ pub struct FontSchemeProperty {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct UnderlineProperty {
     #[serde(rename = "@val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15883,7 +16139,7 @@ pub struct FontFamily {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SmlAGAutoFormat {
     #[serde(rename = "@autoFormatId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15941,7 +16197,7 @@ pub struct SmlAGAutoFormat {
 
 pub type SmlExternalLink = Box<ExternalLink>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalLink {
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15953,7 +16209,7 @@ pub struct ExternalLink {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalBook {
     #[serde(rename = "sheetNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15971,7 +16227,7 @@ pub struct ExternalBook {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTExternalSheetNames {
     #[serde(rename = "sheetName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -15983,7 +16239,7 @@ pub struct CTExternalSheetNames {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTExternalSheetName {
     #[serde(rename = "@val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -15997,7 +16253,7 @@ pub struct CTExternalSheetName {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTExternalDefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16028,7 +16284,7 @@ pub struct CTExternalDefinedName {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalSheetDataSet {
     #[serde(rename = "sheetData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16089,7 +16345,7 @@ pub struct ExternalRow {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalCell {
     #[serde(rename = "@r")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16140,7 +16396,7 @@ pub struct DdeLink {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DdeItems {
     #[serde(rename = "ddeItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16152,7 +16408,7 @@ pub struct DdeItems {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DdeItem {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16195,7 +16451,7 @@ pub struct DdeItem {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDdeValues {
     #[serde(rename = "@rows")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16262,7 +16518,7 @@ pub struct OleLink {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct OleItems {
     #[serde(rename = "oleItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16447,7 +16703,7 @@ pub struct Table {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableStyleInfo {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16489,7 +16745,7 @@ pub struct TableStyleInfo {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "tableColumns")]
 pub struct TableColumns {
     #[serde(rename = "@count")]
@@ -16575,7 +16831,7 @@ pub struct TableColumn {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableFormula {
     #[serde(rename = "$text")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16635,7 +16891,7 @@ pub struct XmlColumnProperties {
 
 pub type SmlVolTypes = Box<CTVolTypes>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTVolTypes {
     #[serde(rename = "volType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -16825,7 +17081,7 @@ pub struct Workbook {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FileVersion {
     #[serde(rename = "@appName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -16851,7 +17107,7 @@ pub struct FileVersion {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "bookViews")]
 pub struct BookViews {
     #[serde(rename = "workbookView")]
@@ -16864,7 +17120,7 @@ pub struct BookViews {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "workbookView")]
 pub struct BookView {
     #[serde(rename = "@visibility")]
@@ -16943,7 +17199,7 @@ pub struct BookView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -17093,7 +17349,7 @@ pub struct CustomWorkbookView {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheets")]
 pub struct Sheets {
     #[serde(rename = "sheet")]
@@ -17126,7 +17382,7 @@ pub struct Sheet {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "workbookPr")]
 pub struct WorkbookProperties {
     #[serde(rename = "@date1904")]
@@ -17248,7 +17504,7 @@ pub struct WorkbookProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagPr {
     #[serde(rename = "@embed")]
     #[serde(
@@ -17269,7 +17525,7 @@ pub struct CTSmartTagPr {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagTypes {
     #[serde(rename = "smartTagType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -17281,7 +17537,7 @@ pub struct CTSmartTagTypes {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagType {
     #[serde(rename = "@namespaceUri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -17301,7 +17557,7 @@ pub struct CTSmartTagType {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FileRecoveryProperties {
     #[serde(rename = "@autoRecover")]
     #[serde(
@@ -17340,7 +17596,7 @@ pub struct FileRecoveryProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "calcPr")]
 pub struct CalculationProperties {
     #[serde(rename = "@calcId")]
@@ -17419,7 +17675,7 @@ pub struct CalculationProperties {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "definedNames")]
 pub struct DefinedNames {
     #[serde(rename = "definedName")]
@@ -17531,7 +17787,7 @@ pub struct DefinedName {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -17549,7 +17805,7 @@ pub struct ExternalReference;
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SheetBackgroundPicture;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotCaches {
     #[serde(rename = "pivotCache")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -17574,7 +17830,7 @@ pub struct CTPivotCache {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FileSharing {
     #[serde(rename = "@readOnlyRecommended")]
     #[serde(
@@ -17623,7 +17879,7 @@ pub struct CTOleSize {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "workbookProtection")]
 pub struct WorkbookProtection {
     #[serde(rename = "@workbookPassword")]
@@ -17692,7 +17948,7 @@ pub struct WorkbookProtection {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WebPublishing {
     #[serde(rename = "@css")]
     #[serde(
@@ -17750,7 +18006,7 @@ pub struct WebPublishing {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFunctionGroups {
     #[serde(rename = "@builtInGroupCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -17772,7 +18028,7 @@ pub struct CTFunctionGroups {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFunctionGroup {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -17786,7 +18042,7 @@ pub struct CTFunctionGroup {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWebPublishObjects {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]

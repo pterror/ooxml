@@ -396,7 +396,7 @@ impl<'a> ParserGenerator<'a> {
             "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
         )
         .unwrap();
-        writeln!(code, "        let tag = start_tag.name();").unwrap();
+        writeln!(code, "        let tag = start_tag.local_name();").unwrap();
         writeln!(code, "        match tag.as_ref() {{").unwrap();
 
         for (xml_name, inner_type, needs_box) in &element_variants {
@@ -430,7 +430,7 @@ impl<'a> ParserGenerator<'a> {
         writeln!(code, "            _ => Err(ParseError::UnexpectedElement(").unwrap();
         writeln!(
             code,
-            "                String::from_utf8_lossy(tag.as_ref()).into_owned()"
+            "                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()"
         )
         .unwrap();
         writeln!(code, "            )),").unwrap();
@@ -562,7 +562,7 @@ impl<'a> ParserGenerator<'a> {
                 "            let val = String::from_utf8_lossy(&attr.value);"
             )
             .unwrap();
-            writeln!(code, "            match attr.key.as_ref() {{").unwrap();
+            writeln!(code, "            match attr.key.local_name().as_ref() {{").unwrap();
             for field in &attr_fields {
                 let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
                 let base_name = base_name.trim_start_matches('_');
@@ -582,7 +582,7 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                unknown => {{").unwrap();
             writeln!(
                 code,
-                "                    let key = String::from_utf8_lossy(unknown).into_owned();"
+                "                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();"
             )
             .unwrap();
             writeln!(
@@ -614,7 +614,11 @@ impl<'a> ParserGenerator<'a> {
             )
             .unwrap();
             writeln!(code, "                    Event::Start(e) => {{").unwrap();
-            writeln!(code, "                        match e.name().as_ref() {{").unwrap();
+            writeln!(
+                code,
+                "                        match e.local_name().as_ref() {{"
+            )
+            .unwrap();
 
             // Track matched element names to avoid duplicate match arms
             let mut matched_names = std::collections::HashSet::new();
@@ -726,7 +730,11 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                        }}").unwrap();
             writeln!(code, "                    }}").unwrap();
             writeln!(code, "                    Event::Empty(e) => {{").unwrap();
-            writeln!(code, "                        match e.name().as_ref() {{").unwrap();
+            writeln!(
+                code,
+                "                        match e.local_name().as_ref() {{"
+            )
+            .unwrap();
 
             // Track matched element names to avoid duplicate match arms
             let mut matched_names_empty = std::collections::HashSet::new();
