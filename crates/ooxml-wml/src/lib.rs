@@ -27,6 +27,7 @@
 
 pub mod document;
 pub mod error;
+pub mod ext;
 pub mod styles;
 pub mod writer;
 
