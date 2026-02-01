@@ -1,4 +1,6 @@
-use ooxml_codegen::{CodegenConfig, FeatureMappings, NameMappings, Schema, generate, parse_rnc};
+use ooxml_codegen::{
+    CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers, parse_rnc,
+};
 use std::fs;
 use std::path::Path;
 
@@ -120,4 +122,16 @@ fn main() {
         "Generated {} bytes to src/generated.rs",
         dest_path.metadata().map(|m| m.len()).unwrap_or(0)
     );
+
+    // Generate event-based parsers
+    // Enable with OOXML_GENERATE_PARSERS=1
+    if std::env::var("OOXML_GENERATE_PARSERS").is_ok() {
+        let parser_dest = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/generated_parsers.rs");
+        let parser_code = generate_parsers(&combined_schema, &config);
+        fs::write(&parser_dest, parser_code).expect("failed to write generated parsers");
+        eprintln!(
+            "Generated {} bytes to src/generated_parsers.rs",
+            parser_dest.metadata().map(|m| m.len()).unwrap_or(0)
+        );
+    }
 }
