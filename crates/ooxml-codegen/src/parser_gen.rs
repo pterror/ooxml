@@ -203,6 +203,7 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
         // Add read_text_content helper for reading element text
+        writeln!(self.output, "#[allow(dead_code)]").unwrap();
         writeln!(
             self.output,
             "/// Read the text content of an element until its end tag."
@@ -237,6 +238,7 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
         // Add decode_hex helper for hexBinary types
+        writeln!(self.output, "#[allow(dead_code)]").unwrap();
         writeln!(self.output, "/// Decode a hex string to bytes.").unwrap();
         writeln!(self.output, "fn decode_hex(s: &str) -> Option<Vec<u8>> {{").unwrap();
         writeln!(self.output, "    let s = s.trim();").unwrap();
@@ -279,8 +281,89 @@ impl<'a> ParserGenerator<'a> {
     fn is_direct_element_variant(pattern: &Pattern) -> bool {
         match pattern {
             Pattern::Element { .. } => true,
-            Pattern::Optional(inner) => Self::is_direct_element_variant(inner),
+            Pattern::Optional(inner) | Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
+                Self::is_direct_element_variant(inner)
+            }
             _ => false,
+        }
+    }
+
+    fn eg_ref_to_field_name(&self, name: &str) -> String {
+        let spec_name = strip_namespace_prefix(name);
+        let short = spec_name.strip_prefix("EG_").unwrap_or(spec_name);
+        to_snake_case(short)
+    }
+
+    fn is_eg_content_field(&self, field: &Field) -> bool {
+        if let Pattern::Ref(name) = &field.pattern
+            && name.contains("_EG_")
+            && let Some(pattern) = self.definitions.get(name.as_str())
+        {
+            return self.is_element_choice(pattern);
+        }
+        false
+    }
+
+    /// Recursively collect all element XML local names from an EG_* definition.
+    fn collect_element_variant_names(
+        &self,
+        pattern: &Pattern,
+        names: &mut Vec<String>,
+        visited: &mut std::collections::HashSet<String>,
+    ) {
+        match pattern {
+            Pattern::Element { name, .. } => {
+                names.push(name.local.clone());
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner) => {
+                self.collect_element_variant_names(inner, names, visited);
+            }
+            Pattern::Ref(name) if name.contains("_EG_") && visited.insert(name.clone()) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.collect_element_variant_names(def_pattern, names, visited);
+                }
+            }
+            Pattern::Choice(items) | Pattern::Sequence(items) | Pattern::Interleave(items) => {
+                for item in items {
+                    self.collect_element_variant_names(item, names, visited);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Recursively collect element variants with their types for EG enum parsers.
+    fn collect_eg_variants(
+        &self,
+        pattern: &Pattern,
+        variants: &mut Vec<(String, String, bool)>,
+        visited: &mut std::collections::HashSet<String>,
+    ) {
+        match pattern {
+            Pattern::Element { name, pattern } => {
+                let (inner_type, needs_box) = self.pattern_to_rust_type(pattern);
+                variants.push((name.local.clone(), inner_type, needs_box));
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner) => {
+                self.collect_eg_variants(inner, variants, visited);
+            }
+            Pattern::Ref(name) if name.contains("_EG_") && visited.insert(name.clone()) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.collect_eg_variants(def_pattern, variants, visited);
+                }
+            }
+            Pattern::Choice(items) | Pattern::Sequence(items) | Pattern::Interleave(items) => {
+                for item in items {
+                    self.collect_eg_variants(item, variants, visited);
+                }
+            }
+            _ => {}
         }
     }
 
@@ -291,11 +374,16 @@ impl<'a> ParserGenerator<'a> {
             return None;
         };
 
-        // Collect element variants
-        let element_variants: Vec<_> = variants
-            .iter()
-            .filter_map(|v| self.extract_element_variant(v))
-            .collect();
+        // Collect element variants recursively (follows nested EG_* refs)
+        let mut element_variants = Vec::new();
+        let mut visited = std::collections::HashSet::new();
+        visited.insert(def.name.clone());
+        for v in variants {
+            self.collect_eg_variants(v, &mut element_variants, &mut visited);
+        }
+        // Dedup by xml name
+        let mut seen = std::collections::HashSet::new();
+        element_variants.retain(|(name, _, _)| seen.insert(name.clone()));
 
         if element_variants.is_empty() {
             return None;
@@ -351,20 +439,6 @@ impl<'a> ParserGenerator<'a> {
         writeln!(code, "}}").unwrap();
 
         Some(code)
-    }
-
-    fn extract_element_variant(&self, pattern: &Pattern) -> Option<(String, String, bool)> {
-        match pattern {
-            Pattern::Element { name, pattern } => {
-                let (inner_type, needs_box) = self.pattern_to_rust_type(pattern);
-                Some((name.local.clone(), inner_type, needs_box))
-            }
-            Pattern::Optional(inner) => self.extract_element_variant(inner),
-            Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
-                self.extract_element_variant(inner)
-            }
-            _ => None,
-        }
     }
 
     fn gen_struct_parser(&self, def: &crate::ast::Definition) -> Option<String> {
@@ -542,6 +616,8 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                    Event::Start(e) => {{").unwrap();
             writeln!(code, "                        match e.name().as_ref() {{").unwrap();
 
+            // Track matched element names to avoid duplicate match arms
+            let mut matched_names = std::collections::HashSet::new();
             for field in &elem_fields {
                 let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
                 let base_name = base_name.trim_start_matches('_');
@@ -557,12 +633,42 @@ impl<'a> ParserGenerator<'a> {
                     )
                     .unwrap();
                 }
-                writeln!(
-                    code,
-                    "                            b\"{}\" => {{",
-                    field.xml_name
-                )
-                .unwrap();
+                if self.is_eg_content_field(field) {
+                    // EG content field: match all variant element names (dedup across fields)
+                    let mut variant_names = Vec::new();
+                    let mut visited = std::collections::HashSet::new();
+                    if let Some(def_pattern) = self.definitions.get(field.xml_name.as_str()) {
+                        self.collect_element_variant_names(
+                            def_pattern,
+                            &mut variant_names,
+                            &mut visited,
+                        );
+                    }
+                    variant_names.retain(|n| matched_names.insert(n.clone()));
+                    if !variant_names.is_empty() {
+                        let arms: Vec<_> = variant_names
+                            .iter()
+                            .map(|n| format!("b\"{}\"", n))
+                            .collect();
+                        writeln!(
+                            code,
+                            "                            {} => {{",
+                            arms.join(" | ")
+                        )
+                        .unwrap();
+                    } else {
+                        // All variants already matched by earlier field — skip
+                        continue;
+                    }
+                } else {
+                    matched_names.insert(field.xml_name.clone());
+                    writeln!(
+                        code,
+                        "                            b\"{}\" => {{",
+                        field.xml_name
+                    )
+                    .unwrap();
+                }
                 if field.is_vec {
                     writeln!(
                         code,
@@ -622,6 +728,8 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                    Event::Empty(e) => {{").unwrap();
             writeln!(code, "                        match e.name().as_ref() {{").unwrap();
 
+            // Track matched element names to avoid duplicate match arms
+            let mut matched_names_empty = std::collections::HashSet::new();
             for field in &elem_fields {
                 let base_name = field.name.strip_prefix("r#").unwrap_or(&field.name);
                 let base_name = base_name.trim_start_matches('_');
@@ -637,12 +745,42 @@ impl<'a> ParserGenerator<'a> {
                     )
                     .unwrap();
                 }
-                writeln!(
-                    code,
-                    "                            b\"{}\" => {{",
-                    field.xml_name
-                )
-                .unwrap();
+                if self.is_eg_content_field(field) {
+                    // EG content field: match all variant element names (dedup across fields)
+                    let mut variant_names = Vec::new();
+                    let mut visited = std::collections::HashSet::new();
+                    if let Some(def_pattern) = self.definitions.get(field.xml_name.as_str()) {
+                        self.collect_element_variant_names(
+                            def_pattern,
+                            &mut variant_names,
+                            &mut visited,
+                        );
+                    }
+                    variant_names.retain(|n| matched_names_empty.insert(n.clone()));
+                    if !variant_names.is_empty() {
+                        let arms: Vec<_> = variant_names
+                            .iter()
+                            .map(|n| format!("b\"{}\"", n))
+                            .collect();
+                        writeln!(
+                            code,
+                            "                            {} => {{",
+                            arms.join(" | ")
+                        )
+                        .unwrap();
+                    } else {
+                        // All variants already matched by earlier field — skip
+                        continue;
+                    }
+                } else {
+                    matched_names_empty.insert(field.xml_name.clone());
+                    writeln!(
+                        code,
+                        "                            b\"{}\" => {{",
+                        field.xml_name
+                    )
+                    .unwrap();
+                }
                 if field.is_vec {
                     writeln!(
                         code,
@@ -867,7 +1005,23 @@ impl<'a> ParserGenerator<'a> {
                     });
                 }
                 Pattern::Ref(name) if name.contains("_EG_") => {
-                    let _ = name;
+                    if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                        if self.is_element_choice(def_pattern) {
+                            // Element choice → Vec<Box<EGType>> field
+                            fields.push(Field {
+                                name: self.eg_ref_to_field_name(name),
+                                xml_name: name.clone(),
+                                pattern: Pattern::Ref(name.clone()),
+                                is_optional: false,
+                                is_attribute: false,
+                                is_vec: true,
+                                is_text_content: false,
+                            });
+                        } else {
+                            // Struct-like → inline fields
+                            self.collect_fields(def_pattern, fields, true);
+                        }
+                    }
                 }
                 Pattern::Choice(_) | Pattern::Ref(_) => {
                     self.collect_fields(inner, fields, false);
@@ -878,25 +1032,43 @@ impl<'a> ParserGenerator<'a> {
                 self.collect_fields(inner, fields, is_optional);
             }
             Pattern::Ref(name) => {
-                // Check if this is a reference to a simple type (text content)
-                if let Some(pattern) = self.definitions.get(name.as_str())
-                    && self.is_string_type(pattern)
-                {
-                    // This is text content - always optional since elements
-                    // can be self-closing (e.g. shared formula refs: <f t="shared" si="0"/>)
-                    fields.push(Field {
-                        name: "text".to_string(),
-                        xml_name: "$text".to_string(),
-                        pattern: Pattern::Datatype {
-                            library: "xsd".to_string(),
-                            name: "string".to_string(),
-                            params: vec![],
-                        },
-                        is_optional: true,
-                        is_attribute: false,
-                        is_vec: false,
-                        is_text_content: true,
-                    });
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    if name.contains("_EG_") {
+                        if self.is_element_choice(def_pattern) {
+                            // Element choice → content field (Optional or Vec depending on context)
+                            fields.push(Field {
+                                name: self.eg_ref_to_field_name(name),
+                                xml_name: name.clone(),
+                                pattern: Pattern::Ref(name.clone()),
+                                is_optional,
+                                is_attribute: false,
+                                is_vec: false,
+                                is_text_content: false,
+                            });
+                        } else {
+                            // Struct-like → inline fields
+                            self.collect_fields(def_pattern, fields, is_optional);
+                        }
+                    } else if name.contains("_AG_") {
+                        // Attribute group → inline attribute fields
+                        self.collect_fields(def_pattern, fields, is_optional);
+                    } else if self.is_string_type(def_pattern) {
+                        // This is text content - always optional since elements
+                        // can be self-closing (e.g. shared formula refs: <f t="shared" si="0"/>)
+                        fields.push(Field {
+                            name: "text".to_string(),
+                            xml_name: "$text".to_string(),
+                            pattern: Pattern::Datatype {
+                                library: "xsd".to_string(),
+                                name: "string".to_string(),
+                                params: vec![],
+                            },
+                            is_optional: true,
+                            is_attribute: false,
+                            is_vec: false,
+                            is_text_content: true,
+                        });
+                    }
                 }
             }
             Pattern::Choice(_) => {}
@@ -1116,6 +1288,11 @@ impl<'a> ParserGenerator<'a> {
     fn get_parse_strategy(&self, pattern: &Pattern) -> ParseStrategy {
         match pattern {
             Pattern::Ref(name) => {
+                // Complex types and element groups always use FromXml
+                if name.contains("_CT_") || name.contains("_EG_") {
+                    return ParseStrategy::FromXml;
+                }
+
                 // Check what this ref resolves to
                 if let Some(def_pattern) = self.definitions.get(name.as_str()) {
                     // If it's a ref to another ref (like CT_Drawing = r_id),
@@ -1128,11 +1305,6 @@ impl<'a> ParserGenerator<'a> {
                         return ParseStrategy::FromXml;
                     }
                     return self.get_parse_strategy(def_pattern);
-                }
-
-                // Complex types (CT_*) and element groups (EG_*) need from_xml
-                if name.contains("_CT_") || name.contains("_EG_") {
-                    return ParseStrategy::FromXml;
                 }
 
                 // Unknown ref - treat as string
@@ -1281,6 +1453,7 @@ fn xsd_to_rust(library: &str, name: &str) -> &'static str {
             "double" => "f64",
             "float" => "f32",
             "decimal" => "f64",
+            "hexBinary" | "base64Binary" => "Vec<u8>",
             _ => "String",
         }
     } else {

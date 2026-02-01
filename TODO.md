@@ -60,12 +60,14 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 
 ### Phase 2: Expand WML feature mappings
 - [ ] **Expand ooxml-features.yaml WML section** - Currently ~20 lines covering 5 types. Use element constants in document.rs:3753-3915 as checklist. Map to feature tags (core, wml-styling, wml-tables, wml-layout, wml-hyperlinks, wml-drawings).
+- [ ] **Add EG_\* name mappings to ooxml-names.yaml** - Current names are mechanical (`EGBlockLevelElts`, `block_level_elts`). Add human-readable mappings (e.g. `BlockContent`, `ParagraphContent`, `rows`). Affects both generated.rs and generated_parsers.rs consistently.
 - [ ] **Regenerate and verify** - Check `#[cfg(feature = "...")]` annotations appear on the right fields.
 
 ### Phase 3: Generate FromXml parsers for WML
-- [ ] **Add `generate_parsers()` to WML build.rs** - Copy SML's pattern (OOXML_GENERATE_PARSERS env var).
-- [ ] **Generate `src/generated_parsers.rs`** - FromXml trait impls using parser_gen.rs infrastructure.
-- [ ] **Add `pub mod generated_parsers` to lib.rs**.
+- [x] **Add `generate_parsers()` to WML build.rs** - Copy SML's pattern (OOXML_GENERATE_PARSERS env var).
+- [x] **Generate `src/generated_parsers.rs`** - FromXml trait impls using parser_gen.rs infrastructure. 24,884 lines of event-based parsers.
+- [x] **Add `pub mod generated_parsers` to lib.rs**.
+- [x] **Fix parser_gen.rs for EG_\*/AG_\* composition** - Handle element group content fields, attribute group inlining, recursive variant flattening, overlapping variant dedup, hexBinary types, CT_Empty strategy.
 - [ ] **Unit tests** - Parse XML snippets with `FromXml::from_xml()` for Document, Paragraph, Run, RunProperties, Table.
 
 ### Phase 4: Extension traits (ext.rs)

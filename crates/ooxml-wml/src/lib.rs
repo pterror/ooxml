@@ -38,6 +38,9 @@ pub mod writer;
 pub mod generated;
 pub use generated as types;
 
+pub mod generated_parsers;
+pub use generated_parsers as parsers;
+
 pub use document::{
     Alignment, AppProperties, BlockContent, Body, BookmarkEnd, BookmarkStart, Cell,
     CommentRangeEnd, CommentRangeStart, CommentReference, CoreProperties, Deletion, Document,
