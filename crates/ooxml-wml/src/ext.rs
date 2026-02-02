@@ -131,6 +131,7 @@ impl BodyExt for types::Body {
             .iter()
             .filter_map(|elt| match elt.as_ref() {
                 types::EGBlockLevelElts::P(p) => Some(p.text()),
+                types::EGBlockLevelElts::Tbl(t) => Some(t.text()),
                 _ => None,
             })
             .collect();

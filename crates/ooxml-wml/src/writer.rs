@@ -1290,11 +1290,17 @@ fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
 /// Serialize a table.
 fn serialize_table(table: &Table, xml: &mut String) {
     xml.push_str("<w:tbl>");
+    // tblPr is required by the schema (ECMA-376 §17.4.38); always emit it.
     if let Some(props) = table.properties() {
         serialize_table_properties(props, xml);
+    } else {
+        xml.push_str("<w:tblPr/>");
     }
+    // tblGrid is required by the schema (ECMA-376 §17.4.48); always emit it.
     if !table.grid_columns().is_empty() {
         serialize_table_grid(table.grid_columns(), xml);
+    } else {
+        xml.push_str("<w:tblGrid/>");
     }
     for row in table.rows() {
         serialize_row(row, xml);
