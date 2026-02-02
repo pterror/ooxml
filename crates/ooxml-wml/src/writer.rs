@@ -1,20 +1,13 @@
 //! Document writing and serialization.
 //!
 //! This module provides functionality for creating new Word documents
-//! and saving existing documents.
+//! using generated types and ToXml serializers.
 
-use crate::document::{
-    AnchoredImage, BlockContent, Body, Border, Cell, CellBorders, CellProperties, CellShading,
-    CellWidth, ContentControl, CustomXml, DocGridType, Drawing, EmbeddedObject, GridColumn,
-    HeaderFooterRef, HeaderFooterType, HeightRule, Hyperlink, InlineImage, NumberingProperties,
-    PageOrientation, Paragraph, ParagraphBorders, ParagraphContent, ParagraphProperties, Row,
-    RowHeight, RowProperties, Run, RunProperties, SectionProperties, TabStop, Table, TableBorders,
-    TableProperties, TableWidth, VerticalMerge, VmlPicture, WrapType,
-};
 use crate::error::Result;
-use crate::styles::Styles;
+use crate::generated_serializers::ToXml;
+use crate::types;
 use ooxml_opc::{PackageWriter, Relationship, Relationships, content_type, rel_type};
-use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlNode};
+use ooxml_xml::{RawXmlElement, RawXmlNode};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};
@@ -30,6 +23,15 @@ pub const NS_WP: &str = "http://schemas.openxmlformats.org/drawingml/2006/wordpr
 pub const NS_A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
 /// Picture namespace.
 pub const NS_PIC: &str = "http://schemas.openxmlformats.org/drawingml/2006/picture";
+
+/// Standard namespace declarations used on root elements.
+const NS_DECLS: &[(&str, &str)] = &[
+    ("xmlns:w", NS_W),
+    ("xmlns:r", NS_R),
+    ("xmlns:wp", NS_WP),
+    ("xmlns:a", NS_A),
+    ("xmlns:pic", NS_PIC),
+];
 
 /// A pending image to be written to the package.
 #[derive(Clone)]
@@ -81,11 +83,63 @@ pub struct PendingNumbering {
     pub list_type: ListType,
 }
 
+/// Type of header or footer.
+///
+/// ECMA-376 Part 1, Section 17.18.36 (ST_HdrFtr).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum HeaderFooterType {
+    /// Default header/footer used on most pages.
+    #[default]
+    Default,
+    /// Header/footer for the first page only.
+    First,
+    /// Header/footer for even pages (when different odd/even is enabled).
+    Even,
+}
+
+impl HeaderFooterType {
+    /// Parse from the `w:type` attribute value.
+    pub fn parse(s: &str) -> Self {
+        match s {
+            "first" => Self::First,
+            "even" => Self::Even,
+            _ => Self::Default,
+        }
+    }
+
+    /// Convert to the `w:type` attribute value.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Default => "default",
+            Self::First => "first",
+            Self::Even => "even",
+        }
+    }
+}
+
+/// Text wrapping type for anchored images.
+///
+/// ECMA-376 Part 1, Section 20.4.2.3.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum WrapType {
+    /// No wrapping - text flows over/under the image.
+    #[default]
+    None,
+    /// Square wrapping - text wraps around a bounding box.
+    Square,
+    /// Tight wrapping - text wraps closely around the image shape.
+    Tight,
+    /// Through wrapping - text wraps through transparent areas.
+    Through,
+    /// Top and bottom - text only above and below.
+    TopAndBottom,
+}
+
 /// A pending header to be written to the package.
 #[derive(Clone)]
 pub struct PendingHeader {
-    /// Header content (paragraphs, tables, etc.).
-    pub body: Body,
+    /// Header content.
+    pub body: types::CTHdrFtr,
     /// Assigned relationship ID.
     pub rel_id: String,
     /// Header type (default, first, even).
@@ -97,14 +151,47 @@ pub struct PendingHeader {
 /// A pending footer to be written to the package.
 #[derive(Clone)]
 pub struct PendingFooter {
-    /// Footer content (paragraphs, tables, etc.).
-    pub body: Body,
+    /// Footer content.
+    pub body: types::CTHdrFtr,
     /// Assigned relationship ID.
     pub rel_id: String,
     /// Footer type (default, first, even).
     pub footer_type: HeaderFooterType,
     /// Generated filename (e.g., "footer1.xml").
     pub filename: String,
+}
+
+/// A pending footnote to be written to the package.
+#[derive(Clone)]
+pub struct PendingFootnote {
+    /// Footnote ID (referenced by FootnoteReference).
+    pub id: i32,
+    /// Footnote content.
+    pub body: types::CTFtnEdn,
+}
+
+/// A pending endnote to be written to the package.
+#[derive(Clone)]
+pub struct PendingEndnote {
+    /// Endnote ID (referenced by EndnoteReference).
+    pub id: i32,
+    /// Endnote content.
+    pub body: types::CTFtnEdn,
+}
+
+/// A pending comment to be written to the package.
+#[derive(Clone)]
+pub struct PendingComment {
+    /// Comment ID (referenced by CommentReference and comment ranges).
+    pub id: i32,
+    /// Comment author.
+    pub author: Option<String>,
+    /// Comment date (ISO 8601 format).
+    pub date: Option<String>,
+    /// Comment initials.
+    pub initials: Option<String>,
+    /// Comment content.
+    pub body: types::Comment,
 }
 
 /// Builder for header content.
@@ -117,7 +204,7 @@ pub struct HeaderBuilder<'a> {
 
 impl<'a> HeaderBuilder<'a> {
     /// Get a mutable reference to the header body.
-    pub fn body_mut(&mut self) -> &mut Body {
+    pub fn body_mut(&mut self) -> &mut types::CTHdrFtr {
         &mut self
             .builder
             .headers
@@ -146,37 +233,89 @@ pub struct FooterBuilder<'a> {
     rel_id: String,
 }
 
-/// A pending footnote to be written to the package.
-#[derive(Clone)]
-pub struct PendingFootnote {
-    /// Footnote ID (referenced by FootnoteReference).
-    pub id: i32,
-    /// Footnote content (paragraphs, tables, etc.).
-    pub body: Body,
+impl<'a> FooterBuilder<'a> {
+    /// Get a mutable reference to the footer body.
+    pub fn body_mut(&mut self) -> &mut types::CTHdrFtr {
+        &mut self
+            .builder
+            .footers
+            .get_mut(&self.rel_id)
+            .expect("footer should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the footer.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the relationship ID for this footer.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
 }
 
-/// A pending endnote to be written to the package.
-#[derive(Clone)]
-pub struct PendingEndnote {
-    /// Endnote ID (referenced by EndnoteReference).
-    pub id: i32,
-    /// Endnote content (paragraphs, tables, etc.).
-    pub body: Body,
+/// Builder for footnote content.
+pub struct FootnoteBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    id: i32,
 }
 
-/// A pending comment to be written to the package.
-#[derive(Clone)]
-pub struct PendingComment {
-    /// Comment ID (referenced by CommentReference and comment ranges).
-    pub id: i32,
-    /// Comment author.
-    pub author: Option<String>,
-    /// Comment date (ISO 8601 format).
-    pub date: Option<String>,
-    /// Comment initials.
-    pub initials: Option<String>,
-    /// Comment content (paragraphs, tables, etc.).
-    pub body: Body,
+impl<'a> FootnoteBuilder<'a> {
+    /// Get a mutable reference to the footnote body.
+    pub fn body_mut(&mut self) -> &mut types::CTFtnEdn {
+        &mut self
+            .builder
+            .footnotes
+            .get_mut(&self.id)
+            .expect("footnote should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the footnote.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the footnote ID for use in FootnoteReference.
+    ///
+    /// The returned ID is always positive (user-created footnotes start at 1).
+    pub fn id(&self) -> u32 {
+        self.id as u32
+    }
+}
+
+/// Builder for endnote content.
+pub struct EndnoteBuilder<'a> {
+    builder: &'a mut DocumentBuilder,
+    id: i32,
+}
+
+impl<'a> EndnoteBuilder<'a> {
+    /// Get a mutable reference to the endnote body.
+    pub fn body_mut(&mut self) -> &mut types::CTFtnEdn {
+        &mut self
+            .builder
+            .endnotes
+            .get_mut(&self.id)
+            .expect("endnote should exist")
+            .body
+    }
+
+    /// Add a paragraph with text to the endnote.
+    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
+        self.body_mut().add_paragraph().add_run().set_text(text);
+        self
+    }
+
+    /// Get the endnote ID for use in EndnoteReference.
+    ///
+    /// The returned ID is always positive (user-created endnotes start at 1).
+    pub fn id(&self) -> u32 {
+        self.id as u32
+    }
 }
 
 /// Builder for comment content.
@@ -187,7 +326,7 @@ pub struct CommentBuilder<'a> {
 
 impl<'a> CommentBuilder<'a> {
     /// Get a mutable reference to the comment body.
-    pub fn body_mut(&mut self) -> &mut Body {
+    pub fn body_mut(&mut self) -> &mut types::Comment {
         &mut self
             .builder
             .comments
@@ -240,95 +379,326 @@ impl<'a> CommentBuilder<'a> {
     }
 }
 
-/// Builder for footnote content.
-pub struct FootnoteBuilder<'a> {
-    builder: &'a mut DocumentBuilder,
-    id: i32,
+// =============================================================================
+// Drawing types (writer-only, produce DrawingML XML for images)
+// =============================================================================
+
+/// A drawing container for images.
+///
+/// This is a writer-side helper that produces the DrawingML XML for inline
+/// and anchored images. Use `Drawing::build()` to convert to a generated
+/// `types::CTDrawing` that can be added to a run.
+#[derive(Debug, Clone, Default)]
+pub struct Drawing {
+    /// Inline images in this drawing.
+    images: Vec<InlineImage>,
+    /// Anchored (floating) images in this drawing.
+    anchored_images: Vec<AnchoredImage>,
 }
 
-impl<'a> FootnoteBuilder<'a> {
-    /// Get a mutable reference to the footnote body.
-    pub fn body_mut(&mut self) -> &mut Body {
-        &mut self
-            .builder
-            .footnotes
-            .get_mut(&self.id)
-            .expect("footnote should exist")
-            .body
+impl Drawing {
+    /// Create an empty drawing.
+    pub fn new() -> Self {
+        Self::default()
     }
 
-    /// Add a paragraph with text to the footnote.
-    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
-        self.body_mut().add_paragraph().add_run().set_text(text);
-        self
+    /// Get inline images in this drawing.
+    pub fn images(&self) -> &[InlineImage] {
+        &self.images
     }
 
-    /// Get the footnote ID for use in FootnoteReference.
+    /// Get mutable reference to inline images.
+    pub fn images_mut(&mut self) -> &mut Vec<InlineImage> {
+        &mut self.images
+    }
+
+    /// Add an inline image to this drawing.
+    pub fn add_image(&mut self, rel_id: impl Into<String>) -> &mut InlineImage {
+        self.images.push(InlineImage::new(rel_id));
+        self.images.last_mut().unwrap()
+    }
+
+    /// Get anchored (floating) images in this drawing.
+    pub fn anchored_images(&self) -> &[AnchoredImage] {
+        &self.anchored_images
+    }
+
+    /// Get mutable reference to anchored images.
+    pub fn anchored_images_mut(&mut self) -> &mut Vec<AnchoredImage> {
+        &mut self.anchored_images
+    }
+
+    /// Add an anchored (floating) image to this drawing.
+    pub fn add_anchored_image(&mut self, rel_id: impl Into<String>) -> &mut AnchoredImage {
+        self.anchored_images.push(AnchoredImage::new(rel_id));
+        self.anchored_images.last_mut().unwrap()
+    }
+
+    /// Convert this drawing to a generated `CTDrawing` type.
     ///
-    /// The returned ID is always positive (user-created footnotes start at 1).
-    pub fn id(&self) -> u32 {
-        self.id as u32
+    /// The `doc_id` counter is incremented for each image to produce unique IDs.
+    pub fn build(self, doc_id: &mut usize) -> types::CTDrawing {
+        let mut children = Vec::new();
+
+        for image in &self.images {
+            let elem = build_inline_image_element(image, *doc_id);
+            children.push(RawXmlNode::Element(elem));
+            *doc_id += 1;
+        }
+
+        for image in &self.anchored_images {
+            let elem = build_anchored_image_element(image, *doc_id);
+            children.push(RawXmlNode::Element(elem));
+            *doc_id += 1;
+        }
+
+        types::CTDrawing {
+            #[cfg(feature = "extra-children")]
+            extra_children: children,
+        }
     }
 }
 
-/// Builder for endnote content.
-pub struct EndnoteBuilder<'a> {
-    builder: &'a mut DocumentBuilder,
-    id: i32,
+/// An inline image in a drawing.
+///
+/// Represents an image embedded in the document via DrawingML.
+/// References image data through a relationship ID.
+#[derive(Debug, Clone)]
+pub struct InlineImage {
+    /// Relationship ID referencing the image file (e.g., "rId4").
+    rel_id: String,
+    /// Width in EMUs (English Metric Units). 914400 EMUs = 1 inch.
+    width_emu: Option<i64>,
+    /// Height in EMUs.
+    height_emu: Option<i64>,
+    /// Optional description/alt text for the image.
+    description: Option<String>,
 }
 
-impl<'a> EndnoteBuilder<'a> {
-    /// Get a mutable reference to the endnote body.
-    pub fn body_mut(&mut self) -> &mut Body {
-        &mut self
-            .builder
-            .endnotes
-            .get_mut(&self.id)
-            .expect("endnote should exist")
-            .body
+impl InlineImage {
+    /// Create a new inline image with the given relationship ID.
+    pub fn new(rel_id: impl Into<String>) -> Self {
+        Self {
+            rel_id: rel_id.into(),
+            width_emu: None,
+            height_emu: None,
+            description: None,
+        }
     }
 
-    /// Add a paragraph with text to the endnote.
-    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
-        self.body_mut().add_paragraph().add_run().set_text(text);
-        self
-    }
-
-    /// Get the endnote ID for use in EndnoteReference.
-    ///
-    /// The returned ID is always positive (user-created endnotes start at 1).
-    pub fn id(&self) -> u32 {
-        self.id as u32
-    }
-}
-
-impl<'a> FooterBuilder<'a> {
-    /// Get a mutable reference to the footer body.
-    pub fn body_mut(&mut self) -> &mut Body {
-        &mut self
-            .builder
-            .footers
-            .get_mut(&self.rel_id)
-            .expect("footer should exist")
-            .body
-    }
-
-    /// Add a paragraph with text to the footer.
-    pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
-        self.body_mut().add_paragraph().add_run().set_text(text);
-        self
-    }
-
-    /// Get the relationship ID for this footer.
+    /// Get the relationship ID.
     pub fn rel_id(&self) -> &str {
         &self.rel_id
     }
+
+    /// Get width in EMUs (914400 EMUs = 1 inch).
+    pub fn width_emu(&self) -> Option<i64> {
+        self.width_emu
+    }
+
+    /// Get height in EMUs.
+    pub fn height_emu(&self) -> Option<i64> {
+        self.height_emu
+    }
+
+    /// Get width in inches.
+    pub fn width_inches(&self) -> Option<f64> {
+        self.width_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Get height in inches.
+    pub fn height_inches(&self) -> Option<f64> {
+        self.height_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Set width in EMUs.
+    pub fn set_width_emu(&mut self, emu: i64) -> &mut Self {
+        self.width_emu = Some(emu);
+        self
+    }
+
+    /// Set height in EMUs.
+    pub fn set_height_emu(&mut self, emu: i64) -> &mut Self {
+        self.height_emu = Some(emu);
+        self
+    }
+
+    /// Set width in inches.
+    pub fn set_width_inches(&mut self, inches: f64) -> &mut Self {
+        self.width_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Set height in inches.
+    pub fn set_height_inches(&mut self, inches: f64) -> &mut Self {
+        self.height_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Get the description/alt text.
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
+
+    /// Set the description/alt text.
+    pub fn set_description(&mut self, desc: impl Into<String>) -> &mut Self {
+        self.description = Some(desc.into());
+        self
+    }
 }
+
+/// An anchored (floating) image in a drawing.
+///
+/// Represents an image positioned relative to a reference point with text
+/// wrapping options. Unlike inline images, anchored images can float and wrap.
+/// ECMA-376 Part 1, Section 20.4.2.3 (anchor).
+#[derive(Debug, Clone)]
+pub struct AnchoredImage {
+    /// Relationship ID referencing the image file (e.g., "rId4").
+    rel_id: String,
+    /// Width in EMUs (English Metric Units). 914400 EMUs = 1 inch.
+    width_emu: Option<i64>,
+    /// Height in EMUs.
+    height_emu: Option<i64>,
+    /// Optional description/alt text for the image.
+    description: Option<String>,
+    /// Whether the image is behind text (true) or in front (false).
+    behind_doc: bool,
+    /// Horizontal position offset from the reference in EMUs.
+    pos_x: i64,
+    /// Vertical position offset from the reference in EMUs.
+    pos_y: i64,
+    /// Text wrapping mode.
+    wrap_type: WrapType,
+}
+
+impl AnchoredImage {
+    /// Create a new anchored image with the given relationship ID.
+    pub fn new(rel_id: impl Into<String>) -> Self {
+        Self {
+            rel_id: rel_id.into(),
+            width_emu: None,
+            height_emu: None,
+            description: None,
+            behind_doc: false,
+            pos_x: 0,
+            pos_y: 0,
+            wrap_type: WrapType::None,
+        }
+    }
+
+    /// Get the relationship ID.
+    pub fn rel_id(&self) -> &str {
+        &self.rel_id
+    }
+
+    /// Get width in EMUs (914400 EMUs = 1 inch).
+    pub fn width_emu(&self) -> Option<i64> {
+        self.width_emu
+    }
+
+    /// Get height in EMUs.
+    pub fn height_emu(&self) -> Option<i64> {
+        self.height_emu
+    }
+
+    /// Get width in inches.
+    pub fn width_inches(&self) -> Option<f64> {
+        self.width_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Get height in inches.
+    pub fn height_inches(&self) -> Option<f64> {
+        self.height_emu.map(|e| e as f64 / 914400.0)
+    }
+
+    /// Set width in EMUs.
+    pub fn set_width_emu(&mut self, emu: i64) -> &mut Self {
+        self.width_emu = Some(emu);
+        self
+    }
+
+    /// Set height in EMUs.
+    pub fn set_height_emu(&mut self, emu: i64) -> &mut Self {
+        self.height_emu = Some(emu);
+        self
+    }
+
+    /// Set width in inches.
+    pub fn set_width_inches(&mut self, inches: f64) -> &mut Self {
+        self.width_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Set height in inches.
+    pub fn set_height_inches(&mut self, inches: f64) -> &mut Self {
+        self.height_emu = Some((inches * 914400.0) as i64);
+        self
+    }
+
+    /// Get the description/alt text.
+    pub fn description(&self) -> Option<&str> {
+        self.description.as_deref()
+    }
+
+    /// Set the description/alt text.
+    pub fn set_description(&mut self, desc: impl Into<String>) -> &mut Self {
+        self.description = Some(desc.into());
+        self
+    }
+
+    /// Check if the image is behind document text.
+    pub fn is_behind_doc(&self) -> bool {
+        self.behind_doc
+    }
+
+    /// Set whether the image is behind document text.
+    pub fn set_behind_doc(&mut self, behind: bool) -> &mut Self {
+        self.behind_doc = behind;
+        self
+    }
+
+    /// Get horizontal position offset in EMUs.
+    pub fn pos_x(&self) -> i64 {
+        self.pos_x
+    }
+
+    /// Get vertical position offset in EMUs.
+    pub fn pos_y(&self) -> i64 {
+        self.pos_y
+    }
+
+    /// Set horizontal position offset in EMUs.
+    pub fn set_pos_x(&mut self, emu: i64) -> &mut Self {
+        self.pos_x = emu;
+        self
+    }
+
+    /// Set vertical position offset in EMUs.
+    pub fn set_pos_y(&mut self, emu: i64) -> &mut Self {
+        self.pos_y = emu;
+        self
+    }
+
+    /// Get the text wrapping type.
+    pub fn wrap_type(&self) -> WrapType {
+        self.wrap_type
+    }
+
+    /// Set the text wrapping type.
+    pub fn set_wrap_type(&mut self, wrap: WrapType) -> &mut Self {
+        self.wrap_type = wrap;
+        self
+    }
+}
+
+// =============================================================================
+// DocumentBuilder
+// =============================================================================
 
 /// Builder for creating new Word documents.
 pub struct DocumentBuilder {
-    body: Body,
-    _styles: Styles, // TODO: serialize styles.xml
+    document: types::Document,
     /// Pending images to write, keyed by rel_id.
     images: HashMap<String, PendingImage>,
     /// Pending hyperlinks, keyed by rel_id.
@@ -361,6 +731,8 @@ pub struct DocumentBuilder {
     next_endnote_id: i32,
     /// Counter for generating unique comment IDs.
     next_comment_id: i32,
+    /// Counter for generating unique drawing/image IDs.
+    next_drawing_id: usize,
 }
 
 impl Default for DocumentBuilder {
@@ -372,9 +744,17 @@ impl Default for DocumentBuilder {
 impl DocumentBuilder {
     /// Create a new document builder.
     pub fn new() -> Self {
+        let document = types::Document {
+            body: Some(Box::new(types::Body::default())),
+            conformance: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
         Self {
-            body: Body::new(),
-            _styles: Styles::new(),
+            document,
             images: HashMap::new(),
             hyperlinks: HashMap::new(),
             numberings: HashMap::new(),
@@ -390,6 +770,7 @@ impl DocumentBuilder {
             next_footnote_id: 1,
             next_endnote_id: 1,
             next_comment_id: 0,
+            next_drawing_id: 1,
         }
     }
 
@@ -441,18 +822,6 @@ impl DocumentBuilder {
     /// Create a list definition and return its numbering ID.
     ///
     /// Use the returned num_id in NumberingProperties when adding list items.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// let num_id = builder.add_list(ListType::Bullet);
-    /// let para = builder.body_mut().add_paragraph();
-    /// para.set_properties(ParagraphProperties {
-    ///     numbering: Some(NumberingProperties { num_id, ilvl: 0 }),
-    ///     ..Default::default()
-    /// });
-    /// para.add_run().set_text("First list item");
-    /// ```
     pub fn add_list(&mut self, list_type: ListType) -> u32 {
         let num_id = self.next_num_id;
         self.next_num_id += 1;
@@ -472,14 +841,6 @@ impl DocumentBuilder {
     /// Add a header and return a builder for its content.
     ///
     /// The header will be automatically linked to the document's section properties.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// let mut builder = DocumentBuilder::new();
-    /// let mut header = builder.add_header(HeaderFooterType::Default);
-    /// header.add_paragraph("Document Title");
-    /// ```
     pub fn add_header(&mut self, header_type: HeaderFooterType) -> HeaderBuilder<'_> {
         let id = self.next_rel_id;
         self.next_rel_id += 1;
@@ -492,7 +853,7 @@ impl DocumentBuilder {
         self.headers.insert(
             rel_id.clone(),
             PendingHeader {
-                body: Body::new(),
+                body: types::CTHdrFtr::default(),
                 rel_id: rel_id.clone(),
                 header_type,
                 filename,
@@ -508,14 +869,6 @@ impl DocumentBuilder {
     /// Add a footer and return a builder for its content.
     ///
     /// The footer will be automatically linked to the document's section properties.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// let mut builder = DocumentBuilder::new();
-    /// let mut footer = builder.add_footer(HeaderFooterType::Default);
-    /// footer.add_paragraph("Page 1");
-    /// ```
     pub fn add_footer(&mut self, footer_type: HeaderFooterType) -> FooterBuilder<'_> {
         let id = self.next_rel_id;
         self.next_rel_id += 1;
@@ -528,7 +881,7 @@ impl DocumentBuilder {
         self.footers.insert(
             rel_id.clone(),
             PendingFooter {
-                body: Body::new(),
+                body: types::CTHdrFtr::default(),
                 rel_id: rel_id.clone(),
                 footer_type,
                 filename,
@@ -543,23 +896,7 @@ impl DocumentBuilder {
 
     /// Add a footnote and return a builder for its content.
     ///
-    /// Use the returned `id` when adding a `FootnoteReference` to a Run.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use ooxml_wml::document::FootnoteReference;
-    ///
-    /// let mut builder = DocumentBuilder::new();
-    /// let mut footnote = builder.add_footnote();
-    /// footnote.add_paragraph("This is a footnote.");
-    /// let footnote_id = footnote.id();
-    ///
-    /// // In a paragraph, add a reference to the footnote
-    /// let run = builder.body_mut().add_paragraph().add_run();
-    /// run.set_text("Some text");
-    /// run.set_footnote_ref(FootnoteReference { id: footnote_id });
-    /// ```
+    /// Use the returned `id` when adding a FootnoteReference to a Run.
     pub fn add_footnote(&mut self) -> FootnoteBuilder<'_> {
         let id = self.next_footnote_id;
         self.next_footnote_id += 1;
@@ -568,7 +905,15 @@ impl DocumentBuilder {
             id,
             PendingFootnote {
                 id,
-                body: Body::new(),
+                body: types::CTFtnEdn {
+                    r#type: None,
+                    id: id as i64,
+                    block_level_elts: Vec::new(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: std::collections::HashMap::new(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                },
             },
         );
 
@@ -577,23 +922,7 @@ impl DocumentBuilder {
 
     /// Add an endnote and return a builder for its content.
     ///
-    /// Use the returned `id` when adding an `EndnoteReference` to a Run.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use ooxml_wml::document::EndnoteReference;
-    ///
-    /// let mut builder = DocumentBuilder::new();
-    /// let mut endnote = builder.add_endnote();
-    /// endnote.add_paragraph("This is an endnote.");
-    /// let endnote_id = endnote.id();
-    ///
-    /// // In a paragraph, add a reference to the endnote
-    /// let run = builder.body_mut().add_paragraph().add_run();
-    /// run.set_text("Some text");
-    /// run.set_endnote_ref(EndnoteReference { id: endnote_id });
-    /// ```
+    /// Use the returned `id` when adding an EndnoteReference to a Run.
     pub fn add_endnote(&mut self) -> EndnoteBuilder<'_> {
         let id = self.next_endnote_id;
         self.next_endnote_id += 1;
@@ -602,7 +931,15 @@ impl DocumentBuilder {
             id,
             PendingEndnote {
                 id,
-                body: Body::new(),
+                body: types::CTFtnEdn {
+                    r#type: None,
+                    id: id as i64,
+                    block_level_elts: Vec::new(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: std::collections::HashMap::new(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                },
             },
         );
 
@@ -612,26 +949,6 @@ impl DocumentBuilder {
     /// Add a comment and return a builder for its content.
     ///
     /// Use the returned `id` when adding comment ranges and references to the document.
-    ///
-    /// # Example
-    ///
-    /// ```ignore
-    /// use ooxml_wml::document::{CommentReference, CommentRangeStart, CommentRangeEnd};
-    ///
-    /// let mut builder = DocumentBuilder::new();
-    /// let mut comment = builder.add_comment();
-    /// comment.set_author("John Doe");
-    /// comment.add_paragraph("This needs review.");
-    /// let comment_id = comment.id();
-    ///
-    /// // In a paragraph, mark the commented text with ranges and reference
-    /// let para = builder.body_mut().add_paragraph();
-    /// para.add_comment_range_start(comment_id);
-    /// para.add_run().set_text("Commented text");
-    /// para.add_comment_range_end(comment_id);
-    /// // Add the comment reference (shows the comment marker)
-    /// para.add_run().set_comment_ref(CommentReference { id: comment_id });
-    /// ```
     pub fn add_comment(&mut self) -> CommentBuilder<'_> {
         let id = self.next_comment_id;
         self.next_comment_id += 1;
@@ -643,23 +960,41 @@ impl DocumentBuilder {
                 author: None,
                 date: None,
                 initials: None,
-                body: Body::new(),
+                body: types::Comment {
+                    block_level_elts: Vec::new(),
+                    initials: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: std::collections::HashMap::new(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                },
             },
         );
 
         CommentBuilder { builder: self, id }
     }
 
-    /// Get a mutable reference to the body.
-    pub fn body_mut(&mut self) -> &mut Body {
-        &mut self.body
+    /// Get a mutable reference to the document body.
+    pub fn body_mut(&mut self) -> &mut types::Body {
+        self.document
+            .body
+            .as_deref_mut()
+            .expect("document body should exist")
     }
 
     /// Add a paragraph with text.
     pub fn add_paragraph(&mut self, text: &str) -> &mut Self {
-        let para = self.body.add_paragraph();
+        let para = self.body_mut().add_paragraph();
         para.add_run().set_text(text);
         self
+    }
+
+    /// Convert a Drawing helper to a CTDrawing using the builder's ID counter.
+    ///
+    /// Use this to create a `types::CTDrawing` from a `Drawing`, then add it
+    /// to a run via `run.add_drawing(ct_drawing)`.
+    pub fn build_drawing(&mut self, drawing: Drawing) -> types::CTDrawing {
+        drawing.build(&mut self.next_drawing_id)
     }
 
     /// Save the document to a file.
@@ -689,35 +1024,74 @@ impl DocumentBuilder {
         // Add header/footer references to section properties
         if !self.headers.is_empty() || !self.footers.is_empty() {
             // Ensure body has section properties
-            if self.body.section_properties().is_none() {
-                self.body
-                    .set_section_properties(SectionProperties::default());
-            }
-            let sect_pr = self.body.section_properties_mut().as_mut().unwrap();
+            #[cfg(feature = "wml-layout")]
+            {
+                let body = self.document.body.as_deref_mut().expect("document body");
+                if body.sect_pr.is_none() {
+                    body.sect_pr = Some(Box::new(types::SectionProperties::default()));
+                }
+                let sect_pr = body.sect_pr.as_deref_mut().unwrap();
 
-            // Add header references
-            for header in self.headers.values() {
-                sect_pr.headers.push(HeaderFooterRef {
-                    rel_id: header.rel_id.clone(),
-                    hf_type: header.header_type,
-                });
-            }
+                // Add header references
+                for header in self.headers.values() {
+                    let mut hdr_ref = types::CTHdrFtrRef {
+                        r#type: match header.header_type {
+                            HeaderFooterType::Default => types::STHdrFtr::Default,
+                            HeaderFooterType::First => types::STHdrFtr::First,
+                            HeaderFooterType::Even => types::STHdrFtr::Even,
+                        },
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: {
+                            let mut m = std::collections::HashMap::new();
+                            m.insert("r:id".to_string(), header.rel_id.clone());
+                            m
+                        },
+                    };
+                    let _ = &mut hdr_ref; // suppress unused mut warning
+                    sect_pr.hdr_ftr_references.push(Box::new(
+                        types::EGHdrFtrReferences::HeaderReference(Box::new(hdr_ref)),
+                    ));
+                }
 
-            // Add footer references
-            for footer in self.footers.values() {
-                sect_pr.footers.push(HeaderFooterRef {
-                    rel_id: footer.rel_id.clone(),
-                    hf_type: footer.footer_type,
-                });
+                // Add footer references
+                for footer in self.footers.values() {
+                    let mut ftr_ref = types::CTHdrFtrRef {
+                        r#type: match footer.footer_type {
+                            HeaderFooterType::Default => types::STHdrFtr::Default,
+                            HeaderFooterType::First => types::STHdrFtr::First,
+                            HeaderFooterType::Even => types::STHdrFtr::Even,
+                        },
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: {
+                            let mut m = std::collections::HashMap::new();
+                            m.insert("r:id".to_string(), footer.rel_id.clone());
+                            m
+                        },
+                    };
+                    let _ = &mut ftr_ref; // suppress unused mut warning
+                    sect_pr.hdr_ftr_references.push(Box::new(
+                        types::EGHdrFtrReferences::FooterReference(Box::new(ftr_ref)),
+                    ));
+                }
+            }
+        }
+
+        // Set namespace declarations on the document's extra_attrs
+        #[cfg(feature = "extra-attrs")]
+        {
+            for &(key, value) in NS_DECLS {
+                self.document
+                    .extra_attrs
+                    .insert(key.to_string(), value.to_string());
             }
         }
 
         // Write document.xml
-        let doc_xml = serialize_document(&self.body);
+        let doc_xml = serialize_to_xml_bytes(&self.document, "w:document")?;
         pkg.add_part(
             "word/document.xml",
             content_type::WORDPROCESSING_DOCUMENT,
-            doc_xml.as_bytes(),
+            &doc_xml,
         )?;
 
         // Write package relationships
@@ -756,12 +1130,12 @@ impl DocumentBuilder {
 
         // Write headers and add relationships
         for header in self.headers.values() {
-            let header_xml = serialize_header(&header.body);
+            let header_xml = serialize_with_namespaces(&header.body, "w:hdr")?;
             let header_path = format!("word/{}", header.filename);
             pkg.add_part(
                 &header_path,
                 content_type::WORDPROCESSING_HEADER,
-                header_xml.as_bytes(),
+                &header_xml,
             )?;
 
             doc_rels.add(Relationship::new(
@@ -773,12 +1147,12 @@ impl DocumentBuilder {
 
         // Write footers and add relationships
         for footer in self.footers.values() {
-            let footer_xml = serialize_footer(&footer.body);
+            let footer_xml = serialize_with_namespaces(&footer.body, "w:ftr")?;
             let footer_path = format!("word/{}", footer.filename);
             pkg.add_part(
                 &footer_path,
                 content_type::WORDPROCESSING_FOOTER,
-                footer_xml.as_bytes(),
+                &footer_xml,
             )?;
 
             doc_rels.add(Relationship::new(
@@ -790,11 +1164,12 @@ impl DocumentBuilder {
 
         // Write footnotes.xml if we have any footnotes
         if !self.footnotes.is_empty() {
-            let footnotes_xml = serialize_footnotes(&self.footnotes);
+            let fns = build_footnotes(&self.footnotes);
+            let footnotes_xml = serialize_with_namespaces(&fns, "w:footnotes")?;
             pkg.add_part(
                 "word/footnotes.xml",
                 content_type::WORDPROCESSING_FOOTNOTES,
-                footnotes_xml.as_bytes(),
+                &footnotes_xml,
             )?;
 
             let footnotes_rel_id = format!("rId{}", self.next_rel_id);
@@ -808,11 +1183,12 @@ impl DocumentBuilder {
 
         // Write endnotes.xml if we have any endnotes
         if !self.endnotes.is_empty() {
-            let endnotes_xml = serialize_endnotes(&self.endnotes);
+            let ens = build_endnotes(&self.endnotes);
+            let endnotes_xml = serialize_with_namespaces(&ens, "w:endnotes")?;
             pkg.add_part(
                 "word/endnotes.xml",
                 content_type::WORDPROCESSING_ENDNOTES,
-                endnotes_xml.as_bytes(),
+                &endnotes_xml,
             )?;
 
             let endnotes_rel_id = format!("rId{}", self.next_rel_id);
@@ -826,11 +1202,12 @@ impl DocumentBuilder {
 
         // Write comments.xml if we have any comments
         if !self.comments.is_empty() {
-            let comments_xml = serialize_comments(&self.comments);
+            let comments = build_comments(&self.comments);
+            let comments_xml = serialize_with_namespaces(&comments, "w:comments")?;
             pkg.add_part(
                 "word/comments.xml",
                 content_type::WORDPROCESSING_COMMENTS,
-                comments_xml.as_bytes(),
+                &comments_xml,
             )?;
 
             let comments_rel_id = format!("rId{}", self.next_rel_id);
@@ -844,14 +1221,14 @@ impl DocumentBuilder {
 
         // Write numbering.xml if we have any numbering definitions
         if !self.numberings.is_empty() {
-            let num_xml = serialize_numbering(&self.numberings);
+            let numbering = build_numbering(&self.numberings);
+            let num_xml = serialize_with_namespaces(&numbering, "w:numbering")?;
             pkg.add_part(
                 "word/numbering.xml",
                 content_type::WORDPROCESSING_NUMBERING,
-                num_xml.as_bytes(),
+                &num_xml,
             )?;
 
-            // Add relationship from document to numbering
             let num_rel_id = format!("rId{}", self.next_rel_id);
             doc_rels.add(Relationship::new(
                 &num_rel_id,
@@ -871,1510 +1248,776 @@ impl DocumentBuilder {
     }
 }
 
-/// Serialize document body to XML.
-pub fn serialize_document(body: &Body) -> String {
-    let mut xml = String::new();
+// =============================================================================
+// Serialization helpers
+// =============================================================================
 
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
-
-    // Document element with namespaces (including DrawingML for images)
-    xml.push_str(&format!(
-        r#"<w:document xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
-
-    // Body
-    xml.push_str("<w:body>");
-    serialize_body(body, &mut xml);
-    xml.push_str("</w:body>");
-
-    xml.push_str("</w:document>");
-    xml
+/// Serialize a ToXml value to bytes with XML declaration prepended.
+fn serialize_to_xml_bytes(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
+    let inner = Vec::new();
+    let mut writer = quick_xml::Writer::new(inner);
+    value.write_element(tag, &mut writer)?;
+    let inner = writer.into_inner();
+    let mut buf = Vec::with_capacity(
+        b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n".len() + inner.len(),
+    );
+    buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
+    buf.extend_from_slice(&inner);
+    Ok(buf)
 }
 
-/// Serialize header content to XML.
-///
-/// Headers use the `<w:hdr>` root element with the same content model as body.
-pub fn serialize_header(body: &Body) -> String {
-    let mut xml = String::new();
+/// Serialize a ToXml value with namespace declarations injected into the
+/// root element's start tag. This is needed for types that don't have
+/// `extra_attrs` (like Footnotes, Endnotes, Comments, Numbering, CTHdrFtr).
+fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
+    use quick_xml::events::{BytesEnd, BytesStart, Event};
 
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
+    let inner = Vec::new();
+    let mut writer = quick_xml::Writer::new(inner);
 
-    // Header element with namespaces
-    xml.push_str(&format!(
-        r#"<w:hdr xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
-
-    // Content (paragraphs, tables, etc.)
-    for block in body.content() {
-        serialize_block_content(block, &mut xml);
+    // Write start tag with namespace declarations + type's own attrs
+    let start = BytesStart::new(tag);
+    let start = value.write_attrs(start);
+    let mut start = start;
+    for &(key, val) in NS_DECLS {
+        start.push_attribute((key, val));
     }
-    serialize_unknown_children(&body.unknown_children, &mut xml);
 
-    xml.push_str("</w:hdr>");
-    xml
-}
-
-/// Serialize footer content to XML.
-///
-/// Footers use the `<w:ftr>` root element with the same content model as body.
-pub fn serialize_footer(body: &Body) -> String {
-    let mut xml = String::new();
-
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
-
-    // Footer element with namespaces
-    xml.push_str(&format!(
-        r#"<w:ftr xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
-
-    // Content (paragraphs, tables, etc.)
-    for block in body.content() {
-        serialize_block_content(block, &mut xml);
+    if value.is_empty_element() {
+        writer.write_event(Event::Empty(start))?;
+    } else {
+        writer.write_event(Event::Start(start))?;
+        value.write_children(&mut writer)?;
+        writer.write_event(Event::End(BytesEnd::new(tag)))?;
     }
-    serialize_unknown_children(&body.unknown_children, &mut xml);
 
-    xml.push_str("</w:ftr>");
-    xml
+    let inner = writer.into_inner();
+    let mut buf = Vec::with_capacity(
+        b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n".len() + inner.len(),
+    );
+    buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
+    buf.extend_from_slice(&inner);
+    Ok(buf)
 }
 
-/// Serialize footnotes to XML.
+// =============================================================================
+// Build generated types from pending data
+// =============================================================================
+
+/// Build a separator footnote/endnote (required by Word).
 ///
-/// Footnotes use the `<w:footnotes>` root element containing individual `<w:footnote>` elements.
-fn serialize_footnotes(footnotes: &HashMap<i32, PendingFootnote>) -> String {
-    let mut xml = String::new();
+/// Creates a CTFtnEdn with a single paragraph containing a single run
+/// with a separator or continuation separator element.
+fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::CTFtnEdn {
+    let separator_content = match ftn_type {
+        types::STFtnEdn::Separator => types::EGRunInnerContent::Separator(Box::new(types::CTEmpty)),
+        types::STFtnEdn::ContinuationSeparator => {
+            types::EGRunInnerContent::ContinuationSeparator(Box::new(types::CTEmpty))
+        }
+        _ => unreachable!("only Separator and ContinuationSeparator expected"),
+    };
 
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
+    let run = types::Run {
+        rsid_r_pr: None,
+        rsid_del: None,
+        rsid_r: None,
+        #[cfg(feature = "wml-styling")]
+        r_pr: None,
+        run_inner_content: vec![Box::new(separator_content)],
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: std::collections::HashMap::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
 
-    // Footnotes element with namespaces
-    xml.push_str(&format!(
-        r#"<w:footnotes xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
+    let para = types::Paragraph {
+        rsid_r_pr: None,
+        rsid_r: None,
+        rsid_del: None,
+        rsid_p: None,
+        rsid_r_default: None,
+        #[cfg(feature = "wml-styling")]
+        p_pr: None,
+        p_content: vec![Box::new(types::EGPContent::R(Box::new(run)))],
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: std::collections::HashMap::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+
+    types::CTFtnEdn {
+        r#type: Some(ftn_type),
+        id,
+        block_level_elts: vec![Box::new(types::EGBlockLevelElts::P(Box::new(para)))],
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: std::collections::HashMap::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build a Footnotes type from pending footnotes.
+fn build_footnotes(footnotes: &HashMap<i32, PendingFootnote>) -> types::Footnotes {
+    let mut fns = types::Footnotes {
+        footnote: Vec::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
 
     // Add separator footnotes (required by Word)
-    // ID -1: separator, ID 0: continuation separator
-    xml.push_str(r#"<w:footnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:footnote>"#);
-    xml.push_str(r#"<w:footnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>"#);
+    fns.footnote.push(Box::new(build_separator_ftn_edn(
+        -1,
+        types::STFtnEdn::Separator,
+    )));
+    fns.footnote.push(Box::new(build_separator_ftn_edn(
+        0,
+        types::STFtnEdn::ContinuationSeparator,
+    )));
 
-    // Sort footnotes by ID for deterministic output
+    // Add user footnotes sorted by ID
     let mut sorted: Vec<_> = footnotes.values().collect();
     sorted.sort_by_key(|f| f.id);
-
-    // Serialize each footnote
     for footnote in sorted {
-        xml.push_str(&format!(r#"<w:footnote w:id="{}">"#, footnote.id));
-        for block in footnote.body.content() {
-            serialize_block_content(block, &mut xml);
-        }
-        serialize_unknown_children(&footnote.body.unknown_children, &mut xml);
-        xml.push_str("</w:footnote>");
+        fns.footnote.push(Box::new(footnote.body.clone()));
     }
 
-    xml.push_str("</w:footnotes>");
-    xml
+    fns
 }
 
-/// Serialize endnotes to XML.
-///
-/// Endnotes use the `<w:endnotes>` root element containing individual `<w:endnote>` elements.
-fn serialize_endnotes(endnotes: &HashMap<i32, PendingEndnote>) -> String {
-    let mut xml = String::new();
-
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
-
-    // Endnotes element with namespaces
-    xml.push_str(&format!(
-        r#"<w:endnotes xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
+/// Build an Endnotes type from pending endnotes.
+fn build_endnotes(endnotes: &HashMap<i32, PendingEndnote>) -> types::Endnotes {
+    let mut ens = types::Endnotes {
+        endnote: Vec::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
 
     // Add separator endnotes (required by Word)
-    xml.push_str(r#"<w:endnote w:type="separator" w:id="-1"><w:p><w:r><w:separator/></w:r></w:p></w:endnote>"#);
-    xml.push_str(r#"<w:endnote w:type="continuationSeparator" w:id="0"><w:p><w:r><w:continuationSeparator/></w:r></w:p></w:endnote>"#);
+    ens.endnote.push(Box::new(build_separator_ftn_edn(
+        -1,
+        types::STFtnEdn::Separator,
+    )));
+    ens.endnote.push(Box::new(build_separator_ftn_edn(
+        0,
+        types::STFtnEdn::ContinuationSeparator,
+    )));
 
-    // Sort endnotes by ID for deterministic output
+    // Add user endnotes sorted by ID
     let mut sorted: Vec<_> = endnotes.values().collect();
     sorted.sort_by_key(|e| e.id);
-
-    // Serialize each endnote
     for endnote in sorted {
-        xml.push_str(&format!(r#"<w:endnote w:id="{}">"#, endnote.id));
-        for block in endnote.body.content() {
-            serialize_block_content(block, &mut xml);
-        }
-        serialize_unknown_children(&endnote.body.unknown_children, &mut xml);
-        xml.push_str("</w:endnote>");
+        ens.endnote.push(Box::new(endnote.body.clone()));
     }
 
-    xml.push_str("</w:endnotes>");
-    xml
+    ens
 }
 
-/// Serialize comments to XML.
-///
-/// Comments use the `<w:comments>` root element containing individual `<w:comment>` elements.
-fn serialize_comments(comments: &HashMap<i32, PendingComment>) -> String {
-    let mut xml = String::new();
-
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
-
-    // Comments element with namespaces
-    xml.push_str(&format!(
-        r#"<w:comments xmlns:w="{}" xmlns:r="{}" xmlns:wp="{}" xmlns:a="{}" xmlns:pic="{}">"#,
-        NS_W, NS_R, NS_WP, NS_A, NS_PIC
-    ));
+/// Build a Comments type from pending comments.
+fn build_comments(comments: &HashMap<i32, PendingComment>) -> types::Comments {
+    let mut result = types::Comments {
+        comment: Vec::new(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
 
     // Sort comments by ID for deterministic output
     let mut sorted: Vec<_> = comments.values().collect();
     sorted.sort_by_key(|c| c.id);
 
-    // Serialize each comment
-    for comment in sorted {
-        xml.push_str(&format!(r#"<w:comment w:id="{}""#, comment.id));
+    for pc in sorted {
+        let mut comment = pc.body.clone();
 
-        // Add optional attributes
-        if let Some(ref author) = comment.author {
-            xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
-        }
-        if let Some(ref date) = comment.date {
-            xml.push_str(&format!(r#" w:date="{}""#, date));
-        }
-        if let Some(ref initials) = comment.initials {
-            xml.push_str(&format!(r#" w:initials="{}""#, escape_xml(initials)));
+        // Set initials if provided
+        if let Some(ref initials) = pc.initials {
+            comment.initials = Some(initials.clone());
         }
 
-        xml.push('>');
-
-        // Comment content
-        for block in comment.body.content() {
-            serialize_block_content(block, &mut xml);
-        }
-        serialize_unknown_children(&comment.body.unknown_children, &mut xml);
-
-        xml.push_str("</w:comment>");
-    }
-
-    xml.push_str("</w:comments>");
-    xml
-}
-
-/// Serialize body contents.
-fn serialize_body(body: &Body, xml: &mut String) {
-    for block in body.content() {
-        serialize_block_content(block, xml);
-    }
-    // Section properties (must come after all block content)
-    if let Some(sect_pr) = body.section_properties() {
-        serialize_section_properties(sect_pr, xml);
-    }
-    // Write unknown children preserved for round-trip fidelity
-    serialize_unknown_children(&body.unknown_children, xml);
-}
-
-/// Serialize a block content element.
-fn serialize_block_content(block: &BlockContent, xml: &mut String) {
-    match block {
-        BlockContent::Paragraph(para) => serialize_paragraph(para, xml),
-        BlockContent::Table(table) => serialize_table(table, xml),
-        BlockContent::ContentControl(sdt) => serialize_content_control(sdt, xml),
-        BlockContent::CustomXml(custom) => serialize_custom_xml(custom, xml),
-    }
-}
-
-/// Serialize a content control (SDT).
-fn serialize_content_control(sdt: &ContentControl, xml: &mut String) {
-    xml.push_str("<w:sdt>");
-
-    // SDT properties
-    let has_props = sdt.tag.is_some() || sdt.alias.is_some();
-    if has_props {
-        xml.push_str("<w:sdtPr>");
-        if let Some(tag) = &sdt.tag {
-            xml.push_str("<w:tag w:val=\"");
-            xml.push_str(&escape_xml(tag));
-            xml.push_str("\"/>");
-        }
-        if let Some(alias) = &sdt.alias {
-            xml.push_str("<w:alias w:val=\"");
-            xml.push_str(&escape_xml(alias));
-            xml.push_str("\"/>");
-        }
-        xml.push_str("</w:sdtPr>");
-    }
-
-    // SDT content
-    xml.push_str("<w:sdtContent>");
-    for block in &sdt.content {
-        serialize_block_content(block, xml);
-    }
-    xml.push_str("</w:sdtContent>");
-
-    serialize_unknown_children(&sdt.unknown_children, xml);
-    xml.push_str("</w:sdt>");
-}
-
-/// Serialize a custom XML block.
-fn serialize_custom_xml(custom: &CustomXml, xml: &mut String) {
-    xml.push_str("<w:customXml");
-    if let Some(uri) = &custom.uri {
-        xml.push_str(" w:uri=\"");
-        xml.push_str(&escape_xml(uri));
-        xml.push('"');
-    }
-    if let Some(element) = &custom.element {
-        xml.push_str(" w:element=\"");
-        xml.push_str(&escape_xml(element));
-        xml.push('"');
-    }
-    xml.push('>');
-
-    for block in &custom.content {
-        serialize_block_content(block, xml);
-    }
-
-    serialize_unknown_children(&custom.unknown_children, xml);
-    xml.push_str("</w:customXml>");
-}
-
-/// Serialize section properties.
-fn serialize_section_properties(props: &SectionProperties, xml: &mut String) {
-    xml.push_str("<w:sectPr>");
-
-    // Section type
-    if let Some(section_type) = &props.section_type {
-        xml.push_str("<w:type w:val=\"");
-        xml.push_str(section_type.as_str());
-        xml.push_str("\"/>");
-    }
-
-    // Page size
-    if let Some(pg_sz) = &props.page_size {
-        xml.push_str("<w:pgSz w:w=\"");
-        xml.push_str(&pg_sz.width.to_string());
-        xml.push_str("\" w:h=\"");
-        xml.push_str(&pg_sz.height.to_string());
-        xml.push('"');
-        if pg_sz.orientation == PageOrientation::Landscape {
-            xml.push_str(" w:orient=\"landscape\"");
-        }
-        xml.push_str("/>");
-    }
-
-    // Page margins
-    if let Some(margins) = &props.margins {
-        xml.push_str("<w:pgMar w:top=\"");
-        xml.push_str(&margins.top.to_string());
-        xml.push_str("\" w:bottom=\"");
-        xml.push_str(&margins.bottom.to_string());
-        xml.push_str("\" w:left=\"");
-        xml.push_str(&margins.left.to_string());
-        xml.push_str("\" w:right=\"");
-        xml.push_str(&margins.right.to_string());
-        xml.push('"');
-        if let Some(header) = margins.header {
-            xml.push_str(" w:header=\"");
-            xml.push_str(&header.to_string());
-            xml.push('"');
-        }
-        if let Some(footer) = margins.footer {
-            xml.push_str(" w:footer=\"");
-            xml.push_str(&footer.to_string());
-            xml.push('"');
-        }
-        if let Some(gutter) = margins.gutter {
-            xml.push_str(" w:gutter=\"");
-            xml.push_str(&gutter.to_string());
-            xml.push('"');
-        }
-        xml.push_str("/>");
-    }
-
-    // Columns
-    if let Some(cols) = &props.columns {
-        xml.push_str("<w:cols");
-        if let Some(num) = cols.num {
-            xml.push_str(" w:num=\"");
-            xml.push_str(&num.to_string());
-            xml.push('"');
-        }
-        if let Some(space) = cols.space {
-            xml.push_str(" w:space=\"");
-            xml.push_str(&space.to_string());
-            xml.push('"');
-        }
-        if cols.equal_width {
-            xml.push_str(" w:equalWidth=\"true\"");
-        }
-        if cols.separator {
-            xml.push_str(" w:sep=\"true\"");
-        }
-        if cols.columns.is_empty() {
-            xml.push_str("/>");
-        } else {
-            xml.push('>');
-            for col in &cols.columns {
-                xml.push_str("<w:col w:w=\"");
-                xml.push_str(&col.width.to_string());
-                xml.push('"');
-                if let Some(space) = col.space {
-                    xml.push_str(" w:space=\"");
-                    xml.push_str(&space.to_string());
-                    xml.push('"');
-                }
-                xml.push_str("/>");
+        // Set id/author/date in extra_attrs
+        #[cfg(feature = "extra-attrs")]
+        {
+            comment
+                .extra_attrs
+                .insert("w:id".to_string(), pc.id.to_string());
+            if let Some(ref author) = pc.author {
+                comment
+                    .extra_attrs
+                    .insert("w:author".to_string(), author.clone());
             }
-            xml.push_str("</w:cols>");
-        }
-    }
-
-    // Document grid
-    if let Some(doc_grid) = &props.doc_grid {
-        xml.push_str("<w:docGrid");
-        if doc_grid.grid_type != DocGridType::Default {
-            xml.push_str(" w:type=\"");
-            xml.push_str(doc_grid.grid_type.as_str());
-            xml.push('"');
-        }
-        if let Some(line_pitch) = doc_grid.line_pitch {
-            xml.push_str(" w:linePitch=\"");
-            xml.push_str(&line_pitch.to_string());
-            xml.push('"');
-        }
-        if let Some(char_space) = doc_grid.char_space {
-            xml.push_str(" w:charSpace=\"");
-            xml.push_str(&char_space.to_string());
-            xml.push('"');
-        }
-        xml.push_str("/>");
-    }
-
-    // Header references
-    for header_ref in &props.headers {
-        xml.push_str("<w:headerReference w:type=\"");
-        xml.push_str(header_ref.hf_type.as_str());
-        xml.push_str("\" r:id=\"");
-        xml.push_str(&header_ref.rel_id);
-        xml.push_str("\"/>");
-    }
-
-    // Footer references
-    for footer_ref in &props.footers {
-        xml.push_str("<w:footerReference w:type=\"");
-        xml.push_str(footer_ref.hf_type.as_str());
-        xml.push_str("\" r:id=\"");
-        xml.push_str(&footer_ref.rel_id);
-        xml.push_str("\"/>");
-    }
-
-    // Unknown children for round-trip preservation
-    serialize_unknown_children(&props.unknown_children, xml);
-
-    xml.push_str("</w:sectPr>");
-}
-
-/// Serialize a table.
-fn serialize_table(table: &Table, xml: &mut String) {
-    xml.push_str("<w:tbl>");
-    // tblPr is required by the schema (ECMA-376 §17.4.38); always emit it.
-    if let Some(props) = table.properties() {
-        serialize_table_properties(props, xml);
-    } else {
-        xml.push_str("<w:tblPr/>");
-    }
-    // tblGrid is required by the schema (ECMA-376 §17.4.48); always emit it.
-    if !table.grid_columns().is_empty() {
-        serialize_table_grid(table.grid_columns(), xml);
-    } else {
-        xml.push_str("<w:tblGrid/>");
-    }
-    for row in table.rows() {
-        serialize_row(row, xml);
-    }
-    serialize_unknown_children(&table.unknown_children, xml);
-    xml.push_str("</w:tbl>");
-}
-
-/// Serialize table properties.
-fn serialize_table_properties(props: &TableProperties, xml: &mut String) {
-    xml.push_str("<w:tblPr>");
-    if let Some(width) = &props.width {
-        serialize_table_width(width, xml);
-    }
-    if let Some(justification) = props.justification {
-        xml.push_str("<w:jc w:val=\"");
-        xml.push_str(justification.as_str());
-        xml.push_str("\"/>");
-    }
-    if let Some(indent) = props.indent {
-        xml.push_str("<w:tblInd w:w=\"");
-        xml.push_str(&indent.to_string());
-        xml.push_str("\" w:type=\"dxa\"/>");
-    }
-    if let Some(borders) = &props.borders {
-        serialize_table_borders(borders, xml);
-    }
-    if let Some(shading) = &props.shading {
-        serialize_cell_shading(shading, xml);
-    }
-    if let Some(layout) = props.layout {
-        xml.push_str("<w:tblLayout w:type=\"");
-        xml.push_str(layout.as_str());
-        xml.push_str("\"/>");
-    }
-    serialize_unknown_children(&props.unknown_children, xml);
-    xml.push_str("</w:tblPr>");
-}
-
-/// Serialize table width.
-fn serialize_table_width(width: &TableWidth, xml: &mut String) {
-    xml.push_str("<w:tblW w:w=\"");
-    xml.push_str(&width.width.to_string());
-    xml.push_str("\" w:type=\"");
-    xml.push_str(width.width_type.as_str());
-    xml.push_str("\"/>");
-}
-
-/// Serialize table borders.
-fn serialize_table_borders(borders: &TableBorders, xml: &mut String) {
-    xml.push_str("<w:tblBorders>");
-    if let Some(border) = &borders.top {
-        xml.push_str("<w:top");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.left {
-        xml.push_str("<w:left");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.bottom {
-        xml.push_str("<w:bottom");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.right {
-        xml.push_str("<w:right");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.inside_h {
-        xml.push_str("<w:insideH");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.inside_v {
-        xml.push_str("<w:insideV");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    xml.push_str("</w:tblBorders>");
-}
-
-/// Serialize table grid columns.
-fn serialize_table_grid(columns: &[GridColumn], xml: &mut String) {
-    xml.push_str("<w:tblGrid>");
-    for col in columns {
-        xml.push_str("<w:gridCol w:w=\"");
-        xml.push_str(&col.width.to_string());
-        xml.push_str("\"/>");
-    }
-    xml.push_str("</w:tblGrid>");
-}
-
-/// Serialize a table row.
-fn serialize_row(row: &Row, xml: &mut String) {
-    xml.push_str("<w:tr>");
-    if let Some(props) = row.properties() {
-        serialize_row_properties(props, xml);
-    }
-    for cell in row.cells() {
-        serialize_cell(cell, xml);
-    }
-    serialize_unknown_children(&row.unknown_children, xml);
-    xml.push_str("</w:tr>");
-}
-
-/// Serialize row properties.
-fn serialize_row_properties(props: &RowProperties, xml: &mut String) {
-    xml.push_str("<w:trPr>");
-    if let Some(height) = &props.height {
-        serialize_row_height(height, xml);
-    }
-    if props.is_header {
-        xml.push_str("<w:tblHeader/>");
-    }
-    if props.cant_split {
-        xml.push_str("<w:cantSplit/>");
-    }
-    serialize_unknown_children(&props.unknown_children, xml);
-    xml.push_str("</w:trPr>");
-}
-
-/// Serialize row height.
-fn serialize_row_height(height: &RowHeight, xml: &mut String) {
-    xml.push_str("<w:trHeight w:val=\"");
-    xml.push_str(&height.value.to_string());
-    xml.push('"');
-    if height.rule != HeightRule::Auto {
-        xml.push_str(" w:hRule=\"");
-        xml.push_str(height.rule.as_str());
-        xml.push('"');
-    }
-    xml.push_str("/>");
-}
-
-/// Serialize a table cell.
-fn serialize_cell(cell: &Cell, xml: &mut String) {
-    xml.push_str("<w:tc>");
-    // Cell properties must come first
-    if let Some(props) = cell.properties() {
-        serialize_cell_properties(props, xml);
-    }
-    for para in cell.paragraphs() {
-        serialize_paragraph(para, xml);
-    }
-    serialize_unknown_children(&cell.unknown_children, xml);
-    xml.push_str("</w:tc>");
-}
-
-/// Serialize cell properties.
-fn serialize_cell_properties(props: &CellProperties, xml: &mut String) {
-    xml.push_str("<w:tcPr>");
-
-    // Cell width
-    if let Some(width) = &props.width {
-        serialize_cell_width(width, xml);
-    }
-
-    // Grid span (horizontal merge)
-    if let Some(span) = props.grid_span
-        && span > 1
-    {
-        xml.push_str("<w:gridSpan w:val=\"");
-        xml.push_str(&span.to_string());
-        xml.push_str("\"/>");
-    }
-
-    // Vertical merge
-    if let Some(merge) = &props.vertical_merge {
-        xml.push_str("<w:vMerge");
-        match merge {
-            VerticalMerge::Restart => xml.push_str(" w:val=\"restart\""),
-            VerticalMerge::Continue => {} // Empty vMerge means continue
-        }
-        xml.push_str("/>");
-    }
-
-    // Borders
-    if let Some(borders) = &props.borders {
-        serialize_cell_borders(borders, xml);
-    }
-
-    // Shading
-    if let Some(shading) = &props.shading {
-        serialize_cell_shading(shading, xml);
-    }
-
-    // Vertical alignment
-    if let Some(valign) = &props.vertical_align {
-        xml.push_str("<w:vAlign w:val=\"");
-        xml.push_str(valign.as_str());
-        xml.push_str("\"/>");
-    }
-
-    // Unknown children for round-trip preservation
-    serialize_unknown_children(&props.unknown_children, xml);
-
-    xml.push_str("</w:tcPr>");
-}
-
-/// Serialize cell width.
-fn serialize_cell_width(width: &CellWidth, xml: &mut String) {
-    xml.push_str("<w:tcW w:w=\"");
-    xml.push_str(&width.width.to_string());
-    xml.push_str("\" w:type=\"");
-    xml.push_str(width.width_type.as_str());
-    xml.push_str("\"/>");
-}
-
-/// Serialize cell borders.
-fn serialize_cell_borders(borders: &CellBorders, xml: &mut String) {
-    xml.push_str("<w:tcBorders>");
-    if let Some(border) = &borders.top {
-        xml.push_str("<w:top");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.left {
-        xml.push_str("<w:left");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.bottom {
-        xml.push_str("<w:bottom");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.right {
-        xml.push_str("<w:right");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.inside_h {
-        xml.push_str("<w:insideH");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.inside_v {
-        xml.push_str("<w:insideV");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    xml.push_str("</w:tcBorders>");
-}
-
-/// Serialize border attributes.
-fn serialize_border_attrs(border: &Border, xml: &mut String) {
-    xml.push_str(" w:val=\"");
-    xml.push_str(border.style.as_str());
-    xml.push('"');
-    if let Some(sz) = border.size {
-        xml.push_str(" w:sz=\"");
-        xml.push_str(&sz.to_string());
-        xml.push('"');
-    }
-    if let Some(color) = &border.color {
-        xml.push_str(" w:color=\"");
-        xml.push_str(color);
-        xml.push('"');
-    }
-    if let Some(space) = border.space {
-        xml.push_str(" w:space=\"");
-        xml.push_str(&space.to_string());
-        xml.push('"');
-    }
-}
-
-/// Serialize cell shading.
-fn serialize_cell_shading(shading: &CellShading, xml: &mut String) {
-    xml.push_str("<w:shd");
-    if let Some(pattern) = &shading.pattern {
-        xml.push_str(" w:val=\"");
-        xml.push_str(match pattern {
-            crate::document::ShadingPattern::Clear => "clear",
-            crate::document::ShadingPattern::Solid => "solid",
-            _ => "clear", // Simplified - full mapping would be extensive
-        });
-        xml.push('"');
-    }
-    if let Some(fill) = &shading.fill {
-        xml.push_str(" w:fill=\"");
-        xml.push_str(fill);
-        xml.push('"');
-    }
-    if let Some(color) = &shading.color {
-        xml.push_str(" w:color=\"");
-        xml.push_str(color);
-        xml.push('"');
-    }
-    xml.push_str("/>");
-}
-
-/// Serialize a paragraph.
-fn serialize_paragraph(para: &Paragraph, xml: &mut String) {
-    xml.push_str("<w:p>");
-
-    // Paragraph properties
-    if let Some(props) = para.properties() {
-        serialize_paragraph_properties(props, xml);
-    }
-
-    // Content (runs, hyperlinks, bookmarks)
-    for content in para.content() {
-        match content {
-            ParagraphContent::Run(run) => serialize_run(run, xml),
-            ParagraphContent::Hyperlink(link) => serialize_hyperlink(link, xml),
-            ParagraphContent::BookmarkStart(bookmark) => {
-                xml.push_str(&format!(
-                    r#"<w:bookmarkStart w:id="{}" w:name="{}"/>"#,
-                    bookmark.id,
-                    escape_xml(&bookmark.name)
-                ));
-            }
-            ParagraphContent::BookmarkEnd(bookmark) => {
-                xml.push_str(&format!(r#"<w:bookmarkEnd w:id="{}"/>"#, bookmark.id));
-            }
-            ParagraphContent::CommentRangeStart(comment) => {
-                xml.push_str(&format!(r#"<w:commentRangeStart w:id="{}"/>"#, comment.id));
-            }
-            ParagraphContent::CommentRangeEnd(comment) => {
-                xml.push_str(&format!(r#"<w:commentRangeEnd w:id="{}"/>"#, comment.id));
-            }
-            ParagraphContent::SimpleField(field) => {
-                xml.push_str("<w:fldSimple w:instr=\"");
-                xml.push_str(&escape_xml(&field.instruction));
-                xml.push_str("\">");
-                for run in &field.runs {
-                    serialize_run(run, xml);
-                }
-                xml.push_str("</w:fldSimple>");
-            }
-            ParagraphContent::Math(math_zone) => {
-                xml.push_str(&ooxml_omml::serialize_math_zone(math_zone));
-            }
-            ParagraphContent::Insertion(ins) => {
-                xml.push_str(&format!(r#"<w:ins w:id="{}""#, ins.id));
-                if let Some(ref author) = ins.author {
-                    xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
-                }
-                if let Some(ref date) = ins.date {
-                    xml.push_str(&format!(r#" w:date="{}""#, escape_xml(date)));
-                }
-                xml.push('>');
-                for run in &ins.runs {
-                    serialize_run(run, xml);
-                }
-                xml.push_str("</w:ins>");
-            }
-            ParagraphContent::Deletion(del) => {
-                xml.push_str(&format!(r#"<w:del w:id="{}""#, del.id));
-                if let Some(ref author) = del.author {
-                    xml.push_str(&format!(r#" w:author="{}""#, escape_xml(author)));
-                }
-                if let Some(ref date) = del.date {
-                    xml.push_str(&format!(r#" w:date="{}""#, escape_xml(date)));
-                }
-                xml.push('>');
-                for run in &del.runs {
-                    serialize_run(run, xml);
-                }
-                xml.push_str("</w:del>");
+            if let Some(ref date) = pc.date {
+                comment
+                    .extra_attrs
+                    .insert("w:date".to_string(), date.clone());
             }
         }
+
+        result.comment.push(Box::new(comment));
     }
 
-    serialize_unknown_children(&para.unknown_children, xml);
-    xml.push_str("</w:p>");
-}
-
-/// Serialize a hyperlink.
-fn serialize_hyperlink(link: &Hyperlink, xml: &mut String) {
-    xml.push_str("<w:hyperlink");
-
-    if let Some(rel_id) = link.rel_id() {
-        xml.push_str(&format!(r#" r:id="{}""#, rel_id));
-    }
-    if let Some(anchor) = link.anchor() {
-        xml.push_str(&format!(r#" w:anchor="{}""#, escape_xml(anchor)));
-    }
-
-    // Write unknown attributes preserved for round-trip fidelity
-    serialize_unknown_attrs(&link.unknown_attrs, xml);
-
-    xml.push('>');
-
-    for run in link.runs() {
-        serialize_run(run, xml);
-    }
-
-    serialize_unknown_children(&link.unknown_children, xml);
-    xml.push_str("</w:hyperlink>");
-}
-
-/// Serialize paragraph properties.
-fn serialize_paragraph_properties(props: &ParagraphProperties, xml: &mut String) {
-    xml.push_str("<w:pPr>");
-
-    if let Some(ref style) = props.style {
-        xml.push_str(&format!(r#"<w:pStyle w:val="{}"/>"#, escape_xml(style)));
-    }
-
-    // Numbering properties
-    if let Some(ref num_props) = props.numbering {
-        serialize_numbering_properties(num_props, xml);
-    }
-
-    // Alignment (justification)
-    if let Some(alignment) = props.alignment {
-        xml.push_str(&format!(r#"<w:jc w:val="{}"/>"#, alignment.as_str()));
-    }
-
-    // Spacing
-    if props.spacing_before.is_some()
-        || props.spacing_after.is_some()
-        || props.spacing_line.is_some()
-    {
-        xml.push_str("<w:spacing");
-        if let Some(before) = props.spacing_before {
-            xml.push_str(&format!(r#" w:before="{}""#, before));
-        }
-        if let Some(after) = props.spacing_after {
-            xml.push_str(&format!(r#" w:after="{}""#, after));
-        }
-        if let Some(line) = props.spacing_line {
-            xml.push_str(&format!(r#" w:line="{}""#, line));
-        }
-        xml.push_str("/>");
-    }
-
-    // Indentation
-    if props.indent_left.is_some()
-        || props.indent_right.is_some()
-        || props.indent_first_line.is_some()
-        || props.indent_hanging.is_some()
-    {
-        xml.push_str("<w:ind");
-        if let Some(left) = props.indent_left {
-            xml.push_str(&format!(r#" w:left="{}""#, left));
-        }
-        if let Some(right) = props.indent_right {
-            xml.push_str(&format!(r#" w:right="{}""#, right));
-        }
-        if let Some(hanging) = props.indent_hanging {
-            xml.push_str(&format!(r#" w:hanging="{}""#, hanging));
-        } else if let Some(first_line) = props.indent_first_line {
-            xml.push_str(&format!(r#" w:firstLine="{}""#, first_line));
-        }
-        xml.push_str("/>");
-    }
-
-    // Paragraph borders
-    if let Some(borders) = &props.borders {
-        serialize_paragraph_borders(borders, xml);
-    }
-
-    // Paragraph shading
-    if let Some(shading) = &props.shading {
-        serialize_cell_shading(shading, xml);
-    }
-
-    // Outline level
-    if let Some(level) = props.outline_level {
-        xml.push_str(&format!(r#"<w:outlineLvl w:val="{}"/>"#, level));
-    }
-
-    // Flow control properties
-    if props.keep_next {
-        xml.push_str("<w:keepNext/>");
-    }
-    if props.keep_lines {
-        xml.push_str("<w:keepLines/>");
-    }
-    if props.page_break_before {
-        xml.push_str("<w:pageBreakBefore/>");
-    }
-    if let Some(widow_control) = props.widow_control {
-        if widow_control {
-            xml.push_str("<w:widowControl/>");
-        } else {
-            xml.push_str(r#"<w:widowControl w:val="0"/>"#);
-        }
-    }
-
-    // Tab stops
-    if !props.tabs.is_empty() {
-        serialize_tab_stops(&props.tabs, xml);
-    }
-
-    serialize_unknown_children(&props.unknown_children, xml);
-    xml.push_str("</w:pPr>");
-}
-
-/// Serialize tab stops.
-fn serialize_tab_stops(tabs: &[TabStop], xml: &mut String) {
-    xml.push_str("<w:tabs>");
-    for tab in tabs {
-        xml.push_str("<w:tab w:val=\"");
-        xml.push_str(tab.tab_type.as_str());
-        xml.push_str("\" w:pos=\"");
-        xml.push_str(&tab.position.to_string());
-        xml.push('"');
-        if let Some(leader) = tab.leader {
-            xml.push_str(" w:leader=\"");
-            xml.push_str(leader.as_str());
-            xml.push('"');
-        }
-        xml.push_str("/>");
-    }
-    xml.push_str("</w:tabs>");
-}
-
-/// Serialize paragraph borders.
-fn serialize_paragraph_borders(borders: &ParagraphBorders, xml: &mut String) {
-    xml.push_str("<w:pBdr>");
-    if let Some(border) = &borders.top {
-        xml.push_str("<w:top");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.left {
-        xml.push_str("<w:left");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.bottom {
-        xml.push_str("<w:bottom");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.right {
-        xml.push_str("<w:right");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.between {
-        xml.push_str("<w:between");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    if let Some(border) = &borders.bar {
-        xml.push_str("<w:bar");
-        serialize_border_attrs(border, xml);
-        xml.push_str("/>");
-    }
-    xml.push_str("</w:pBdr>");
-}
-
-/// Serialize numbering properties (within pPr).
-fn serialize_numbering_properties(props: &NumberingProperties, xml: &mut String) {
-    xml.push_str("<w:numPr>");
-    xml.push_str(&format!(r#"<w:ilvl w:val="{}"/>"#, props.ilvl));
-    xml.push_str(&format!(r#"<w:numId w:val="{}"/>"#, props.num_id));
-    xml.push_str("</w:numPr>");
-}
-
-/// Serialize a run.
-fn serialize_run(run: &Run, xml: &mut String) {
-    xml.push_str("<w:r");
-
-    // Write unknown attributes preserved for round-trip fidelity
-    serialize_unknown_attrs(&run.unknown_attrs, xml);
-
-    xml.push('>');
-
-    // Run properties
-    if let Some(props) = run.properties() {
-        serialize_run_properties(props, xml);
-    }
-
-    // Page break (if any)
-    if run.has_page_break() {
-        xml.push_str(r#"<w:br w:type="page"/>"#);
-    }
-
-    // Drawings (images)
-    for drawing in run.drawings() {
-        serialize_drawing(drawing, xml);
-    }
-
-    // VML pictures (legacy images)
-    for vml_pict in run.vml_pictures() {
-        serialize_vml_picture(vml_pict, xml);
-    }
-
-    // Embedded objects
-    for obj in run.embedded_objects() {
-        serialize_embedded_object(obj, xml);
-    }
-
-    // Symbols
-    for symbol in run.symbols() {
-        xml.push_str("<w:sym w:font=\"");
-        xml.push_str(&escape_xml(&symbol.font));
-        xml.push_str("\" w:char=\"");
-        xml.push_str(&escape_xml(&symbol.char_code));
-        xml.push_str("\"/>");
-    }
-
-    // Field character (complex field marker)
-    if let Some(field_char) = run.field_char() {
-        xml.push_str("<w:fldChar w:fldCharType=\"");
-        xml.push_str(field_char.field_type.as_str());
-        xml.push_str("\"/>");
-    }
-
-    // Field instruction text
-    if let Some(instr_text) = run.instr_text() {
-        xml.push_str("<w:instrText>");
-        xml.push_str(&escape_xml(instr_text));
-        xml.push_str("</w:instrText>");
-    }
-
-    // Footnote reference
-    if let Some(footnote_ref) = run.footnote_ref() {
-        xml.push_str("<w:footnoteReference w:id=\"");
-        xml.push_str(&footnote_ref.id.to_string());
-        xml.push_str("\"/>");
-    }
-
-    // Endnote reference
-    if let Some(endnote_ref) = run.endnote_ref() {
-        xml.push_str("<w:endnoteReference w:id=\"");
-        xml.push_str(&endnote_ref.id.to_string());
-        xml.push_str("\"/>");
-    }
-
-    // Comment reference
-    if let Some(comment_ref) = run.comment_ref() {
-        xml.push_str("<w:commentReference w:id=\"");
-        xml.push_str(&comment_ref.id.to_string());
-        xml.push_str("\"/>");
-    }
-
-    // Text content
-    let text = run.text();
-    if !text.is_empty() {
-        // Handle text that needs xml:space="preserve"
-        let needs_preserve = text.starts_with(' ')
-            || text.ends_with(' ')
-            || text.contains('\t')
-            || text.contains('\n');
-
-        if needs_preserve {
-            xml.push_str(r#"<w:t xml:space="preserve">"#);
-        } else {
-            xml.push_str("<w:t>");
-        }
-        xml.push_str(&escape_xml(text));
-        xml.push_str("</w:t>");
-    }
-
-    serialize_unknown_children(&run.unknown_children, xml);
-    xml.push_str("</w:r>");
-}
-
-/// Serialize a drawing element.
-fn serialize_drawing(drawing: &Drawing, xml: &mut String) {
-    xml.push_str("<w:drawing>");
-    let mut doc_id = 1;
-    for image in drawing.images() {
-        serialize_inline_image(image, doc_id, xml);
-        doc_id += 1;
-    }
-    for image in drawing.anchored_images() {
-        serialize_anchored_image(image, doc_id, xml);
-        doc_id += 1;
-    }
-    serialize_unknown_children(&drawing.unknown_children, xml);
-    xml.push_str("</w:drawing>");
-}
-
-/// Serialize a VML picture element (legacy image format).
-fn serialize_vml_picture(vml_pict: &VmlPicture, xml: &mut String) {
-    xml.push_str("<w:pict");
-    for (key, value) in &vml_pict.attributes {
-        xml.push(' ');
-        xml.push_str(key);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(value));
-        xml.push('"');
-    }
-    xml.push('>');
-
-    // Serialize children using the RawXmlNode serialization
-    for child in &vml_pict.children {
-        serialize_raw_xml_node(child, xml);
-    }
-
-    xml.push_str("</w:pict>");
-}
-
-/// Serialize an embedded OLE object.
-fn serialize_embedded_object(obj: &EmbeddedObject, xml: &mut String) {
-    xml.push_str("<w:object");
-    for (key, value) in &obj.attributes {
-        xml.push(' ');
-        xml.push_str(key);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(value));
-        xml.push('"');
-    }
-    xml.push('>');
-
-    // Serialize children using the RawXmlNode serialization
-    for child in &obj.children {
-        serialize_raw_xml_node(child, xml);
-    }
-
-    xml.push_str("</w:object>");
-}
-
-/// Serialize an inline image.
-///
-/// Generates the DrawingML structure required for an inline image.
-fn serialize_inline_image(image: &InlineImage, doc_id: usize, xml: &mut String) {
-    // Default dimensions: 1 inch x 1 inch (914400 EMUs)
-    let cx = image.width_emu().unwrap_or(914400);
-    let cy = image.height_emu().unwrap_or(914400);
-    let rel_id = image.rel_id();
-    let descr = image.description().unwrap_or("Image");
-
-    // Inline element with extent
-    xml.push_str(r#"<wp:inline distT="0" distB="0" distL="0" distR="0">"#);
-    xml.push_str(&format!(r#"<wp:extent cx="{}" cy="{}"/>"#, cx, cy));
-
-    // Document properties
-    xml.push_str(&format!(
-        r#"<wp:docPr id="{}" name="Picture {}" descr="{}"/>"#,
-        doc_id,
-        doc_id,
-        escape_xml(descr)
-    ));
-
-    // Graphic frame lock
-    xml.push_str(
-        r#"<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>"#,
-    );
-
-    // Graphic container
-    xml.push_str(r#"<a:graphic>"#);
-    xml.push_str(
-        r#"<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">"#,
-    );
-
-    // Picture element
-    xml.push_str(r#"<pic:pic>"#);
-
-    // Non-visual properties
-    xml.push_str(&format!(
-        r#"<pic:nvPicPr><pic:cNvPr id="{}" name="Picture {}"/><pic:cNvPicPr/></pic:nvPicPr>"#,
-        doc_id, doc_id
-    ));
-
-    // Blip fill (references the image relationship)
-    xml.push_str(r#"<pic:blipFill>"#);
-    xml.push_str(&format!(r#"<a:blip r:embed="{}"/>"#, rel_id));
-    xml.push_str(r#"<a:stretch><a:fillRect/></a:stretch>"#);
-    xml.push_str(r#"</pic:blipFill>"#);
-
-    // Shape properties
-    xml.push_str(r#"<pic:spPr>"#);
-    xml.push_str(r#"<a:xfrm>"#);
-    xml.push_str(r#"<a:off x="0" y="0"/>"#);
-    xml.push_str(&format!(r#"<a:ext cx="{}" cy="{}"/>"#, cx, cy));
-    xml.push_str(r#"</a:xfrm>"#);
-    xml.push_str(r#"<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
-    xml.push_str(r#"</pic:spPr>"#);
-
-    xml.push_str(r#"</pic:pic>"#);
-    xml.push_str(r#"</a:graphicData>"#);
-    xml.push_str(r#"</a:graphic>"#);
-    xml.push_str(r#"</wp:inline>"#);
-}
-
-/// Serialize an anchored (floating) image.
-///
-/// Generates the DrawingML structure required for an anchored image with text wrapping.
-fn serialize_anchored_image(image: &AnchoredImage, doc_id: usize, xml: &mut String) {
-    // Default dimensions: 1 inch x 1 inch (914400 EMUs)
-    let cx = image.width_emu().unwrap_or(914400);
-    let cy = image.height_emu().unwrap_or(914400);
-    let rel_id = image.rel_id();
-    let descr = image.description().unwrap_or("Image");
-    let behind_doc = if image.is_behind_doc() { "1" } else { "0" };
-
-    // Anchor element with positioning attributes
-    xml.push_str(&format!(
-        r#"<wp:anchor distT="0" distB="0" distL="114300" distR="114300" simplePos="0" relativeHeight="251658240" behindDoc="{}" locked="0" layoutInCell="1" allowOverlap="1">"#,
-        behind_doc
-    ));
-
-    // Simple position (unused but required)
-    xml.push_str(r#"<wp:simplePos x="0" y="0"/>"#);
-
-    // Horizontal position
-    xml.push_str(r#"<wp:positionH relativeFrom="column">"#);
-    xml.push_str(&format!(
-        r#"<wp:posOffset>{}</wp:posOffset>"#,
-        image.pos_x()
-    ));
-    xml.push_str(r#"</wp:positionH>"#);
-
-    // Vertical position
-    xml.push_str(r#"<wp:positionV relativeFrom="paragraph">"#);
-    xml.push_str(&format!(
-        r#"<wp:posOffset>{}</wp:posOffset>"#,
-        image.pos_y()
-    ));
-    xml.push_str(r#"</wp:positionV>"#);
-
-    // Extent
-    xml.push_str(&format!(r#"<wp:extent cx="{}" cy="{}"/>"#, cx, cy));
-
-    // Effect extent (no effects)
-    xml.push_str(r#"<wp:effectExtent l="0" t="0" r="0" b="0"/>"#);
-
-    // Wrap type
-    match image.wrap_type() {
-        WrapType::None => xml.push_str(r#"<wp:wrapNone/>"#),
-        WrapType::Square => xml.push_str(r#"<wp:wrapSquare wrapText="bothSides"/>"#),
-        WrapType::Tight => xml.push_str(r#"<wp:wrapTight wrapText="bothSides"><wp:wrapPolygon edited="0"><wp:start x="0" y="0"/><wp:lineTo x="0" y="21600"/><wp:lineTo x="21600" y="21600"/><wp:lineTo x="21600" y="0"/><wp:lineTo x="0" y="0"/></wp:wrapPolygon></wp:wrapTight>"#),
-        WrapType::Through => xml.push_str(r#"<wp:wrapThrough wrapText="bothSides"><wp:wrapPolygon edited="0"><wp:start x="0" y="0"/><wp:lineTo x="0" y="21600"/><wp:lineTo x="21600" y="21600"/><wp:lineTo x="21600" y="0"/><wp:lineTo x="0" y="0"/></wp:wrapPolygon></wp:wrapThrough>"#),
-        WrapType::TopAndBottom => xml.push_str(r#"<wp:wrapTopAndBottom/>"#),
-    }
-
-    // Document properties
-    xml.push_str(&format!(
-        r#"<wp:docPr id="{}" name="Picture {}" descr="{}"/>"#,
-        doc_id,
-        doc_id,
-        escape_xml(descr)
-    ));
-
-    // Graphic frame lock
-    xml.push_str(
-        r#"<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>"#,
-    );
-
-    // Graphic container
-    xml.push_str(r#"<a:graphic>"#);
-    xml.push_str(
-        r#"<a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">"#,
-    );
-
-    // Picture element
-    xml.push_str(r#"<pic:pic>"#);
-
-    // Non-visual properties
-    xml.push_str(&format!(
-        r#"<pic:nvPicPr><pic:cNvPr id="{}" name="Picture {}"/><pic:cNvPicPr/></pic:nvPicPr>"#,
-        doc_id, doc_id
-    ));
-
-    // Blip fill (references the image relationship)
-    xml.push_str(r#"<pic:blipFill>"#);
-    xml.push_str(&format!(r#"<a:blip r:embed="{}"/>"#, rel_id));
-    xml.push_str(r#"<a:stretch><a:fillRect/></a:stretch>"#);
-    xml.push_str(r#"</pic:blipFill>"#);
-
-    // Shape properties
-    xml.push_str(r#"<pic:spPr>"#);
-    xml.push_str(r#"<a:xfrm>"#);
-    xml.push_str(r#"<a:off x="0" y="0"/>"#);
-    xml.push_str(&format!(r#"<a:ext cx="{}" cy="{}"/>"#, cx, cy));
-    xml.push_str(r#"</a:xfrm>"#);
-    xml.push_str(r#"<a:prstGeom prst="rect"><a:avLst/></a:prstGeom>"#);
-    xml.push_str(r#"</pic:spPr>"#);
-
-    xml.push_str(r#"</pic:pic>"#);
-    xml.push_str(r#"</a:graphicData>"#);
-    xml.push_str(r#"</a:graphic>"#);
-    xml.push_str(r#"</wp:anchor>"#);
-}
-
-/// Serialize run properties.
-fn serialize_run_properties(props: &RunProperties, xml: &mut String) {
-    // Only output if there are properties to write
-    let has_props = props.bold
-        || props.italic
-        || props.underline.is_some()
-        || props.strike
-        || props.double_strike
-        || props.size.is_some()
-        || props.font.is_some()
-        || props.fonts.is_some()
-        || props.style.is_some()
-        || props.color.is_some()
-        || props.highlight.is_some()
-        || props.vertical_align.is_some()
-        || props.all_caps
-        || props.small_caps
-        || props.hidden
-        || props.shading.is_some()
-        || !props.unknown_children.is_empty();
-
-    if !has_props {
-        return;
-    }
-
-    xml.push_str("<w:rPr>");
-
-    if let Some(ref style) = props.style {
-        xml.push_str(&format!(r#"<w:rStyle w:val="{}"/>"#, escape_xml(style)));
-    }
-
-    // Serialize fonts: prefer the new Fonts struct, fall back to legacy font field
-    if let Some(ref fonts) = props.fonts {
-        let mut attrs = String::new();
-        if let Some(ref ascii) = fonts.ascii {
-            attrs.push_str(&format!(r#" w:ascii="{}""#, escape_xml(ascii)));
-        }
-        if let Some(ref h_ansi) = fonts.h_ansi {
-            attrs.push_str(&format!(r#" w:hAnsi="{}""#, escape_xml(h_ansi)));
-        }
-        if let Some(ref east_asia) = fonts.east_asia {
-            attrs.push_str(&format!(r#" w:eastAsia="{}""#, escape_xml(east_asia)));
-        }
-        if let Some(ref cs) = fonts.cs {
-            attrs.push_str(&format!(r#" w:cs="{}""#, escape_xml(cs)));
-        }
-        if !attrs.is_empty() {
-            xml.push_str(&format!("<w:rFonts{}/>", attrs));
-        }
-    } else if let Some(ref font) = props.font {
-        // Legacy single font field (backward compatibility)
-        xml.push_str(&format!(r#"<w:rFonts w:ascii="{}"/>"#, escape_xml(font)));
-    }
-
-    if props.bold {
-        xml.push_str("<w:b/>");
-    }
-
-    if props.italic {
-        xml.push_str("<w:i/>");
-    }
-
-    if let Some(underline) = props.underline {
-        xml.push_str(&format!(r#"<w:u w:val="{}"/>"#, underline.as_str()));
-    }
-
-    if props.strike {
-        xml.push_str("<w:strike/>");
-    }
-
-    if props.double_strike {
-        xml.push_str("<w:dstrike/>");
-    }
-
-    if props.all_caps {
-        xml.push_str("<w:caps/>");
-    }
-
-    if props.small_caps {
-        xml.push_str("<w:smallCaps/>");
-    }
-
-    if let Some(highlight) = props.highlight {
-        xml.push_str(&format!(r#"<w:highlight w:val="{}"/>"#, highlight.as_str()));
-    }
-
-    if let Some(vertical_align) = props.vertical_align {
-        xml.push_str(&format!(
-            r#"<w:vertAlign w:val="{}"/>"#,
-            vertical_align.as_str()
-        ));
-    }
-
-    if let Some(size) = props.size {
-        xml.push_str(&format!(r#"<w:sz w:val="{}"/>"#, size));
-    }
-
-    if let Some(ref color) = props.color {
-        xml.push_str(&format!(r#"<w:color w:val="{}"/>"#, escape_xml(color)));
-    }
-
-    if props.hidden {
-        xml.push_str("<w:vanish/>");
-    }
-
-    if let Some(ref shading) = props.shading {
-        serialize_cell_shading(shading, xml);
-    }
-
-    serialize_unknown_children(&props.unknown_children, xml);
-    xml.push_str("</w:rPr>");
-}
-
-/// Escape special XML characters.
-fn escape_xml(s: &str) -> String {
-    let mut result = String::with_capacity(s.len());
-    for c in s.chars() {
-        match c {
-            '&' => result.push_str("&amp;"),
-            '<' => result.push_str("&lt;"),
-            '>' => result.push_str("&gt;"),
-            '"' => result.push_str("&quot;"),
-            '\'' => result.push_str("&apos;"),
-            _ => result.push(c),
-        }
-    }
     result
 }
 
-/// Serialize a RawXmlNode (preserved unknown element) to XML string.
-fn serialize_raw_xml_node(node: &RawXmlNode, xml: &mut String) {
-    match node {
-        RawXmlNode::Element(elem) => serialize_raw_xml_element(elem, xml),
-        RawXmlNode::Text(text) => xml.push_str(&escape_xml(text)),
-        RawXmlNode::CData(text) => {
-            xml.push_str("<![CDATA[");
-            xml.push_str(text);
-            xml.push_str("]]>");
+/// Map ListType to STNumberFormat and level text.
+fn list_type_to_num_fmt_and_text(list_type: ListType) -> (types::STNumberFormat, &'static str) {
+    match list_type {
+        ListType::Bullet => (types::STNumberFormat::Bullet, "\u{2022}"),
+        ListType::Decimal => (types::STNumberFormat::Decimal, "%1."),
+        ListType::LowerLetter => (types::STNumberFormat::LowerLetter, "%1."),
+        ListType::UpperLetter => (types::STNumberFormat::UpperLetter, "%1."),
+        ListType::LowerRoman => (types::STNumberFormat::LowerRoman, "%1."),
+        ListType::UpperRoman => (types::STNumberFormat::UpperRoman, "%1."),
+    }
+}
+
+/// Build a Numbering type from pending numbering definitions.
+fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Numbering {
+    let mut numbering = types::Numbering {
+        num_pic_bullet: Vec::new(),
+        abstract_num: Vec::new(),
+        num: Vec::new(),
+        num_id_mac_at_cleanup: None,
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    };
+
+    // Sort numberings by num_id for deterministic output
+    let mut sorted: Vec<_> = numberings.values().collect();
+    sorted.sort_by_key(|n| n.num_id);
+
+    for pn in &sorted {
+        let (num_fmt, lvl_text) = list_type_to_num_fmt_and_text(pn.list_type);
+
+        let level = types::Level {
+            ilvl: 0,
+            tplc: None,
+            tentative: None,
+            start: Some(Box::new(types::CTDecimalNumber {
+                value: 1,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            })),
+            num_fmt: Some(Box::new(types::CTNumFmt {
+                value: num_fmt,
+                format: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            })),
+            lvl_restart: None,
+            paragraph_style: None,
+            is_lgl: None,
+            suff: None,
+            lvl_text: Some(Box::new(types::CTLevelText {
+                value: Some(lvl_text.to_string()),
+                null: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            })),
+            lvl_pic_bullet_id: None,
+            legacy: None,
+            lvl_jc: Some(Box::new(types::CTJc {
+                value: types::STJc::Left,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            })),
+            p_pr: None,
+            r_pr: if pn.list_type == ListType::Bullet {
+                // For bullet lists, use Symbol font
+                Some(Box::new(build_bullet_run_properties()))
+            } else {
+                None
+            },
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        let abs = types::AbstractNumbering {
+            abstract_num_id: pn.abstract_num_id as i64,
+            nsid: None,
+            multi_level_type: None,
+            tmpl: None,
+            name: None,
+            style_link: None,
+            num_style_link: None,
+            lvl: vec![Box::new(level)],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        numbering.abstract_num.push(Box::new(abs));
+
+        let inst = types::NumberingInstance {
+            num_id: pn.num_id as i64,
+            abstract_num_id: Box::new(types::CTDecimalNumber {
+                value: pn.abstract_num_id as i64,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: std::collections::HashMap::new(),
+            }),
+            lvl_override: Vec::new(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        numbering.num.push(Box::new(inst));
+    }
+
+    numbering
+}
+
+/// Build run properties for bullet list levels (Symbol font).
+#[cfg(feature = "wml-styling")]
+fn build_bullet_run_properties() -> types::RunProperties {
+    types::RunProperties {
+        fonts: Some(Box::new(types::Fonts {
+            ascii: Some("Symbol".to_string()),
+            h_ansi: Some("Symbol".to_string()),
+            hint: Some(types::STHint::Default),
+            ..Default::default()
+        })),
+        ..Default::default()
+    }
+}
+
+/// Stub for when wml-styling is not enabled.
+#[cfg(not(feature = "wml-styling"))]
+fn build_bullet_run_properties() -> types::RunProperties {
+    types::RunProperties::default()
+}
+
+// =============================================================================
+// Drawing XML element builders
+// =============================================================================
+
+/// Build the `a:graphic` element containing a picture reference.
+fn build_graphic_element(rel_id: &str, width: i64, height: i64, doc_id: usize) -> RawXmlElement {
+    let blip = RawXmlElement {
+        name: "a:blip".to_string(),
+        attributes: vec![("r:embed".to_string(), rel_id.to_string())],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let fill_rect = RawXmlElement {
+        name: "a:fillRect".to_string(),
+        attributes: vec![],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let stretch = RawXmlElement {
+        name: "a:stretch".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(fill_rect)],
+        self_closing: false,
+    };
+
+    let blip_fill = RawXmlElement {
+        name: "pic:blipFill".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(blip), RawXmlNode::Element(stretch)],
+        self_closing: false,
+    };
+
+    let cnv_pr = RawXmlElement {
+        name: "pic:cNvPr".to_string(),
+        attributes: vec![
+            ("id".to_string(), doc_id.to_string()),
+            ("name".to_string(), format!("Picture {}", doc_id)),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let cnv_pic_pr = RawXmlElement {
+        name: "pic:cNvPicPr".to_string(),
+        attributes: vec![],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let nv_pic_pr = RawXmlElement {
+        name: "pic:nvPicPr".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(cnv_pr), RawXmlNode::Element(cnv_pic_pr)],
+        self_closing: false,
+    };
+
+    let off = RawXmlElement {
+        name: "a:off".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let ext = RawXmlElement {
+        name: "a:ext".to_string(),
+        attributes: vec![
+            ("cx".to_string(), width.to_string()),
+            ("cy".to_string(), height.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let xfrm = RawXmlElement {
+        name: "a:xfrm".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(off), RawXmlNode::Element(ext)],
+        self_closing: false,
+    };
+
+    let av_lst = RawXmlElement {
+        name: "a:avLst".to_string(),
+        attributes: vec![],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let prst_geom = RawXmlElement {
+        name: "a:prstGeom".to_string(),
+        attributes: vec![("prst".to_string(), "rect".to_string())],
+        children: vec![RawXmlNode::Element(av_lst)],
+        self_closing: false,
+    };
+
+    let sp_pr = RawXmlElement {
+        name: "pic:spPr".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(xfrm), RawXmlNode::Element(prst_geom)],
+        self_closing: false,
+    };
+
+    let pic = RawXmlElement {
+        name: "pic:pic".to_string(),
+        attributes: vec![],
+        children: vec![
+            RawXmlNode::Element(nv_pic_pr),
+            RawXmlNode::Element(blip_fill),
+            RawXmlNode::Element(sp_pr),
+        ],
+        self_closing: false,
+    };
+
+    let graphic_data = RawXmlElement {
+        name: "a:graphicData".to_string(),
+        attributes: vec![(
+            "uri".to_string(),
+            "http://schemas.openxmlformats.org/drawingml/2006/picture".to_string(),
+        )],
+        children: vec![RawXmlNode::Element(pic)],
+        self_closing: false,
+    };
+
+    RawXmlElement {
+        name: "a:graphic".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(graphic_data)],
+        self_closing: false,
+    }
+}
+
+/// Build the `wp:inline` element for an inline image.
+fn build_inline_image_element(image: &InlineImage, doc_id: usize) -> RawXmlElement {
+    let width_emu = image.width_emu.unwrap_or(914400);
+    let height_emu = image.height_emu.unwrap_or(914400);
+    let desc = image.description.as_deref().unwrap_or("Image");
+
+    let extent = RawXmlElement {
+        name: "wp:extent".to_string(),
+        attributes: vec![
+            ("cx".to_string(), width_emu.to_string()),
+            ("cy".to_string(), height_emu.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let doc_pr = RawXmlElement {
+        name: "wp:docPr".to_string(),
+        attributes: vec![
+            ("id".to_string(), doc_id.to_string()),
+            ("name".to_string(), format!("Picture {}", doc_id)),
+            ("descr".to_string(), desc.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let graphic_frame_locks = RawXmlElement {
+        name: "a:graphicFrameLocks".to_string(),
+        attributes: vec![("noChangeAspect".to_string(), "1".to_string())],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let cnv_graphic_frame_pr = RawXmlElement {
+        name: "wp:cNvGraphicFramePr".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(graphic_frame_locks)],
+        self_closing: false,
+    };
+
+    let graphic = build_graphic_element(&image.rel_id, width_emu, height_emu, doc_id);
+
+    RawXmlElement {
+        name: "wp:inline".to_string(),
+        attributes: vec![
+            ("distT".to_string(), "0".to_string()),
+            ("distB".to_string(), "0".to_string()),
+            ("distL".to_string(), "0".to_string()),
+            ("distR".to_string(), "0".to_string()),
+        ],
+        children: vec![
+            RawXmlNode::Element(extent),
+            RawXmlNode::Element(doc_pr),
+            RawXmlNode::Element(cnv_graphic_frame_pr),
+            RawXmlNode::Element(graphic),
+        ],
+        self_closing: false,
+    }
+}
+
+/// Build the wrap type element for an anchored image.
+fn build_wrap_element(wrap_type: WrapType) -> RawXmlElement {
+    match wrap_type {
+        WrapType::None => RawXmlElement {
+            name: "wp:wrapNone".to_string(),
+            attributes: vec![],
+            children: vec![],
+            self_closing: true,
+        },
+        WrapType::Square => RawXmlElement {
+            name: "wp:wrapSquare".to_string(),
+            attributes: vec![("wrapText".to_string(), "bothSides".to_string())],
+            children: vec![],
+            self_closing: true,
+        },
+        WrapType::Tight => {
+            let polygon = build_default_wrap_polygon();
+            RawXmlElement {
+                name: "wp:wrapTight".to_string(),
+                attributes: vec![("wrapText".to_string(), "bothSides".to_string())],
+                children: vec![RawXmlNode::Element(polygon)],
+                self_closing: false,
+            }
         }
-        RawXmlNode::Comment(text) => {
-            xml.push_str("<!--");
-            xml.push_str(text);
-            xml.push_str("-->");
+        WrapType::Through => {
+            let polygon = build_default_wrap_polygon();
+            RawXmlElement {
+                name: "wp:wrapThrough".to_string(),
+                attributes: vec![("wrapText".to_string(), "bothSides".to_string())],
+                children: vec![RawXmlNode::Element(polygon)],
+                self_closing: false,
+            }
         }
+        WrapType::TopAndBottom => RawXmlElement {
+            name: "wp:wrapTopAndBottom".to_string(),
+            attributes: vec![],
+            children: vec![],
+            self_closing: true,
+        },
     }
 }
 
-/// Serialize a RawXmlElement (preserved unknown element) to XML string.
-fn serialize_raw_xml_element(elem: &ooxml_xml::RawXmlElement, xml: &mut String) {
-    xml.push('<');
-    xml.push_str(&elem.name);
+/// Build a default rectangular wrap polygon.
+fn build_default_wrap_polygon() -> RawXmlElement {
+    let start = RawXmlElement {
+        name: "wp:start".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
 
-    for (key, value) in &elem.attributes {
-        xml.push(' ');
-        xml.push_str(key);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(value));
-        xml.push('"');
-    }
+    let line_to_1 = RawXmlElement {
+        name: "wp:lineTo".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "21600".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
 
-    if elem.self_closing && elem.children.is_empty() {
-        xml.push_str("/>");
-    } else {
-        xml.push('>');
-        for child in &elem.children {
-            serialize_raw_xml_node(child, xml);
-        }
-        xml.push_str("</");
-        xml.push_str(&elem.name);
-        xml.push('>');
+    let line_to_2 = RawXmlElement {
+        name: "wp:lineTo".to_string(),
+        attributes: vec![
+            ("x".to_string(), "21600".to_string()),
+            ("y".to_string(), "21600".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let line_to_3 = RawXmlElement {
+        name: "wp:lineTo".to_string(),
+        attributes: vec![
+            ("x".to_string(), "21600".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let line_to_4 = RawXmlElement {
+        name: "wp:lineTo".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    RawXmlElement {
+        name: "wp:wrapPolygon".to_string(),
+        attributes: vec![("edited".to_string(), "0".to_string())],
+        children: vec![
+            RawXmlNode::Element(start),
+            RawXmlNode::Element(line_to_1),
+            RawXmlNode::Element(line_to_2),
+            RawXmlNode::Element(line_to_3),
+            RawXmlNode::Element(line_to_4),
+        ],
+        self_closing: false,
     }
 }
 
-/// Serialize unknown children preserved for round-trip fidelity.
-/// Children are sorted by position to maintain original order.
-fn serialize_unknown_children(children: &[PositionedNode], xml: &mut String) {
-    // Sort by position to interleave correctly with known elements
-    let mut sorted: Vec<_> = children.iter().collect();
-    sorted.sort_by_key(|pn| pn.position);
-    for pn in sorted {
-        serialize_raw_xml_node(&pn.node, xml);
+/// Build the `wp:anchor` element for an anchored (floating) image.
+fn build_anchored_image_element(image: &AnchoredImage, doc_id: usize) -> RawXmlElement {
+    let width_emu = image.width_emu.unwrap_or(914400);
+    let height_emu = image.height_emu.unwrap_or(914400);
+    let desc = image.description.as_deref().unwrap_or("Image");
+    let behind_doc = if image.behind_doc { "1" } else { "0" };
+
+    let simple_pos = RawXmlElement {
+        name: "wp:simplePos".to_string(),
+        attributes: vec![
+            ("x".to_string(), "0".to_string()),
+            ("y".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let pos_offset_h = RawXmlElement {
+        name: "wp:posOffset".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Text(image.pos_x.to_string())],
+        self_closing: false,
+    };
+
+    let position_h = RawXmlElement {
+        name: "wp:positionH".to_string(),
+        attributes: vec![("relativeFrom".to_string(), "column".to_string())],
+        children: vec![RawXmlNode::Element(pos_offset_h)],
+        self_closing: false,
+    };
+
+    let pos_offset_v = RawXmlElement {
+        name: "wp:posOffset".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Text(image.pos_y.to_string())],
+        self_closing: false,
+    };
+
+    let position_v = RawXmlElement {
+        name: "wp:positionV".to_string(),
+        attributes: vec![("relativeFrom".to_string(), "paragraph".to_string())],
+        children: vec![RawXmlNode::Element(pos_offset_v)],
+        self_closing: false,
+    };
+
+    let extent = RawXmlElement {
+        name: "wp:extent".to_string(),
+        attributes: vec![
+            ("cx".to_string(), width_emu.to_string()),
+            ("cy".to_string(), height_emu.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let effect_extent = RawXmlElement {
+        name: "wp:effectExtent".to_string(),
+        attributes: vec![
+            ("l".to_string(), "0".to_string()),
+            ("t".to_string(), "0".to_string()),
+            ("r".to_string(), "0".to_string()),
+            ("b".to_string(), "0".to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let wrap = build_wrap_element(image.wrap_type);
+
+    let doc_pr = RawXmlElement {
+        name: "wp:docPr".to_string(),
+        attributes: vec![
+            ("id".to_string(), doc_id.to_string()),
+            ("name".to_string(), format!("Picture {}", doc_id)),
+            ("descr".to_string(), desc.to_string()),
+        ],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let graphic_frame_locks = RawXmlElement {
+        name: "a:graphicFrameLocks".to_string(),
+        attributes: vec![("noChangeAspect".to_string(), "1".to_string())],
+        children: vec![],
+        self_closing: true,
+    };
+
+    let cnv_graphic_frame_pr = RawXmlElement {
+        name: "wp:cNvGraphicFramePr".to_string(),
+        attributes: vec![],
+        children: vec![RawXmlNode::Element(graphic_frame_locks)],
+        self_closing: false,
+    };
+
+    let graphic = build_graphic_element(&image.rel_id, width_emu, height_emu, doc_id);
+
+    RawXmlElement {
+        name: "wp:anchor".to_string(),
+        attributes: vec![
+            ("distT".to_string(), "0".to_string()),
+            ("distB".to_string(), "0".to_string()),
+            ("distL".to_string(), "114300".to_string()),
+            ("distR".to_string(), "114300".to_string()),
+            ("simplePos".to_string(), "0".to_string()),
+            ("relativeHeight".to_string(), "251658240".to_string()),
+            ("behindDoc".to_string(), behind_doc.to_string()),
+            ("locked".to_string(), "0".to_string()),
+            ("layoutInCell".to_string(), "1".to_string()),
+            ("allowOverlap".to_string(), "1".to_string()),
+        ],
+        children: vec![
+            RawXmlNode::Element(simple_pos),
+            RawXmlNode::Element(position_h),
+            RawXmlNode::Element(position_v),
+            RawXmlNode::Element(extent),
+            RawXmlNode::Element(effect_extent),
+            RawXmlNode::Element(wrap),
+            RawXmlNode::Element(doc_pr),
+            RawXmlNode::Element(cnv_graphic_frame_pr),
+            RawXmlNode::Element(graphic),
+        ],
+        self_closing: false,
     }
 }
 
-/// Serialize unknown attributes preserved for round-trip fidelity.
-/// Attributes are sorted by position to maintain original order.
-fn serialize_unknown_attrs(attrs: &[PositionedAttr], xml: &mut String) {
-    // Sort by position to preserve original attribute order
-    let mut sorted: Vec<_> = attrs.iter().collect();
-    sorted.sort_by_key(|pa| pa.position);
-    for pa in sorted {
-        xml.push(' ');
-        xml.push_str(&pa.name);
-        xml.push_str("=\"");
-        xml.push_str(&escape_xml(&pa.value));
-        xml.push('"');
-    }
-}
+// =============================================================================
+// Utility functions
+// =============================================================================
 
 /// Get file extension from MIME content type.
 fn extension_from_content_type(content_type: &str) -> &'static str {
@@ -2392,175 +2035,74 @@ fn extension_from_content_type(content_type: &str) -> &'static str {
     }
 }
 
-/// Serialize numbering.xml content.
-fn serialize_numbering(numberings: &HashMap<u32, PendingNumbering>) -> String {
-    let mut xml = String::new();
-
-    // XML declaration
-    xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-    xml.push('\n');
-
-    // Numbering element with namespace
-    xml.push_str(&format!(r#"<w:numbering xmlns:w="{}">"#, NS_W));
-
-    // Sort numberings by num_id for deterministic output
-    let mut sorted: Vec<_> = numberings.values().collect();
-    sorted.sort_by_key(|n| n.num_id);
-
-    // Write abstract numbering definitions
-    for num in &sorted {
-        serialize_abstract_num(num, &mut xml);
-    }
-
-    // Write concrete numbering instances
-    for num in &sorted {
-        xml.push_str(&format!(
-            r#"<w:num w:numId="{}"><w:abstractNumId w:val="{}"/></w:num>"#,
-            num.num_id, num.abstract_num_id
-        ));
-    }
-
-    xml.push_str("</w:numbering>");
-    xml
-}
-
-/// Serialize an abstract numbering definition.
-fn serialize_abstract_num(num: &PendingNumbering, xml: &mut String) {
-    xml.push_str(&format!(
-        r#"<w:abstractNum w:abstractNumId="{}">"#,
-        num.abstract_num_id
-    ));
-
-    // Level 0 definition (we only support single-level lists in v0.1)
-    xml.push_str(r#"<w:lvl w:ilvl="0">"#);
-
-    // Start value
-    xml.push_str(r#"<w:start w:val="1"/>"#);
-
-    // Number format and text based on list type
-    let (num_fmt, lvl_text) = match num.list_type {
-        ListType::Bullet => ("bullet", "\u{2022}"), // Bullet character
-        ListType::Decimal => ("decimal", "%1."),
-        ListType::LowerLetter => ("lowerLetter", "%1."),
-        ListType::UpperLetter => ("upperLetter", "%1."),
-        ListType::LowerRoman => ("lowerRoman", "%1."),
-        ListType::UpperRoman => ("upperRoman", "%1."),
-    };
-
-    xml.push_str(&format!(r#"<w:numFmt w:val="{}"/>"#, num_fmt));
-    xml.push_str(&format!(r#"<w:lvlText w:val="{}"/>"#, lvl_text));
-    xml.push_str(r#"<w:lvlJc w:val="left"/>"#);
-
-    // Paragraph properties (indentation)
-    xml.push_str("<w:pPr>");
-    xml.push_str(r#"<w:ind w:left="720" w:hanging="360"/>"#);
-    xml.push_str("</w:pPr>");
-
-    // Run properties for bullet lists (use Symbol font)
-    if num.list_type == ListType::Bullet {
-        xml.push_str("<w:rPr>");
-        xml.push_str(r#"<w:rFonts w:ascii="Symbol" w:hAnsi="Symbol" w:hint="default"/>"#);
-        xml.push_str("</w:rPr>");
-    }
-
-    xml.push_str("</w:lvl>");
-    xml.push_str("</w:abstractNum>");
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_serialize_simple_document() {
-        let mut body = Body::new();
-        body.add_paragraph().add_run().set_text("Hello, World!");
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains("<w:document"));
-        assert!(xml.contains("<w:body>"));
-        assert!(xml.contains("<w:p>"));
-        assert!(xml.contains("<w:r>"));
-        assert!(xml.contains("<w:t>Hello, World!</w:t>"));
-    }
-
-    #[test]
-    fn test_serialize_with_formatting() {
-        let mut body = Body::new();
-        let run = body.add_paragraph().add_run();
-        run.set_text("Bold text");
-        run.set_properties(RunProperties {
-            bold: true,
-            italic: true,
-            ..Default::default()
-        });
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains("<w:b/>"));
-        assert!(xml.contains("<w:i/>"));
-    }
-
-    #[test]
-    fn test_serialize_fonts() {
-        use crate::document::Fonts;
-
-        let mut body = Body::new();
-        let run = body.add_paragraph().add_run();
-        run.set_text("Text with fonts");
-        run.set_properties(RunProperties {
-            fonts: Some(Fonts {
-                ascii: Some("Arial".to_string()),
-                h_ansi: Some("Arial".to_string()),
-                east_asia: Some("MS Gothic".to_string()),
-                cs: Some("Arial".to_string()),
-            }),
-            ..Default::default()
-        });
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains(r#"w:ascii="Arial""#));
-        assert!(xml.contains(r#"w:hAnsi="Arial""#));
-        assert!(xml.contains(r#"w:eastAsia="MS Gothic""#));
-        assert!(xml.contains(r#"w:cs="Arial""#));
-    }
-
-    #[test]
-    fn test_escape_xml_entities() {
-        let mut body = Body::new();
-        body.add_paragraph()
-            .add_run()
-            .set_text("Tom & Jerry <friends>");
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains("Tom &amp; Jerry &lt;friends&gt;"));
-    }
-
-    #[test]
-    fn test_preserve_whitespace() {
-        let mut body = Body::new();
-        body.add_paragraph().add_run().set_text("  leading spaces");
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains(r#"xml:space="preserve""#));
-    }
-
-    #[test]
-    fn test_document_builder() {
+    fn test_document_builder_simple() {
         let mut builder = DocumentBuilder::new();
-        builder.add_paragraph("First paragraph");
+        builder.add_paragraph("Hello, World!");
         builder.add_paragraph("Second paragraph");
 
-        let body = &builder.body;
-        assert_eq!(body.paragraphs().len(), 2);
+        let body = builder.document.body.as_ref().unwrap();
+        assert_eq!(body.block_level_elts.len(), 2);
     }
 
     #[test]
-    #[cfg(feature = "read")]
+    fn test_serialize_to_xml_bytes() {
+        let doc = types::Document {
+            body: Some(Box::new(types::Body::default())),
+            conformance: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: std::collections::HashMap::new(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+
+        let bytes = serialize_to_xml_bytes(&doc, "w:document").unwrap();
+        let xml = String::from_utf8(bytes).unwrap();
+        assert!(xml.starts_with("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+        assert!(xml.contains("w:document"));
+    }
+
+    #[test]
+    fn test_list_type_mapping() {
+        let (fmt, text) = list_type_to_num_fmt_and_text(ListType::Bullet);
+        assert!(matches!(fmt, types::STNumberFormat::Bullet));
+        assert_eq!(text, "\u{2022}");
+
+        let (fmt, text) = list_type_to_num_fmt_and_text(ListType::Decimal);
+        assert!(matches!(fmt, types::STNumberFormat::Decimal));
+        assert_eq!(text, "%1.");
+    }
+
+    #[test]
+    fn test_extension_from_content_type() {
+        assert_eq!(extension_from_content_type("image/png"), "png");
+        assert_eq!(extension_from_content_type("image/jpeg"), "jpg");
+        assert_eq!(extension_from_content_type("image/gif"), "gif");
+        assert_eq!(extension_from_content_type("unknown/type"), "bin");
+    }
+
+    #[test]
+    fn test_drawing_build() {
+        let mut drawing = Drawing::new();
+        drawing
+            .add_image("rId1")
+            .set_width_inches(1.0)
+            .set_height_inches(1.0);
+
+        let mut doc_id = 1;
+        let ct_drawing = drawing.build(&mut doc_id);
+        assert_eq!(doc_id, 2);
+
+        #[cfg(feature = "extra-children")]
+        assert_eq!(ct_drawing.extra_children.len(), 1);
+        let _ = ct_drawing;
+    }
+
+    #[test]
     fn test_roundtrip_create_and_read() {
         use crate::Document;
         use crate::ext::BodyExt;
@@ -2580,344 +2122,5 @@ mod tests {
 
         assert_eq!(doc.body().paragraphs().len(), 1);
         assert_eq!(doc.text(), "Test content");
-    }
-
-    #[test]
-    fn test_serialize_table() {
-        let mut body = Body::new();
-        let table = body.add_table();
-        let row = table.add_row();
-        row.add_cell().add_paragraph().add_run().set_text("A1");
-        row.add_cell().add_paragraph().add_run().set_text("B1");
-
-        let xml = serialize_document(&body);
-
-        assert!(xml.contains("<w:tbl>"));
-        assert!(xml.contains("<w:tr>"));
-        assert!(xml.contains("<w:tc>"));
-        assert!(xml.contains("<w:t>A1</w:t>"));
-        assert!(xml.contains("<w:t>B1</w:t>"));
-    }
-
-    #[test]
-    #[cfg(feature = "read")]
-    fn test_roundtrip_table() {
-        use crate::Document;
-        use crate::ext::{BodyExt, CellExt, RowExt, TableExt};
-        use std::io::Cursor;
-
-        // Create a document with a table
-        let mut builder = DocumentBuilder::new();
-        builder.add_paragraph("Before table");
-        let table = builder.body_mut().add_table();
-        let row = table.add_row();
-        row.add_cell().add_paragraph().add_run().set_text("Cell 1");
-        row.add_cell().add_paragraph().add_run().set_text("Cell 2");
-        builder
-            .body_mut()
-            .add_paragraph()
-            .add_run()
-            .set_text("After table");
-
-        // Write to memory
-        let mut buffer = Cursor::new(Vec::new());
-        builder.write(&mut buffer).unwrap();
-
-        // Read it back
-        buffer.set_position(0);
-        let doc = Document::from_reader(buffer).unwrap();
-
-        // Verify structure: 2 paragraphs + 1 table
-        assert_eq!(doc.body().paragraphs().len(), 2);
-        assert_eq!(doc.body().tables().len(), 1);
-
-        let table = &doc.body().tables()[0];
-        assert_eq!(table.row_count(), 1);
-        assert_eq!(table.rows()[0].cells().len(), 2);
-        assert_eq!(table.rows()[0].cells()[0].text(), "Cell 1");
-        assert_eq!(table.rows()[0].cells()[1].text(), "Cell 2");
-    }
-
-    #[test]
-    fn test_serialize_inline_image() {
-        use crate::document::Drawing;
-
-        let mut body = Body::new();
-        let run = body.add_paragraph().add_run();
-
-        // Add a drawing with an image
-        let mut drawing = Drawing::new();
-        drawing
-            .add_image("rId1")
-            .set_width_inches(2.0)
-            .set_height_inches(1.5)
-            .set_description("Test image");
-        run.drawings_mut().push(drawing);
-
-        let xml = serialize_document(&body);
-
-        // Check DrawingML structure
-        assert!(xml.contains("<w:drawing>"));
-        assert!(xml.contains("<wp:inline"));
-        assert!(xml.contains(r#"r:embed="rId1""#));
-        assert!(xml.contains("wp:extent"));
-        assert!(xml.contains("pic:pic"));
-        assert!(xml.contains(r#"descr="Test image""#));
-    }
-
-    #[test]
-    fn test_document_builder_add_image() {
-        let mut builder = DocumentBuilder::new();
-
-        // Add an image via the builder
-        let rel_id = builder.add_image(vec![0x89, 0x50, 0x4E, 0x47], "image/png");
-        assert_eq!(rel_id, "rId1");
-
-        // Add another image
-        let rel_id2 = builder.add_image(vec![0xFF, 0xD8, 0xFF], "image/jpeg");
-        assert_eq!(rel_id2, "rId2");
-
-        // Verify the images are tracked
-        assert_eq!(builder.images.len(), 2);
-    }
-
-    #[test]
-    fn test_extension_from_content_type() {
-        assert_eq!(extension_from_content_type("image/png"), "png");
-        assert_eq!(extension_from_content_type("image/jpeg"), "jpg");
-        assert_eq!(extension_from_content_type("image/gif"), "gif");
-        assert_eq!(extension_from_content_type("unknown/type"), "bin");
-    }
-
-    #[test]
-    fn test_serialize_header() {
-        let mut body = Body::new();
-        body.add_paragraph().add_run().set_text("Header text");
-
-        let xml = serialize_header(&body);
-
-        assert!(xml.contains("<w:hdr"));
-        assert!(xml.contains("</w:hdr>"));
-        assert!(xml.contains("<w:t>Header text</w:t>"));
-    }
-
-    #[test]
-    fn test_serialize_footer() {
-        let mut body = Body::new();
-        body.add_paragraph().add_run().set_text("Footer text");
-
-        let xml = serialize_footer(&body);
-
-        assert!(xml.contains("<w:ftr"));
-        assert!(xml.contains("</w:ftr>"));
-        assert!(xml.contains("<w:t>Footer text</w:t>"));
-    }
-
-    #[test]
-    #[cfg(feature = "read")]
-    fn test_document_builder_with_header_footer() {
-        use crate::Document;
-        use crate::ext::{BodyExt, SectionPropertiesExt};
-        use std::io::Cursor;
-
-        // Create a document with header and footer
-        let mut builder = DocumentBuilder::new();
-
-        {
-            let mut header = builder.add_header(HeaderFooterType::Default);
-            header.add_paragraph("Document Header");
-        }
-
-        {
-            let mut footer = builder.add_footer(HeaderFooterType::Default);
-            footer.add_paragraph("Page Footer");
-        }
-
-        builder.add_paragraph("Body content");
-
-        // Write to memory
-        let mut buffer = Cursor::new(Vec::new());
-        builder.write(&mut buffer).unwrap();
-
-        // Read it back and verify
-        buffer.set_position(0);
-        let mut doc = Document::from_reader(buffer).unwrap();
-
-        // Verify body content
-        assert_eq!(doc.body().paragraphs().len(), 1);
-        assert_eq!(doc.text(), "Body content");
-
-        // Verify section properties have header/footer references
-        let sect_pr = doc
-            .body()
-            .section_properties()
-            .expect("should have section properties");
-        let headers = sect_pr.header_references();
-        let footers = sect_pr.footer_references();
-        assert_eq!(headers.len(), 1);
-        assert_eq!(footers.len(), 1);
-
-        // Get rel_ids before mutable borrows
-        let header_rel_id = headers[0].1.to_string();
-        let footer_rel_id = footers[0].1.to_string();
-
-        // Verify we can read the header content
-        let header = doc.get_header(&header_rel_id).unwrap();
-        assert_eq!(header.text(), "Document Header");
-
-        // Verify we can read the footer content
-        let footer = doc.get_footer(&footer_rel_id).unwrap();
-        assert_eq!(footer.text(), "Page Footer");
-    }
-
-    #[test]
-    #[cfg(feature = "read")]
-    fn test_document_builder_with_footnote() {
-        use crate::Document;
-        use crate::document::FootnoteReference;
-        use crate::ext::{BodyExt, ParagraphExt, RunExt};
-        use std::io::Cursor;
-
-        // Create a document with a footnote
-        let mut builder = DocumentBuilder::new();
-
-        // Add a footnote first
-        let footnote_id = {
-            let mut footnote = builder.add_footnote();
-            footnote.add_paragraph("This is a footnote.");
-            footnote.id()
-        };
-
-        // Add body content with footnote reference
-        {
-            let para = builder.body_mut().add_paragraph();
-            let run = para.add_run();
-            run.set_text("Some text");
-            run.set_footnote_ref(FootnoteReference { id: footnote_id });
-        }
-
-        // Write to memory
-        let mut buffer = Cursor::new(Vec::new());
-        builder.write(&mut buffer).unwrap();
-
-        // Read it back and verify
-        buffer.set_position(0);
-        let mut doc = Document::from_reader(buffer).unwrap();
-
-        // Verify body content has footnote reference
-        let para = &doc.body().paragraphs()[0];
-        let run = &para.runs()[0];
-        assert!(run.footnote_ref().is_some());
-        assert_eq!(run.footnote_ref().unwrap().id, footnote_id as i64);
-
-        // Verify we can read the footnotes part
-        let footnotes = doc.get_footnotes().unwrap();
-
-        // Find our footnote (ID 1) - cast to i32 for the get() method
-        let fn1 = footnotes
-            .get(footnote_id as i32)
-            .expect("should find footnote");
-        assert_eq!(fn1.text(), "This is a footnote.");
-    }
-
-    #[test]
-    #[cfg(feature = "read")]
-    fn test_document_builder_with_endnote() {
-        use crate::Document;
-        use crate::document::EndnoteReference;
-        use crate::ext::{BodyExt, ParagraphExt, RunExt};
-        use std::io::Cursor;
-
-        // Create a document with an endnote
-        let mut builder = DocumentBuilder::new();
-
-        // Add an endnote first
-        let endnote_id = {
-            let mut endnote = builder.add_endnote();
-            endnote.add_paragraph("This is an endnote.");
-            endnote.id()
-        };
-
-        // Add body content with endnote reference
-        {
-            let para = builder.body_mut().add_paragraph();
-            let run = para.add_run();
-            run.set_text("Some text");
-            run.set_endnote_ref(EndnoteReference { id: endnote_id });
-        }
-
-        // Write to memory
-        let mut buffer = Cursor::new(Vec::new());
-        builder.write(&mut buffer).unwrap();
-
-        // Read it back and verify
-        buffer.set_position(0);
-        let mut doc = Document::from_reader(buffer).unwrap();
-
-        // Verify body content has endnote reference
-        let para = &doc.body().paragraphs()[0];
-        let run = &para.runs()[0];
-        assert!(run.endnote_ref().is_some());
-        assert_eq!(run.endnote_ref().unwrap().id, endnote_id as i64);
-
-        // Verify we can read the endnotes part
-        let endnotes = doc.get_endnotes().unwrap();
-
-        // Find our endnote (ID 1) - cast to i32 for the get() method
-        let en1 = endnotes
-            .get(endnote_id as i32)
-            .expect("should find endnote");
-        assert_eq!(en1.text(), "This is an endnote.");
-    }
-
-    #[test]
-    #[cfg(feature = "read")]
-    fn test_document_builder_with_comment() {
-        use crate::Document;
-        use crate::document::CommentReference;
-        use crate::ext::BodyExt;
-        use std::io::Cursor;
-
-        // Create a document with a comment
-        let mut builder = DocumentBuilder::new();
-
-        // Add a comment first
-        let comment_id = {
-            let mut comment = builder.add_comment();
-            comment.set_author("Test Author");
-            comment.add_paragraph("This needs review.");
-            comment.id()
-        };
-
-        // Add body content with comment ranges and reference
-        {
-            let para = builder.body_mut().add_paragraph();
-            para.add_comment_range_start(comment_id);
-            para.add_run().set_text("Commented text");
-            para.add_comment_range_end(comment_id);
-            para.add_run()
-                .set_comment_ref(CommentReference { id: comment_id });
-        }
-
-        // Write to memory
-        let mut buffer = Cursor::new(Vec::new());
-        builder.write(&mut buffer).unwrap();
-
-        // Read it back and verify
-        buffer.set_position(0);
-        let mut doc = Document::from_reader(buffer).unwrap();
-
-        // Verify body content
-        assert!(!doc.body().paragraphs().is_empty());
-
-        // Verify we can read the comments part
-        let comments = doc.get_comments().unwrap();
-
-        // Find our comment (ID 0)
-        let c0 = comments
-            .get(comment_id as i32)
-            .expect("should find comment");
-        assert_eq!(c0.author.as_deref(), Some("Test Author"));
-        assert_eq!(c0.text(), "This needs review.");
     }
 }

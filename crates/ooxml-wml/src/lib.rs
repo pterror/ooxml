@@ -4,8 +4,6 @@
 //!
 //! # Reading Documents
 //!
-//! Requires the `read` feature (enabled by default in `full`).
-//!
 //! ```ignore
 //! use ooxml_wml::Document;
 //! use ooxml_wml::ext::{BodyExt, ParagraphExt};
@@ -18,8 +16,6 @@
 //!
 //! # Creating Documents
 //!
-//! Requires the `write` feature (enabled by default in `full`).
-//!
 //! ```ignore
 //! use ooxml_wml::DocumentBuilder;
 //!
@@ -28,16 +24,10 @@
 //! builder.save("output.docx")?;
 //! ```
 
+pub mod convenience;
 pub mod document;
 pub mod error;
-
-#[cfg(feature = "read")]
 pub mod ext;
-
-#[cfg(feature = "write")]
-pub mod styles;
-
-#[cfg(feature = "write")]
 pub mod writer;
 
 // Generated types from ECMA-376 schema.
@@ -54,33 +44,17 @@ pub use generated_parsers as parsers;
 pub mod generated_serializers;
 pub use generated_serializers as serializers;
 
-// Handwritten types from document.rs — used by both read (header/footer/footnotes)
-// and write (DocumentBuilder). Always available.
-pub use document::{
-    Alignment, AppProperties, BlockContent, Body, BookmarkEnd, BookmarkStart, Cell,
-    CommentRangeEnd, CommentRangeStart, CommentReference, CoreProperties, Deletion, Drawing,
-    EmbeddedObject, EndnoteReference, Fonts, FootnoteReference, HeaderFooterType, Hyperlink,
-    ImageData, InlineImage, Insertion, NumberingProperties, Paragraph, ParagraphContent,
-    ParagraphProperties, Row, Run, RunProperties, Table, TextBoxContent, VmlPicture,
-};
-
-// Document reader — requires `read` feature.
-#[cfg(feature = "read")]
-pub use document::Document;
+// Metadata types from document.rs (OPC, not WML — not generated).
+pub use document::{AppProperties, CoreProperties, Document, DocumentSettings, ImageData};
 
 // Error types — always available.
 pub use error::{Error, ParseContext, Result, position_to_line_col};
 pub use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 
-// Handwritten styles — only needed by the writer.
-#[cfg(feature = "write")]
-pub use styles::{Style, StyleType, Styles};
-
-// Writer — requires `write` feature.
-#[cfg(feature = "write")]
+// Writer types.
 pub use writer::{
-    CommentBuilder, DocumentBuilder, EndnoteBuilder, FooterBuilder, FootnoteBuilder, HeaderBuilder,
-    ListType,
+    AnchoredImage, CommentBuilder, DocumentBuilder, Drawing, EndnoteBuilder, FooterBuilder,
+    FootnoteBuilder, HeaderBuilder, HeaderFooterType, InlineImage, ListType, WrapType,
 };
 
 // Re-export commonly used generated types at the crate root.
@@ -88,11 +62,3 @@ pub use types::ns;
 
 // Re-export MathZone from ooxml-omml for convenience.
 pub use ooxml_omml::MathZone;
-
-// ## Current Limitations (v0.1)
-//
-// Images:
-// - Inline images only (no floating/anchored images)
-// - No image cropping or effects
-// - No linked images (external URLs)
-// - Basic positioning only (no text wrapping options)
