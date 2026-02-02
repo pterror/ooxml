@@ -90,6 +90,52 @@ impl<R: Read + Seek> Package<R> {
         self.read_part_relationships("")
     }
 
+    /// Copy all parts to a writer, replacing specific parts with new content.
+    ///
+    /// This is the core mechanism for roundtrip preservation: it copies every part
+    /// from the source package verbatim, except for parts that have replacement
+    /// bytes provided. `[Content_Types].xml` is skipped since `PackageWriter::finish()`
+    /// regenerates it.
+    ///
+    /// Both default and override content types from the original package are
+    /// transferred to the writer.
+    pub fn copy_to_writer<W: Write + Seek>(
+        &mut self,
+        writer: &mut PackageWriter<W>,
+        replacements: &HashMap<&str, &[u8]>,
+    ) -> Result<()> {
+        // Transfer all default content types from original package
+        for (ext, ct) in self.content_types.defaults() {
+            writer.add_default_content_type(ext, ct);
+        }
+
+        // Collect part names and their content types (excluding [Content_Types].xml)
+        let parts_info: Vec<(String, String)> = self
+            .parts()
+            .filter(|name| *name != "[Content_Types].xml")
+            .map(|name| {
+                let ct = self
+                    .content_types
+                    .get(name)
+                    .unwrap_or("application/octet-stream")
+                    .to_string();
+                (name.to_string(), ct)
+            })
+            .collect();
+
+        // Copy each part, using replacement bytes when provided
+        for (name, ct) in &parts_info {
+            let data = if let Some(replacement) = replacements.get(name.as_str()) {
+                replacement.to_vec()
+            } else {
+                self.read_part(name)?
+            };
+            writer.add_part(name, ct, &data)?;
+        }
+
+        Ok(())
+    }
+
     /// Read relationships for a specific part.
     pub fn read_part_relationships(
         &mut self,

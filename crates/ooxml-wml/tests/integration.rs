@@ -716,3 +716,109 @@ fn test_roundtrip_bookmarks() {
         .any(|c| matches!(c.as_ref(), EGPContent::BookmarkEnd(_)));
     assert!(has_bookmark_end, "should have BookmarkEnd");
 }
+
+/// Test that Document::write() produces a valid package that can be re-read.
+///
+/// Creates a document with DocumentBuilder, reads it via Document::from_reader(),
+/// writes it back with Document::write(), then reads the result and verifies
+/// text content is preserved.
+#[test]
+fn test_document_save_roundtrip() {
+    let mut builder = DocumentBuilder::new();
+    builder.add_paragraph("Hello, roundtrip!");
+    builder.add_paragraph("Second paragraph.");
+
+    // Write with builder
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read with generated parser
+    buffer.set_position(0);
+    let mut doc = Document::from_reader(buffer).unwrap();
+
+    // Save via generated serializer
+    let mut out = Cursor::new(Vec::new());
+    doc.write(&mut out).unwrap();
+
+    // Re-read the saved output
+    out.set_position(0);
+    let doc2 = Document::from_reader(out).unwrap();
+
+    assert_eq!(doc2.text(), "Hello, roundtrip!\nSecond paragraph.");
+}
+
+/// Test that Document::write() preserves all package parts (images, rels, etc.).
+#[test]
+fn test_document_save_preserves_parts() {
+    let mut builder = DocumentBuilder::new();
+    let png_data = vec![0x89, 0x50, 0x4E, 0x47, 0x00, 0x00];
+    let rel_id = builder.add_image(png_data, "image/png");
+
+    {
+        let para = builder.body_mut().add_paragraph();
+        let run = para.add_run();
+        let mut drawing = Drawing::new();
+        drawing.add_image(&rel_id).set_width_inches(1.0);
+        run.drawings_mut().push(drawing);
+    }
+    builder.add_paragraph("Text content");
+
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read and save
+    buffer.set_position(0);
+    let mut doc = Document::from_reader(buffer).unwrap();
+
+    let mut out = Cursor::new(Vec::new());
+    doc.write(&mut out).unwrap();
+
+    // Verify all parts are present in the saved output
+    out.set_position(0);
+    let doc2 = Document::from_reader(out).unwrap();
+
+    assert!(doc2.package().has_part("word/document.xml"));
+    assert!(doc2.package().has_part("_rels/.rels"));
+    assert!(doc2.package().has_part("word/media/image1.png"));
+    assert!(doc2.text().contains("Text content"));
+}
+
+/// Test that modifications to the generated body are reflected after save.
+#[test]
+fn test_document_save_with_body_modification() {
+    use ooxml_wml::types::{EGBlockLevelElts, EGPContent, EGRunInnerContent, Paragraph, Run, Text};
+
+    let mut builder = DocumentBuilder::new();
+    builder.add_paragraph("Original text");
+
+    let mut buffer = Cursor::new(Vec::new());
+    builder.write(&mut buffer).unwrap();
+
+    // Read the document
+    buffer.set_position(0);
+    let mut doc = Document::from_reader(buffer).unwrap();
+
+    // Add a new paragraph via the generated types
+    let text = Text {
+        text: Some("Added paragraph".to_string()),
+        ..Default::default()
+    };
+    let mut run = Run::default();
+    run.run_inner_content
+        .push(Box::new(EGRunInnerContent::T(Box::new(text))));
+    let mut para = Paragraph::default();
+    para.p_content.push(Box::new(EGPContent::R(Box::new(run))));
+    doc.body_mut()
+        .block_level_elts
+        .push(Box::new(EGBlockLevelElts::P(Box::new(para))));
+
+    // Save
+    let mut out = Cursor::new(Vec::new());
+    doc.write(&mut out).unwrap();
+
+    // Re-read and verify the modification
+    out.set_position(0);
+    let doc2 = Document::from_reader(out).unwrap();
+
+    assert_eq!(doc2.text(), "Original text\nAdded paragraph");
+}

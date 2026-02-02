@@ -40,6 +40,10 @@ use std::path::Path;
 use crate::ext;
 #[cfg(feature = "read")]
 use crate::generated as types;
+#[cfg(all(feature = "read", feature = "write"))]
+use crate::generated_serializers::ToXml;
+#[cfg(all(feature = "read", feature = "write"))]
+use ooxml_opc::PackageWriter;
 
 /// A Word document (.docx file).
 ///
@@ -57,6 +61,8 @@ pub struct Document<R> {
     doc_rels: Relationships,
     /// Path to the document part (e.g., "word/document.xml")
     doc_path: String,
+    /// Path to the styles part (e.g., "word/styles.xml"), if present.
+    styles_path: Option<String>,
     /// Core document properties (title, author, etc.)
     core_properties: Option<CoreProperties>,
     /// Extended application properties (word count, etc.)
@@ -100,12 +106,20 @@ impl<R: Read + Seek> Document<R> {
             Relationships::new()
         };
 
-        // Load styles using the generated parser
-        let gen_styles = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES) {
-            let styles_xml = package.read_part(&styles_rel.target)?;
-            ext::parse_styles(&styles_xml)?
+        // Load styles using the generated parser.
+        // Check package-level rels first, then document-level rels (where real
+        // .docx files from Word typically reference styles).
+        let (gen_styles, styles_path) = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES)
+        {
+            let path = styles_rel.target.clone();
+            let styles_xml = package.read_part(&path)?;
+            (ext::parse_styles(&styles_xml)?, Some(path))
+        } else if let Some(styles_rel) = doc_rels.get_by_type(rel_type::STYLES) {
+            let path = resolve_path(&doc_path, &styles_rel.target);
+            let styles_xml = package.read_part(&path)?;
+            (ext::parse_styles(&styles_xml)?, Some(path))
         } else {
-            types::Styles::default()
+            (types::Styles::default(), None)
         };
 
         // Load core properties if available
@@ -131,6 +145,7 @@ impl<R: Read + Seek> Document<R> {
             gen_styles,
             doc_rels,
             doc_path,
+            styles_path,
             core_properties,
             app_properties,
         })
@@ -368,6 +383,63 @@ impl<R: Read + Seek> Document<R> {
         let settings_xml = self.package.read_part(&settings_path)?;
         parse_settings(&settings_xml)
     }
+}
+
+#[cfg(all(feature = "read", feature = "write"))]
+impl<R: Read + Seek> Document<R> {
+    /// Save the document to a file.
+    ///
+    /// This serializes the current state of the generated types (`gen_doc`,
+    /// `gen_styles`) back into the package, preserving all other parts verbatim.
+    pub fn save<P: AsRef<Path>>(&mut self, path: P) -> Result<()> {
+        let file = File::create(path)?;
+        self.write(file)
+    }
+
+    /// Write the document to a writer.
+    ///
+    /// Serializes the document and styles using the generated `ToXml` serializers,
+    /// then copies all package parts to the output, replacing only the modified
+    /// parts.
+    pub fn write<W: std::io::Write + Seek>(&mut self, writer: W) -> Result<()> {
+        // Serialize document XML
+        let doc_xml = serialize_xml(&self.gen_doc, "w:document")?;
+
+        // Build replacements map
+        let mut replacements = std::collections::HashMap::new();
+        replacements.insert(self.doc_path.as_str(), doc_xml.as_slice());
+
+        // Serialize styles if we have a styles path
+        let styles_xml;
+        if let Some(ref styles_path) = self.styles_path {
+            styles_xml = serialize_xml(&self.gen_styles, "w:styles")?;
+            replacements.insert(styles_path.as_str(), styles_xml.as_slice());
+        }
+
+        // Create package writer and copy all parts with replacements
+        let mut pkg_writer = PackageWriter::new(writer);
+        self.package
+            .copy_to_writer(&mut pkg_writer, &replacements)?;
+        pkg_writer.finish()?;
+
+        Ok(())
+    }
+}
+
+/// Serialize a ToXml value to bytes with an XML declaration prepended.
+#[cfg(all(feature = "read", feature = "write"))]
+fn serialize_xml(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
+    let inner = Vec::new();
+    let mut writer = quick_xml::Writer::new(inner);
+    value.write_element(tag, &mut writer)?;
+    let inner = writer.into_inner();
+
+    let mut buf = Vec::with_capacity(
+        b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n".len() + inner.len(),
+    );
+    buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
+    buf.extend_from_slice(&inner);
+    Ok(buf)
 }
 
 /// Resolve a relative path against a base path.
