@@ -63,10 +63,10 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Handle AG_\* attribute groups** - Inline attribute group fields into parent structs.
 - [x] **Regenerate WML types** - Body, Paragraph, Run, RunProperties, SectionProperties, Table, CTRow, TableCell all now complete.
 
-### Phase 2: Expand WML feature mappings
-- [ ] **Expand ooxml-features.yaml WML section** - Currently ~20 lines covering 5 types. Use element constants in document.rs:3753-3915 as checklist. Map to feature tags (core, wml-styling, wml-tables, wml-layout, wml-hyperlinks, wml-drawings).
-- [ ] **Add EG_\* name mappings to ooxml-names.yaml** - Current names are mechanical (`EGBlockLevelElts`, `block_level_elts`). Add human-readable mappings (e.g. `BlockContent`, `ParagraphContent`, `rows`). Affects both generated.rs and generated_parsers.rs consistently.
-- [ ] **Regenerate and verify** - Check `#[cfg(feature = "...")]` annotations appear on the right fields.
+### Phase 2: Expand WML feature mappings ✅
+- [x] **Expand ooxml-features.yaml WML section** - Expanded from 5 types to 18 types with ~165 field→feature mappings across 10 feature flags (wml-styling, wml-tables, wml-layout, wml-hyperlinks, wml-drawings, wml-numbering, wml-comments, wml-fields, wml-track-changes, wml-settings).
+- [x] **Add EG_\* name mappings to ooxml-names.yaml** - EG_* types renamed to human-readable names (BlockContent, ParagraphContent, RunContent, RowContent, CellContent, HeaderFooterRef, etc.). EG_* fields renamed (block_content, paragraph_content, run_content, rows, cells, header_footer_refs, range_markup). CT_HdrFtr→HeaderFooter, CT_FtnEdn→FootnoteEndnote, CT_FtnEdnRef→FootnoteEndnoteRef.
+- [x] **Regenerate and verify** - 165 wml-* feature annotations, 1041 total. Slim build (`--no-default-features`) compiles.
 
 ### Phase 3: Generate FromXml parsers for WML
 - [x] **Add `generate_parsers()` to WML build.rs** - Copy SML's pattern (OOXML_GENERATE_PARSERS env var).

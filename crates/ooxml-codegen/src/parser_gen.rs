@@ -343,6 +343,12 @@ impl<'a> ParserGenerator<'a> {
     fn eg_ref_to_field_name(&self, name: &str) -> String {
         let spec_name = strip_namespace_prefix(name);
         let short = spec_name.strip_prefix("EG_").unwrap_or(spec_name);
+        // Check names.yaml field mapping first
+        if let Some(mappings) = &self.config.name_mappings
+            && let Some(mapped) = mappings.resolve_field(&self.config.module_name, short)
+        {
+            return mapped.to_string();
+        }
         to_snake_case(short)
     }
 

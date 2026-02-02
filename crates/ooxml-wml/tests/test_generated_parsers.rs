@@ -32,10 +32,10 @@ fn test_parse_run_with_text() {
     let xml = r#"<r><t>Hello World</t></r>"#;
     let run: Run = parse_from_xml(xml).expect("should parse run");
     assert!(run.r_pr.is_none());
-    assert_eq!(run.run_inner_content.len(), 1);
+    assert_eq!(run.run_content.len(), 1);
     // Verify it's a text element
-    match run.run_inner_content[0].as_ref() {
-        EGRunInnerContent::T(_) => {}
+    match run.run_content[0].as_ref() {
+        RunContent::T(_) => {}
         other => panic!("expected T variant, got {:?}", other),
     }
 }
@@ -49,7 +49,7 @@ fn test_parse_run_with_properties_and_text() {
     assert!(rpr.bold.is_some());
     assert!(rpr.italic.is_some());
     assert!(rpr.caps.is_none());
-    assert_eq!(run.run_inner_content.len(), 1);
+    assert_eq!(run.run_content.len(), 1);
 }
 
 #[test]
@@ -78,10 +78,10 @@ fn test_parse_paragraph_simple() {
     let xml = r#"<p><r><t>Hello</t></r></p>"#;
     let para: Paragraph = parse_from_xml(xml).expect("should parse paragraph");
     assert!(para.p_pr.is_none());
-    assert_eq!(para.p_content.len(), 1);
+    assert_eq!(para.paragraph_content.len(), 1);
     // First content item should be a Run
-    match para.p_content[0].as_ref() {
-        EGPContent::R(_) => {}
+    match para.paragraph_content[0].as_ref() {
+        ParagraphContent::R(_) => {}
         other => panic!("expected R variant, got {:?}", other),
     }
 }
@@ -91,21 +91,21 @@ fn test_parse_paragraph_with_properties() {
     let xml = r#"<p><pPr><jc val="center"/></pPr><r><t>Centered</t></r></p>"#;
     let para: Paragraph = parse_from_xml(xml).expect("should parse paragraph");
     assert!(para.p_pr.is_some());
-    assert_eq!(para.p_content.len(), 1);
+    assert_eq!(para.paragraph_content.len(), 1);
 }
 
 #[test]
 fn test_parse_paragraph_multiple_runs() {
     let xml = r#"<p><r><t>Hello </t></r><r><rPr><b/></rPr><t>World</t></r></p>"#;
     let para: Paragraph = parse_from_xml(xml).expect("should parse paragraph");
-    assert_eq!(para.p_content.len(), 2);
+    assert_eq!(para.paragraph_content.len(), 2);
 }
 
 #[test]
 fn test_parse_body_with_paragraphs() {
     let xml = r#"<body><p><r><t>First</t></r></p><p><r><t>Second</t></r></p></body>"#;
     let body: Body = parse_from_xml(xml).expect("should parse body");
-    assert_eq!(body.block_level_elts.len(), 2);
+    assert_eq!(body.block_content.len(), 2);
     assert!(body.sect_pr.is_none());
 }
 
@@ -114,7 +114,7 @@ fn test_parse_body_with_section_properties() {
     let xml =
         r#"<body><p><r><t>Hello</t></r></p><sectPr><pgSz w="12240" h="15840"/></sectPr></body>"#;
     let body: Body = parse_from_xml(xml).expect("should parse body");
-    assert_eq!(body.block_level_elts.len(), 1);
+    assert_eq!(body.block_content.len(), 1);
     assert!(body.sect_pr.is_some());
 }
 
@@ -124,17 +124,17 @@ fn test_parse_document() {
     let doc: Document = parse_from_xml(xml).expect("should parse document");
     assert!(doc.body.is_some());
     let body = doc.body.as_ref().unwrap();
-    assert_eq!(body.block_level_elts.len(), 1);
+    assert_eq!(body.block_content.len(), 1);
 }
 
 #[test]
 fn test_parse_table_basic() {
     let xml = r#"<tbl><tblPr/><tblGrid><gridCol/></tblGrid><tr><tc><p><r><t>Cell</t></r></p></tc></tr></tbl>"#;
     let table: Table = parse_from_xml(xml).expect("should parse table");
-    assert_eq!(table.content_row_content.len(), 1);
+    assert_eq!(table.rows.len(), 1);
     // First content should be a table row
-    match table.content_row_content[0].as_ref() {
-        EGContentRowContent::Tr(_) => {}
+    match table.rows[0].as_ref() {
+        RowContent::Tr(_) => {}
         other => panic!("expected Tr variant, got {:?}", other),
     }
 }
@@ -143,9 +143,9 @@ fn test_parse_table_basic() {
 fn test_parse_run_with_break() {
     let xml = r#"<r><t>Before</t><br/><t>After</t></r>"#;
     let run: Run = parse_from_xml(xml).expect("should parse run with break");
-    assert_eq!(run.run_inner_content.len(), 3);
-    match run.run_inner_content[1].as_ref() {
-        EGRunInnerContent::Br(_) => {}
+    assert_eq!(run.run_content.len(), 3);
+    match run.run_content[1].as_ref() {
+        RunContent::Br(_) => {}
         other => panic!("expected Br variant, got {:?}", other),
     }
 }
@@ -162,5 +162,5 @@ fn test_parse_empty_paragraph() {
     let xml = r#"<p/>"#;
     let para: Paragraph = parse_from_xml(xml).expect("should parse empty paragraph");
     assert!(para.p_pr.is_none());
-    assert!(para.p_content.is_empty());
+    assert!(para.paragraph_content.is_empty());
 }

@@ -139,7 +139,7 @@ pub enum WrapType {
 #[derive(Clone)]
 pub struct PendingHeader {
     /// Header content.
-    pub body: types::CTHdrFtr,
+    pub body: types::HeaderFooter,
     /// Assigned relationship ID.
     pub rel_id: String,
     /// Header type (default, first, even).
@@ -152,7 +152,7 @@ pub struct PendingHeader {
 #[derive(Clone)]
 pub struct PendingFooter {
     /// Footer content.
-    pub body: types::CTHdrFtr,
+    pub body: types::HeaderFooter,
     /// Assigned relationship ID.
     pub rel_id: String,
     /// Footer type (default, first, even).
@@ -167,7 +167,7 @@ pub struct PendingFootnote {
     /// Footnote ID (referenced by FootnoteReference).
     pub id: i32,
     /// Footnote content.
-    pub body: types::CTFtnEdn,
+    pub body: types::FootnoteEndnote,
 }
 
 /// A pending endnote to be written to the package.
@@ -176,7 +176,7 @@ pub struct PendingEndnote {
     /// Endnote ID (referenced by EndnoteReference).
     pub id: i32,
     /// Endnote content.
-    pub body: types::CTFtnEdn,
+    pub body: types::FootnoteEndnote,
 }
 
 /// A pending comment to be written to the package.
@@ -204,7 +204,7 @@ pub struct HeaderBuilder<'a> {
 
 impl<'a> HeaderBuilder<'a> {
     /// Get a mutable reference to the header body.
-    pub fn body_mut(&mut self) -> &mut types::CTHdrFtr {
+    pub fn body_mut(&mut self) -> &mut types::HeaderFooter {
         &mut self
             .builder
             .headers
@@ -235,7 +235,7 @@ pub struct FooterBuilder<'a> {
 
 impl<'a> FooterBuilder<'a> {
     /// Get a mutable reference to the footer body.
-    pub fn body_mut(&mut self) -> &mut types::CTHdrFtr {
+    pub fn body_mut(&mut self) -> &mut types::HeaderFooter {
         &mut self
             .builder
             .footers
@@ -264,7 +264,7 @@ pub struct FootnoteBuilder<'a> {
 
 impl<'a> FootnoteBuilder<'a> {
     /// Get a mutable reference to the footnote body.
-    pub fn body_mut(&mut self) -> &mut types::CTFtnEdn {
+    pub fn body_mut(&mut self) -> &mut types::FootnoteEndnote {
         &mut self
             .builder
             .footnotes
@@ -295,7 +295,7 @@ pub struct EndnoteBuilder<'a> {
 
 impl<'a> EndnoteBuilder<'a> {
     /// Get a mutable reference to the endnote body.
-    pub fn body_mut(&mut self) -> &mut types::CTFtnEdn {
+    pub fn body_mut(&mut self) -> &mut types::FootnoteEndnote {
         &mut self
             .builder
             .endnotes
@@ -745,6 +745,7 @@ impl DocumentBuilder {
     /// Create a new document builder.
     pub fn new() -> Self {
         let document = types::Document {
+            #[cfg(feature = "wml-styling")]
             background: None,
             body: Some(Box::new(types::Body::default())),
             conformance: None,
@@ -854,7 +855,7 @@ impl DocumentBuilder {
         self.headers.insert(
             rel_id.clone(),
             PendingHeader {
-                body: types::CTHdrFtr::default(),
+                body: types::HeaderFooter::default(),
                 rel_id: rel_id.clone(),
                 header_type,
                 filename,
@@ -882,7 +883,7 @@ impl DocumentBuilder {
         self.footers.insert(
             rel_id.clone(),
             PendingFooter {
-                body: types::CTHdrFtr::default(),
+                body: types::HeaderFooter::default(),
                 rel_id: rel_id.clone(),
                 footer_type,
                 filename,
@@ -906,10 +907,10 @@ impl DocumentBuilder {
             id,
             PendingFootnote {
                 id,
-                body: types::CTFtnEdn {
+                body: types::FootnoteEndnote {
                     r#type: None,
                     id: id as i64,
-                    block_level_elts: Vec::new(),
+                    block_content: Vec::new(),
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: std::collections::HashMap::new(),
                     #[cfg(feature = "extra-children")]
@@ -932,10 +933,10 @@ impl DocumentBuilder {
             id,
             PendingEndnote {
                 id,
-                body: types::CTFtnEdn {
+                body: types::FootnoteEndnote {
                     r#type: None,
                     id: id as i64,
-                    block_level_elts: Vec::new(),
+                    block_content: Vec::new(),
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: std::collections::HashMap::new(),
                     #[cfg(feature = "extra-children")]
@@ -965,7 +966,7 @@ impl DocumentBuilder {
                     id: 0,                 // set in build_comments
                     author: String::new(), // set in build_comments
                     date: None,
-                    block_level_elts: Vec::new(),
+                    block_content: Vec::new(),
                     initials: None,
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
@@ -1038,7 +1039,7 @@ impl DocumentBuilder {
 
                 // Add header references
                 for header in self.headers.values() {
-                    let mut hdr_ref = types::CTHdrFtrRef {
+                    let mut hdr_ref = types::HeaderFooterReference {
                         r#type: match header.header_type {
                             HeaderFooterType::Default => types::STHdrFtr::Default,
                             HeaderFooterType::First => types::STHdrFtr::First,
@@ -1052,14 +1053,14 @@ impl DocumentBuilder {
                         },
                     };
                     let _ = &mut hdr_ref; // suppress unused mut warning
-                    sect_pr.hdr_ftr_references.push(Box::new(
-                        types::EGHdrFtrReferences::HeaderReference(Box::new(hdr_ref)),
+                    sect_pr.header_footer_refs.push(Box::new(
+                        types::HeaderFooterRef::HeaderReference(Box::new(hdr_ref)),
                     ));
                 }
 
                 // Add footer references
                 for footer in self.footers.values() {
-                    let mut ftr_ref = types::CTHdrFtrRef {
+                    let mut ftr_ref = types::HeaderFooterReference {
                         r#type: match footer.footer_type {
                             HeaderFooterType::Default => types::STHdrFtr::Default,
                             HeaderFooterType::First => types::STHdrFtr::First,
@@ -1073,8 +1074,8 @@ impl DocumentBuilder {
                         },
                     };
                     let _ = &mut ftr_ref; // suppress unused mut warning
-                    sect_pr.hdr_ftr_references.push(Box::new(
-                        types::EGHdrFtrReferences::FooterReference(Box::new(ftr_ref)),
+                    sect_pr.header_footer_refs.push(Box::new(
+                        types::HeaderFooterRef::FooterReference(Box::new(ftr_ref)),
                     ));
                 }
             }
@@ -1272,7 +1273,7 @@ fn serialize_to_xml_bytes(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
 
 /// Serialize a ToXml value with namespace declarations injected into the
 /// root element's start tag. This is needed for types that don't have
-/// `extra_attrs` (like Footnotes, Endnotes, Comments, Numbering, CTHdrFtr).
+/// `extra_attrs` (like Footnotes, Endnotes, Comments, Numbering, HeaderFooter).
 fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
     use quick_xml::events::{BytesEnd, BytesStart, Event};
 
@@ -1310,13 +1311,13 @@ fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
 
 /// Build a separator footnote/endnote (required by Word).
 ///
-/// Creates a CTFtnEdn with a single paragraph containing a single run
+/// Creates a FootnoteEndnote with a single paragraph containing a single run
 /// with a separator or continuation separator element.
-fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::CTFtnEdn {
+fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::FootnoteEndnote {
     let separator_content = match ftn_type {
-        types::STFtnEdn::Separator => types::EGRunInnerContent::Separator(Box::new(types::CTEmpty)),
+        types::STFtnEdn::Separator => types::RunContent::Separator(Box::new(types::CTEmpty)),
         types::STFtnEdn::ContinuationSeparator => {
-            types::EGRunInnerContent::ContinuationSeparator(Box::new(types::CTEmpty))
+            types::RunContent::ContinuationSeparator(Box::new(types::CTEmpty))
         }
         _ => unreachable!("only Separator and ContinuationSeparator expected"),
     };
@@ -1327,7 +1328,7 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::CTFtnEd
         rsid_r: None,
         #[cfg(feature = "wml-styling")]
         r_pr: None,
-        run_inner_content: vec![Box::new(separator_content)],
+        run_content: vec![Box::new(separator_content)],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
@@ -1342,17 +1343,17 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::CTFtnEd
         rsid_r_default: None,
         #[cfg(feature = "wml-styling")]
         p_pr: None,
-        p_content: vec![Box::new(types::EGPContent::R(Box::new(run)))],
+        paragraph_content: vec![Box::new(types::ParagraphContent::R(Box::new(run)))],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
         extra_children: Vec::new(),
     };
 
-    types::CTFtnEdn {
+    types::FootnoteEndnote {
         r#type: Some(ftn_type),
         id,
-        block_level_elts: vec![Box::new(types::EGBlockLevelElts::P(Box::new(para)))],
+        block_content: vec![Box::new(types::BlockContent::P(Box::new(para)))],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
@@ -1461,9 +1462,11 @@ fn list_type_to_num_fmt_and_text(list_type: ListType) -> (types::STNumberFormat,
 /// Build a Numbering type from pending numbering definitions.
 fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Numbering {
     let mut numbering = types::Numbering {
+        #[cfg(feature = "wml-numbering")]
         num_pic_bullet: Vec::new(),
         abstract_num: Vec::new(),
         num: Vec::new(),
+        #[cfg(feature = "wml-numbering")]
         num_id_mac_at_cleanup: None,
         #[cfg(feature = "extra-children")]
         extra_children: Vec::new(),
@@ -2036,7 +2039,7 @@ mod tests {
         builder.add_paragraph("Second paragraph");
 
         let body = builder.document.body.as_ref().unwrap();
-        assert_eq!(body.block_level_elts.len(), 2);
+        assert_eq!(body.block_content.len(), 2);
     }
 
     #[test]

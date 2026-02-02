@@ -2088,7 +2088,7 @@ impl ToXml for Comment {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -2099,7 +2099,7 @@ impl ToXml for Comment {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -2539,7 +2539,7 @@ impl ToXml for CTRunTrackChange {
     }
 }
 
-impl ToXml for EGPContentMath {
+impl ToXml for MathContent {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         for child in &self.extra_children {
@@ -2557,7 +2557,7 @@ impl ToXml for EGPContentMath {
     }
 }
 
-impl ToXml for EGPContentBase {
+impl ToXml for ParagraphContentBase {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -2572,7 +2572,7 @@ impl ToXml for EGPContentBase {
     }
 }
 
-impl ToXml for EGContentRunContentBase {
+impl ToXml for RunContentBase {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -2627,7 +2627,7 @@ impl ToXml for EGContentRunContentBase {
     }
 }
 
-impl ToXml for EGCellMarkupElements {
+impl ToXml for CellMarkup {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -2642,7 +2642,7 @@ impl ToXml for EGCellMarkupElements {
     }
 }
 
-impl ToXml for EGRangeMarkupElements {
+impl ToXml for RangeMarkup {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -2835,108 +2835,143 @@ impl ToXml for ParagraphProperties {
         if let Some(ref val) = self.paragraph_style {
             val.write_element("w:pStyle", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.keep_next {
             val.write_element("w:keepNext", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.keep_lines {
             val.write_element("w:keepLines", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.page_break_before {
             val.write_element("w:pageBreakBefore", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.frame_pr {
             val.write_element("w:framePr", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.widow_control {
             val.write_element("w:widowControl", writer)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_pr {
             val.write_element("w:numPr", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.suppress_line_numbers {
             val.write_element("w:suppressLineNumbers", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.paragraph_border {
             val.write_element("w:pBdr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tabs {
             val.write_element("w:tabs", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.suppress_auto_hyphens {
             val.write_element("w:suppressAutoHyphens", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.kinsoku {
             val.write_element("w:kinsoku", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.word_wrap {
             val.write_element("w:wordWrap", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.overflow_punct {
             val.write_element("w:overflowPunct", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.top_line_punct {
             val.write_element("w:topLinePunct", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.auto_space_d_e {
             val.write_element("w:autoSpaceDE", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.auto_space_d_n {
             val.write_element("w:autoSpaceDN", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bidi {
             val.write_element("w:bidi", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.adjust_right_ind {
             val.write_element("w:adjustRightInd", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.snap_to_grid {
             val.write_element("w:snapToGrid", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.spacing {
             val.write_element("w:spacing", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.indentation {
             val.write_element("w:ind", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.contextual_spacing {
             val.write_element("w:contextualSpacing", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.mirror_indents {
             val.write_element("w:mirrorIndents", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.suppress_overlap {
             val.write_element("w:suppressOverlap", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.text_direction {
             val.write_element("w:textDirection", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.text_alignment {
             val.write_element("w:textAlignment", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.textbox_tight_wrap {
             val.write_element("w:textboxTightWrap", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.outline_lvl {
             val.write_element("w:outlineLvl", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.div_id {
             val.write_element("w:divId", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.sect_pr {
             val.write_element("w:sectPr", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.p_pr_change {
             val.write_element("w:pPrChange", writer)?;
         }
@@ -2951,108 +2986,143 @@ impl ToXml for ParagraphProperties {
         if self.paragraph_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.keep_next.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.keep_lines.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.page_break_before.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.frame_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.widow_control.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.suppress_line_numbers.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.paragraph_border.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tabs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.suppress_auto_hyphens.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.kinsoku.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.word_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.overflow_punct.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.top_line_punct.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.auto_space_d_e.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.auto_space_d_n.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bidi.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.adjust_right_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.snap_to_grid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.indentation.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.contextual_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.mirror_indents.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.suppress_overlap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.text_direction.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.text_alignment.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.textbox_tight_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.outline_lvl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.div_id.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.sect_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.p_pr_change.is_some() {
             return false;
         }
@@ -3794,7 +3864,7 @@ impl ToXml for CTSimpleField {
         if let Some(ref val) = self.fld_data {
             val.write_element("w:fldData", writer)?;
         }
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -3808,7 +3878,7 @@ impl ToXml for CTSimpleField {
         if self.fld_data.is_some() {
             return false;
         }
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -3922,7 +3992,7 @@ impl ToXml for Hyperlink {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -3933,7 +4003,7 @@ impl ToXml for Hyperlink {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -4765,7 +4835,7 @@ impl ToXml for DocumentGrid {
     }
 }
 
-impl ToXml for CTHdrFtrRef {
+impl ToXml for HeaderFooterReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         {
@@ -4787,7 +4857,7 @@ impl ToXml for CTHdrFtrRef {
     }
 }
 
-impl ToXml for EGHdrFtrReferences {
+impl ToXml for HeaderFooterRef {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -4801,9 +4871,9 @@ impl ToXml for EGHdrFtrReferences {
     }
 }
 
-impl ToXml for CTHdrFtr {
+impl ToXml for HeaderFooter {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -4814,7 +4884,7 @@ impl ToXml for CTHdrFtr {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -5196,66 +5266,86 @@ impl ToXml for SectionProperties {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.hdr_ftr_references {
+        for item in &self.header_footer_refs {
             item.write_element("", writer)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.footnote_pr {
             val.write_element("w:footnotePr", writer)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.endnote_pr {
             val.write_element("w:endnotePr", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.r#type {
             val.write_element("w:type", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.pg_sz {
             val.write_element("w:pgSz", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.pg_mar {
             val.write_element("w:pgMar", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.paper_src {
             val.write_element("w:paperSrc", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.pg_borders {
             val.write_element("w:pgBorders", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.ln_num_type {
             val.write_element("w:lnNumType", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.pg_num_type {
             val.write_element("w:pgNumType", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.cols {
             val.write_element("w:cols", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.form_prot {
             val.write_element("w:formProt", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.v_align {
             val.write_element("w:vAlign", writer)?;
         }
+        #[cfg(feature = "wml-comments")]
         if let Some(ref val) = self.no_endnote {
             val.write_element("w:noEndnote", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.title_pg {
             val.write_element("w:titlePg", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.text_direction {
             val.write_element("w:textDirection", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.bidi {
             val.write_element("w:bidi", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.rtl_gutter {
             val.write_element("w:rtlGutter", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.doc_grid {
             val.write_element("w:docGrid", writer)?;
         }
+        #[cfg(feature = "wml-layout")]
         if let Some(ref val) = self.printer_settings {
             val.write_element("w:printerSettings", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.sect_pr_change {
             val.write_element("w:sectPrChange", writer)?;
         }
@@ -5267,66 +5357,86 @@ impl ToXml for SectionProperties {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.hdr_ftr_references.is_empty() {
+        if !self.header_footer_refs.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.footnote_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.endnote_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.r#type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.pg_sz.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.pg_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.paper_src.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.pg_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.ln_num_type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.pg_num_type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.cols.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.form_prot.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.v_align.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-comments")]
         if self.no_endnote.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.title_pg.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.text_direction.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.bidi.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.rtl_gutter.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.doc_grid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-layout")]
         if self.printer_settings.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.sect_pr_change.is_some() {
             return false;
         }
@@ -5542,7 +5652,7 @@ impl ToXml for Text {
     }
 }
 
-impl ToXml for EGRunInnerContent {
+impl ToXml for RunContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -5624,7 +5734,7 @@ impl ToXml for Run {
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
-        for item in &self.run_inner_content {
+        for item in &self.run_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -5639,7 +5749,7 @@ impl ToXml for Run {
         if self.r_pr.is_some() {
             return false;
         }
-        if !self.run_inner_content.is_empty() {
+        if !self.run_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -6222,120 +6332,159 @@ impl ToXml for RunProperties {
         if let Some(ref val) = self.run_style {
             val.write_element("w:rStyle", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.fonts {
             val.write_element("w:rFonts", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bold {
             val.write_element("w:b", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.b_cs {
             val.write_element("w:bCs", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.italic {
             val.write_element("w:i", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.i_cs {
             val.write_element("w:iCs", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.caps {
             val.write_element("w:caps", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.small_caps {
             val.write_element("w:smallCaps", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.strikethrough {
             val.write_element("w:strike", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.dstrike {
             val.write_element("w:dstrike", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.outline {
             val.write_element("w:outline", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.shadow {
             val.write_element("w:shadow", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.emboss {
             val.write_element("w:emboss", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.imprint {
             val.write_element("w:imprint", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.no_proof {
             val.write_element("w:noProof", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.snap_to_grid {
             val.write_element("w:snapToGrid", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.vanish {
             val.write_element("w:vanish", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.web_hidden {
             val.write_element("w:webHidden", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.color {
             val.write_element("w:color", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.spacing {
             val.write_element("w:spacing", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.width {
             val.write_element("w:w", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.kern {
             val.write_element("w:kern", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.position {
             val.write_element("w:position", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.size {
             val.write_element("w:sz", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.size_complex_script {
             val.write_element("w:szCs", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.highlight {
             val.write_element("w:highlight", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.underline {
             val.write_element("w:u", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.effect {
             val.write_element("w:effect", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.bdr {
             val.write_element("w:bdr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.fit_text {
             val.write_element("w:fitText", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.vert_align {
             val.write_element("w:vertAlign", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.rtl {
             val.write_element("w:rtl", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cs {
             val.write_element("w:cs", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.em {
             val.write_element("w:em", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.lang {
             val.write_element("w:lang", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.east_asian_layout {
             val.write_element("w:eastAsianLayout", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.spec_vanish {
             val.write_element("w:specVanish", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.o_math {
             val.write_element("w:oMath", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.r_pr_change {
             val.write_element("w:rPrChange", writer)?;
         }
@@ -6350,120 +6499,159 @@ impl ToXml for RunProperties {
         if self.run_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.fonts.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bold.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.b_cs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.italic.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.i_cs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.caps.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.small_caps.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.strikethrough.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.dstrike.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.outline.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.shadow.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.emboss.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.imprint.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.no_proof.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.snap_to_grid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.vanish.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.web_hidden.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.color.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.width.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.kern.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.position.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.size_complex_script.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.highlight.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.underline.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.effect.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.bdr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.fit_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.vert_align.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.rtl.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.cs.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.em.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.lang.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.east_asian_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.spec_vanish.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.o_math.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.r_pr_change.is_some() {
             return false;
         }
@@ -6499,7 +6687,7 @@ impl ToXml for EGRPr {
     }
 }
 
-impl ToXml for EGRPrMath {
+impl ToXml for MathRunProperties {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -7549,7 +7737,7 @@ impl ToXml for CTRubyPr {
     }
 }
 
-impl ToXml for EGRubyContent {
+impl ToXml for RubyContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -8048,7 +8236,7 @@ impl ToXml for CTSdtEndPr {
     }
 }
 
-impl ToXml for EGContentRunContent {
+impl ToXml for RunContentChoice {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -8124,7 +8312,7 @@ impl ToXml for CTDirContentRun {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8135,7 +8323,7 @@ impl ToXml for CTDirContentRun {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8163,7 +8351,7 @@ impl ToXml for CTBdoContentRun {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8174,7 +8362,7 @@ impl ToXml for CTBdoContentRun {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8187,7 +8375,7 @@ impl ToXml for CTBdoContentRun {
 
 impl ToXml for CTSdtContentRun {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8198,7 +8386,7 @@ impl ToXml for CTSdtContentRun {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8209,7 +8397,7 @@ impl ToXml for CTSdtContentRun {
     }
 }
 
-impl ToXml for EGContentBlockContent {
+impl ToXml for BlockContentChoice {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -8268,7 +8456,7 @@ impl ToXml for EGContentBlockContent {
 
 impl ToXml for CTSdtContentBlock {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.content_block_content {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8279,7 +8467,7 @@ impl ToXml for CTSdtContentBlock {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.content_block_content.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8290,7 +8478,7 @@ impl ToXml for CTSdtContentBlock {
     }
 }
 
-impl ToXml for EGContentRowContent {
+impl ToXml for RowContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -8348,7 +8536,7 @@ impl ToXml for EGContentRowContent {
 
 impl ToXml for CTSdtContentRow {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.content_row_content {
+        for item in &self.rows {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8359,7 +8547,7 @@ impl ToXml for CTSdtContentRow {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.content_row_content.is_empty() {
+        if !self.rows.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8370,7 +8558,7 @@ impl ToXml for CTSdtContentRow {
     }
 }
 
-impl ToXml for EGContentCellContent {
+impl ToXml for CellContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -8428,7 +8616,7 @@ impl ToXml for EGContentCellContent {
 
 impl ToXml for CTSdtContentCell {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.content_cell_content {
+        for item in &self.cells {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8439,7 +8627,7 @@ impl ToXml for CTSdtContentCell {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.content_cell_content.is_empty() {
+        if !self.cells.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8641,7 +8829,7 @@ impl ToXml for CTCustomXmlRun {
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8655,7 +8843,7 @@ impl ToXml for CTCustomXmlRun {
         if self.custom_xml_pr.is_some() {
             return false;
         }
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8687,7 +8875,7 @@ impl ToXml for CTSmartTagRun {
         if let Some(ref val) = self.smart_tag_pr {
             val.write_element("w:smartTagPr", writer)?;
         }
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8701,7 +8889,7 @@ impl ToXml for CTSmartTagRun {
         if self.smart_tag_pr.is_some() {
             return false;
         }
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8733,7 +8921,7 @@ impl ToXml for CTCustomXmlBlock {
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
-        for item in &self.content_block_content {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8747,7 +8935,7 @@ impl ToXml for CTCustomXmlBlock {
         if self.custom_xml_pr.is_some() {
             return false;
         }
-        if !self.content_block_content.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8809,7 +8997,7 @@ impl ToXml for CTCustomXmlRow {
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
-        for item in &self.content_row_content {
+        for item in &self.rows {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8823,7 +9011,7 @@ impl ToXml for CTCustomXmlRow {
         if self.custom_xml_pr.is_some() {
             return false;
         }
-        if !self.content_row_content.is_empty() {
+        if !self.rows.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8855,7 +9043,7 @@ impl ToXml for CTCustomXmlCell {
         if let Some(ref val) = self.custom_xml_pr {
             val.write_element("w:customXmlPr", writer)?;
         }
-        for item in &self.content_cell_content {
+        for item in &self.cells {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -8869,7 +9057,7 @@ impl ToXml for CTCustomXmlCell {
         if self.custom_xml_pr.is_some() {
             return false;
         }
-        if !self.content_cell_content.is_empty() {
+        if !self.cells.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -8904,7 +9092,7 @@ impl ToXml for CTSmartTagPr {
     }
 }
 
-impl ToXml for EGPContent {
+impl ToXml for ParagraphContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -9011,7 +9199,7 @@ impl ToXml for Paragraph {
         if let Some(ref val) = self.p_pr {
             val.write_element("w:pPr", writer)?;
         }
-        for item in &self.p_content {
+        for item in &self.paragraph_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -9026,7 +9214,7 @@ impl ToXml for Paragraph {
         if self.p_pr.is_some() {
             return false;
         }
-        if !self.p_content.is_empty() {
+        if !self.paragraph_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -9444,49 +9632,63 @@ impl ToXml for CTTcPrBase {
 
 impl ToXml for TableCellProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cnf_style {
             val.write_element("w:cnfStyle", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_w {
             val.write_element("w:tcW", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.grid_span {
             val.write_element("w:gridSpan", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.horizontal_merge {
             val.write_element("w:hMerge", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.vertical_merge {
             val.write_element("w:vMerge", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_borders {
             val.write_element("w:tcBorders", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.no_wrap {
             val.write_element("w:noWrap", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_mar {
             val.write_element("w:tcMar", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.text_direction {
             val.write_element("w:textDirection", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tc_fit_text {
             val.write_element("w:tcFitText", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.v_align {
             val.write_element("w:vAlign", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.hide_mark {
             val.write_element("w:hideMark", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.headers {
             val.write_element("w:headers", writer)?;
         }
-        if let Some(ref val) = self.cell_markup_elements {
+        if let Some(ref val) = self.cell_markup {
             val.write_element("", writer)?;
         }
         if let Some(ref val) = self.tc_pr_change {
@@ -9500,49 +9702,63 @@ impl ToXml for TableCellProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.cnf_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.grid_span.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.horizontal_merge.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.vertical_merge.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.no_wrap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.text_direction.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tc_fit_text.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.v_align.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.hide_mark.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.headers.is_some() {
             return false;
         }
-        if self.cell_markup_elements.is_some() {
+        if self.cell_markup.is_some() {
             return false;
         }
         if self.tc_pr_change.is_some() {
@@ -9600,7 +9816,7 @@ impl ToXml for CTTcPrInner {
         if let Some(ref val) = self.headers {
             val.write_element("w:headers", writer)?;
         }
-        if let Some(ref val) = self.cell_markup_elements {
+        if let Some(ref val) = self.cell_markup {
             val.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -9653,7 +9869,7 @@ impl ToXml for CTTcPrInner {
         if self.headers.is_some() {
             return false;
         }
-        if self.cell_markup_elements.is_some() {
+        if self.cell_markup.is_some() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -9678,10 +9894,11 @@ impl ToXml for TableCell {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.cell_properties {
             val.write_element("w:tcPr", writer)?;
         }
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -9692,10 +9909,11 @@ impl ToXml for TableCell {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.cell_properties.is_some() {
             return false;
         }
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -9840,12 +10058,15 @@ impl ToXml for CTTrPrBase {
 
 impl ToXml for TableRowProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.ins {
             val.write_element("w:ins", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.del {
             val.write_element("w:del", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.tr_pr_change {
             val.write_element("w:trPrChange", writer)?;
         }
@@ -9857,12 +10078,15 @@ impl ToXml for TableRowProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-track-changes")]
         if self.ins.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.del.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.tr_pr_change.is_some() {
             return false;
         }
@@ -9909,13 +10133,15 @@ impl ToXml for CTRow {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_pr_ex {
             val.write_element("w:tblPrEx", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.row_properties {
             val.write_element("w:trPr", writer)?;
         }
-        for item in &self.content_cell_content {
+        for item in &self.cells {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -9926,13 +10152,15 @@ impl ToXml for CTRow {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-tables")]
         if self.tbl_pr_ex.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.row_properties.is_some() {
             return false;
         }
-        if !self.content_cell_content.is_empty() {
+        if !self.cells.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -10303,57 +10531,75 @@ impl ToXml for CTTblPrBase {
 
 impl ToXml for TableProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style {
             val.write_element("w:tblStyle", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tblp_pr {
             val.write_element("w:tblpPr", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_overlap {
             val.write_element("w:tblOverlap", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.bidi_visual {
             val.write_element("w:bidiVisual", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style_row_band_size {
             val.write_element("w:tblStyleRowBandSize", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.tbl_style_col_band_size {
             val.write_element("w:tblStyleColBandSize", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_w {
             val.write_element("w:tblW", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.justification {
             val.write_element("w:jc", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_spacing {
             val.write_element("w:tblCellSpacing", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_ind {
             val.write_element("w:tblInd", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_borders {
             val.write_element("w:tblBorders", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.shading {
             val.write_element("w:shd", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_layout {
             val.write_element("w:tblLayout", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_cell_mar {
             val.write_element("w:tblCellMar", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_look {
             val.write_element("w:tblLook", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_caption {
             val.write_element("w:tblCaption", writer)?;
         }
+        #[cfg(feature = "wml-tables")]
         if let Some(ref val) = self.tbl_description {
             val.write_element("w:tblDescription", writer)?;
         }
+        #[cfg(feature = "wml-track-changes")]
         if let Some(ref val) = self.tbl_pr_change {
             val.write_element("w:tblPrChange", writer)?;
         }
@@ -10365,57 +10611,75 @@ impl ToXml for TableProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tblp_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_overlap.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.bidi_visual.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style_row_band_size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.tbl_style_col_band_size.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_w.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.justification.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_ind.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_borders.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.shading.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_layout.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_cell_mar.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_look.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_caption.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-tables")]
         if self.tbl_description.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-track-changes")]
         if self.tbl_pr_change.is_some() {
             return false;
         }
@@ -10579,7 +10843,7 @@ impl ToXml for CTTblPrEx {
 
 impl ToXml for Table {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.range_markup_elements {
+        for item in &self.range_markup {
             item.write_element("", writer)?;
         }
         {
@@ -10590,7 +10854,7 @@ impl ToXml for Table {
             let val = &self.tbl_grid;
             val.write_element("w:tblGrid", writer)?;
         }
-        for item in &self.content_row_content {
+        for item in &self.rows {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -10601,7 +10865,7 @@ impl ToXml for Table {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.range_markup_elements.is_empty() {
+        if !self.range_markup.is_empty() {
             return false;
         }
         false
@@ -10756,7 +11020,7 @@ impl ToXml for CTNumRestart {
     }
 }
 
-impl ToXml for CTFtnEdnRef {
+impl ToXml for FootnoteEndnoteRef {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         if let Some(ref val) = self.custom_mark_follows {
@@ -10806,7 +11070,7 @@ impl ToXml for CTFtnEdnSepRef {
     }
 }
 
-impl ToXml for CTFtnEdn {
+impl ToXml for FootnoteEndnote {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         if let Some(ref val) = self.r#type {
@@ -10830,7 +11094,7 @@ impl ToXml for CTFtnEdn {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -10841,7 +11105,7 @@ impl ToXml for CTFtnEdn {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -12234,12 +12498,15 @@ impl ToXml for CTWriteProtection {
 
 impl ToXml for Settings {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.write_protection {
             val.write_element("w:writeProtection", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.view {
             val.write_element("w:view", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.zoom {
             val.write_element("w:zoom", writer)?;
         }
@@ -12306,6 +12573,7 @@ impl ToXml for Settings {
         if let Some(ref val) = self.forms_design {
             val.write_element("w:formsDesign", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.attached_template {
             val.write_element("w:attachedTemplate", writer)?;
         }
@@ -12321,12 +12589,15 @@ impl ToXml for Settings {
         if let Some(ref val) = self.document_type {
             val.write_element("w:documentType", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.mail_merge {
             val.write_element("w:mailMerge", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.revision_view {
             val.write_element("w:revisionView", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.track_revisions {
             val.write_element("w:trackRevisions", writer)?;
         }
@@ -12336,6 +12607,7 @@ impl ToXml for Settings {
         if let Some(ref val) = self.do_not_track_formatting {
             val.write_element("w:doNotTrackFormatting", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.document_protection {
             val.write_element("w:documentProtection", writer)?;
         }
@@ -12348,6 +12620,7 @@ impl ToXml for Settings {
         if let Some(ref val) = self.style_lock_q_f_set {
             val.write_element("w:styleLockQFSet", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.default_tab_stop {
             val.write_element("w:defaultTabStop", writer)?;
         }
@@ -12375,6 +12648,7 @@ impl ToXml for Settings {
         if let Some(ref val) = self.default_table_style {
             val.write_element("w:defaultTableStyle", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.even_and_odd_headers {
             val.write_element("w:evenAndOddHeaders", writer)?;
         }
@@ -12474,12 +12748,15 @@ impl ToXml for Settings {
         if let Some(ref val) = self.endnote_pr {
             val.write_element("w:endnotePr", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.compat {
             val.write_element("w:compat", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.doc_vars {
             val.write_element("w:docVars", writer)?;
         }
+        #[cfg(feature = "wml-settings")]
         if let Some(ref val) = self.rsids {
             val.write_element("w:rsids", writer)?;
         }
@@ -12530,12 +12807,15 @@ impl ToXml for Settings {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-settings")]
         if self.write_protection.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.view.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.zoom.is_some() {
             return false;
         }
@@ -12602,6 +12882,7 @@ impl ToXml for Settings {
         if self.forms_design.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.attached_template.is_some() {
             return false;
         }
@@ -12617,12 +12898,15 @@ impl ToXml for Settings {
         if self.document_type.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.mail_merge.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.revision_view.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.track_revisions.is_some() {
             return false;
         }
@@ -12632,6 +12916,7 @@ impl ToXml for Settings {
         if self.do_not_track_formatting.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.document_protection.is_some() {
             return false;
         }
@@ -12644,6 +12929,7 @@ impl ToXml for Settings {
         if self.style_lock_q_f_set.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.default_tab_stop.is_some() {
             return false;
         }
@@ -12671,6 +12957,7 @@ impl ToXml for Settings {
         if self.default_table_style.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.even_and_odd_headers.is_some() {
             return false;
         }
@@ -12770,12 +13057,15 @@ impl ToXml for Settings {
         if self.endnote_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.compat.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.doc_vars.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-settings")]
         if self.rsids.is_some() {
             return false;
         }
@@ -13687,6 +13977,7 @@ impl ToXml for NumberingInstance {
 
 impl ToXml for Numbering {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-numbering")]
         for item in &self.num_pic_bullet {
             item.write_element("w:numPicBullet", writer)?;
         }
@@ -13696,6 +13987,7 @@ impl ToXml for Numbering {
         for item in &self.num {
             item.write_element("w:num", writer)?;
         }
+        #[cfg(feature = "wml-numbering")]
         if let Some(ref val) = self.num_id_mac_at_cleanup {
             val.write_element("w:numIdMacAtCleanup", writer)?;
         }
@@ -13707,6 +13999,7 @@ impl ToXml for Numbering {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-numbering")]
         if !self.num_pic_bullet.is_empty() {
             return false;
         }
@@ -13716,6 +14009,7 @@ impl ToXml for Numbering {
         if !self.num.is_empty() {
             return false;
         }
+        #[cfg(feature = "wml-numbering")]
         if self.num_id_mac_at_cleanup.is_some() {
             return false;
         }
@@ -13832,27 +14126,35 @@ impl ToXml for Style {
         if let Some(ref val) = self.based_on {
             val.write_element("w:basedOn", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.next {
             val.write_element("w:next", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.link {
             val.write_element("w:link", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.auto_redefine {
             val.write_element("w:autoRedefine", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.hidden {
             val.write_element("w:hidden", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.ui_priority {
             val.write_element("w:uiPriority", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.semi_hidden {
             val.write_element("w:semiHidden", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.unhide_when_used {
             val.write_element("w:unhideWhenUsed", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.q_format {
             val.write_element("w:qFormat", writer)?;
         }
@@ -13871,21 +14173,27 @@ impl ToXml for Style {
         if let Some(ref val) = self.rsid {
             val.write_element("w:rsid", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.p_pr {
             val.write_element("w:pPr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.table_properties {
             val.write_element("w:tblPr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.row_properties {
             val.write_element("w:trPr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.cell_properties {
             val.write_element("w:tcPr", writer)?;
         }
+        #[cfg(feature = "wml-styling")]
         for item in &self.tbl_style_pr {
             item.write_element("w:tblStylePr", writer)?;
         }
@@ -13906,27 +14214,35 @@ impl ToXml for Style {
         if self.based_on.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.next.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.link.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.auto_redefine.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.hidden.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.ui_priority.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.semi_hidden.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.unhide_when_used.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.q_format.is_some() {
             return false;
         }
@@ -13945,21 +14261,27 @@ impl ToXml for Style {
         if self.rsid.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.p_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.r_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.table_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.row_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if self.cell_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "wml-styling")]
         if !self.tbl_style_pr.is_empty() {
             return false;
         }
@@ -14525,7 +14847,7 @@ impl ToXml for CTDivs {
 
 impl ToXml for CTTxbxContent {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -14536,7 +14858,7 @@ impl ToXml for CTTxbxContent {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -14567,7 +14889,7 @@ impl ToXml for EGMathContent {
 
 impl ToXml for EGBlockLevelChunkElts {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.content_block_content {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "extra-children")]
@@ -14578,7 +14900,7 @@ impl ToXml for EGBlockLevelChunkElts {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.content_block_content.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -14589,7 +14911,7 @@ impl ToXml for EGBlockLevelChunkElts {
     }
 }
 
-impl ToXml for EGBlockLevelElts {
+impl ToXml for BlockContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -14647,7 +14969,7 @@ impl ToXml for EGBlockLevelElts {
     }
 }
 
-impl ToXml for EGRunLevelElts {
+impl ToXml for RunLevelContent {
     fn write_element<W: Write>(
         &self,
         _tag: &str,
@@ -14702,7 +15024,7 @@ impl ToXml for EGRunLevelElts {
 
 impl ToXml for Body {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        for item in &self.block_level_elts {
+        for item in &self.block_content {
             item.write_element("", writer)?;
         }
         #[cfg(feature = "wml-layout")]
@@ -14717,7 +15039,7 @@ impl ToXml for Body {
     }
 
     fn is_empty_element(&self) -> bool {
-        if !self.block_level_elts.is_empty() {
+        if !self.block_content.is_empty() {
             return false;
         }
         #[cfg(feature = "wml-layout")]
@@ -15285,6 +15607,7 @@ impl ToXml for Document {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "wml-styling")]
         if let Some(ref val) = self.background {
             val.write_element("w:background", writer)?;
         }
@@ -15299,6 +15622,7 @@ impl ToXml for Document {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "wml-styling")]
         if self.background.is_some() {
             return false;
         }

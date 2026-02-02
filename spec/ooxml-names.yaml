@@ -698,6 +698,28 @@ wml:
     CT_DrawingML: Drawing
     CT_Inline: InlineDrawing
     CT_Anchor: AnchoredDrawing
+    # EG_* element group enums
+    EG_BlockLevelElts: BlockContent
+    EG_ContentBlockContent: BlockContentChoice
+    EG_PContent: ParagraphContent
+    EG_PContentBase: ParagraphContentBase
+    EG_ContentRunContent: RunContentChoice
+    EG_ContentRunContentBase: RunContentBase
+    EG_RunInnerContent: RunContent
+    EG_RunLevelElts: RunLevelContent
+    EG_ContentRowContent: RowContent
+    EG_ContentCellContent: CellContent
+    EG_RangeMarkupElements: RangeMarkup
+    EG_HdrFtrReferences: HeaderFooterRef
+    EG_CellMarkupElements: CellMarkup
+    EG_RPrMath: MathRunProperties
+    EG_RubyContent: RubyContent
+    EG_PContentMath: MathContent
+    # Additional CT_* types
+    CT_HdrFtr: HeaderFooter
+    CT_FtnEdn: FootnoteEndnote
+    CT_FtnEdnRef: FootnoteEndnoteRef
+    CT_HdrFtrRef: HeaderFooterReference
 
   fields:
     val: value
@@ -725,6 +747,19 @@ wml:
     gridSpan: grid_span
     vMerge: vertical_merge
     hMerge: horizontal_merge
+    # EG_* field names (key = stripped EG_ prefix, value = desired field name)
+    BlockLevelElts: block_content
+    PContent: paragraph_content
+    RunInnerContent: run_content
+    ContentRowContent: rows
+    ContentCellContent: cells
+    ContentBlockContent: block_content
+    ContentRunContent: run_content
+    RangeMarkupElements: range_markup
+    HdrFtrReferences: header_footer_refs
+    CellMarkupElements: cell_markup
+    RPrMath: math_run_props
+    RunLevelElts: run_level_content
 
 # PresentationML (PowerPoint)
 pml:

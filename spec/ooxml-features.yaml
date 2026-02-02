@@ -523,30 +523,245 @@ sml:
     extLst: [extensions]
 
 # =============================================================================
-# WordprocessingML (Word) - TODO: expand
+# WordprocessingML (Word)
 # =============================================================================
 wml:
+  # ---------------------------------------------------------------------------
+  # Top-level
+  # ---------------------------------------------------------------------------
   Document:
     body: [core]
+    background: [styling]
 
   Body:
-    p: [core]                    # Paragraphs
-    tbl: [tables]                # Tables
-    sectPr: [layout]             # Section properties
+    # block_level_elts omitted — EG_* content, always included
+    sectPr: [layout]
 
+  # ---------------------------------------------------------------------------
+  # Paragraph
+  # ---------------------------------------------------------------------------
   Paragraph:
-    pPr: [styling]               # Paragraph properties
-    r: [core]                    # Runs
-    hyperlink: [hyperlinks]
-    bookmarkStart: [core]
-    bookmarkEnd: [core]
+    pPr: [styling]
+    # p_content omitted — EG_* content, always included
 
+  ParagraphProperties:
+    pStyle: [core]
+    keepNext: [layout]
+    keepLines: [layout]
+    pageBreakBefore: [layout]
+    framePr: [layout]
+    widowControl: [layout]
+    numPr: [numbering]
+    suppressLineNumbers: [layout]
+    pBdr: [styling]
+    shd: [styling]
+    tabs: [styling]
+    suppressAutoHyphens: [styling]
+    kinsoku: [styling]
+    wordWrap: [styling]
+    overflowPunct: [styling]
+    topLinePunct: [styling]
+    autoSpaceDE: [styling]
+    autoSpaceDN: [styling]
+    bidi: [styling]
+    adjustRightInd: [styling]
+    snapToGrid: [layout]
+    spacing: [styling]
+    ind: [styling]
+    contextualSpacing: [styling]
+    mirrorIndents: [styling]
+    suppressOverlap: [layout]
+    jc: [styling]
+    textDirection: [styling]
+    textAlignment: [styling]
+    textboxTightWrap: [styling]
+    outlineLvl: [styling]
+    divId: [styling]
+    cnfStyle: [styling]
+    rPr: [styling]
+    sectPr: [layout]
+    pPrChange: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Run
+  # ---------------------------------------------------------------------------
   Run:
-    rPr: [styling]               # Run properties
-    t: [core]                    # Text
-    br: [core]                   # Break
-    tab: [core]                  # Tab
-    drawing: [drawings]
+    rPr: [styling]
+    # run_inner_content omitted — EG_* content, always included
+
+  RunProperties:
+    rStyle: [core]
+    rFonts: [styling]
+    b: [styling]
+    bCs: [styling]
+    i: [styling]
+    iCs: [styling]
+    caps: [styling]
+    smallCaps: [styling]
+    strike: [styling]
+    dstrike: [styling]
+    outline: [styling]
+    shadow: [styling]
+    emboss: [styling]
+    imprint: [styling]
+    noProof: [styling]
+    snapToGrid: [styling]
+    vanish: [styling]
+    webHidden: [styling]
+    color: [styling]
+    spacing: [styling]
+    w: [styling]
+    kern: [styling]
+    position: [styling]
+    sz: [styling]
+    szCs: [styling]
+    highlight: [styling]
+    u: [styling]
+    effect: [styling]
+    bdr: [styling]
+    shd: [styling]
+    fitText: [styling]
+    vertAlign: [styling]
+    rtl: [styling]
+    cs: [styling]
+    em: [styling]
+    lang: [styling]
+    eastAsianLayout: [styling]
+    specVanish: [styling]
+    oMath: [styling]
+    rPrChange: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Section
+  # ---------------------------------------------------------------------------
+  SectionProperties:
+    # hdr_ftr_references omitted — EG_* content, always included
+    footnotePr: [comments]
+    endnotePr: [comments]
+    type: [layout]
+    pgSz: [layout]
+    pgMar: [layout]
+    paperSrc: [layout]
+    pgBorders: [layout]
+    lnNumType: [layout]
+    pgNumType: [layout]
+    cols: [layout]
+    formProt: [layout]
+    vAlign: [layout]
+    noEndnote: [comments]
+    titlePg: [layout]
+    textDirection: [layout]
+    bidi: [layout]
+    rtlGutter: [layout]
+    docGrid: [layout]
+    printerSettings: [layout]
+    sectPrChange: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Table structure
+  # ---------------------------------------------------------------------------
+  Table:
+    # range_markup_elements, content_row_content omitted — EG_* content
+    tblPr: [core]
+    tblGrid: [core]
+
+  CTRow:
+    tblPrEx: [tables]
+    trPr: [tables]
+    # content_cell_content omitted — EG_* content
+
+  TableCell:
+    tcPr: [tables]
+    # block_level_elts omitted — EG_* content
+
+  TableProperties:
+    tblStyle: [styling]
+    tblpPr: [tables]
+    tblOverlap: [tables]
+    bidiVisual: [tables]
+    tblStyleRowBandSize: [styling]
+    tblStyleColBandSize: [styling]
+    tblW: [tables]
+    jc: [tables]
+    tblCellSpacing: [tables]
+    tblInd: [tables]
+    tblBorders: [tables]
+    shd: [tables]
+    tblLayout: [tables]
+    tblCellMar: [tables]
+    tblLook: [tables]
+    tblCaption: [tables]
+    tblDescription: [tables]
+    tblPrChange: [track-changes]
+
+  TableCellProperties:
+    cnfStyle: [styling]
+    tcW: [tables]
+    gridSpan: [tables]
+    hMerge: [tables]
+    vMerge: [tables]
+    tcBorders: [tables]
+    shd: [tables]
+    noWrap: [tables]
+    tcMar: [tables]
+    textDirection: [tables]
+    tcFitText: [tables]
+    vAlign: [tables]
+    hideMark: [tables]
+    headers: [tables]
+
+  TableRowProperties:
+    ins: [track-changes]
+    del: [track-changes]
+    trPrChange: [track-changes]
+
+  # ---------------------------------------------------------------------------
+  # Styles
+  # ---------------------------------------------------------------------------
+  Style:
+    name: [core]
+    basedOn: [core]
+    next: [styling]
+    link: [styling]
+    autoRedefine: [styling]
+    hidden: [styling]
+    uiPriority: [styling]
+    semiHidden: [styling]
+    unhideWhenUsed: [styling]
+    qFormat: [styling]
+    pPr: [styling]
+    rPr: [styling]
+    tblPr: [styling]
+    trPr: [styling]
+    tcPr: [styling]
+    tblStylePr: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Settings
+  # ---------------------------------------------------------------------------
+  Settings:
+    writeProtection: [settings]
+    view: [settings]
+    zoom: [settings]
+    defaultTabStop: [settings]
+    compat: [settings]
+    rsids: [settings]
+    docVars: [settings]
+    trackRevisions: [settings, track-changes]
+    revisionView: [settings, track-changes]
+    documentProtection: [settings]
+    evenAndOddHeaders: [settings]
+    mailMerge: [settings]
+    attachedTemplate: [settings]
+
+  # ---------------------------------------------------------------------------
+  # Numbering
+  # ---------------------------------------------------------------------------
+  Numbering:
+    numPicBullet: [numbering]
+    abstractNum: [core]
+    num: [core]
+    numIdMacAtCleanup: [numbering]
 
 # =============================================================================
 # PresentationML (PowerPoint) - TODO: expand

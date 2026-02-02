@@ -5,7 +5,7 @@
 
 use ooxml_wml::Document;
 use ooxml_wml::ext::{CellExt, ParagraphExt, RowExt, RunExt, RunPropertiesExt, TableExt};
-use ooxml_wml::types::EGBlockLevelElts;
+use ooxml_wml::types::BlockContent;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::io::{Read, Seek};
@@ -201,9 +201,9 @@ fn validate_style_references<R: Read + Seek>(
 ) {
     let mut checked_styles: HashSet<String> = HashSet::new();
 
-    for block in &doc.body().block_level_elts {
+    for block in &doc.body().block_content {
         match block.as_ref() {
-            EGBlockLevelElts::P(para) => {
+            BlockContent::P(para) => {
                 // NOTE: Paragraph style references are in CTPPrBase (not yet flattened).
                 // Checking character style references in runs instead.
 
@@ -223,7 +223,7 @@ fn validate_style_references<R: Read + Seek>(
                     }
                 }
             }
-            EGBlockLevelElts::Tbl(table) => {
+            BlockContent::Tbl(table) => {
                 // Check styles in table cells
                 for row in table.rows() {
                     for cell in row.cells() {
@@ -260,8 +260,8 @@ fn validate_fonts<R: Read + Seek>(doc: &Document<R>, result: &mut ValidationResu
     let common_fonts_lower: HashSet<String> =
         COMMON_FONTS.iter().map(|f| f.to_lowercase()).collect();
 
-    for block in &doc.body().block_level_elts {
-        if let EGBlockLevelElts::P(para) = block.as_ref() {
+    for block in &doc.body().block_content {
+        if let BlockContent::P(para) = block.as_ref() {
             for run in para.runs() {
                 if let Some(props) = run.properties()
                     && let Some(font) = props.font_ascii()

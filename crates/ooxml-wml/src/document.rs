@@ -226,8 +226,8 @@ impl<R: Read + Seek> Document<R> {
 
     /// Load a header part by its relationship ID.
     ///
-    /// Returns the parsed header as a generated `CTHdrFtr` type.
-    pub fn get_header(&mut self, rel_id: &str) -> Result<types::CTHdrFtr> {
+    /// Returns the parsed header as a generated `HeaderFooter` type.
+    pub fn get_header(&mut self, rel_id: &str) -> Result<types::HeaderFooter> {
         let rel = self
             .doc_rels
             .get(rel_id)
@@ -240,8 +240,8 @@ impl<R: Read + Seek> Document<R> {
 
     /// Load a footer part by its relationship ID.
     ///
-    /// Returns the parsed footer as a generated `CTHdrFtr` type.
-    pub fn get_footer(&mut self, rel_id: &str) -> Result<types::CTHdrFtr> {
+    /// Returns the parsed footer as a generated `HeaderFooter` type.
+    pub fn get_footer(&mut self, rel_id: &str) -> Result<types::HeaderFooter> {
         let rel = self
             .doc_rels
             .get(rel_id)
