@@ -423,7 +423,7 @@ impl HeaderPart {
         &self.content
     }
 
-    /// Get all paragraphs in the header (including those in tables and content controls).
+    /// Get all paragraphs in the header (including those nested in tables and content controls).
     pub fn paragraphs(&self) -> Vec<&Paragraph> {
         collect_paragraphs(&self.content)
     }
@@ -573,9 +573,19 @@ impl Body {
         Self::default()
     }
 
-    /// Get all paragraphs in the body (flattened, including those in tables and content controls).
+    /// Get direct paragraph children of the body.
+    ///
+    /// Returns only top-level paragraphs. Paragraphs nested inside tables or
+    /// content controls are not included — navigate those via
+    /// [`tables()`](Self::tables) → `rows()` → `cells()` → `paragraphs()`.
     pub fn paragraphs(&self) -> Vec<&Paragraph> {
-        collect_paragraphs(&self.content)
+        self.content
+            .iter()
+            .filter_map(|b| match b {
+                BlockContent::Paragraph(p) => Some(p),
+                _ => None,
+            })
+            .collect()
     }
 
     /// Get block-level content.
@@ -937,12 +947,14 @@ impl Cell {
     }
 
     /// Extract all text from the cell.
+    ///
+    /// Paragraphs are joined with newlines.
     pub fn text(&self) -> String {
         self.paragraphs
             .iter()
             .map(|p| p.text())
             .collect::<Vec<_>>()
-            .join(" ")
+            .join("\n")
     }
 }
 
@@ -7032,8 +7044,8 @@ mod tests {
         assert!(matches!(body.content()[1], BlockContent::Table(_)));
         assert!(matches!(body.content()[2], BlockContent::Paragraph(_)));
 
-        // All paragraphs (including table cells)
-        assert_eq!(body.paragraphs().len(), 3);
+        // Direct paragraphs only (table cell paragraphs not included)
+        assert_eq!(body.paragraphs().len(), 2);
     }
 
     #[test]
