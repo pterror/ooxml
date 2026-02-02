@@ -288,6 +288,58 @@ impl<'a> ParserGenerator<'a> {
         }
     }
 
+    /// Check if a pattern contains XML child elements (even from unresolved refs).
+    fn has_xml_children_pattern(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Empty => false,
+            Pattern::Attribute { .. } => false,
+            Pattern::Element { .. } => true,
+            Pattern::Ref(name) => {
+                if name.contains("_AG_") {
+                    return false;
+                }
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.has_xml_children_pattern(def_pattern)
+                } else {
+                    true
+                }
+            }
+            Pattern::Sequence(items) | Pattern::Interleave(items) | Pattern::Choice(items) => {
+                items.iter().any(|i| self.has_xml_children_pattern(i))
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner)
+            | Pattern::Mixed(inner) => self.has_xml_children_pattern(inner),
+            Pattern::Text => true,
+            _ => false,
+        }
+    }
+
+    /// Check if a pattern contains XML attributes (even from unresolved refs).
+    fn has_xml_attr_pattern(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Attribute { .. } => true,
+            Pattern::Ref(name) if name.contains("_AG_") => true,
+            Pattern::Ref(name) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.has_xml_attr_pattern(def_pattern)
+                } else {
+                    false
+                }
+            }
+            Pattern::Sequence(items) | Pattern::Interleave(items) | Pattern::Choice(items) => {
+                items.iter().any(|i| self.has_xml_attr_pattern(i))
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner) => self.has_xml_attr_pattern(inner),
+            _ => false,
+        }
+    }
+
     fn eg_ref_to_field_name(&self, name: &str) -> String {
         let spec_name = strip_namespace_prefix(name);
         let short = spec_name.strip_prefix("EG_").unwrap_or(spec_name);
@@ -446,41 +498,164 @@ impl<'a> ParserGenerator<'a> {
         let fields = self.extract_fields(&def.pattern);
 
         if fields.is_empty() {
-            // Empty struct - skip all children with depth tracking
+            let has_unresolved_children = self.has_xml_children_pattern(&def.pattern);
+            let has_unresolved_attrs = self.has_xml_attr_pattern(&def.pattern);
+
             let mut code = String::new();
             writeln!(code, "impl FromXml for {} {{", rust_name).unwrap();
-            writeln!(
-                code,
-                "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
-            )
-            .unwrap();
-            writeln!(code, "        if !is_empty {{").unwrap();
-            writeln!(
-                code,
-                "            // Skip to matching end tag with depth tracking"
-            )
-            .unwrap();
-            writeln!(code, "            let mut buf = Vec::new();").unwrap();
-            writeln!(code, "            let mut depth = 1u32;").unwrap();
-            writeln!(code, "            loop {{").unwrap();
-            writeln!(
-                code,
-                "                match reader.read_event_into(&mut buf)? {{"
-            )
-            .unwrap();
-            writeln!(code, "                    Event::Start(_) => depth += 1,").unwrap();
-            writeln!(
-                code,
-                "                    Event::End(_) => {{ depth -= 1; if depth == 0 {{ break; }} }}"
-            )
-            .unwrap();
-            writeln!(code, "                    Event::Eof => break,").unwrap();
-            writeln!(code, "                    _ => {{}}").unwrap();
-            writeln!(code, "                }}").unwrap();
-            writeln!(code, "                buf.clear();").unwrap();
-            writeln!(code, "            }}").unwrap();
-            writeln!(code, "        }}").unwrap();
-            writeln!(code, "        Ok(Self {{}})").unwrap();
+
+            if has_unresolved_children || has_unresolved_attrs {
+                // Struct with extra_children/extra_attrs — capture unknown XML
+                writeln!(
+                    code,
+                    "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
+                )
+                .unwrap();
+                if has_unresolved_attrs {
+                    writeln!(code, "        #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(
+                        code,
+                        "        let mut extra_attrs = std::collections::HashMap::new();"
+                    )
+                    .unwrap();
+                    writeln!(code, "        #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(
+                        code,
+                        "        for attr in start_tag.attributes().filter_map(|a| a.ok()) {{"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "            let val = String::from_utf8_lossy(&attr.value).into_owned();"
+                    )
+                    .unwrap();
+                    writeln!(code, "            extra_attrs.insert(key, val);").unwrap();
+                    writeln!(code, "        }}").unwrap();
+                }
+                if has_unresolved_children {
+                    writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "        let mut extra_children = Vec::new();").unwrap();
+                }
+                writeln!(code, "        if !is_empty {{").unwrap();
+                writeln!(code, "            let mut buf = Vec::new();").unwrap();
+                writeln!(code, "            loop {{").unwrap();
+                writeln!(
+                    code,
+                    "                match reader.read_event_into(&mut buf)? {{"
+                )
+                .unwrap();
+                if has_unresolved_children {
+                    writeln!(
+                        code,
+                        "                    #[cfg(feature = \"extra-children\")]"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    Event::Start(e) => {{").unwrap();
+                    writeln!(
+                        code,
+                        "                        let elem = RawXmlElement::from_reader(reader, &e)?;"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "                        extra_children.push(RawXmlNode::Element(elem));"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    }}").unwrap();
+                    writeln!(
+                        code,
+                        "                    #[cfg(not(feature = \"extra-children\"))]"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "                    Event::Start(_) => {{ skip_element(reader)?; }}"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "                    #[cfg(feature = \"extra-children\")]"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    Event::Empty(e) => {{").unwrap();
+                    writeln!(
+                        code,
+                        "                        let elem = RawXmlElement::from_empty(&e);"
+                    )
+                    .unwrap();
+                    writeln!(
+                        code,
+                        "                        extra_children.push(RawXmlNode::Element(elem));"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    }}").unwrap();
+                    writeln!(
+                        code,
+                        "                    #[cfg(not(feature = \"extra-children\"))]"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    Event::Empty(_) => {{}}").unwrap();
+                } else {
+                    writeln!(
+                        code,
+                        "                    Event::Start(_) => {{ skip_element(reader)?; }}"
+                    )
+                    .unwrap();
+                    writeln!(code, "                    Event::Empty(_) => {{}}").unwrap();
+                }
+                writeln!(code, "                    Event::End(_) => break,").unwrap();
+                writeln!(code, "                    Event::Eof => break,").unwrap();
+                writeln!(code, "                    _ => {{}}").unwrap();
+                writeln!(code, "                }}").unwrap();
+                writeln!(code, "                buf.clear();").unwrap();
+                writeln!(code, "            }}").unwrap();
+                writeln!(code, "        }}").unwrap();
+                writeln!(code, "        Ok(Self {{").unwrap();
+                if has_unresolved_attrs {
+                    writeln!(code, "            #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(code, "            extra_attrs,").unwrap();
+                }
+                if has_unresolved_children {
+                    writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "            extra_children,").unwrap();
+                }
+                writeln!(code, "        }})").unwrap();
+            } else {
+                // Truly empty struct - skip all children with depth tracking
+                writeln!(
+                    code,
+                    "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {{"
+                )
+                .unwrap();
+                writeln!(code, "        if !is_empty {{").unwrap();
+                writeln!(code, "            let mut buf = Vec::new();").unwrap();
+                writeln!(code, "            let mut depth = 1u32;").unwrap();
+                writeln!(code, "            loop {{").unwrap();
+                writeln!(
+                    code,
+                    "                match reader.read_event_into(&mut buf)? {{"
+                )
+                .unwrap();
+                writeln!(code, "                    Event::Start(_) => depth += 1,").unwrap();
+                writeln!(
+                    code,
+                    "                    Event::End(_) => {{ depth -= 1; if depth == 0 {{ break; }} }}"
+                )
+                .unwrap();
+                writeln!(code, "                    Event::Eof => break,").unwrap();
+                writeln!(code, "                    _ => {{}}").unwrap();
+                writeln!(code, "                }}").unwrap();
+                writeln!(code, "                buf.clear();").unwrap();
+                writeln!(code, "            }}").unwrap();
+                writeln!(code, "        }}").unwrap();
+                writeln!(code, "        Ok(Self {{}})").unwrap();
+            }
+
             writeln!(code, "    }}").unwrap();
             writeln!(code, "}}").unwrap();
             return Some(code);
@@ -974,6 +1149,7 @@ impl<'a> ParserGenerator<'a> {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
+                    xml_prefix: name.prefix.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: true,
@@ -985,6 +1161,7 @@ impl<'a> ParserGenerator<'a> {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
+                    xml_prefix: name.prefix.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: false,
@@ -1005,6 +1182,7 @@ impl<'a> ParserGenerator<'a> {
                     fields.push(Field {
                         name: self.qname_to_field_name(name),
                         xml_name: name.local.clone(),
+                        xml_prefix: name.prefix.clone(),
                         pattern: pattern.as_ref().clone(),
                         is_optional: false,
                         is_attribute: false,
@@ -1019,6 +1197,7 @@ impl<'a> ParserGenerator<'a> {
                             fields.push(Field {
                                 name: self.eg_ref_to_field_name(name),
                                 xml_name: name.clone(),
+                                xml_prefix: None,
                                 pattern: Pattern::Ref(name.clone()),
                                 is_optional: false,
                                 is_attribute: false,
@@ -1047,6 +1226,7 @@ impl<'a> ParserGenerator<'a> {
                             fields.push(Field {
                                 name: self.eg_ref_to_field_name(name),
                                 xml_name: name.clone(),
+                                xml_prefix: None,
                                 pattern: Pattern::Ref(name.clone()),
                                 is_optional,
                                 is_attribute: false,
@@ -1066,6 +1246,7 @@ impl<'a> ParserGenerator<'a> {
                         fields.push(Field {
                             name: "text".to_string(),
                             xml_name: "$text".to_string(),
+                            xml_prefix: None,
                             pattern: Pattern::Datatype {
                                 library: "xsd".to_string(),
                                 name: "string".to_string(),
@@ -1349,17 +1530,18 @@ impl<'a> ParserGenerator<'a> {
     }
 }
 
-struct Field {
-    name: String,
-    xml_name: String,
-    pattern: Pattern,
-    is_optional: bool,
-    is_attribute: bool,
-    is_vec: bool,
-    is_text_content: bool,
+pub(crate) struct Field {
+    pub name: String,
+    pub xml_name: String,
+    pub xml_prefix: Option<String>,
+    pub pattern: Pattern,
+    pub is_optional: bool,
+    pub is_attribute: bool,
+    pub is_vec: bool,
+    pub is_text_content: bool,
 }
 
-fn strip_namespace_prefix(name: &str) -> &str {
+pub(crate) fn strip_namespace_prefix(name: &str) -> &str {
     for kind in ["CT_", "ST_", "EG_"] {
         if let Some(pos) = name.find(kind)
             && pos > 0
@@ -1370,7 +1552,7 @@ fn strip_namespace_prefix(name: &str) -> &str {
     name
 }
 
-fn to_pascal_case(s: &str) -> String {
+pub(crate) fn to_pascal_case(s: &str) -> String {
     let mut result = String::new();
     let mut capitalize_next = true;
     for ch in s.chars() {
@@ -1386,7 +1568,7 @@ fn to_pascal_case(s: &str) -> String {
     result
 }
 
-fn to_snake_case(s: &str) -> String {
+pub(crate) fn to_snake_case(s: &str) -> String {
     let mut result = String::new();
     for (i, ch) in s.chars().enumerate() {
         if ch.is_uppercase() && i > 0 {
@@ -1444,7 +1626,7 @@ fn to_snake_case(s: &str) -> String {
     }
 }
 
-fn xsd_to_rust(library: &str, name: &str) -> &'static str {
+pub(crate) fn xsd_to_rust(library: &str, name: &str) -> &'static str {
     if library == "xsd" {
         match name {
             "string" => "String",

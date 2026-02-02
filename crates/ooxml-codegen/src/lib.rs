@@ -8,12 +8,14 @@ pub mod codegen;
 pub mod lexer;
 pub mod parser;
 pub mod parser_gen;
+pub mod serializer_gen;
 
 pub use ast::{DatatypeParam, Definition, Namespace, Pattern, QName, Schema};
 pub use codegen::{CodegenConfig, FeatureMappings, ModuleMappings, NameMappings, generate};
 pub use lexer::{LexError, Lexer};
 pub use parser::{ParseError, Parser};
 pub use parser_gen::generate_parsers;
+pub use serializer_gen::generate_serializers;
 
 /// Parse an RNC schema from a string.
 pub fn parse_rnc(input: &str) -> Result<Schema, Error> {
