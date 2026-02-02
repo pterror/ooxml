@@ -49,7 +49,7 @@ DocumentBuilder handles common cases but doesn't expose:
 
 - [x] **Lazy/cursor API** - `LazyWorksheet` provides streaming row iteration without materializing all rows. `Workbook::sheet_xml()` returns raw XML for lazy parsing.
 - [x] **Feature-gated extra_attrs** - `extra-attrs` feature captures unhandled attributes in `extra_attrs: HashMap<String, String>` for roundtrip fidelity. Enabled by default.
-- [x] **Feature-gated unknown children** - `extra-children` feature captures unknown child elements in `extra_children: Vec<ooxml_xml::RawXmlNode>`. Uses shared `ooxml-xml` crate.
+- [x] **Feature-gated unknown children** - `extra-children` feature captures unknown child elements in `extra_children: Vec<ooxml_xml::PositionedNode>`. Position-indexed for roundtrip ordering fidelity (ADR-004).
 - [x] **Per-field feature gating** - Uses `spec/ooxml-features.yaml` to gate non-core fields behind features (sml-styling, sml-formulas, etc.). 265 fields gated, 893 parser locations.
 - [x] **Extension trait cfg attrs** - Feature-gated WorksheetExt and ResolvedSheet methods for `--no-default-features` support.
 
@@ -73,7 +73,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Generate `src/generated_parsers.rs`** - FromXml trait impls using parser_gen.rs infrastructure. 24,884 lines of event-based parsers.
 - [x] **Add `pub mod generated_parsers` to lib.rs**.
 - [x] **Fix parser_gen.rs for EG_\*/AG_\* composition** - Handle element group content fields, attribute group inlining, recursive variant flattening, overlapping variant dedup, hexBinary types, CT_Empty strategy.
-- [ ] **Unit tests** - Parse XML snippets with `FromXml::from_xml()` for Document, Paragraph, Run, RunProperties, Table.
+- [x] **Unit tests** - Parse XML snippets with `FromXml::from_xml()` for Document, Paragraph, Run, RunProperties, Table, ParagraphProperties, SectionProperties, Style, Hyperlink, namespace-prefixed XML, and ADR-004 position tracking.
 
 ### Phase 4: Extension traits (ext.rs) ✅
 - [x] **Pure traits** - `DocumentExt`, `BodyExt`, `ParagraphExt`, `RunExt`, `RunPropertiesExt` (wml-styling gated), `HyperlinkExt`, `TableExt`, `RowExt`, `CellExt`, `SectionPropertiesExt` (wml-layout gated).
