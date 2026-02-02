@@ -7351,6 +7351,8 @@ pub struct CTGvmlGraphicFrameNonVisual {
 pub struct CTGvmlGraphicalObjectFrame {
     #[serde(rename = "nvGraphicFramePr")]
     pub nv_graphic_frame_pr: Box<CTGvmlGraphicFrameNonVisual>,
+    #[serde(rename = "graphic")]
+    pub graphic: Box<CTGraphicalObject>,
     #[serde(rename = "xfrm")]
     pub transform: Box<Transform2D>,
     #[serde(rename = "extLst")]

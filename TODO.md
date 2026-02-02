@@ -91,18 +91,21 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Add DrawingExt trait** - Walks raw XML in CTDrawing to extract image relationship IDs (inline + anchored).
 - [x] **Gate modules behind features** - writer.rs behind `write`, styles.rs behind `write`, ext.rs behind `read`.
 - [x] **Update integration tests** - Use generated types + ext traits for assertions.
-- [ ] **Delete parse_document()** - ~2100 lines still present for header/footer parsing. Remove when headers/footers migrate to generated types.
+- [x] **Delete parse_document()** - Handwritten parser removed. Headers/footers/footnotes/endnotes/comments all use generated FromXml parsers via ext.rs helpers.
 
-### Phase 7: Migrate writer to generated types (HIGH PRIORITY)
-- [ ] **Add ToXml codegen** - Generate `ToXml` trait impls alongside `FromXml`.
-- [ ] **Update DocumentBuilder** - Accept generated types instead of handwritten types.
-- [ ] **Delete handwritten types** - Remove Body, Paragraph, Run, etc. from document.rs.
-- [ ] **Delete styles.rs** - Replaced by ext.rs style resolution.
-- [ ] **Remove `write` feature gate** - Once writer uses generated types, merge read+write.
+### Phase 7: Migrate writer to generated types ✅
+- [x] **Add ToXml codegen** (Phase 7a) - Generate `ToXml` trait impls alongside `FromXml`.
+- [x] **Update DocumentBuilder** (Phase 7c) - Uses generated types + ToXml serialization. convenience.rs provides builder methods.
+- [x] **Delete handwritten types** (Phase 7c) - Removed Body, Paragraph, Run, Table, etc. from document.rs (~7000 lines deleted).
+- [x] **Delete styles.rs** (Phase 7c) - Replaced by ext.rs style resolution.
+- [x] **Remove `read`/`write` feature gates** (Phase 7c) - Merged into single unconditional API.
 
-### Phase 8: Codegen stub type upgrades (HIGH PRIORITY)
-- [ ] **Update codegen to generate extra_attrs/extra_children for stub types** - CTDrawing, CTRunTrackChange, EGPContentMath currently hand-edited. Codegen should produce the same pattern.
-- [ ] **Delete parse_document()** - Once headers/footers use generated types, remove ~2100 lines of handwritten parsing code.
+### Phase 8: Codegen attribute inheritance ✅
+- [x] **Stub types have extra_attrs/extra_children** - CTDrawing, CTRunTrackChange, EGPContentMath now generated with roundtrip capture.
+- [x] **Fix attribute inheritance from base types** - `collect_fields()` now inlines CT_* mixin refs (like AG_* groups). Comment has `author`/`date`/`id`, Bookmark has `id`, CTMarkupRange has `id`.
+- [x] **CTPPrBase flattening** - ParagraphProperties now includes all CTPPrBase fields (alignment, numbering, spacing, indent). convenience.rs uses proper typed fields.
+- [x] **Skip wildcard elements** - Wildcard element patterns (`element * { ... }`) are excluded from field collection to avoid generating invalid `_any` fields.
+- [x] **Regenerate all crates** - All four crates (WML, SML, PML, DML) regenerated with the inheritance fix.
 
 ## Other Codegen Migrations
 

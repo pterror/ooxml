@@ -745,6 +745,7 @@ impl DocumentBuilder {
     /// Create a new document builder.
     pub fn new() -> Self {
         let document = types::Document {
+            background: None,
             body: Some(Box::new(types::Body::default())),
             conformance: None,
             #[cfg(feature = "extra-attrs")]
@@ -961,10 +962,13 @@ impl DocumentBuilder {
                 date: None,
                 initials: None,
                 body: types::Comment {
+                    id: 0,                 // set in build_comments
+                    author: String::new(), // set in build_comments
+                    date: None,
                     block_level_elts: Vec::new(),
                     initials: None,
                     #[cfg(feature = "extra-attrs")]
-                    extra_attrs: std::collections::HashMap::new(),
+                    extra_attrs: Default::default(),
                     #[cfg(feature = "extra-children")]
                     extra_children: Vec::new(),
                 },
@@ -1426,30 +1430,16 @@ fn build_comments(comments: &HashMap<i32, PendingComment>) -> types::Comments {
 
     for pc in sorted {
         let mut comment = pc.body.clone();
-
-        // Set initials if provided
+        comment.id = pc.id as i64;
+        if let Some(ref author) = pc.author {
+            comment.author = author.clone();
+        }
+        if let Some(ref date) = pc.date {
+            comment.date = Some(date.clone());
+        }
         if let Some(ref initials) = pc.initials {
             comment.initials = Some(initials.clone());
         }
-
-        // Set id/author/date in extra_attrs
-        #[cfg(feature = "extra-attrs")]
-        {
-            comment
-                .extra_attrs
-                .insert("w:id".to_string(), pc.id.to_string());
-            if let Some(ref author) = pc.author {
-                comment
-                    .extra_attrs
-                    .insert("w:author".to_string(), author.clone());
-            }
-            if let Some(ref date) = pc.date {
-                comment
-                    .extra_attrs
-                    .insert("w:date".to_string(), date.clone());
-            }
-        }
-
         result.comment.push(Box::new(comment));
     }
 
@@ -2052,6 +2042,7 @@ mod tests {
     #[test]
     fn test_serialize_to_xml_bytes() {
         let doc = types::Document {
+            background: None,
             body: Some(Box::new(types::Body::default())),
             conformance: None,
             #[cfg(feature = "extra-attrs")]

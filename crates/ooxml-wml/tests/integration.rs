@@ -403,13 +403,13 @@ fn test_roundtrip_paragraph_properties() {
 
     {
         let para = builder.body_mut().add_paragraph();
-        para.set_alignment("center");
+        para.set_alignment(ooxml_wml::types::STJc::Center);
         para.add_run().set_text("Centered text");
     }
 
     {
         let para = builder.body_mut().add_paragraph();
-        para.set_alignment("right");
+        para.set_alignment(ooxml_wml::types::STJc::Right);
         para.set_spacing(Some(240), Some(120));
         para.add_run().set_text("Right aligned with spacing");
     }

@@ -1751,16 +1751,8 @@ mod tests {
     fn test_body_tables() {
         let tbl = Box::new(types::EGBlockLevelElts::Tbl(Box::new(types::Table {
             range_markup_elements: vec![],
-            table_properties: Box::new(types::TableProperties {
-                tbl_pr_change: None,
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            }),
-            tbl_grid: Box::new(types::TableGrid {
-                tbl_grid_change: None,
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            }),
+            table_properties: Box::default(),
+            tbl_grid: Box::default(),
             content_row_content: vec![],
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
@@ -1777,6 +1769,7 @@ mod tests {
     #[test]
     fn test_document_ext_body() {
         let doc = types::Document {
+            background: None,
             body: Some(Box::new(make_body(vec![]))),
             conformance: None,
             #[cfg(feature = "extra-attrs")]
@@ -1787,6 +1780,7 @@ mod tests {
         assert!(doc.body().is_some());
 
         let doc_no_body = types::Document {
+            background: None,
             body: None,
             conformance: None,
             #[cfg(feature = "extra-attrs")]
@@ -1861,16 +1855,8 @@ mod tests {
     fn make_table(rows: Vec<Box<types::EGContentRowContent>>) -> types::Table {
         types::Table {
             range_markup_elements: vec![],
-            table_properties: Box::new(types::TableProperties {
-                tbl_pr_change: None,
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            }),
-            tbl_grid: Box::new(types::TableGrid {
-                tbl_grid_change: None,
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            }),
+            table_properties: Box::default(),
+            tbl_grid: Box::default(),
             content_row_content: rows,
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
