@@ -2,6 +2,13 @@
 //!
 //! This module provides the main entry point for working with DOCX files.
 //!
+//! The `Document<R>` reader type requires the `read` feature.
+//! Handwritten types (Body, Paragraph, Run, etc.) are always available for
+//! use by both the reader and writer.
+
+// Allow dead code when `read` is not enabled — parsing code is conditionally compiled.
+#![cfg_attr(not(feature = "read"), allow(dead_code, unused_imports))]
+//!
 //! # Example
 //!
 //! ```ignore
@@ -17,22 +24,35 @@
 //! ```
 
 use crate::error::{Error, Result};
-use crate::styles::{Styles, merge_run_properties};
+#[cfg(feature = "read")]
 use ooxml_opc::{Package, Relationships, rel_type, rels_path_for};
 use ooxml_xml::{PositionedAttr, PositionedNode, RawXmlElement, RawXmlNode};
 use quick_xml::Reader;
 use quick_xml::events::Event;
+#[cfg(feature = "read")]
 use std::fs::File;
+#[cfg(feature = "read")]
 use std::io::{BufReader, Read, Seek};
+#[cfg(feature = "read")]
 use std::path::Path;
+
+#[cfg(feature = "read")]
+use crate::ext;
+#[cfg(feature = "read")]
+use crate::generated as types;
 
 /// A Word document (.docx file).
 ///
-/// This is the main entry point for reading and writing Word documents.
+/// This is the main entry point for reading Word documents. The document stores
+/// parsed generated types (`types::Document`, `types::Styles`) that can be
+/// queried using the extension traits in `ext`.
+///
+/// For writing documents, use `DocumentBuilder`.
+#[cfg(feature = "read")]
 pub struct Document<R> {
     package: Package<R>,
-    body: Body,
-    styles: Styles,
+    gen_doc: types::Document,
+    gen_styles: types::Styles,
     /// Document part relationships (for images, hyperlinks, etc.)
     doc_rels: Relationships,
     /// Path to the document part (e.g., "word/document.xml")
@@ -43,6 +63,7 @@ pub struct Document<R> {
     app_properties: Option<AppProperties>,
 }
 
+#[cfg(feature = "read")]
 impl Document<BufReader<File>> {
     /// Open a Word document from a file path.
     pub fn open<P: AsRef<Path>>(path: P) -> Result<Self> {
@@ -52,6 +73,7 @@ impl Document<BufReader<File>> {
     }
 }
 
+#[cfg(feature = "read")]
 impl<R: Read + Seek> Document<R> {
     /// Open a Word document from a reader.
     pub fn from_reader(reader: R) -> Result<Self> {
@@ -65,9 +87,9 @@ impl<R: Read + Seek> Document<R> {
 
         let doc_path = doc_rel.target.clone();
 
-        // Parse the document XML
+        // Parse the document XML using the generated parser
         let doc_xml = package.read_part(&doc_path)?;
-        let body = parse_document(&doc_xml)?;
+        let gen_doc = ext::parse_document(&doc_xml)?;
 
         // Load document-level relationships (for images, hyperlinks, etc.)
         let doc_rels_path = rels_path_for(&doc_path);
@@ -78,12 +100,12 @@ impl<R: Read + Seek> Document<R> {
             Relationships::new()
         };
 
-        // Load styles if available
-        let styles = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES) {
+        // Load styles using the generated parser
+        let gen_styles = if let Some(styles_rel) = rels.get_by_type(rel_type::STYLES) {
             let styles_xml = package.read_part(&styles_rel.target)?;
-            Styles::parse(&styles_xml[..])?
+            ext::parse_styles(&styles_xml)?
         } else {
-            Styles::new()
+            types::Styles::default()
         };
 
         // Load core properties if available
@@ -105,8 +127,8 @@ impl<R: Read + Seek> Document<R> {
 
         Ok(Self {
             package,
-            body,
-            styles,
+            gen_doc,
+            gen_styles,
             doc_rels,
             doc_path,
             core_properties,
@@ -115,13 +137,27 @@ impl<R: Read + Seek> Document<R> {
     }
 
     /// Get the document body.
-    pub fn body(&self) -> &Body {
-        &self.body
+    ///
+    /// Returns the generated `Body` type. Use extension traits from `ext` to
+    /// access paragraphs, runs, and text content.
+    pub fn body(&self) -> &types::Body {
+        self.gen_doc
+            .body
+            .as_deref()
+            .expect("document has no body element")
     }
 
     /// Get a mutable reference to the document body.
-    pub fn body_mut(&mut self) -> &mut Body {
-        &mut self.body
+    pub fn body_mut(&mut self) -> &mut types::Body {
+        self.gen_doc
+            .body
+            .as_deref_mut()
+            .expect("document has no body element")
+    }
+
+    /// Get the generated document.
+    pub fn gen_doc(&self) -> &types::Document {
+        &self.gen_doc
     }
 
     /// Get the underlying package.
@@ -134,9 +170,9 @@ impl<R: Read + Seek> Document<R> {
         &mut self.package
     }
 
-    /// Get the document styles.
-    pub fn styles(&self) -> &Styles {
-        &self.styles
+    /// Get the document styles (generated types).
+    pub fn styles(&self) -> &types::Styles {
+        &self.gen_styles
     }
 
     /// Get the core document properties (title, author, etc.).
@@ -153,37 +189,16 @@ impl<R: Read + Seek> Document<R> {
         self.app_properties.as_ref()
     }
 
-    /// Resolve effective run properties for a run, combining direct and style formatting.
-    ///
-    /// This merges: default run properties -> paragraph style -> character style -> direct formatting.
-    pub fn resolve_run_formatting(&self, para: &Paragraph, run: &Run) -> RunProperties {
-        let mut props = self.styles.default_run().clone();
-
-        // Apply paragraph style's run properties
-        if let Some(pstyle) = para.properties().and_then(|p| p.style.as_ref()) {
-            let style_props = self.styles.resolve_run_properties(pstyle);
-            merge_run_properties(&mut props, &style_props);
-        }
-
-        // Apply character style
-        if let Some(rstyle) = run.properties().and_then(|p| p.style.as_ref()) {
-            let style_props = self.styles.resolve_run_properties(rstyle);
-            merge_run_properties(&mut props, &style_props);
-        }
-
-        // Apply direct formatting
-        if let Some(direct) = run.properties() {
-            merge_run_properties(&mut props, direct);
-        }
-
-        props
-    }
-
     /// Extract all text from the document.
     ///
     /// Paragraphs are separated by newlines.
     pub fn text(&self) -> String {
-        self.body.text()
+        use crate::ext::BodyExt;
+        self.gen_doc
+            .body
+            .as_deref()
+            .map(|b| b.text())
+            .unwrap_or_default()
     }
 
     /// Get image data by relationship ID.
@@ -356,6 +371,7 @@ impl<R: Read + Seek> Document<R> {
 }
 
 /// Resolve a relative path against a base path.
+#[cfg(feature = "read")]
 fn resolve_path(base: &str, relative: &str) -> String {
     // If the target is absolute (starts with /), use it directly (without the /)
     if let Some(stripped) = relative.strip_prefix('/') {
@@ -371,6 +387,7 @@ fn resolve_path(base: &str, relative: &str) -> String {
 }
 
 /// Determine MIME content type from file extension.
+#[cfg(feature = "read")]
 fn content_type_from_path(path: &str) -> String {
     let ext = path.rsplit('.').next().unwrap_or("").to_lowercase();
     match ext.as_str() {
@@ -6816,7 +6833,7 @@ fn local_name_str(name: &str) -> &str {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "read"))]
 mod tests {
     use super::*;
 

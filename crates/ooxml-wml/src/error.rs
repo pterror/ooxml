@@ -52,6 +52,19 @@ pub enum Error {
     RawXml(#[from] ooxml_xml::Error),
 }
 
+impl From<crate::generated_parsers::ParseError> for Error {
+    fn from(e: crate::generated_parsers::ParseError) -> Self {
+        match e {
+            crate::generated_parsers::ParseError::Xml(x) => Error::Xml(x),
+            #[cfg(feature = "extra-children")]
+            crate::generated_parsers::ParseError::RawXml(r) => Error::RawXml(r),
+            crate::generated_parsers::ParseError::UnexpectedElement(msg) => Error::Invalid(msg),
+            crate::generated_parsers::ParseError::MissingAttribute(msg) => Error::Invalid(msg),
+            crate::generated_parsers::ParseError::InvalidValue(msg) => Error::Invalid(msg),
+        }
+    }
+}
+
 impl Error {
     /// Create a parse error with context.
     pub fn parse(context: impl Into<String>, message: impl Into<String>) -> Self {

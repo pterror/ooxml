@@ -80,19 +80,29 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Resolve traits** - `StyleContext` (holds styles + docDefaults), `RunResolveExt` (resolve bold/italic/font size/font/color via basedOn chain, depth-limit 20). `ResolvedDocument` wrapper.
 - [x] **Wrapper functions** - `parse_document(xml)`, `parse_styles(xml)` using generated FromXml. Now works on real prefixed OOXML content.
 
-### Phase 5: Parity tests
-- [ ] **Parser parity tests** - Parse same XML with both handwritten and generated parsers, compare results via extension traits. Cover: simple docs, formatted text, tables (basic/merged/nested), section properties, hyperlinks, comments, footnotes.
-- [ ] **Fixture parity** - All `.docx` files in `tests/fixtures/` parsed by both paths.
+### Phase 5: Parity tests ✅
+- [x] **Parser parity tests** - Parse same XML with both handwritten and generated parsers, compare results via extension traits. Cover: simple docs, formatted text, tables (basic/merged/nested), section properties, hyperlinks, comments, footnotes.
+- [x] **Fixture parity** - All `.docx` files in `tests/fixtures/` parsed by both paths.
 
-### Phase 6: Migrate writer + public API
-- [ ] **Update writer.rs** - Change serialize functions to accept generated types.
-- [ ] **Update lib.rs exports** - Re-export generated types + extension traits instead of handwritten types.
-- [ ] **Type aliases** - Add backward-compat aliases where names differ (Cell → TableCell, Row → CTRow).
+### Phase 6: Replace handwritten document parser with generated ✅
+- [x] **Upgrade stub types** - CTDrawing, CTRunTrackChange, EGPContentMath now capture raw XML (extra_attrs + extra_children) instead of skipping content.
+- [x] **Add `read`/`write` feature gates** - `read` enables Document::from_reader() + generated parser + ext traits; `write` enables DocumentBuilder + handwritten types.
+- [x] **Switch Document<R> to generated types** - Stores `types::Document` + `types::Styles` instead of handwritten Body/Styles. Users access content via ext traits.
+- [x] **Add DrawingExt trait** - Walks raw XML in CTDrawing to extract image relationship IDs (inline + anchored).
+- [x] **Gate modules behind features** - writer.rs behind `write`, styles.rs behind `write`, ext.rs behind `read`.
+- [x] **Update integration tests** - Use generated types + ext traits for assertions.
+- [ ] **Delete parse_document()** - ~2100 lines still present for header/footer parsing. Remove when headers/footers migrate to generated types.
 
-### Phase 7: Remove handwritten parsing
-- [ ] **Gut document.rs** - Remove ~6,000+ lines of parsing code and type definitions; keep Document struct + OPC loading.
-- [ ] **Delete styles.rs** - Logic moved to ext.rs resolve traits.
-- [ ] **Expected result** - ~6,000+ lines removed, replaced by generated code + ~800-1000 lines of extension traits.
+### Phase 7: Migrate writer to generated types (HIGH PRIORITY)
+- [ ] **Add ToXml codegen** - Generate `ToXml` trait impls alongside `FromXml`.
+- [ ] **Update DocumentBuilder** - Accept generated types instead of handwritten types.
+- [ ] **Delete handwritten types** - Remove Body, Paragraph, Run, etc. from document.rs.
+- [ ] **Delete styles.rs** - Replaced by ext.rs style resolution.
+- [ ] **Remove `write` feature gate** - Once writer uses generated types, merge read+write.
+
+### Phase 8: Codegen stub type upgrades (HIGH PRIORITY)
+- [ ] **Update codegen to generate extra_attrs/extra_children for stub types** - CTDrawing, CTRunTrackChange, EGPContentMath currently hand-edited. Codegen should produce the same pattern.
+- [ ] **Delete parse_document()** - Once headers/footers use generated types, remove ~2100 lines of handwritten parsing code.
 
 ## Other Codegen Migrations
 

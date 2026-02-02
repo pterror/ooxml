@@ -7122,10 +7122,26 @@ pub struct CTParaRPrChange {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRunTrackChange;
+pub struct CTRunTrackChange {
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct EGPContentMath;
+pub struct EGPContentMath {
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNumPr {
@@ -7469,7 +7485,18 @@ pub struct CTObjectLink {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTDrawing;
+pub struct CTDrawing {
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSimpleField {

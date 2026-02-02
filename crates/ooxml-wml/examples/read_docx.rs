@@ -5,6 +5,7 @@
 //! Run with: cargo run --example read_docx -- path/to/document.docx
 
 use ooxml_wml::Document;
+use ooxml_wml::ext::{BodyExt, ParagraphExt};
 use std::env;
 
 fn main() -> ooxml_wml::Result<()> {

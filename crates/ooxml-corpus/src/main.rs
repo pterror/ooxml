@@ -9,6 +9,7 @@ use ooxml_corpus::{
     analyze_error, detect_edge_cases, extract_coverage_from_file, extract_features,
     extract_fixture, validate_document,
 };
+use ooxml_wml::ext::BodyExt;
 use rayon::prelude::*;
 use serde::Serialize;
 use std::collections::HashMap;

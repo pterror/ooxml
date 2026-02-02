@@ -4171,26 +4171,70 @@ impl FromXml for CTRunTrackChange {
         _start: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-attrs")]
+        let extra_attrs = {
+            let mut attrs = std::collections::HashMap::new();
+            for attr in _start.attributes().flatten() {
+                let key = std::str::from_utf8(attr.key.as_ref())
+                    .unwrap_or_default()
+                    .to_string();
+                let val = std::str::from_utf8(&attr.value)
+                    .unwrap_or_default()
+                    .to_string();
+                attrs.insert(key, val);
+            }
+            attrs
+        };
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
+                    Event::Start(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_reader(reader, &e)?;
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        {
+                            reader.read_to_end_into(e.name(), &mut Vec::new())?;
                         }
                     }
+                    Event::Empty(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_empty(&e);
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::Text(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let text = e.decode().unwrap_or_default().to_string();
+                            if !text.is_empty() {
+                                extra_children.push(ooxml_xml::RawXmlNode::Text(text));
+                            }
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -4200,26 +4244,54 @@ impl FromXml for EGPContentMath {
         _start: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
+                    Event::Start(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_reader(reader, &e)?;
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        {
+                            reader.read_to_end_into(e.name(), &mut Vec::new())?;
                         }
                     }
+                    Event::Empty(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_empty(&e);
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::Text(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let text = e.decode().unwrap_or_default().to_string();
+                            if !text.is_empty() {
+                                extra_children.push(ooxml_xml::RawXmlNode::Text(text));
+                            }
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -5764,26 +5836,70 @@ impl FromXml for CTDrawing {
         _start: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-attrs")]
+        let extra_attrs = {
+            let mut attrs = std::collections::HashMap::new();
+            for attr in _start.attributes().flatten() {
+                let key = std::str::from_utf8(attr.key.as_ref())
+                    .unwrap_or_default()
+                    .to_string();
+                let val = std::str::from_utf8(&attr.value)
+                    .unwrap_or_default()
+                    .to_string();
+                attrs.insert(key, val);
+            }
+            attrs
+        };
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
+                    Event::Start(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_reader(reader, &e)?;
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        {
+                            reader.read_to_end_into(e.name(), &mut Vec::new())?;
                         }
                     }
+                    Event::Empty(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let elem = ooxml_xml::RawXmlElement::from_empty(&e);
+                            extra_children.push(ooxml_xml::RawXmlNode::Element(elem));
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::Text(e) => {
+                        #[cfg(feature = "extra-children")]
+                        {
+                            let text = e.decode().unwrap_or_default().to_string();
+                            if !text.is_empty() {
+                                extra_children.push(ooxml_xml::RawXmlNode::Text(text));
+                            }
+                        }
+                        #[cfg(not(feature = "extra-children"))]
+                        let _ = &e;
+                    }
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 

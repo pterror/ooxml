@@ -2560,8 +2560,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_roundtrip_create_and_read() {
         use crate::Document;
+        use crate::ext::BodyExt;
         use std::io::Cursor;
 
         // Create a document
@@ -2598,8 +2600,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_roundtrip_table() {
         use crate::Document;
+        use crate::ext::{BodyExt, CellExt, RowExt, TableExt};
         use std::io::Cursor;
 
         // Create a document with a table
@@ -2623,13 +2627,13 @@ mod tests {
         buffer.set_position(0);
         let doc = Document::from_reader(buffer).unwrap();
 
-        // Verify structure
-        assert_eq!(doc.body().content().len(), 3); // para, table, para
-        assert_eq!(doc.body().tables().count(), 1);
+        // Verify structure: 2 paragraphs + 1 table
+        assert_eq!(doc.body().paragraphs().len(), 2);
+        assert_eq!(doc.body().tables().len(), 1);
 
-        let table = doc.body().tables().next().unwrap();
+        let table = &doc.body().tables()[0];
         assert_eq!(table.row_count(), 1);
-        assert_eq!(table.column_count(), 2);
+        assert_eq!(table.rows()[0].cells().len(), 2);
         assert_eq!(table.rows()[0].cells()[0].text(), "Cell 1");
         assert_eq!(table.rows()[0].cells()[1].text(), "Cell 2");
     }
@@ -2710,8 +2714,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_document_builder_with_header_footer() {
         use crate::Document;
+        use crate::ext::{BodyExt, SectionPropertiesExt};
         use std::io::Cursor;
 
         // Create a document with header and footer
@@ -2746,12 +2752,14 @@ mod tests {
             .body()
             .section_properties()
             .expect("should have section properties");
-        assert_eq!(sect_pr.headers.len(), 1);
-        assert_eq!(sect_pr.footers.len(), 1);
+        let headers = sect_pr.header_references();
+        let footers = sect_pr.footer_references();
+        assert_eq!(headers.len(), 1);
+        assert_eq!(footers.len(), 1);
 
         // Get rel_ids before mutable borrows
-        let header_rel_id = sect_pr.headers[0].rel_id.clone();
-        let footer_rel_id = sect_pr.footers[0].rel_id.clone();
+        let header_rel_id = headers[0].1.to_string();
+        let footer_rel_id = footers[0].1.to_string();
 
         // Verify we can read the header content
         let header = doc.get_header(&header_rel_id).unwrap();
@@ -2763,9 +2771,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_document_builder_with_footnote() {
         use crate::Document;
         use crate::document::FootnoteReference;
+        use crate::ext::{BodyExt, ParagraphExt, RunExt};
         use std::io::Cursor;
 
         // Create a document with a footnote
@@ -2798,7 +2808,7 @@ mod tests {
         let para = &doc.body().paragraphs()[0];
         let run = &para.runs()[0];
         assert!(run.footnote_ref().is_some());
-        assert_eq!(run.footnote_ref().unwrap().id, footnote_id);
+        assert_eq!(run.footnote_ref().unwrap().id, footnote_id as i64);
 
         // Verify we can read the footnotes part
         let footnotes = doc.get_footnotes().unwrap();
@@ -2811,9 +2821,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_document_builder_with_endnote() {
         use crate::Document;
         use crate::document::EndnoteReference;
+        use crate::ext::{BodyExt, ParagraphExt, RunExt};
         use std::io::Cursor;
 
         // Create a document with an endnote
@@ -2846,7 +2858,7 @@ mod tests {
         let para = &doc.body().paragraphs()[0];
         let run = &para.runs()[0];
         assert!(run.endnote_ref().is_some());
-        assert_eq!(run.endnote_ref().unwrap().id, endnote_id);
+        assert_eq!(run.endnote_ref().unwrap().id, endnote_id as i64);
 
         // Verify we can read the endnotes part
         let endnotes = doc.get_endnotes().unwrap();
@@ -2859,9 +2871,11 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "read")]
     fn test_document_builder_with_comment() {
         use crate::Document;
         use crate::document::CommentReference;
+        use crate::ext::BodyExt;
         use std::io::Cursor;
 
         // Create a document with a comment
