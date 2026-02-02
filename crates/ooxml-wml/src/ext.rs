@@ -1113,6 +1113,86 @@ pub fn parse_styles(xml: &[u8]) -> Result<types::Styles, ParseError> {
     ))
 }
 
+/// Parse a header or footer from XML bytes using the generated `FromXml` parser.
+pub fn parse_hdr_ftr(xml: &[u8]) -> Result<types::CTHdrFtr, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return types::CTHdrFtr::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return types::CTHdrFtr::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no header/footer element found".to_string(),
+    ))
+}
+
+/// Parse footnotes from XML bytes using the generated `FromXml` parser.
+pub fn parse_footnotes(xml: &[u8]) -> Result<types::Footnotes, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return types::Footnotes::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return types::Footnotes::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no footnotes element found".to_string(),
+    ))
+}
+
+/// Parse endnotes from XML bytes using the generated `FromXml` parser.
+pub fn parse_endnotes(xml: &[u8]) -> Result<types::Endnotes, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return types::Endnotes::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return types::Endnotes::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no endnotes element found".to_string(),
+    ))
+}
+
+/// Parse comments from XML bytes using the generated `FromXml` parser.
+pub fn parse_comments(xml: &[u8]) -> Result<types::Comments, ParseError> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => return types::Comments::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return types::Comments::from_xml(&mut reader, &e, true),
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(ParseError::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+    Err(ParseError::UnexpectedElement(
+        "no comments element found".to_string(),
+    ))
+}
+
 // =============================================================================
 // ResolvedDocument
 // =============================================================================

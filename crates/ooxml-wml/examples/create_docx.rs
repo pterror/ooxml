@@ -5,7 +5,7 @@
 //!
 //! Run with: cargo run --example create_docx
 
-use ooxml_wml::{DocumentBuilder, ListType, ParagraphProperties, RunProperties};
+use ooxml_wml::{DocumentBuilder, ListType};
 
 fn main() -> ooxml_wml::Result<()> {
     let mut builder = DocumentBuilder::new();
@@ -15,11 +15,8 @@ fn main() -> ooxml_wml::Result<()> {
         let para = builder.body_mut().add_paragraph();
         let run = para.add_run();
         run.set_text("Document Title");
-        run.set_properties(RunProperties {
-            bold: true,
-            size: Some(48), // 24pt (size is in half-points)
-            ..Default::default()
-        });
+        run.set_bold(true);
+        run.set_font_size(48); // 24pt (size is in half-points)
     }
 
     // Add a regular paragraph
@@ -30,10 +27,7 @@ fn main() -> ooxml_wml::Result<()> {
         let para = builder.body_mut().add_paragraph();
         let run = para.add_run();
         run.set_text("This text is italic.");
-        run.set_properties(RunProperties {
-            italic: true,
-            ..Default::default()
-        });
+        run.set_italic(true);
     }
 
     // Add a bulleted list
@@ -45,13 +39,7 @@ fn main() -> ooxml_wml::Result<()> {
     ] {
         let para = builder.body_mut().add_paragraph();
         para.add_run().set_text(item);
-        para.set_properties(ParagraphProperties {
-            numbering: Some(ooxml_wml::NumberingProperties {
-                num_id: bullet_id,
-                ilvl: 0,
-            }),
-            ..Default::default()
-        });
+        para.set_numbering(bullet_id, 0);
     }
 
     // Add a numbered list
@@ -63,10 +51,7 @@ fn main() -> ooxml_wml::Result<()> {
     ] {
         let para = builder.body_mut().add_paragraph();
         para.add_run().set_text(item);
-        para.set_properties(ParagraphProperties {
-            numbering: Some(ooxml_wml::NumberingProperties { num_id, ilvl: 0 }),
-            ..Default::default()
-        });
+        para.set_numbering(num_id, 0);
     }
 
     // Add a simple table
@@ -80,10 +65,7 @@ fn main() -> ooxml_wml::Result<()> {
             let para = cell.add_paragraph();
             let run = para.add_run();
             run.set_text(header);
-            run.set_properties(RunProperties {
-                bold: true,
-                ..Default::default()
-            });
+            run.set_bold(true);
         }
 
         // Data rows

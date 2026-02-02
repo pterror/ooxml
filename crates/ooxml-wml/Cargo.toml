@@ -9,8 +9,6 @@ description = "WordprocessingML (DOCX) support for the ooxml library"
 [features]
 default = ["full"]
 full = [
-    "read",
-    "write",
     "wml-styling",
     "wml-tables",
     "wml-layout",
@@ -19,8 +17,6 @@ full = [
     "extra-attrs",
     "extra-children",
 ]
-read = []
-write = []
 wml-styling = []
 wml-tables = []
 wml-layout = []

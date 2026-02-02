@@ -1,15 +1,14 @@
 //! Roundtrip tests: build → write → read using generated types + ext traits.
 //!
-//! These tests verify that documents created with `DocumentBuilder` (handwritten types)
+//! These tests verify that documents created with `DocumentBuilder` (convenience API)
 //! can be written to ZIP, read back with `Document::from_reader()` (generated parser),
 //! and produce correct results through the ext trait API.
 
-use ooxml_wml::document::{PageMargins, PageOrientation, PageSize, SectionProperties};
 use ooxml_wml::ext::{
     BodyExt, CellExt, HyperlinkExt, ParagraphExt, RowExt, RunExt, RunPropertiesExt,
     SectionPropertiesExt, TableExt,
 };
-use ooxml_wml::{Document, DocumentBuilder, RunProperties};
+use ooxml_wml::{Document, DocumentBuilder};
 use std::io::Cursor;
 
 // =============================================================================
@@ -51,7 +50,7 @@ fn test_roundtrip_simple_document() {
 /// Runs with bold, italic, underline, strikethrough, font size, and color.
 #[test]
 fn test_roundtrip_formatted_text() {
-    use ooxml_wml::document::UnderlineStyle;
+    use ooxml_wml::types::STUnderline;
 
     let mut builder = DocumentBuilder::new();
     {
@@ -59,39 +58,24 @@ fn test_roundtrip_formatted_text() {
 
         let run = para.add_run();
         run.set_text("Bold");
-        run.set_properties(RunProperties {
-            bold: true,
-            ..Default::default()
-        });
+        run.set_bold(true);
 
         let run = para.add_run();
         run.set_text("Italic");
-        run.set_properties(RunProperties {
-            italic: true,
-            ..Default::default()
-        });
+        run.set_italic(true);
 
         let run = para.add_run();
         run.set_text("Underline");
-        run.set_properties(RunProperties {
-            underline: Some(UnderlineStyle::Single),
-            ..Default::default()
-        });
+        run.set_underline(STUnderline::Single);
 
         let run = para.add_run();
         run.set_text("Strike");
-        run.set_properties(RunProperties {
-            strike: true,
-            ..Default::default()
-        });
+        run.set_strikethrough(true);
 
         let run = para.add_run();
         run.set_text("Sized");
-        run.set_properties(RunProperties {
-            size: Some(48),
-            color: Some("FF0000".to_string()),
-            ..Default::default()
-        });
+        run.set_font_size(48);
+        run.set_color("FF0000");
     }
 
     let doc = roundtrip(builder);
@@ -182,7 +166,7 @@ fn test_roundtrip_page_break() {
     builder.add_paragraph("Before break");
     {
         let para = builder.body_mut().add_paragraph();
-        para.add_run().set_page_break(true);
+        para.add_run().set_page_break();
     }
     builder.add_paragraph("After break");
 
@@ -206,10 +190,7 @@ fn test_roundtrip_multiple_paragraphs_with_formatting() {
         para.add_run().set_text("Normal ");
         let run = para.add_run();
         run.set_text("Bold");
-        run.set_properties(RunProperties {
-            bold: true,
-            ..Default::default()
-        });
+        run.set_bold(true);
     }
 
     // Paragraph 2: italic + bold+italic
@@ -217,17 +198,11 @@ fn test_roundtrip_multiple_paragraphs_with_formatting() {
         let para = builder.body_mut().add_paragraph();
         let run = para.add_run();
         run.set_text("Italic ");
-        run.set_properties(RunProperties {
-            italic: true,
-            ..Default::default()
-        });
+        run.set_italic(true);
         let run = para.add_run();
         run.set_text("BoldItalic");
-        run.set_properties(RunProperties {
-            bold: true,
-            italic: true,
-            ..Default::default()
-        });
+        run.set_bold(true);
+        run.set_italic(true);
     }
 
     let doc = roundtrip(builder);
@@ -255,30 +230,34 @@ fn test_roundtrip_multiple_paragraphs_with_formatting() {
 #[cfg(feature = "wml-layout")]
 #[test]
 fn test_roundtrip_section_properties() {
-    use ooxml_wml::types::STPageOrientation;
+    use ooxml_wml::types::{PageMargins, PageSize, STPageOrientation, SectionProperties};
 
     let mut builder = DocumentBuilder::new();
     builder.add_paragraph("Landscape page");
 
-    builder
-        .body_mut()
-        .set_section_properties(SectionProperties {
-            page_size: Some(PageSize {
-                width: 15840,
-                height: 12240,
-                orientation: PageOrientation::Landscape,
-            }),
-            margins: Some(PageMargins {
-                top: 720,
-                bottom: 720,
-                left: 1080,
-                right: 1080,
-                header: Some(360),
-                footer: Some(360),
-                gutter: Some(0),
-            }),
-            ..Default::default()
-        });
+    let sect_pr = SectionProperties {
+        pg_sz: Some(Box::new(PageSize {
+            width: Some("15840".to_string()),
+            height: Some("12240".to_string()),
+            orient: Some(STPageOrientation::Landscape),
+            code: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        })),
+        pg_mar: Some(Box::new(PageMargins {
+            top: "720".to_string(),
+            bottom: "720".to_string(),
+            left: "1080".to_string(),
+            right: "1080".to_string(),
+            header: "360".to_string(),
+            footer: "360".to_string(),
+            gutter: "0".to_string(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        })),
+        ..Default::default()
+    };
+    builder.body_mut().set_section_properties(sect_pr);
 
     let doc = roundtrip(builder);
     let sect = doc.body().section_properties().expect("section_properties");
