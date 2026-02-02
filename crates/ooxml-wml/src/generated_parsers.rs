@@ -3482,7 +3482,7 @@ impl FromXml for Comment {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         let mut f_initials = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3550,8 +3550,8 @@ impl FromXml for Comment {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -3596,8 +3596,8 @@ impl FromXml for Comment {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -3621,7 +3621,7 @@ impl FromXml for Comment {
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             initials: f_initials,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4633,7 +4633,7 @@ impl FromXml for CTRunTrackChange {
     }
 }
 
-impl FromXml for EGPContentMath {
+impl FromXml for MathContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4675,7 +4675,7 @@ impl FromXml for EGPContentMath {
     }
 }
 
-impl FromXml for EGPContentBase {
+impl FromXml for ParagraphContentBase {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4702,7 +4702,7 @@ impl FromXml for EGPContentBase {
     }
 }
 
-impl FromXml for EGContentRunContentBase {
+impl FromXml for RunContentBase {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4817,7 +4817,7 @@ impl FromXml for EGContentRunContentBase {
     }
 }
 
-impl FromXml for EGCellMarkupElements {
+impl FromXml for CellMarkup {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -4844,7 +4844,7 @@ impl FromXml for EGCellMarkupElements {
     }
 }
 
-impl FromXml for EGRangeMarkupElements {
+impl FromXml for RangeMarkup {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -5241,40 +5241,75 @@ impl FromXml for ParagraphProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_paragraph_style = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_keep_next = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_keep_lines = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_page_break_before = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_frame_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_widow_control = None;
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_suppress_line_numbers = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_paragraph_border = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tabs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_suppress_auto_hyphens = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_kinsoku = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_word_wrap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_overflow_punct = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_top_line_punct = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_auto_space_d_e = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_auto_space_d_n = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bidi = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_adjust_right_ind = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_snap_to_grid = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_spacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_indentation = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_contextual_spacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_mirror_indents = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_suppress_overlap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_text_direction = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_text_alignment = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_textbox_tight_wrap = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_outline_lvl = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_div_id = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_sect_pr = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_p_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -5290,132 +5325,167 @@ impl FromXml for ParagraphProperties {
                                 f_paragraph_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
                                 f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"framePr" => {
                                 f_frame_pr =
                                     Some(Box::new(CTFramePr::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
                                 f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pBdr" => {
                                 f_paragraph_border =
                                     Some(Box::new(CTPBdr::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tabs" => {
                                 f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
                                 f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"ind" => {
                                 f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJc::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textAlignment" => {
                                 f_text_alignment =
                                     Some(Box::new(CTTextAlignment::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textboxTightWrap" => {
                                 f_textbox_tight_wrap = Some(Box::new(
                                     CTTextboxTightWrap::from_xml(reader, &e, false)?,
                                 ));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outlineLvl" => {
                                 f_outline_lvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(CTParaRPr::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"sectPr" => {
                                 f_sect_pr =
                                     Some(Box::new(SectionProperties::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, false)?));
@@ -5439,128 +5509,163 @@ impl FromXml for ParagraphProperties {
                                 f_paragraph_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepNext" => {
                                 f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"keepLines" => {
                                 f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pageBreakBefore" => {
                                 f_page_break_before =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"framePr" => {
                                 f_frame_pr = Some(Box::new(CTFramePr::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"widowControl" => {
                                 f_widow_control =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numPr" => {
                                 f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressLineNumbers" => {
                                 f_suppress_line_numbers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pBdr" => {
                                 f_paragraph_border =
                                     Some(Box::new(CTPBdr::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tabs" => {
                                 f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"suppressAutoHyphens" => {
                                 f_suppress_auto_hyphens =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"wordWrap" => {
                                 f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"overflowPunct" => {
                                 f_overflow_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"topLinePunct" => {
                                 f_top_line_punct =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDE" => {
                                 f_auto_space_d_e =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoSpaceDN" => {
                                 f_auto_space_d_n =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"adjustRightInd" => {
                                 f_adjust_right_ind =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"ind" => {
                                 f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"contextualSpacing" => {
                                 f_contextual_spacing =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"mirrorIndents" => {
                                 f_mirror_indents =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"suppressOverlap" => {
                                 f_suppress_overlap =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"jc" => {
                                 f_justification = Some(Box::new(CTJc::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textAlignment" => {
                                 f_text_alignment =
                                     Some(Box::new(CTTextAlignment::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"textboxTightWrap" => {
                                 f_textbox_tight_wrap =
                                     Some(Box::new(CTTextboxTightWrap::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outlineLvl" => {
                                 f_outline_lvl =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"divId" => {
                                 f_div_id =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(CTParaRPr::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"sectPr" => {
                                 f_sect_pr =
                                     Some(Box::new(SectionProperties::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, true)?));
@@ -5585,40 +5690,75 @@ impl FromXml for ParagraphProperties {
 
         Ok(Self {
             paragraph_style: f_paragraph_style,
+            #[cfg(feature = "wml-layout")]
             keep_next: f_keep_next,
+            #[cfg(feature = "wml-layout")]
             keep_lines: f_keep_lines,
+            #[cfg(feature = "wml-layout")]
             page_break_before: f_page_break_before,
+            #[cfg(feature = "wml-layout")]
             frame_pr: f_frame_pr,
+            #[cfg(feature = "wml-layout")]
             widow_control: f_widow_control,
+            #[cfg(feature = "wml-numbering")]
             num_pr: f_num_pr,
+            #[cfg(feature = "wml-layout")]
             suppress_line_numbers: f_suppress_line_numbers,
+            #[cfg(feature = "wml-styling")]
             paragraph_border: f_paragraph_border,
+            #[cfg(feature = "wml-styling")]
             shading: f_shading,
+            #[cfg(feature = "wml-styling")]
             tabs: f_tabs,
+            #[cfg(feature = "wml-styling")]
             suppress_auto_hyphens: f_suppress_auto_hyphens,
+            #[cfg(feature = "wml-styling")]
             kinsoku: f_kinsoku,
+            #[cfg(feature = "wml-styling")]
             word_wrap: f_word_wrap,
+            #[cfg(feature = "wml-styling")]
             overflow_punct: f_overflow_punct,
+            #[cfg(feature = "wml-styling")]
             top_line_punct: f_top_line_punct,
+            #[cfg(feature = "wml-styling")]
             auto_space_d_e: f_auto_space_d_e,
+            #[cfg(feature = "wml-styling")]
             auto_space_d_n: f_auto_space_d_n,
+            #[cfg(feature = "wml-styling")]
             bidi: f_bidi,
+            #[cfg(feature = "wml-styling")]
             adjust_right_ind: f_adjust_right_ind,
+            #[cfg(feature = "wml-layout")]
             snap_to_grid: f_snap_to_grid,
+            #[cfg(feature = "wml-styling")]
             spacing: f_spacing,
+            #[cfg(feature = "wml-styling")]
             indentation: f_indentation,
+            #[cfg(feature = "wml-styling")]
             contextual_spacing: f_contextual_spacing,
+            #[cfg(feature = "wml-styling")]
             mirror_indents: f_mirror_indents,
+            #[cfg(feature = "wml-layout")]
             suppress_overlap: f_suppress_overlap,
+            #[cfg(feature = "wml-styling")]
             justification: f_justification,
+            #[cfg(feature = "wml-styling")]
             text_direction: f_text_direction,
+            #[cfg(feature = "wml-styling")]
             text_alignment: f_text_alignment,
+            #[cfg(feature = "wml-styling")]
             textbox_tight_wrap: f_textbox_tight_wrap,
+            #[cfg(feature = "wml-styling")]
             outline_lvl: f_outline_lvl,
+            #[cfg(feature = "wml-styling")]
             div_id: f_div_id,
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
+            #[cfg(feature = "wml-layout")]
             sect_pr: f_sect_pr,
+            #[cfg(feature = "wml-track-changes")]
             p_pr_change: f_p_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -6911,7 +7051,7 @@ impl FromXml for CTSimpleField {
         let mut f_fld_lock = None;
         let mut f_dirty = None;
         let mut f_fld_data = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -6982,8 +7122,8 @@ impl FromXml for CTSimpleField {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -7035,7 +7175,8 @@ impl FromXml for CTSimpleField {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -7060,7 +7201,7 @@ impl FromXml for CTSimpleField {
             fld_lock: f_fld_lock,
             dirty: f_dirty,
             fld_data: f_fld_data,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -7232,7 +7373,7 @@ impl FromXml for Hyperlink {
         let mut f_doc_location = None;
         let mut f_history = None;
         let mut f_anchor = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -7306,8 +7447,8 @@ impl FromXml for Hyperlink {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -7356,7 +7497,8 @@ impl FromXml for Hyperlink {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -7382,7 +7524,7 @@ impl FromXml for Hyperlink {
             doc_location: f_doc_location,
             history: f_history,
             anchor: f_anchor,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -8791,7 +8933,7 @@ impl FromXml for DocumentGrid {
     }
 }
 
-impl FromXml for CTHdrFtrRef {
+impl FromXml for HeaderFooterReference {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8838,7 +8980,7 @@ impl FromXml for CTHdrFtrRef {
     }
 }
 
-impl FromXml for EGHdrFtrReferences {
+impl FromXml for HeaderFooterRef {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -8847,11 +8989,11 @@ impl FromXml for EGHdrFtrReferences {
         let tag = start_tag.local_name();
         match tag.as_ref() {
             b"headerReference" => {
-                let inner = CTHdrFtrRef::from_xml(reader, start_tag, is_empty)?;
+                let inner = HeaderFooterReference::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::HeaderReference(Box::new(inner)))
             }
             b"footerReference" => {
-                let inner = CTHdrFtrRef::from_xml(reader, start_tag, is_empty)?;
+                let inner = HeaderFooterReference::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::FooterReference(Box::new(inner)))
             }
             _ => Err(ParseError::UnexpectedElement(
@@ -8861,13 +9003,13 @@ impl FromXml for EGHdrFtrReferences {
     }
 }
 
-impl FromXml for CTHdrFtr {
+impl FromXml for HeaderFooter {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -8906,8 +9048,8 @@ impl FromXml for CTHdrFtr {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -8952,8 +9094,8 @@ impl FromXml for CTHdrFtr {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -8974,7 +9116,7 @@ impl FromXml for CTHdrFtr {
         }
 
         Ok(Self {
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -9553,26 +9695,46 @@ impl FromXml for SectionProperties {
         let mut f_rsid_del = None;
         let mut f_rsid_r = None;
         let mut f_rsid_sect = None;
-        let mut f_hdr_ftr_references = Vec::new();
+        let mut f_header_footer_refs = Vec::new();
+        #[cfg(feature = "wml-comments")]
         let mut f_footnote_pr = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_endnote_pr = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_type = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_pg_sz = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_pg_mar = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_paper_src = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_pg_borders = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_ln_num_type = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_pg_num_type = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_cols = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_form_prot = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_v_align = None;
+        #[cfg(feature = "wml-comments")]
         let mut f_no_endnote = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_title_pg = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_text_direction = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_bidi = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_rtl_gutter = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_doc_grid = None;
+        #[cfg(feature = "wml-layout")]
         let mut f_printer_settings = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_sect_pr_change = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9613,80 +9775,99 @@ impl FromXml for SectionProperties {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"headerReference" | b"footerReference" => {
-                                f_hdr_ftr_references.push(Box::new(EGHdrFtrReferences::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_header_footer_refs
+                                    .push(Box::new(HeaderFooterRef::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnotePr" => {
                                 f_footnote_pr =
                                     Some(Box::new(CTFtnProps::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnotePr" => {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnProps::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"type" => {
                                 f_type = Some(Box::new(CTSectType::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgSz" => {
                                 f_pg_sz = Some(Box::new(PageSize::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgMar" => {
                                 f_pg_mar =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"paperSrc" => {
                                 f_paper_src =
                                     Some(Box::new(CTPaperSource::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgBorders" => {
                                 f_pg_borders =
                                     Some(Box::new(CTPageBorders::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"lnNumType" => {
                                 f_ln_num_type =
                                     Some(Box::new(CTLineNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgNumType" => {
                                 f_pg_num_type =
                                     Some(Box::new(CTPageNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"cols" => {
                                 f_cols = Some(Box::new(Columns::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"formProt" => {
                                 f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"noEndnote" => {
                                 f_no_endnote =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"titlePg" => {
                                 f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"rtlGutter" => {
                                 f_rtl_gutter =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"docGrid" => {
                                 f_doc_grid =
                                     Some(Box::new(DocumentGrid::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"printerSettings" => {
                                 f_printer_settings =
                                     Some(Box::new(CTRel::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"sectPrChange" => {
                                 f_sect_pr_change =
                                     Some(Box::new(CTSectPrChange::from_xml(reader, &e, false)?));
@@ -9707,77 +9888,96 @@ impl FromXml for SectionProperties {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"headerReference" | b"footerReference" => {
-                                f_hdr_ftr_references.push(Box::new(EGHdrFtrReferences::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_header_footer_refs
+                                    .push(Box::new(HeaderFooterRef::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"footnotePr" => {
                                 f_footnote_pr =
                                     Some(Box::new(CTFtnProps::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"endnotePr" => {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnProps::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"type" => {
                                 f_type = Some(Box::new(CTSectType::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgSz" => {
                                 f_pg_sz = Some(Box::new(PageSize::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgMar" => {
                                 f_pg_mar = Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"paperSrc" => {
                                 f_paper_src =
                                     Some(Box::new(CTPaperSource::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgBorders" => {
                                 f_pg_borders =
                                     Some(Box::new(CTPageBorders::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"lnNumType" => {
                                 f_ln_num_type =
                                     Some(Box::new(CTLineNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"pgNumType" => {
                                 f_pg_num_type =
                                     Some(Box::new(CTPageNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"cols" => {
                                 f_cols = Some(Box::new(Columns::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"formProt" => {
                                 f_form_prot = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-comments")]
                             b"noEndnote" => {
                                 f_no_endnote = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"titlePg" => {
                                 f_title_pg = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"bidi" => {
                                 f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"rtlGutter" => {
                                 f_rtl_gutter = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"docGrid" => {
                                 f_doc_grid =
                                     Some(Box::new(DocumentGrid::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-layout")]
                             b"printerSettings" => {
                                 f_printer_settings =
                                     Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"sectPrChange" => {
                                 f_sect_pr_change =
                                     Some(Box::new(CTSectPrChange::from_xml(reader, &e, true)?));
@@ -9805,26 +10005,46 @@ impl FromXml for SectionProperties {
             rsid_del: f_rsid_del,
             rsid_r: f_rsid_r,
             rsid_sect: f_rsid_sect,
-            hdr_ftr_references: f_hdr_ftr_references,
+            header_footer_refs: f_header_footer_refs,
+            #[cfg(feature = "wml-comments")]
             footnote_pr: f_footnote_pr,
+            #[cfg(feature = "wml-comments")]
             endnote_pr: f_endnote_pr,
+            #[cfg(feature = "wml-layout")]
             r#type: f_type,
+            #[cfg(feature = "wml-layout")]
             pg_sz: f_pg_sz,
+            #[cfg(feature = "wml-layout")]
             pg_mar: f_pg_mar,
+            #[cfg(feature = "wml-layout")]
             paper_src: f_paper_src,
+            #[cfg(feature = "wml-layout")]
             pg_borders: f_pg_borders,
+            #[cfg(feature = "wml-layout")]
             ln_num_type: f_ln_num_type,
+            #[cfg(feature = "wml-layout")]
             pg_num_type: f_pg_num_type,
+            #[cfg(feature = "wml-layout")]
             cols: f_cols,
+            #[cfg(feature = "wml-layout")]
             form_prot: f_form_prot,
+            #[cfg(feature = "wml-layout")]
             v_align: f_v_align,
+            #[cfg(feature = "wml-comments")]
             no_endnote: f_no_endnote,
+            #[cfg(feature = "wml-layout")]
             title_pg: f_title_pg,
+            #[cfg(feature = "wml-layout")]
             text_direction: f_text_direction,
+            #[cfg(feature = "wml-layout")]
             bidi: f_bidi,
+            #[cfg(feature = "wml-layout")]
             rtl_gutter: f_rtl_gutter,
+            #[cfg(feature = "wml-layout")]
             doc_grid: f_doc_grid,
+            #[cfg(feature = "wml-layout")]
             printer_settings: f_printer_settings,
+            #[cfg(feature = "wml-track-changes")]
             sect_pr_change: f_sect_pr_change,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10229,7 +10449,7 @@ impl FromXml for Text {
     }
 }
 
-impl FromXml for EGRunInnerContent {
+impl FromXml for RunContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -10346,11 +10566,11 @@ impl FromXml for EGRunInnerContent {
                 Ok(Self::Ruby(Box::new(inner)))
             }
             b"footnoteReference" => {
-                let inner = CTFtnEdnRef::from_xml(reader, start_tag, is_empty)?;
+                let inner = FootnoteEndnoteRef::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::FootnoteReference(Box::new(inner)))
             }
             b"endnoteReference" => {
-                let inner = CTFtnEdnRef::from_xml(reader, start_tag, is_empty)?;
+                let inner = FootnoteEndnoteRef::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::EndnoteReference(Box::new(inner)))
             }
             b"commentReference" => {
@@ -10387,7 +10607,7 @@ impl FromXml for Run {
         let mut f_rsid_r = None;
         #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
-        let mut f_run_inner_content = Vec::new();
+        let mut f_run_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -10461,9 +10681,8 @@ impl FromXml for Run {
                             | b"drawing"
                             | b"ptab"
                             | b"lastRenderedPageBreak" => {
-                                f_run_inner_content.push(Box::new(EGRunInnerContent::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_run_content
+                                    .push(Box::new(RunContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -10517,8 +10736,8 @@ impl FromXml for Run {
                             | b"drawing"
                             | b"ptab"
                             | b"lastRenderedPageBreak" => {
-                                f_run_inner_content
-                                    .push(Box::new(EGRunInnerContent::from_xml(reader, &e, true)?));
+                                f_run_content
+                                    .push(Box::new(RunContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -10544,7 +10763,7 @@ impl FromXml for Run {
             rsid_r: f_rsid_r,
             #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
-            run_inner_content: f_run_inner_content,
+            run_content: f_run_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -11453,44 +11672,83 @@ impl FromXml for RunProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_run_style = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_fonts = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bold = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_b_cs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_italic = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_i_cs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_caps = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_small_caps = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_strikethrough = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_dstrike = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_outline = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_shadow = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_emboss = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_imprint = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_no_proof = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_snap_to_grid = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_vanish = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_web_hidden = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_color = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_spacing = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_width = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_kern = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_position = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_size = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_size_complex_script = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_highlight = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_underline = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_effect = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_bdr = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_fit_text = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_vert_align = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_rtl = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cs = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_em = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_lang = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_east_asian_layout = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_spec_vanish = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_o_math = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_r_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -11506,137 +11764,176 @@ impl FromXml for RunProperties {
                                 f_run_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rFonts" => {
                                 f_fonts = Some(Box::new(Fonts::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"b" => {
                                 f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bCs" => {
                                 f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"i" => {
                                 f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"iCs" => {
                                 f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"caps" => {
                                 f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"smallCaps" => {
                                 f_small_caps =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"strike" => {
                                 f_strikethrough =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"dstrike" => {
                                 f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outline" => {
                                 f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shadow" => {
                                 f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"emboss" => {
                                 f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"imprint" => {
                                 f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"noProof" => {
                                 f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"vanish" => {
                                 f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"webHidden" => {
                                 f_web_hidden =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"color" => {
                                 f_color = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"w" => {
                                 f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kern" => {
                                 f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"position" => {
                                 f_position = Some(Box::new(CTSignedHpsMeasure::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"szCs" => {
                                 f_size_complex_script =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"highlight" => {
                                 f_highlight =
                                     Some(Box::new(CTHighlight::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"u" => {
                                 f_underline =
                                     Some(Box::new(CTUnderline::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"effect" => {
                                 f_effect =
                                     Some(Box::new(CTTextEffect::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bdr" => {
                                 f_bdr = Some(Box::new(CTBorder::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"fitText" => {
                                 f_fit_text =
                                     Some(Box::new(CTFitText::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"vertAlign" => {
                                 f_vert_align = Some(Box::new(CTVerticalAlignRun::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rtl" => {
                                 f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cs" => {
                                 f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"em" => {
                                 f_em = Some(Box::new(CTEm::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"lang" => {
                                 f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"eastAsianLayout" => {
                                 f_east_asian_layout =
                                     Some(Box::new(CTEastAsianLayout::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"specVanish" => {
                                 f_spec_vanish =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"oMath" => {
                                 f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPrChange" => {
                                 f_r_pr_change =
                                     Some(Box::new(CTRPrChange::from_xml(reader, &e, false)?));
@@ -11659,132 +11956,171 @@ impl FromXml for RunProperties {
                             b"rStyle" => {
                                 f_run_style = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rFonts" => {
                                 f_fonts = Some(Box::new(Fonts::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"b" => {
                                 f_bold = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bCs" => {
                                 f_b_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"i" => {
                                 f_italic = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"iCs" => {
                                 f_i_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"caps" => {
                                 f_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"smallCaps" => {
                                 f_small_caps = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"strike" => {
                                 f_strikethrough =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"dstrike" => {
                                 f_dstrike = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"outline" => {
                                 f_outline = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shadow" => {
                                 f_shadow = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"emboss" => {
                                 f_emboss = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"imprint" => {
                                 f_imprint = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"noProof" => {
                                 f_no_proof = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"snapToGrid" => {
                                 f_snap_to_grid =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"vanish" => {
                                 f_vanish = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"webHidden" => {
                                 f_web_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"color" => {
                                 f_color = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"spacing" => {
                                 f_spacing = Some(Box::new(CTSignedTwipsMeasure::from_xml(
                                     reader, &e, true,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"w" => {
                                 f_width = Some(Box::new(CTTextScale::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"kern" => {
                                 f_kern = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"position" => {
                                 f_position =
                                     Some(Box::new(CTSignedHpsMeasure::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"sz" => {
                                 f_size = Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"szCs" => {
                                 f_size_complex_script =
                                     Some(Box::new(CTHpsMeasure::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"highlight" => {
                                 f_highlight =
                                     Some(Box::new(CTHighlight::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"u" => {
                                 f_underline =
                                     Some(Box::new(CTUnderline::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"effect" => {
                                 f_effect =
                                     Some(Box::new(CTTextEffect::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"bdr" => {
                                 f_bdr = Some(Box::new(CTBorder::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"fitText" => {
                                 f_fit_text = Some(Box::new(CTFitText::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"vertAlign" => {
                                 f_vert_align =
                                     Some(Box::new(CTVerticalAlignRun::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rtl" => {
                                 f_rtl = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"cs" => {
                                 f_cs = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"em" => {
                                 f_em = Some(Box::new(CTEm::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"lang" => {
                                 f_lang = Some(Box::new(CTLanguage::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"eastAsianLayout" => {
                                 f_east_asian_layout =
                                     Some(Box::new(CTEastAsianLayout::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"specVanish" => {
                                 f_spec_vanish =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"oMath" => {
                                 f_o_math = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"rPrChange" => {
                                 f_r_pr_change =
                                     Some(Box::new(CTRPrChange::from_xml(reader, &e, true)?));
@@ -11809,44 +12145,83 @@ impl FromXml for RunProperties {
 
         Ok(Self {
             run_style: f_run_style,
+            #[cfg(feature = "wml-styling")]
             fonts: f_fonts,
+            #[cfg(feature = "wml-styling")]
             bold: f_bold,
+            #[cfg(feature = "wml-styling")]
             b_cs: f_b_cs,
+            #[cfg(feature = "wml-styling")]
             italic: f_italic,
+            #[cfg(feature = "wml-styling")]
             i_cs: f_i_cs,
+            #[cfg(feature = "wml-styling")]
             caps: f_caps,
+            #[cfg(feature = "wml-styling")]
             small_caps: f_small_caps,
+            #[cfg(feature = "wml-styling")]
             strikethrough: f_strikethrough,
+            #[cfg(feature = "wml-styling")]
             dstrike: f_dstrike,
+            #[cfg(feature = "wml-styling")]
             outline: f_outline,
+            #[cfg(feature = "wml-styling")]
             shadow: f_shadow,
+            #[cfg(feature = "wml-styling")]
             emboss: f_emboss,
+            #[cfg(feature = "wml-styling")]
             imprint: f_imprint,
+            #[cfg(feature = "wml-styling")]
             no_proof: f_no_proof,
+            #[cfg(feature = "wml-styling")]
             snap_to_grid: f_snap_to_grid,
+            #[cfg(feature = "wml-styling")]
             vanish: f_vanish,
+            #[cfg(feature = "wml-styling")]
             web_hidden: f_web_hidden,
+            #[cfg(feature = "wml-styling")]
             color: f_color,
+            #[cfg(feature = "wml-styling")]
             spacing: f_spacing,
+            #[cfg(feature = "wml-styling")]
             width: f_width,
+            #[cfg(feature = "wml-styling")]
             kern: f_kern,
+            #[cfg(feature = "wml-styling")]
             position: f_position,
+            #[cfg(feature = "wml-styling")]
             size: f_size,
+            #[cfg(feature = "wml-styling")]
             size_complex_script: f_size_complex_script,
+            #[cfg(feature = "wml-styling")]
             highlight: f_highlight,
+            #[cfg(feature = "wml-styling")]
             underline: f_underline,
+            #[cfg(feature = "wml-styling")]
             effect: f_effect,
+            #[cfg(feature = "wml-styling")]
             bdr: f_bdr,
+            #[cfg(feature = "wml-styling")]
             shading: f_shading,
+            #[cfg(feature = "wml-styling")]
             fit_text: f_fit_text,
+            #[cfg(feature = "wml-styling")]
             vert_align: f_vert_align,
+            #[cfg(feature = "wml-styling")]
             rtl: f_rtl,
+            #[cfg(feature = "wml-styling")]
             cs: f_cs,
+            #[cfg(feature = "wml-styling")]
             em: f_em,
+            #[cfg(feature = "wml-styling")]
             lang: f_lang,
+            #[cfg(feature = "wml-styling")]
             east_asian_layout: f_east_asian_layout,
+            #[cfg(feature = "wml-styling")]
             spec_vanish: f_spec_vanish,
+            #[cfg(feature = "wml-styling")]
             o_math: f_o_math,
+            #[cfg(feature = "wml-track-changes")]
             r_pr_change: f_r_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -11919,7 +12294,7 @@ impl FromXml for EGRPr {
     }
 }
 
-impl FromXml for EGRPrMath {
+impl FromXml for MathRunProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -13759,7 +14134,7 @@ impl FromXml for CTRubyPr {
     }
 }
 
-impl FromXml for EGRubyContent {
+impl FromXml for RubyContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -13912,7 +14287,7 @@ impl FromXml for CTRubyContent {
                             | b"moveFrom"
                             | b"moveTo" => {
                                 f_ruby_content
-                                    .push(Box::new(EGRubyContent::from_xml(reader, &e, false)?));
+                                    .push(Box::new(RubyContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -13954,7 +14329,7 @@ impl FromXml for CTRubyContent {
                             | b"moveFrom"
                             | b"moveTo" => {
                                 f_ruby_content
-                                    .push(Box::new(EGRubyContent::from_xml(reader, &e, true)?));
+                                    .push(Box::new(RubyContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -14947,7 +15322,7 @@ impl FromXml for CTSdtEndPr {
     }
 }
 
-impl FromXml for EGContentRunContent {
+impl FromXml for RunContentChoice {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15085,7 +15460,7 @@ impl FromXml for CTDirContentRun {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -15147,8 +15522,8 @@ impl FromXml for CTDirContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15197,7 +15572,8 @@ impl FromXml for CTDirContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15219,7 +15595,7 @@ impl FromXml for CTDirContentRun {
 
         Ok(Self {
             value: f_value,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -15235,7 +15611,7 @@ impl FromXml for CTBdoContentRun {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_value = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -15297,8 +15673,8 @@ impl FromXml for CTBdoContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15347,7 +15723,8 @@ impl FromXml for CTBdoContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15369,7 +15746,7 @@ impl FromXml for CTBdoContentRun {
 
         Ok(Self {
             value: f_value,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -15384,7 +15761,7 @@ impl FromXml for CTSdtContentRun {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -15427,8 +15804,8 @@ impl FromXml for CTSdtContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15477,7 +15854,8 @@ impl FromXml for CTSdtContentRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15498,14 +15876,14 @@ impl FromXml for CTSdtContentRun {
         }
 
         Ok(Self {
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
     }
 }
 
-impl FromXml for EGContentBlockContent {
+impl FromXml for BlockContentChoice {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15634,7 +16012,7 @@ impl FromXml for CTSdtContentBlock {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_content_block_content = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -15672,9 +16050,9 @@ impl FromXml for CTSdtContentBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15718,9 +16096,9 @@ impl FromXml for CTSdtContentBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, true,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15741,14 +16119,14 @@ impl FromXml for CTSdtContentBlock {
         }
 
         Ok(Self {
-            content_block_content: f_content_block_content,
+            block_content: f_block_content,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
     }
 }
 
-impl FromXml for EGContentRowContent {
+impl FromXml for RowContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -15873,7 +16251,7 @@ impl FromXml for CTSdtContentRow {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_content_row_content = Vec::new();
+        let mut f_rows = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -15910,9 +16288,7 @@ impl FromXml for CTSdtContentRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15955,9 +16331,7 @@ impl FromXml for CTSdtContentRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -15978,14 +16352,14 @@ impl FromXml for CTSdtContentRow {
         }
 
         Ok(Self {
-            content_row_content: f_content_row_content,
+            rows: f_rows,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
     }
 }
 
-impl FromXml for EGContentCellContent {
+impl FromXml for CellContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -16110,7 +16484,7 @@ impl FromXml for CTSdtContentCell {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_content_cell_content = Vec::new();
+        let mut f_cells = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -16147,9 +16521,7 @@ impl FromXml for CTSdtContentCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16192,9 +16564,7 @@ impl FromXml for CTSdtContentCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16215,7 +16585,7 @@ impl FromXml for CTSdtContentCell {
         }
 
         Ok(Self {
-            content_cell_content: f_content_cell_content,
+            cells: f_cells,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -16624,7 +16994,7 @@ impl FromXml for CTCustomXmlRun {
         let mut f_uri = None;
         let mut f_element: Option<STXmlName> = None;
         let mut f_custom_xml_pr = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -16693,8 +17063,8 @@ impl FromXml for CTCustomXmlRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16747,7 +17117,8 @@ impl FromXml for CTCustomXmlRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16772,7 +17143,7 @@ impl FromXml for CTCustomXmlRun {
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
             custom_xml_pr: f_custom_xml_pr,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -16790,7 +17161,7 @@ impl FromXml for CTSmartTagRun {
         let mut f_uri = None;
         let mut f_element: Option<STXmlName> = None;
         let mut f_smart_tag_pr = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -16859,8 +17230,8 @@ impl FromXml for CTSmartTagRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16913,7 +17284,8 @@ impl FromXml for CTSmartTagRun {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -16938,7 +17310,7 @@ impl FromXml for CTSmartTagRun {
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
             smart_tag_pr: f_smart_tag_pr,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -16956,7 +17328,7 @@ impl FromXml for CTCustomXmlBlock {
         let mut f_uri = None;
         let mut f_element: Option<STXmlName> = None;
         let mut f_custom_xml_pr = None;
-        let mut f_content_block_content = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -17020,9 +17392,9 @@ impl FromXml for CTCustomXmlBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17070,9 +17442,9 @@ impl FromXml for CTCustomXmlBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, true,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17097,7 +17469,7 @@ impl FromXml for CTCustomXmlBlock {
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
             custom_xml_pr: f_custom_xml_pr,
-            content_block_content: f_content_block_content,
+            block_content: f_block_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -17189,7 +17561,7 @@ impl FromXml for CTCustomXmlRow {
         let mut f_uri = None;
         let mut f_element: Option<STXmlName> = None;
         let mut f_custom_xml_pr = None;
-        let mut f_content_row_content = Vec::new();
+        let mut f_rows = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -17252,9 +17624,7 @@ impl FromXml for CTCustomXmlRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17301,9 +17671,7 @@ impl FromXml for CTCustomXmlRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17328,7 +17696,7 @@ impl FromXml for CTCustomXmlRow {
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
             custom_xml_pr: f_custom_xml_pr,
-            content_row_content: f_content_row_content,
+            rows: f_rows,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -17346,7 +17714,7 @@ impl FromXml for CTCustomXmlCell {
         let mut f_uri = None;
         let mut f_element: Option<STXmlName> = None;
         let mut f_custom_xml_pr = None;
-        let mut f_content_cell_content = Vec::new();
+        let mut f_cells = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -17409,9 +17777,7 @@ impl FromXml for CTCustomXmlCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17458,9 +17824,7 @@ impl FromXml for CTCustomXmlCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17485,7 +17849,7 @@ impl FromXml for CTCustomXmlCell {
             element: f_element
                 .ok_or_else(|| ParseError::MissingAttribute("element".to_string()))?,
             custom_xml_pr: f_custom_xml_pr,
-            content_cell_content: f_content_cell_content,
+            cells: f_cells,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -17558,7 +17922,7 @@ impl FromXml for CTSmartTagPr {
     }
 }
 
-impl FromXml for EGPContent {
+impl FromXml for ParagraphContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -17714,7 +18078,7 @@ impl FromXml for Paragraph {
         let mut f_rsid_r_default = None;
         #[cfg(feature = "wml-styling")]
         let mut f_p_pr = None;
-        let mut f_p_content = Vec::new();
+        let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -17794,8 +18158,8 @@ impl FromXml for Paragraph {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content
-                                    .push(Box::new(EGPContent::from_xml(reader, &e, false)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17850,7 +18214,8 @@ impl FromXml for Paragraph {
                             | b"fldSimple"
                             | b"hyperlink"
                             | b"subDoc" => {
-                                f_p_content.push(Box::new(EGPContent::from_xml(reader, &e, true)?));
+                                f_paragraph_content
+                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -17878,7 +18243,7 @@ impl FromXml for Paragraph {
             rsid_r_default: f_rsid_r_default,
             #[cfg(feature = "wml-styling")]
             p_pr: f_p_pr,
-            p_content: f_p_content,
+            paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -18702,21 +19067,35 @@ impl FromXml for TableCellProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_cnf_style = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_w = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_grid_span = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_horizontal_merge = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_vertical_merge = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_borders = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_no_wrap = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_mar = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_text_direction = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tc_fit_text = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_v_align = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_hide_mark = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_headers = None;
-        let mut f_cell_markup_elements = None;
+        let mut f_cell_markup = None;
         let mut f_tc_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -18728,59 +19107,72 @@ impl FromXml for TableCellProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcW" => {
                                 f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridSpan" => {
                                 f_grid_span =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hMerge" => {
                                 f_horizontal_merge =
                                     Some(Box::new(CTHMerge::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vMerge" => {
                                 f_vertical_merge =
                                     Some(Box::new(CTVMerge::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcBorders" => {
                                 f_tc_borders =
                                     Some(Box::new(CTTcBorders::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
                                 f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcMar" => {
                                 f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
                                 f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"headers" => {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
                             }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
-                                f_cell_markup_elements = Some(Box::new(
-                                    EGCellMarkupElements::from_xml(reader, &e, false)?,
-                                ));
+                                f_cell_markup =
+                                    Some(Box::new(CellMarkup::from_xml(reader, &e, false)?));
                             }
                             b"tcPrChange" => {
                                 f_tc_pr_change =
@@ -18801,59 +19193,72 @@ impl FromXml for TableCellProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"cnfStyle" => {
                                 f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcW" => {
                                 f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"gridSpan" => {
                                 f_grid_span =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hMerge" => {
                                 f_horizontal_merge =
                                     Some(Box::new(CTHMerge::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vMerge" => {
                                 f_vertical_merge =
                                     Some(Box::new(CTVMerge::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcBorders" => {
                                 f_tc_borders =
                                     Some(Box::new(CTTcBorders::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"noWrap" => {
                                 f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcMar" => {
                                 f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"textDirection" => {
                                 f_text_direction =
                                     Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tcFitText" => {
                                 f_tc_fit_text =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"vAlign" => {
                                 f_v_align =
                                     Some(Box::new(CTVerticalJc::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"hideMark" => {
                                 f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"headers" => {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
                             }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
-                                f_cell_markup_elements = Some(Box::new(
-                                    EGCellMarkupElements::from_xml(reader, &e, true)?,
-                                ));
+                                f_cell_markup =
+                                    Some(Box::new(CellMarkup::from_xml(reader, &e, true)?));
                             }
                             b"tcPrChange" => {
                                 f_tc_pr_change =
@@ -18878,21 +19283,35 @@ impl FromXml for TableCellProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             cnf_style: f_cnf_style,
+            #[cfg(feature = "wml-tables")]
             tc_w: f_tc_w,
+            #[cfg(feature = "wml-tables")]
             grid_span: f_grid_span,
+            #[cfg(feature = "wml-tables")]
             horizontal_merge: f_horizontal_merge,
+            #[cfg(feature = "wml-tables")]
             vertical_merge: f_vertical_merge,
+            #[cfg(feature = "wml-tables")]
             tc_borders: f_tc_borders,
+            #[cfg(feature = "wml-tables")]
             shading: f_shading,
+            #[cfg(feature = "wml-tables")]
             no_wrap: f_no_wrap,
+            #[cfg(feature = "wml-tables")]
             tc_mar: f_tc_mar,
+            #[cfg(feature = "wml-tables")]
             text_direction: f_text_direction,
+            #[cfg(feature = "wml-tables")]
             tc_fit_text: f_tc_fit_text,
+            #[cfg(feature = "wml-tables")]
             v_align: f_v_align,
+            #[cfg(feature = "wml-tables")]
             hide_mark: f_hide_mark,
+            #[cfg(feature = "wml-tables")]
             headers: f_headers,
-            cell_markup_elements: f_cell_markup_elements,
+            cell_markup: f_cell_markup,
             tc_pr_change: f_tc_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -18920,7 +19339,7 @@ impl FromXml for CTTcPrInner {
         let mut f_v_align = None;
         let mut f_hide_mark = None;
         let mut f_headers = None;
-        let mut f_cell_markup_elements = None;
+        let mut f_cell_markup = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -18981,9 +19400,8 @@ impl FromXml for CTTcPrInner {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
                             }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
-                                f_cell_markup_elements = Some(Box::new(
-                                    EGCellMarkupElements::from_xml(reader, &e, false)?,
-                                ));
+                                f_cell_markup =
+                                    Some(Box::new(CellMarkup::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19050,9 +19468,8 @@ impl FromXml for CTTcPrInner {
                                 f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
                             }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
-                                f_cell_markup_elements = Some(Box::new(
-                                    EGCellMarkupElements::from_xml(reader, &e, true)?,
-                                ));
+                                f_cell_markup =
+                                    Some(Box::new(CellMarkup::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19087,7 +19504,7 @@ impl FromXml for CTTcPrInner {
             v_align: f_v_align,
             hide_mark: f_hide_mark,
             headers: f_headers,
-            cell_markup_elements: f_cell_markup_elements,
+            cell_markup: f_cell_markup,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -19101,8 +19518,9 @@ impl FromXml for TableCell {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_id = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_cell_properties = None;
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -19132,6 +19550,7 @@ impl FromXml for TableCell {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, false,
@@ -19165,8 +19584,8 @@ impl FromXml for TableCell {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19183,6 +19602,7 @@ impl FromXml for TableCell {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, true,
@@ -19216,8 +19636,8 @@ impl FromXml for TableCell {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19239,8 +19659,9 @@ impl FromXml for TableCell {
 
         Ok(Self {
             id: f_id,
+            #[cfg(feature = "wml-tables")]
             cell_properties: f_cell_properties,
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -19468,8 +19889,11 @@ impl FromXml for TableRowProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-track-changes")]
         let mut f_ins = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_del = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tr_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -19481,12 +19905,15 @@ impl FromXml for TableRowProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"ins" => {
                                 f_ins = Some(Box::new(CTTrackChange::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"del" => {
                                 f_del = Some(Box::new(CTTrackChange::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"trPrChange" => {
                                 f_tr_pr_change =
                                     Some(Box::new(CTTrPrChange::from_xml(reader, &e, false)?));
@@ -19506,12 +19933,15 @@ impl FromXml for TableRowProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-track-changes")]
                             b"ins" => {
                                 f_ins = Some(Box::new(CTTrackChange::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"del" => {
                                 f_del = Some(Box::new(CTTrackChange::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"trPrChange" => {
                                 f_tr_pr_change =
                                     Some(Box::new(CTTrPrChange::from_xml(reader, &e, true)?));
@@ -19535,8 +19965,11 @@ impl FromXml for TableRowProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-track-changes")]
             ins: f_ins,
+            #[cfg(feature = "wml-track-changes")]
             del: f_del,
+            #[cfg(feature = "wml-track-changes")]
             tr_pr_change: f_tr_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -19554,9 +19987,11 @@ impl FromXml for CTRow {
         let mut f_rsid_r = None;
         let mut f_rsid_del = None;
         let mut f_rsid_tr = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_pr_ex = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_row_properties = None;
-        let mut f_content_cell_content = Vec::new();
+        let mut f_cells = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -19595,10 +20030,12 @@ impl FromXml for CTRow {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tblPrEx" => {
                                 f_tbl_pr_ex =
                                     Some(Box::new(CTTblPrEx::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trPr" => {
                                 f_row_properties = Some(Box::new(TableRowProperties::from_xml(
                                     reader, &e, false,
@@ -19630,9 +20067,7 @@ impl FromXml for CTRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19649,10 +20084,12 @@ impl FromXml for CTRow {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-tables")]
                             b"tblPrEx" => {
                                 f_tbl_pr_ex =
                                     Some(Box::new(CTTblPrEx::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"trPr" => {
                                 f_row_properties =
                                     Some(Box::new(TableRowProperties::from_xml(reader, &e, true)?));
@@ -19683,9 +20120,7 @@ impl FromXml for CTRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_cell_content.push(Box::new(
-                                    EGContentCellContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -19710,9 +20145,11 @@ impl FromXml for CTRow {
             rsid_r: f_rsid_r,
             rsid_del: f_rsid_del,
             rsid_tr: f_rsid_tr,
+            #[cfg(feature = "wml-tables")]
             tbl_pr_ex: f_tbl_pr_ex,
+            #[cfg(feature = "wml-tables")]
             row_properties: f_row_properties,
-            content_cell_content: f_content_cell_content,
+            cells: f_cells,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -20354,23 +20791,41 @@ impl FromXml for TableProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tblp_pr = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_overlap = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_bidi_visual = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style_row_band_size = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style_col_band_size = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_w = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_justification = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_spacing = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_ind = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_borders = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_shading = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_layout = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_cell_mar = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_look = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_caption = None;
+        #[cfg(feature = "wml-tables")]
         let mut f_tbl_description = None;
+        #[cfg(feature = "wml-track-changes")]
         let mut f_tbl_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -20382,71 +20837,89 @@ impl FromXml for TableProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyle" => {
                                 f_tbl_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblpPr" => {
                                 f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblOverlap" => {
                                 f_tbl_overlap =
                                     Some(Box::new(CTTblOverlap::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleRowBandSize" => {
                                 f_tbl_style_row_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleColBandSize" => {
                                 f_tbl_style_col_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look =
                                     Some(Box::new(CTTblLook::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCaption" => {
                                 f_tbl_caption =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblDescription" => {
                                 f_tbl_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrChange" => {
                                 f_tbl_pr_change =
                                     Some(Box::new(CTTblPrChange::from_xml(reader, &e, false)?));
@@ -20466,68 +20939,86 @@ impl FromXml for TableProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyle" => {
                                 f_tbl_style = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblpPr" => {
                                 f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblOverlap" => {
                                 f_tbl_overlap =
                                     Some(Box::new(CTTblOverlap::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"bidiVisual" => {
                                 f_bidi_visual =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleRowBandSize" => {
                                 f_tbl_style_row_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStyleColBandSize" => {
                                 f_tbl_style_col_band_size =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblW" => {
                                 f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"jc" => {
                                 f_justification =
                                     Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellSpacing" => {
                                 f_tbl_cell_spacing =
                                     Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblInd" => {
                                 f_tbl_ind = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblBorders" => {
                                 f_tbl_borders =
                                     Some(Box::new(CTTblBorders::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"shd" => {
                                 f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLayout" => {
                                 f_tbl_layout =
                                     Some(Box::new(CTTblLayoutType::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCellMar" => {
                                 f_tbl_cell_mar =
                                     Some(Box::new(CTTblCellMar::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblLook" => {
                                 f_tbl_look = Some(Box::new(CTTblLook::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblCaption" => {
                                 f_tbl_caption =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-tables")]
                             b"tblDescription" => {
                                 f_tbl_description =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-track-changes")]
                             b"tblPrChange" => {
                                 f_tbl_pr_change =
                                     Some(Box::new(CTTblPrChange::from_xml(reader, &e, true)?));
@@ -20551,23 +21042,41 @@ impl FromXml for TableProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             tbl_style: f_tbl_style,
+            #[cfg(feature = "wml-tables")]
             tblp_pr: f_tblp_pr,
+            #[cfg(feature = "wml-tables")]
             tbl_overlap: f_tbl_overlap,
+            #[cfg(feature = "wml-tables")]
             bidi_visual: f_bidi_visual,
+            #[cfg(feature = "wml-styling")]
             tbl_style_row_band_size: f_tbl_style_row_band_size,
+            #[cfg(feature = "wml-styling")]
             tbl_style_col_band_size: f_tbl_style_col_band_size,
+            #[cfg(feature = "wml-tables")]
             tbl_w: f_tbl_w,
+            #[cfg(feature = "wml-tables")]
             justification: f_justification,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_spacing: f_tbl_cell_spacing,
+            #[cfg(feature = "wml-tables")]
             tbl_ind: f_tbl_ind,
+            #[cfg(feature = "wml-tables")]
             tbl_borders: f_tbl_borders,
+            #[cfg(feature = "wml-tables")]
             shading: f_shading,
+            #[cfg(feature = "wml-tables")]
             tbl_layout: f_tbl_layout,
+            #[cfg(feature = "wml-tables")]
             tbl_cell_mar: f_tbl_cell_mar,
+            #[cfg(feature = "wml-tables")]
             tbl_look: f_tbl_look,
+            #[cfg(feature = "wml-tables")]
             tbl_caption: f_tbl_caption,
+            #[cfg(feature = "wml-tables")]
             tbl_description: f_tbl_description,
+            #[cfg(feature = "wml-track-changes")]
             tbl_pr_change: f_tbl_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -20871,10 +21380,10 @@ impl FromXml for Table {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_range_markup_elements = Vec::new();
+        let mut f_range_markup = Vec::new();
         let mut f_table_properties: Option<Box<TableProperties>> = None;
         let mut f_tbl_grid: Option<Box<TableGrid>> = None;
-        let mut f_content_row_content = Vec::new();
+        let mut f_rows = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -20901,9 +21410,8 @@ impl FromXml for Table {
                             | b"customXmlMoveFromRangeEnd"
                             | b"customXmlMoveToRangeStart"
                             | b"customXmlMoveToRangeEnd" => {
-                                f_range_markup_elements.push(Box::new(
-                                    EGRangeMarkupElements::from_xml(reader, &e, false)?,
-                                ));
+                                f_range_markup
+                                    .push(Box::new(RangeMarkup::from_xml(reader, &e, false)?));
                             }
                             b"tblPr" => {
                                 f_table_properties =
@@ -20915,9 +21423,7 @@ impl FromXml for Table {
                             }
                             b"tr" | b"customXml" | b"sdt" | b"proofErr" | b"permStart"
                             | b"permEnd" | b"ins" | b"del" | b"moveFrom" | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -20950,9 +21456,8 @@ impl FromXml for Table {
                             | b"customXmlMoveFromRangeEnd"
                             | b"customXmlMoveToRangeStart"
                             | b"customXmlMoveToRangeEnd" => {
-                                f_range_markup_elements.push(Box::new(
-                                    EGRangeMarkupElements::from_xml(reader, &e, true)?,
-                                ));
+                                f_range_markup
+                                    .push(Box::new(RangeMarkup::from_xml(reader, &e, true)?));
                             }
                             b"tblPr" => {
                                 f_table_properties =
@@ -20963,9 +21468,7 @@ impl FromXml for Table {
                             }
                             b"tr" | b"customXml" | b"sdt" | b"proofErr" | b"permStart"
                             | b"permEnd" | b"ins" | b"del" | b"moveFrom" | b"moveTo" => {
-                                f_content_row_content.push(Box::new(
-                                    EGContentRowContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -20986,12 +21489,12 @@ impl FromXml for Table {
         }
 
         Ok(Self {
-            range_markup_elements: f_range_markup_elements,
+            range_markup: f_range_markup,
             table_properties: f_table_properties
                 .ok_or_else(|| ParseError::MissingAttribute("tblPr".to_string()))?,
             tbl_grid: f_tbl_grid
                 .ok_or_else(|| ParseError::MissingAttribute("tblGrid".to_string()))?,
-            content_row_content: f_content_row_content,
+            rows: f_rows,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -21268,7 +21771,7 @@ impl FromXml for CTNumRestart {
     }
 }
 
-impl FromXml for CTFtnEdnRef {
+impl FromXml for FootnoteEndnoteRef {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21367,7 +21870,7 @@ impl FromXml for CTFtnEdnSepRef {
     }
 }
 
-impl FromXml for CTFtnEdn {
+impl FromXml for FootnoteEndnote {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -21375,7 +21878,7 @@ impl FromXml for CTFtnEdn {
     ) -> Result<Self, ParseError> {
         let mut f_type = None;
         let mut f_id: Option<STDecimalNumber> = None;
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -21436,8 +21939,8 @@ impl FromXml for CTFtnEdn {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -21482,8 +21985,8 @@ impl FromXml for CTFtnEdn {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -21506,7 +22009,7 @@ impl FromXml for CTFtnEdn {
         Ok(Self {
             r#type: f_type,
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]
@@ -24291,8 +24794,11 @@ impl FromXml for Settings {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-settings")]
         let mut f_write_protection = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_view = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_zoom = None;
         let mut f_remove_personal_information = None;
         let mut f_remove_date_and_time = None;
@@ -24315,20 +24821,26 @@ impl FromXml for Settings {
         let mut f_active_writing_style = Vec::new();
         let mut f_proof_state = None;
         let mut f_forms_design = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_attached_template = None;
         let mut f_link_styles = None;
         let mut f_style_pane_format_filter = None;
         let mut f_style_pane_sort_method = None;
         let mut f_document_type = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_mail_merge = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_revision_view = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_track_revisions = None;
         let mut f_do_not_track_moves = None;
         let mut f_do_not_track_formatting = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_document_protection = None;
         let mut f_auto_format_override = None;
         let mut f_style_lock_theme = None;
         let mut f_style_lock_q_f_set = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_default_tab_stop = None;
         let mut f_auto_hyphenation = None;
         let mut f_consecutive_hyphen_limit = None;
@@ -24338,6 +24850,7 @@ impl FromXml for Settings {
         let mut f_summary_length = None;
         let mut f_click_and_type_style = None;
         let mut f_default_table_style = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_even_and_odd_headers = None;
         let mut f_book_fold_rev_printing = None;
         let mut f_book_fold_printing = None;
@@ -24371,8 +24884,11 @@ impl FromXml for Settings {
         let mut f_hdr_shape_defaults = None;
         let mut f_footnote_pr = None;
         let mut f_endnote_pr = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_compat = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_doc_vars = None;
+        #[cfg(feature = "wml-settings")]
         let mut f_rsids = None;
         let mut f_attached_schema = Vec::new();
         let mut f_theme_font_lang = None;
@@ -24397,13 +24913,16 @@ impl FromXml for Settings {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"writeProtection" => {
                                 f_write_protection =
                                     Some(Box::new(CTWriteProtection::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"view" => {
                                 f_view = Some(Box::new(CTView::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"zoom" => {
                                 f_zoom = Some(Box::new(CTZoom::from_xml(reader, &e, false)?));
                             }
@@ -24491,6 +25010,7 @@ impl FromXml for Settings {
                                 f_forms_design =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attachedTemplate" => {
                                 f_attached_template =
                                     Some(Box::new(CTRel::from_xml(reader, &e, false)?));
@@ -24511,15 +25031,18 @@ impl FromXml for Settings {
                                 f_document_type =
                                     Some(Box::new(CTDocType::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailMerge" => {
                                 f_mail_merge =
                                     Some(Box::new(CTMailMerge::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"revisionView" => {
                                 f_revision_view = Some(Box::new(CTTrackChangesView::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"trackRevisions" => {
                                 f_track_revisions =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -24532,6 +25055,7 @@ impl FromXml for Settings {
                                 f_do_not_track_formatting =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"documentProtection" => {
                                 f_document_protection =
                                     Some(Box::new(CTDocProtect::from_xml(reader, &e, false)?));
@@ -24548,6 +25072,7 @@ impl FromXml for Settings {
                                 f_style_lock_q_f_set =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"defaultTabStop" => {
                                 f_default_tab_stop =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, false)?));
@@ -24585,6 +25110,7 @@ impl FromXml for Settings {
                                 f_default_table_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"evenAndOddHeaders" => {
                                 f_even_and_odd_headers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
@@ -24718,14 +25244,17 @@ impl FromXml for Settings {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnDocProps::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"compat" => {
                                 f_compat =
                                     Some(Box::new(Compatibility::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docVars" => {
                                 f_doc_vars =
                                     Some(Box::new(CTDocVars::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"rsids" => {
                                 f_rsids = Some(Box::new(CTDocRsids::from_xml(reader, &e, false)?));
                             }
@@ -24798,13 +25327,16 @@ impl FromXml for Settings {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-settings")]
                             b"writeProtection" => {
                                 f_write_protection =
                                     Some(Box::new(CTWriteProtection::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"view" => {
                                 f_view = Some(Box::new(CTView::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"zoom" => {
                                 f_zoom = Some(Box::new(CTZoom::from_xml(reader, &e, true)?));
                             }
@@ -24892,6 +25424,7 @@ impl FromXml for Settings {
                                 f_forms_design =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"attachedTemplate" => {
                                 f_attached_template =
                                     Some(Box::new(CTRel::from_xml(reader, &e, true)?));
@@ -24912,14 +25445,17 @@ impl FromXml for Settings {
                                 f_document_type =
                                     Some(Box::new(CTDocType::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"mailMerge" => {
                                 f_mail_merge =
                                     Some(Box::new(CTMailMerge::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"revisionView" => {
                                 f_revision_view =
                                     Some(Box::new(CTTrackChangesView::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"trackRevisions" => {
                                 f_track_revisions =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -24932,6 +25468,7 @@ impl FromXml for Settings {
                                 f_do_not_track_formatting =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"documentProtection" => {
                                 f_document_protection =
                                     Some(Box::new(CTDocProtect::from_xml(reader, &e, true)?));
@@ -24948,6 +25485,7 @@ impl FromXml for Settings {
                                 f_style_lock_q_f_set =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"defaultTabStop" => {
                                 f_default_tab_stop =
                                     Some(Box::new(CTTwipsMeasure::from_xml(reader, &e, true)?));
@@ -24985,6 +25523,7 @@ impl FromXml for Settings {
                                 f_default_table_style =
                                     Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"evenAndOddHeaders" => {
                                 f_even_and_odd_headers =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
@@ -25117,13 +25656,16 @@ impl FromXml for Settings {
                                 f_endnote_pr =
                                     Some(Box::new(CTEdnDocProps::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"compat" => {
                                 f_compat =
                                     Some(Box::new(Compatibility::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"docVars" => {
                                 f_doc_vars = Some(Box::new(CTDocVars::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-settings")]
                             b"rsids" => {
                                 f_rsids = Some(Box::new(CTDocRsids::from_xml(reader, &e, true)?));
                             }
@@ -25200,8 +25742,11 @@ impl FromXml for Settings {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-settings")]
             write_protection: f_write_protection,
+            #[cfg(feature = "wml-settings")]
             view: f_view,
+            #[cfg(feature = "wml-settings")]
             zoom: f_zoom,
             remove_personal_information: f_remove_personal_information,
             remove_date_and_time: f_remove_date_and_time,
@@ -25224,20 +25769,26 @@ impl FromXml for Settings {
             active_writing_style: f_active_writing_style,
             proof_state: f_proof_state,
             forms_design: f_forms_design,
+            #[cfg(feature = "wml-settings")]
             attached_template: f_attached_template,
             link_styles: f_link_styles,
             style_pane_format_filter: f_style_pane_format_filter,
             style_pane_sort_method: f_style_pane_sort_method,
             document_type: f_document_type,
+            #[cfg(feature = "wml-settings")]
             mail_merge: f_mail_merge,
+            #[cfg(feature = "wml-settings")]
             revision_view: f_revision_view,
+            #[cfg(feature = "wml-settings")]
             track_revisions: f_track_revisions,
             do_not_track_moves: f_do_not_track_moves,
             do_not_track_formatting: f_do_not_track_formatting,
+            #[cfg(feature = "wml-settings")]
             document_protection: f_document_protection,
             auto_format_override: f_auto_format_override,
             style_lock_theme: f_style_lock_theme,
             style_lock_q_f_set: f_style_lock_q_f_set,
+            #[cfg(feature = "wml-settings")]
             default_tab_stop: f_default_tab_stop,
             auto_hyphenation: f_auto_hyphenation,
             consecutive_hyphen_limit: f_consecutive_hyphen_limit,
@@ -25247,6 +25798,7 @@ impl FromXml for Settings {
             summary_length: f_summary_length,
             click_and_type_style: f_click_and_type_style,
             default_table_style: f_default_table_style,
+            #[cfg(feature = "wml-settings")]
             even_and_odd_headers: f_even_and_odd_headers,
             book_fold_rev_printing: f_book_fold_rev_printing,
             book_fold_printing: f_book_fold_printing,
@@ -25281,8 +25833,11 @@ impl FromXml for Settings {
             hdr_shape_defaults: f_hdr_shape_defaults,
             footnote_pr: f_footnote_pr,
             endnote_pr: f_endnote_pr,
+            #[cfg(feature = "wml-settings")]
             compat: f_compat,
+            #[cfg(feature = "wml-settings")]
             doc_vars: f_doc_vars,
+            #[cfg(feature = "wml-settings")]
             rsids: f_rsids,
             attached_schema: f_attached_schema,
             theme_font_lang: f_theme_font_lang,
@@ -26933,9 +27488,11 @@ impl FromXml for Numbering {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_pic_bullet = Vec::new();
         let mut f_abstract_num = Vec::new();
         let mut f_num = Vec::new();
+        #[cfg(feature = "wml-numbering")]
         let mut f_num_id_mac_at_cleanup = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -26947,6 +27504,7 @@ impl FromXml for Numbering {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"numPicBullet" => {
                                 f_num_pic_bullet
                                     .push(Box::new(CTNumPicBullet::from_xml(reader, &e, false)?));
@@ -26961,6 +27519,7 @@ impl FromXml for Numbering {
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numIdMacAtCleanup" => {
                                 f_num_id_mac_at_cleanup =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
@@ -26980,6 +27539,7 @@ impl FromXml for Numbering {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-numbering")]
                             b"numPicBullet" => {
                                 f_num_pic_bullet
                                     .push(Box::new(CTNumPicBullet::from_xml(reader, &e, true)?));
@@ -26992,6 +27552,7 @@ impl FromXml for Numbering {
                                 f_num
                                     .push(Box::new(NumberingInstance::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-numbering")]
                             b"numIdMacAtCleanup" => {
                                 f_num_id_mac_at_cleanup =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
@@ -27015,9 +27576,11 @@ impl FromXml for Numbering {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-numbering")]
             num_pic_bullet: f_num_pic_bullet,
             abstract_num: f_abstract_num,
             num: f_num,
+            #[cfg(feature = "wml-numbering")]
             num_id_mac_at_cleanup: f_num_id_mac_at_cleanup,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -27167,24 +27730,38 @@ impl FromXml for Style {
         let mut f_name = None;
         let mut f_aliases = None;
         let mut f_based_on = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_next = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_link = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_auto_redefine = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_hidden = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_ui_priority = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_semi_hidden = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_unhide_when_used = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_q_format = None;
         let mut f_locked = None;
         let mut f_personal = None;
         let mut f_personal_compose = None;
         let mut f_personal_reply = None;
         let mut f_rsid = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_p_pr = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_r_pr = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_table_properties = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_row_properties = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_cell_properties = None;
+        #[cfg(feature = "wml-styling")]
         let mut f_tbl_style_pr = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -27233,31 +27810,39 @@ impl FromXml for Style {
                             b"basedOn" => {
                                 f_based_on = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"next" => {
                                 f_next = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"link" => {
                                 f_link = Some(Box::new(CTString::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoRedefine" => {
                                 f_auto_redefine =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"uiPriority" => {
                                 f_ui_priority =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"semiHidden" => {
                                 f_semi_hidden =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"unhideWhenUsed" => {
                                 f_unhide_when_used =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"qFormat" => {
                                 f_q_format = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
                             }
@@ -27279,27 +27864,33 @@ impl FromXml for Style {
                                 f_rsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr =
                                     Some(Box::new(RunProperties::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, false)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"trPr" => {
                                 f_row_properties = Some(Box::new(TableRowProperties::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, false,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
                                 f_tbl_style_pr
                                     .push(Box::new(CTTblStylePr::from_xml(reader, &e, false)?));
@@ -27328,31 +27919,39 @@ impl FromXml for Style {
                             b"basedOn" => {
                                 f_based_on = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"next" => {
                                 f_next = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"link" => {
                                 f_link = Some(Box::new(CTString::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"autoRedefine" => {
                                 f_auto_redefine =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"hidden" => {
                                 f_hidden = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"uiPriority" => {
                                 f_ui_priority =
                                     Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"semiHidden" => {
                                 f_semi_hidden =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"unhideWhenUsed" => {
                                 f_unhide_when_used =
                                     Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"qFormat" => {
                                 f_q_format = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
                             }
@@ -27374,25 +27973,31 @@ impl FromXml for Style {
                                 f_rsid =
                                     Some(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(CTPPrGeneral::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(RunProperties::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblPr" => {
                                 f_table_properties =
                                     Some(Box::new(CTTblPrBase::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"trPr" => {
                                 f_row_properties =
                                     Some(Box::new(TableRowProperties::from_xml(reader, &e, true)?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tcPr" => {
                                 f_cell_properties = Some(Box::new(TableCellProperties::from_xml(
                                     reader, &e, true,
                                 )?));
                             }
+                            #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
                                 f_tbl_style_pr
                                     .push(Box::new(CTTblStylePr::from_xml(reader, &e, true)?));
@@ -27423,24 +28028,38 @@ impl FromXml for Style {
             name: f_name,
             aliases: f_aliases,
             based_on: f_based_on,
+            #[cfg(feature = "wml-styling")]
             next: f_next,
+            #[cfg(feature = "wml-styling")]
             link: f_link,
+            #[cfg(feature = "wml-styling")]
             auto_redefine: f_auto_redefine,
+            #[cfg(feature = "wml-styling")]
             hidden: f_hidden,
+            #[cfg(feature = "wml-styling")]
             ui_priority: f_ui_priority,
+            #[cfg(feature = "wml-styling")]
             semi_hidden: f_semi_hidden,
+            #[cfg(feature = "wml-styling")]
             unhide_when_used: f_unhide_when_used,
+            #[cfg(feature = "wml-styling")]
             q_format: f_q_format,
             locked: f_locked,
             personal: f_personal,
             personal_compose: f_personal_compose,
             personal_reply: f_personal_reply,
             rsid: f_rsid,
+            #[cfg(feature = "wml-styling")]
             p_pr: f_p_pr,
+            #[cfg(feature = "wml-styling")]
             r_pr: f_r_pr,
+            #[cfg(feature = "wml-styling")]
             table_properties: f_table_properties,
+            #[cfg(feature = "wml-styling")]
             row_properties: f_row_properties,
+            #[cfg(feature = "wml-styling")]
             cell_properties: f_cell_properties,
+            #[cfg(feature = "wml-styling")]
             tbl_style_pr: f_tbl_style_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -28550,7 +29169,7 @@ impl FromXml for CTTxbxContent {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -28589,8 +29208,8 @@ impl FromXml for CTTxbxContent {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -28635,8 +29254,8 @@ impl FromXml for CTTxbxContent {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -28657,7 +29276,7 @@ impl FromXml for CTTxbxContent {
         }
 
         Ok(Self {
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -28712,7 +29331,7 @@ impl FromXml for EGBlockLevelChunkElts {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_content_block_content = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
 
@@ -28750,9 +29369,9 @@ impl FromXml for EGBlockLevelChunkElts {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, false)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, false,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -28796,9 +29415,9 @@ impl FromXml for EGBlockLevelChunkElts {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_content_block_content.push(Box::new(
-                                    EGContentBlockContent::from_xml(reader, &e, true)?,
-                                ));
+                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
+                                    reader, &e, true,
+                                )?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -28819,14 +29438,14 @@ impl FromXml for EGBlockLevelChunkElts {
         }
 
         Ok(Self {
-            content_block_content: f_content_block_content,
+            block_content: f_block_content,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
     }
 }
 
-impl FromXml for EGBlockLevelElts {
+impl FromXml for BlockContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -28953,7 +29572,7 @@ impl FromXml for EGBlockLevelElts {
     }
 }
 
-impl FromXml for EGRunLevelElts {
+impl FromXml for RunLevelContent {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
         start_tag: &BytesStart,
@@ -29066,7 +29685,7 @@ impl FromXml for Body {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_block_level_elts = Vec::new();
+        let mut f_block_content = Vec::new();
         #[cfg(feature = "wml-layout")]
         let mut f_sect_pr = None;
         #[cfg(feature = "extra-children")]
@@ -29107,8 +29726,8 @@ impl FromXml for Body {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, false)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "wml-layout")]
                             b"sectPr" => {
@@ -29158,8 +29777,8 @@ impl FromXml for Body {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_level_elts
-                                    .push(Box::new(EGBlockLevelElts::from_xml(reader, &e, true)?));
+                                f_block_content
+                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "wml-layout")]
                             b"sectPr" => {
@@ -29185,7 +29804,7 @@ impl FromXml for Body {
         }
 
         Ok(Self {
-            block_level_elts: f_block_level_elts,
+            block_content: f_block_content,
             #[cfg(feature = "wml-layout")]
             sect_pr: f_sect_pr,
             #[cfg(feature = "extra-children")]
@@ -29318,7 +29937,8 @@ impl FromXml for Footnotes {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"footnote" => {
-                                f_footnote.push(Box::new(CTFtnEdn::from_xml(reader, &e, false)?));
+                                f_footnote
+                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -29336,7 +29956,8 @@ impl FromXml for Footnotes {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"footnote" => {
-                                f_footnote.push(Box::new(CTFtnEdn::from_xml(reader, &e, true)?));
+                                f_footnote
+                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -29382,7 +30003,8 @@ impl FromXml for Endnotes {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"endnote" => {
-                                f_endnote.push(Box::new(CTFtnEdn::from_xml(reader, &e, false)?));
+                                f_endnote
+                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, false)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -29400,7 +30022,8 @@ impl FromXml for Endnotes {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"endnote" => {
-                                f_endnote.push(Box::new(CTFtnEdn::from_xml(reader, &e, true)?));
+                                f_endnote
+                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, true)?));
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
@@ -30510,6 +31133,7 @@ impl FromXml for Document {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "wml-styling")]
         let mut f_background = None;
         let mut f_body = None;
         let mut f_conformance = None;
@@ -30542,6 +31166,7 @@ impl FromXml for Document {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"background" => {
                                 f_background =
                                     Some(Box::new(CTBackground::from_xml(reader, &e, false)?));
@@ -30564,6 +31189,7 @@ impl FromXml for Document {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "wml-styling")]
                             b"background" => {
                                 f_background =
                                     Some(Box::new(CTBackground::from_xml(reader, &e, true)?));
@@ -30590,6 +31216,7 @@ impl FromXml for Document {
         }
 
         Ok(Self {
+            #[cfg(feature = "wml-styling")]
             background: f_background,
             body: f_body,
             conformance: f_conformance,

@@ -106,20 +106,20 @@ pub trait BodyExt {
 
 impl BodyExt for types::Body {
     fn paragraphs(&self) -> Vec<&types::Paragraph> {
-        self.block_level_elts
+        self.block_content
             .iter()
             .filter_map(|elt| match elt.as_ref() {
-                types::EGBlockLevelElts::P(p) => Some(p.as_ref()),
+                types::BlockContent::P(p) => Some(p.as_ref()),
                 _ => None,
             })
             .collect()
     }
 
     fn tables(&self) -> Vec<&types::Table> {
-        self.block_level_elts
+        self.block_content
             .iter()
             .filter_map(|elt| match elt.as_ref() {
-                types::EGBlockLevelElts::Tbl(t) => Some(t.as_ref()),
+                types::BlockContent::Tbl(t) => Some(t.as_ref()),
                 _ => None,
             })
             .collect()
@@ -127,11 +127,11 @@ impl BodyExt for types::Body {
 
     fn text(&self) -> String {
         let texts: Vec<String> = self
-            .block_level_elts
+            .block_content
             .iter()
             .filter_map(|elt| match elt.as_ref() {
-                types::EGBlockLevelElts::P(p) => Some(p.text()),
-                types::EGBlockLevelElts::Tbl(t) => Some(t.text()),
+                types::BlockContent::P(p) => Some(p.text()),
+                types::BlockContent::Tbl(t) => Some(t.text()),
                 _ => None,
             })
             .collect();
@@ -166,22 +166,22 @@ pub trait ParagraphExt {
 
 impl ParagraphExt for types::Paragraph {
     fn runs(&self) -> Vec<&types::Run> {
-        collect_runs_from_p_content(&self.p_content)
+        collect_runs_from_paragraph_content(&self.paragraph_content)
     }
 
     fn text(&self) -> String {
         let mut out = String::new();
-        for content in &self.p_content {
-            collect_text_from_p_content(content, &mut out);
+        for content in &self.paragraph_content {
+            collect_text_from_paragraph_content(content, &mut out);
         }
         out
     }
 
     fn hyperlinks(&self) -> Vec<&types::Hyperlink> {
-        self.p_content
+        self.paragraph_content
             .iter()
             .filter_map(|c| match c.as_ref() {
-                types::EGPContent::Hyperlink(h) => Some(h.as_ref()),
+                types::ParagraphContent::Hyperlink(h) => Some(h.as_ref()),
                 _ => None,
             })
             .collect()
@@ -194,16 +194,18 @@ impl ParagraphExt for types::Paragraph {
 }
 
 /// Collect runs from paragraph content, including nested runs in hyperlinks and simple fields.
-fn collect_runs_from_p_content(content: &[Box<types::EGPContent>]) -> Vec<&types::Run> {
+fn collect_runs_from_paragraph_content(
+    content: &[Box<types::ParagraphContent>],
+) -> Vec<&types::Run> {
     let mut runs = Vec::new();
     for item in content {
         match item.as_ref() {
-            types::EGPContent::R(r) => runs.push(r.as_ref()),
-            types::EGPContent::Hyperlink(h) => {
-                runs.extend(collect_runs_from_p_content(&h.p_content));
+            types::ParagraphContent::R(r) => runs.push(r.as_ref()),
+            types::ParagraphContent::Hyperlink(h) => {
+                runs.extend(collect_runs_from_paragraph_content(&h.paragraph_content));
             }
-            types::EGPContent::FldSimple(f) => {
-                runs.extend(collect_runs_from_p_content(&f.p_content));
+            types::ParagraphContent::FldSimple(f) => {
+                runs.extend(collect_runs_from_paragraph_content(&f.paragraph_content));
             }
             _ => {}
         }
@@ -212,17 +214,17 @@ fn collect_runs_from_p_content(content: &[Box<types::EGPContent>]) -> Vec<&types
 }
 
 /// Collect text from a single paragraph content item.
-fn collect_text_from_p_content(content: &types::EGPContent, out: &mut String) {
+fn collect_text_from_paragraph_content(content: &types::ParagraphContent, out: &mut String) {
     match content {
-        types::EGPContent::R(r) => out.push_str(&r.text()),
-        types::EGPContent::Hyperlink(h) => {
-            for item in &h.p_content {
-                collect_text_from_p_content(item, out);
+        types::ParagraphContent::R(r) => out.push_str(&r.text()),
+        types::ParagraphContent::Hyperlink(h) => {
+            for item in &h.paragraph_content {
+                collect_text_from_paragraph_content(item, out);
             }
         }
-        types::EGPContent::FldSimple(f) => {
-            for item in &f.p_content {
-                collect_text_from_p_content(item, out);
+        types::ParagraphContent::FldSimple(f) => {
+            for item in &f.paragraph_content {
+                collect_text_from_paragraph_content(item, out);
             }
         }
         _ => {}
@@ -272,25 +274,25 @@ pub trait RunExt {
     fn has_images(&self) -> bool;
 
     /// Get the footnote reference in this run, if any.
-    fn footnote_ref(&self) -> Option<&types::CTFtnEdnRef>;
+    fn footnote_ref(&self) -> Option<&types::FootnoteEndnoteRef>;
 
     /// Get the endnote reference in this run, if any.
-    fn endnote_ref(&self) -> Option<&types::CTFtnEdnRef>;
+    fn endnote_ref(&self) -> Option<&types::FootnoteEndnoteRef>;
 }
 
 impl RunExt for types::Run {
     fn text(&self) -> String {
         let mut out = String::new();
-        for item in &self.run_inner_content {
+        for item in &self.run_content {
             match item.as_ref() {
-                types::EGRunInnerContent::T(t) => {
+                types::RunContent::T(t) => {
                     if let Some(ref text) = t.text {
                         out.push_str(text);
                     }
                 }
-                types::EGRunInnerContent::Tab(_) => out.push('\t'),
-                types::EGRunInnerContent::Cr(_) => out.push('\n'),
-                types::EGRunInnerContent::Br(br) => {
+                types::RunContent::Tab(_) => out.push('\t'),
+                types::RunContent::Cr(_) => out.push('\n'),
+                types::RunContent::Br(br) => {
                     // Page/column breaks aren't text; only text-wrapping breaks produce newlines
                     if !matches!(
                         br.r#type,
@@ -311,20 +313,20 @@ impl RunExt for types::Run {
     }
 
     fn has_page_break(&self) -> bool {
-        self.run_inner_content.iter().any(|item| {
+        self.run_content.iter().any(|item| {
             matches!(
                 item.as_ref(),
-                types::EGRunInnerContent::Br(br) if br.r#type == Some(types::STBrType::Page)
+                types::RunContent::Br(br) if br.r#type == Some(types::STBrType::Page)
             )
         })
     }
 
     #[cfg(feature = "wml-drawings")]
     fn drawings(&self) -> Vec<&types::CTDrawing> {
-        self.run_inner_content
+        self.run_content
             .iter()
             .filter_map(|item| match item.as_ref() {
-                types::EGRunInnerContent::Drawing(d) => Some(d.as_ref()),
+                types::RunContent::Drawing(d) => Some(d.as_ref()),
                 _ => None,
             })
             .collect()
@@ -352,25 +354,25 @@ impl RunExt for types::Run {
 
     #[cfg(feature = "wml-drawings")]
     fn has_images(&self) -> bool {
-        self.run_inner_content
+        self.run_content
             .iter()
-            .any(|item| matches!(item.as_ref(), types::EGRunInnerContent::Drawing(_)))
+            .any(|item| matches!(item.as_ref(), types::RunContent::Drawing(_)))
     }
 
-    fn footnote_ref(&self) -> Option<&types::CTFtnEdnRef> {
-        self.run_inner_content
+    fn footnote_ref(&self) -> Option<&types::FootnoteEndnoteRef> {
+        self.run_content
             .iter()
             .find_map(|item| match item.as_ref() {
-                types::EGRunInnerContent::FootnoteReference(r) => Some(r.as_ref()),
+                types::RunContent::FootnoteReference(r) => Some(r.as_ref()),
                 _ => None,
             })
     }
 
-    fn endnote_ref(&self) -> Option<&types::CTFtnEdnRef> {
-        self.run_inner_content
+    fn endnote_ref(&self) -> Option<&types::FootnoteEndnoteRef> {
+        self.run_content
             .iter()
             .find_map(|item| match item.as_ref() {
-                types::EGRunInnerContent::EndnoteReference(r) => Some(r.as_ref()),
+                types::RunContent::EndnoteReference(r) => Some(r.as_ref()),
                 _ => None,
             })
     }
@@ -637,13 +639,13 @@ pub trait HyperlinkExt {
 
 impl HyperlinkExt for types::Hyperlink {
     fn runs(&self) -> Vec<&types::Run> {
-        collect_runs_from_p_content(&self.p_content)
+        collect_runs_from_paragraph_content(&self.paragraph_content)
     }
 
     fn text(&self) -> String {
         let mut out = String::new();
-        for item in &self.p_content {
-            collect_text_from_p_content(item, &mut out);
+        for item in &self.paragraph_content {
+            collect_text_from_paragraph_content(item, &mut out);
         }
         out
     }
@@ -684,10 +686,10 @@ pub trait TableExt {
 
 impl TableExt for types::Table {
     fn rows(&self) -> Vec<&types::CTRow> {
-        self.content_row_content
+        self.rows
             .iter()
             .filter_map(|c| match c.as_ref() {
-                types::EGContentRowContent::Tr(row) => Some(row.as_ref()),
+                types::RowContent::Tr(row) => Some(row.as_ref()),
                 _ => None,
             })
             .collect()
@@ -717,6 +719,7 @@ pub trait RowExt {
     fn cells(&self) -> Vec<&types::TableCell>;
 
     /// Get row properties.
+    #[cfg(feature = "wml-tables")]
     fn properties(&self) -> Option<&types::TableRowProperties>;
 
     /// Extract all text from the row.
@@ -725,15 +728,16 @@ pub trait RowExt {
 
 impl RowExt for types::CTRow {
     fn cells(&self) -> Vec<&types::TableCell> {
-        self.content_cell_content
+        self.cells
             .iter()
             .filter_map(|c| match c.as_ref() {
-                types::EGContentCellContent::Tc(cell) => Some(cell.as_ref()),
+                types::CellContent::Tc(cell) => Some(cell.as_ref()),
                 _ => None,
             })
             .collect()
     }
 
+    #[cfg(feature = "wml-tables")]
     fn properties(&self) -> Option<&types::TableRowProperties> {
         self.row_properties.as_deref()
     }
@@ -754,6 +758,7 @@ pub trait CellExt {
     fn paragraphs(&self) -> Vec<&types::Paragraph>;
 
     /// Get cell properties.
+    #[cfg(feature = "wml-tables")]
     fn properties(&self) -> Option<&types::TableCellProperties>;
 
     /// Extract all text from the cell.
@@ -762,15 +767,16 @@ pub trait CellExt {
 
 impl CellExt for types::TableCell {
     fn paragraphs(&self) -> Vec<&types::Paragraph> {
-        self.block_level_elts
+        self.block_content
             .iter()
             .filter_map(|elt| match elt.as_ref() {
-                types::EGBlockLevelElts::P(p) => Some(p.as_ref()),
+                types::BlockContent::P(p) => Some(p.as_ref()),
                 _ => None,
             })
             .collect()
     }
 
+    #[cfg(feature = "wml-tables")]
     fn properties(&self) -> Option<&types::TableCellProperties> {
         self.cell_properties.as_deref()
     }
@@ -849,10 +855,10 @@ impl SectionPropertiesExt for types::SectionProperties {
 
     #[cfg(feature = "extra-attrs")]
     fn header_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
-        self.hdr_ftr_references
+        self.header_footer_refs
             .iter()
             .filter_map(|r| match r.as_ref() {
-                types::EGHdrFtrReferences::HeaderReference(h) => {
+                types::HeaderFooterRef::HeaderReference(h) => {
                     h.extra_attrs.get("r:id").map(|id| (&h.r#type, id.as_str()))
                 }
                 _ => None,
@@ -862,10 +868,10 @@ impl SectionPropertiesExt for types::SectionProperties {
 
     #[cfg(feature = "extra-attrs")]
     fn footer_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
-        self.hdr_ftr_references
+        self.header_footer_refs
             .iter()
             .filter_map(|r| match r.as_ref() {
-                types::EGHdrFtrReferences::FooterReference(f) => {
+                types::HeaderFooterRef::FooterReference(f) => {
                     f.extra_attrs.get("r:id").map(|id| (&f.r#type, id.as_str()))
                 }
                 _ => None,
@@ -1114,14 +1120,14 @@ pub fn parse_styles(xml: &[u8]) -> Result<types::Styles, ParseError> {
 }
 
 /// Parse a header or footer from XML bytes using the generated `FromXml` parser.
-pub fn parse_hdr_ftr(xml: &[u8]) -> Result<types::CTHdrFtr, ParseError> {
+pub fn parse_hdr_ftr(xml: &[u8]) -> Result<types::HeaderFooter, ParseError> {
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
 
     loop {
         match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) => return types::CTHdrFtr::from_xml(&mut reader, &e, false),
-            Ok(Event::Empty(e)) => return types::CTHdrFtr::from_xml(&mut reader, &e, true),
+            Ok(Event::Start(e)) => return types::HeaderFooter::from_xml(&mut reader, &e, false),
+            Ok(Event::Empty(e)) => return types::HeaderFooter::from_xml(&mut reader, &e, true),
             Ok(Event::Eof) => break,
             Err(e) => return Err(ParseError::Xml(e)),
             _ => {}
@@ -1563,20 +1569,20 @@ mod tests {
     // RunExt tests
     // -------------------------------------------------------------------------
 
-    fn make_text(s: &str) -> Box<types::EGRunInnerContent> {
-        Box::new(types::EGRunInnerContent::T(Box::new(types::Text {
+    fn make_text(s: &str) -> Box<types::RunContent> {
+        Box::new(types::RunContent::T(Box::new(types::Text {
             text: Some(s.to_string()),
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         })))
     }
 
-    fn make_tab() -> Box<types::EGRunInnerContent> {
-        Box::new(types::EGRunInnerContent::Tab(Box::new(types::CTEmpty)))
+    fn make_tab() -> Box<types::RunContent> {
+        Box::new(types::RunContent::Tab(Box::new(types::CTEmpty)))
     }
 
-    fn make_br(br_type: Option<types::STBrType>) -> Box<types::EGRunInnerContent> {
-        Box::new(types::EGRunInnerContent::Br(Box::new(types::CTBr {
+    fn make_br(br_type: Option<types::STBrType>) -> Box<types::RunContent> {
+        Box::new(types::RunContent::Br(Box::new(types::CTBr {
             r#type: br_type,
             clear: None,
             #[cfg(feature = "extra-attrs")]
@@ -1584,18 +1590,18 @@ mod tests {
         })))
     }
 
-    fn make_cr() -> Box<types::EGRunInnerContent> {
-        Box::new(types::EGRunInnerContent::Cr(Box::new(types::CTEmpty)))
+    fn make_cr() -> Box<types::RunContent> {
+        Box::new(types::RunContent::Cr(Box::new(types::CTEmpty)))
     }
 
-    fn make_run(content: Vec<Box<types::EGRunInnerContent>>) -> types::Run {
+    fn make_run(content: Vec<Box<types::RunContent>>) -> types::Run {
         types::Run {
             rsid_r_pr: None,
             rsid_del: None,
             rsid_r: None,
             #[cfg(feature = "wml-styling")]
             r_pr: None,
-            run_inner_content: content,
+            run_content: content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1649,13 +1655,13 @@ mod tests {
     // ParagraphExt tests
     // -------------------------------------------------------------------------
 
-    fn make_p_run(text: &str) -> Box<types::EGPContent> {
-        Box::new(types::EGPContent::R(Box::new(make_run(vec![make_text(
-            text,
-        )]))))
+    fn make_p_run(text: &str) -> Box<types::ParagraphContent> {
+        Box::new(types::ParagraphContent::R(Box::new(make_run(vec![
+            make_text(text),
+        ]))))
     }
 
-    fn make_paragraph(content: Vec<Box<types::EGPContent>>) -> types::Paragraph {
+    fn make_paragraph(content: Vec<Box<types::ParagraphContent>>) -> types::Paragraph {
         types::Paragraph {
             rsid_r_pr: None,
             rsid_r: None,
@@ -1664,7 +1670,7 @@ mod tests {
             rsid_r_default: None,
             #[cfg(feature = "wml-styling")]
             p_pr: None,
-            p_content: content,
+            paragraph_content: content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1681,18 +1687,20 @@ mod tests {
 
     #[test]
     fn test_paragraph_with_hyperlink() {
-        let hyperlink = Box::new(types::EGPContent::Hyperlink(Box::new(types::Hyperlink {
-            tgt_frame: None,
-            tooltip: None,
-            doc_location: None,
-            history: None,
-            anchor: Some("bookmark1".to_string()),
-            p_content: vec![make_p_run("link text")],
-            #[cfg(feature = "extra-attrs")]
-            extra_attrs: Default::default(),
-            #[cfg(feature = "extra-children")]
-            extra_children: Default::default(),
-        })));
+        let hyperlink = Box::new(types::ParagraphContent::Hyperlink(Box::new(
+            types::Hyperlink {
+                tgt_frame: None,
+                tooltip: None,
+                doc_location: None,
+                history: None,
+                anchor: Some("bookmark1".to_string()),
+                paragraph_content: vec![make_p_run("link text")],
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Default::default(),
+            },
+        )));
         let para = make_paragraph(vec![make_p_run("Click "), hyperlink]);
         assert_eq!(para.runs().len(), 2);
         assert_eq!(para.text(), "Click link text");
@@ -1702,13 +1710,13 @@ mod tests {
 
     #[test]
     fn test_paragraph_with_fld_simple() {
-        let fld = Box::new(types::EGPContent::FldSimple(Box::new(
+        let fld = Box::new(types::ParagraphContent::FldSimple(Box::new(
             types::CTSimpleField {
                 instr: "PAGE".to_string(),
                 fld_lock: None,
                 dirty: None,
                 fld_data: None,
-                p_content: vec![make_p_run("1")],
+                paragraph_content: vec![make_p_run("1")],
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
                 #[cfg(feature = "extra-children")]
@@ -1724,9 +1732,9 @@ mod tests {
     // BodyExt tests
     // -------------------------------------------------------------------------
 
-    fn make_body(content: Vec<Box<types::EGBlockLevelElts>>) -> types::Body {
+    fn make_body(content: Vec<Box<types::BlockContent>>) -> types::Body {
         types::Body {
-            block_level_elts: content,
+            block_content: content,
             #[cfg(feature = "wml-layout")]
             sect_pr: None,
             #[cfg(feature = "extra-children")]
@@ -1736,10 +1744,10 @@ mod tests {
 
     #[test]
     fn test_body_paragraphs() {
-        let p1 = Box::new(types::EGBlockLevelElts::P(Box::new(make_paragraph(vec![
+        let p1 = Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
             make_p_run("First"),
         ]))));
-        let p2 = Box::new(types::EGBlockLevelElts::P(Box::new(make_paragraph(vec![
+        let p2 = Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
             make_p_run("Second"),
         ]))));
         let body = make_body(vec![p1, p2]);
@@ -1749,11 +1757,11 @@ mod tests {
 
     #[test]
     fn test_body_tables() {
-        let tbl = Box::new(types::EGBlockLevelElts::Tbl(Box::new(types::Table {
-            range_markup_elements: vec![],
+        let tbl = Box::new(types::BlockContent::Tbl(Box::new(types::Table {
+            range_markup: vec![],
             table_properties: Box::default(),
             tbl_grid: Box::default(),
-            content_row_content: vec![],
+            rows: vec![],
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         })));
@@ -1803,7 +1811,7 @@ mod tests {
             doc_location: None,
             history: None,
             anchor: Some("top".to_string()),
-            p_content: vec![make_p_run("click"), make_p_run(" here")],
+            paragraph_content: vec![make_p_run("click"), make_p_run(" here")],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1818,33 +1826,13 @@ mod tests {
     // Table/Row/Cell tests
     // -------------------------------------------------------------------------
 
-    fn make_table_cell(text: &str) -> Box<types::EGContentCellContent> {
-        Box::new(types::EGContentCellContent::Tc(Box::new(
-            types::TableCell {
-                id: None,
-                cell_properties: None,
-                block_level_elts: vec![Box::new(types::EGBlockLevelElts::P(Box::new(
-                    make_paragraph(vec![make_p_run(text)]),
-                )))],
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            },
-        )))
-    }
-
-    fn make_table_row(
-        cells: Vec<Box<types::EGContentCellContent>>,
-    ) -> Box<types::EGContentRowContent> {
-        Box::new(types::EGContentRowContent::Tr(Box::new(types::CTRow {
-            rsid_r_pr: None,
-            rsid_r: None,
-            rsid_del: None,
-            rsid_tr: None,
-            tbl_pr_ex: None,
-            row_properties: None,
-            content_cell_content: cells,
+    fn make_table_cell(text: &str) -> Box<types::CellContent> {
+        Box::new(types::CellContent::Tc(Box::new(types::TableCell {
+            id: None,
+            cell_properties: None,
+            block_content: vec![Box::new(types::BlockContent::P(Box::new(make_paragraph(
+                vec![make_p_run(text)],
+            ))))],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1852,12 +1840,28 @@ mod tests {
         })))
     }
 
-    fn make_table(rows: Vec<Box<types::EGContentRowContent>>) -> types::Table {
+    fn make_table_row(cells: Vec<Box<types::CellContent>>) -> Box<types::RowContent> {
+        Box::new(types::RowContent::Tr(Box::new(types::CTRow {
+            rsid_r_pr: None,
+            rsid_r: None,
+            rsid_del: None,
+            rsid_tr: None,
+            tbl_pr_ex: None,
+            row_properties: None,
+            cells,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        })))
+    }
+
+    fn make_table(rows: Vec<Box<types::RowContent>>) -> types::Table {
         types::Table {
-            range_markup_elements: vec![],
+            range_markup: vec![],
             table_properties: Box::default(),
             tbl_grid: Box::default(),
-            content_row_content: rows,
+            rows,
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
         }
@@ -1883,7 +1887,7 @@ mod tests {
             rsid_tr: None,
             tbl_pr_ex: None,
             row_properties: None,
-            content_cell_content: vec![make_table_cell("X"), make_table_cell("Y")],
+            cells: vec![make_table_cell("X"), make_table_cell("Y")],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1898,11 +1902,11 @@ mod tests {
         let cell = types::TableCell {
             id: None,
             cell_properties: None,
-            block_level_elts: vec![
-                Box::new(types::EGBlockLevelElts::P(Box::new(make_paragraph(vec![
+            block_content: vec![
+                Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
                     make_p_run("Line 1"),
                 ])))),
-                Box::new(types::EGBlockLevelElts::P(Box::new(make_paragraph(vec![
+                Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
                     make_p_run("Line 2"),
                 ])))),
             ],
@@ -1927,7 +1931,7 @@ mod tests {
             rsid_del: None,
             rsid_r: None,
             rsid_sect: None,
-            hdr_ftr_references: vec![],
+            header_footer_refs: vec![],
             footnote_pr: None,
             endnote_pr: None,
             r#type: None,
@@ -2101,7 +2105,7 @@ mod tests {
                 rpr.bold = on_off(None);
                 rpr
             })),
-            run_inner_content: vec![make_text("bold")],
+            run_content: vec![make_text("bold")],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -2152,7 +2156,7 @@ mod tests {
                 }));
                 rpr
             })),
-            run_inner_content: vec![make_text("styled")],
+            run_content: vec![make_text("styled")],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -2188,7 +2192,7 @@ mod tests {
             rsid_del: None,
             rsid_r: None,
             r_pr: None,
-            run_inner_content: vec![make_text("default")],
+            run_content: vec![make_text("default")],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]

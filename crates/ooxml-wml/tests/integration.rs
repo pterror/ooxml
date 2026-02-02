@@ -529,7 +529,7 @@ fn test_roundtrip_fonts() {
 /// Test roundtrip of bookmarks.
 #[test]
 fn test_roundtrip_bookmarks() {
-    use ooxml_wml::types::EGPContent;
+    use ooxml_wml::types::ParagraphContent;
 
     let mut builder = DocumentBuilder::new();
     {
@@ -548,16 +548,15 @@ fn test_roundtrip_bookmarks() {
     let para = &doc.body().paragraphs()[0];
     assert_eq!(para.text(), "Bookmarked text");
 
-    let has_bookmark_start = para
-        .p_content
-        .iter()
-        .any(|c| matches!(c.as_ref(), EGPContent::BookmarkStart(b) if b.name == "my_bookmark"));
+    let has_bookmark_start = para.paragraph_content.iter().any(
+        |c| matches!(c.as_ref(), ParagraphContent::BookmarkStart(b) if b.name == "my_bookmark"),
+    );
     assert!(has_bookmark_start, "should have BookmarkStart");
 
     let has_bookmark_end = para
-        .p_content
+        .paragraph_content
         .iter()
-        .any(|c| matches!(c.as_ref(), EGPContent::BookmarkEnd(_)));
+        .any(|c| matches!(c.as_ref(), ParagraphContent::BookmarkEnd(_)));
     assert!(has_bookmark_end, "should have BookmarkEnd");
 }
 
@@ -621,7 +620,7 @@ fn test_document_save_preserves_parts() {
 /// Test that modifications to the generated body are reflected after save.
 #[test]
 fn test_document_save_with_body_modification() {
-    use ooxml_wml::types::{EGBlockLevelElts, EGPContent, EGRunInnerContent, Paragraph, Run, Text};
+    use ooxml_wml::types::{BlockContent, Paragraph, ParagraphContent, Run, RunContent, Text};
 
     let mut builder = DocumentBuilder::new();
     builder.add_paragraph("Original text");
@@ -637,13 +636,14 @@ fn test_document_save_with_body_modification() {
         ..Default::default()
     };
     let mut run = Run::default();
-    run.run_inner_content
-        .push(Box::new(EGRunInnerContent::T(Box::new(text))));
+    run.run_content
+        .push(Box::new(RunContent::T(Box::new(text))));
     let mut para = Paragraph::default();
-    para.p_content.push(Box::new(EGPContent::R(Box::new(run))));
+    para.paragraph_content
+        .push(Box::new(ParagraphContent::R(Box::new(run))));
     doc.body_mut()
-        .block_level_elts
-        .push(Box::new(EGBlockLevelElts::P(Box::new(para))));
+        .block_content
+        .push(Box::new(BlockContent::P(Box::new(para))));
 
     let mut out = Cursor::new(Vec::new());
     doc.write(&mut out).unwrap();

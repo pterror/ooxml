@@ -7,7 +7,7 @@ use ooxml_wml::Document;
 use ooxml_wml::ext::{
     CellExt, DrawingExt, HyperlinkExt, ParagraphExt, RowExt, RunExt, RunPropertiesExt, TableExt,
 };
-use ooxml_wml::types::EGBlockLevelElts;
+use ooxml_wml::types::BlockContent;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::io::{Read, Seek};
@@ -227,7 +227,7 @@ pub fn extract_features<R: Read + Seek>(doc: &Document<R>) -> DocumentFeatures {
     };
 
     // Process body content
-    for block in &doc.body().block_level_elts {
+    for block in &doc.body().block_content {
         process_block(block.as_ref(), &mut features, 0);
     }
 
@@ -235,9 +235,9 @@ pub fn extract_features<R: Read + Seek>(doc: &Document<R>) -> DocumentFeatures {
 }
 
 /// Process a block-level element (paragraph or table).
-fn process_block(block: &EGBlockLevelElts, features: &mut DocumentFeatures, table_depth: u8) {
+fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_depth: u8) {
     match block {
-        EGBlockLevelElts::P(para) => {
+        BlockContent::P(para) => {
             features.paragraph_count += 1;
 
             // Process paragraph content: runs and hyperlinks
@@ -258,7 +258,7 @@ fn process_block(block: &EGBlockLevelElts, features: &mut DocumentFeatures, tabl
             // These fields are captured in extra_children raw XML. Feature detection for paragraph
             // properties will be restored when codegen inlines CTPPrBase fields (Phase 2 WML migration).
         }
-        EGBlockLevelElts::Tbl(table) => {
+        BlockContent::Tbl(table) => {
             features.table_count += 1;
             let new_depth = table_depth + 1;
             features.max_table_nesting = features.max_table_nesting.max(new_depth);
@@ -275,11 +275,11 @@ fn process_block(block: &EGBlockLevelElts, features: &mut DocumentFeatures, tabl
                 }
             }
         }
-        EGBlockLevelElts::Sdt(_) => {
+        BlockContent::Sdt(_) => {
             // Content controls contain nested block content, but the type hierarchy
-            // (EGContentBlockContent vs EGBlockLevelElts) differs. Skip for now.
+            // (BlockContentChoice vs BlockContent) differs. Skip for now.
         }
-        EGBlockLevelElts::CustomXml(_) => {
+        BlockContent::CustomXml(_) => {
             // Custom XML blocks contain nested block content. Skip for now.
         }
         _ => {
