@@ -740,7 +740,8 @@ impl<'a> Generator<'a> {
                 writeln!(code, "pub struct {};", rust_name).unwrap();
             }
         } else {
-            // Derive Default when all fields are optional or vec (common for OOXML types)
+            // Derive Default when all fields are optional, vec, or EG content (which we
+            // always wrap in Option<> or Vec<>, making them defaultable).
             let all_defaultable = fields
                 .iter()
                 .all(|f| f.is_optional || f.is_vec || self.is_eg_content_field(f));
@@ -762,9 +763,12 @@ impl<'a> Generator<'a> {
                 let is_eg_content = self.is_eg_content_field(field);
                 let inner_type = self.pattern_to_rust_type(&field.pattern, false);
                 let is_bool = inner_type == "bool";
+                // Required EG content fields are wrapped in Option<> for Default/serde
+                // compatibility — EG enums don't impl Default, but Option<Box<EG>> does.
+                let eg_needs_option = is_eg_content && !field.is_optional && !field.is_vec;
                 let field_type = if field.is_vec {
                     format!("Vec<{}>", inner_type)
-                } else if field.is_optional {
+                } else if field.is_optional || eg_needs_option {
                     format!("Option<{}>", inner_type)
                 } else {
                     inner_type
