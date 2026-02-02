@@ -8,7 +8,7 @@
 
 use super::generated::*;
 #[cfg(feature = "extra-children")]
-use ooxml_xml::{RawXmlElement, RawXmlNode};
+use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 use quick_xml::Reader;
 use quick_xml::events::{BytesStart, Event};
 use std::io::BufRead;
@@ -119,6 +119,8 @@ impl FromXml for AutoFilter {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -149,22 +151,38 @@ impl FromXml for AutoFilter {
                             b"filterColumn" => {
                                 f_filter_column
                                     .push(Box::new(FilterColumn::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -179,22 +197,38 @@ impl FromXml for AutoFilter {
                             b"filterColumn" => {
                                 f_filter_column
                                     .push(Box::new(FilterColumn::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -306,6 +340,8 @@ impl FromXml for Filters {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -336,16 +372,28 @@ impl FromXml for Filters {
                         match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(Filter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dateGroupItem" => {
                                 f_date_group_item
                                     .push(Box::new(DateGroupItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -358,16 +406,28 @@ impl FromXml for Filters {
                         match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(Filter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dateGroupItem" => {
                                 f_date_group_item
                                     .push(Box::new(DateGroupItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -453,6 +513,8 @@ impl FromXml for CustomFilters {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -481,12 +543,20 @@ impl FromXml for CustomFilters {
                             b"customFilter" => {
                                 f_custom_filter
                                     .push(Box::new(CustomFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -500,12 +570,20 @@ impl FromXml for CustomFilters {
                             b"customFilter" => {
                                 f_custom_filter
                                     .push(Box::new(CustomFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -832,6 +910,8 @@ impl FromXml for SortState {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -869,16 +949,28 @@ impl FromXml for SortState {
                             b"sortCondition" => {
                                 f_sort_condition
                                     .push(Box::new(SortCondition::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -892,16 +984,28 @@ impl FromXml for SortState {
                             b"sortCondition" => {
                                 f_sort_condition
                                     .push(Box::new(SortCondition::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1242,6 +1346,8 @@ impl FromXml for EGExtensionList {
         let mut f_ext = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1252,12 +1358,20 @@ impl FromXml for EGExtensionList {
                         match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1270,12 +1384,20 @@ impl FromXml for EGExtensionList {
                         match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1306,6 +1428,8 @@ impl FromXml for ExtensionList {
         let mut f_ext = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1316,12 +1440,20 @@ impl FromXml for ExtensionList {
                         match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1334,12 +1466,20 @@ impl FromXml for ExtensionList {
                         match e.local_name().as_ref() {
                             b"ext" => {
                                 f_ext.push(Box::new(Extension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1371,6 +1511,8 @@ impl FromXml for CalcChain {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1381,16 +1523,28 @@ impl FromXml for CalcChain {
                         match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(CalcCell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1403,16 +1557,28 @@ impl FromXml for CalcChain {
                         match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(CalcCell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1518,6 +1684,8 @@ impl FromXml for Comments {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1528,20 +1696,36 @@ impl FromXml for Comments {
                         match e.local_name().as_ref() {
                             b"authors" => {
                                 f_authors = Some(Box::new(Authors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"commentList" => {
                                 f_comment_list =
                                     Some(Box::new(CommentList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1554,20 +1738,36 @@ impl FromXml for Comments {
                         match e.local_name().as_ref() {
                             b"authors" => {
                                 f_authors = Some(Box::new(Authors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"commentList" => {
                                 f_comment_list =
                                     Some(Box::new(CommentList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1602,6 +1802,8 @@ impl FromXml for Authors {
         let mut f_author = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1612,12 +1814,20 @@ impl FromXml for Authors {
                         match e.local_name().as_ref() {
                             b"author" => {
                                 f_author.push(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1630,12 +1840,20 @@ impl FromXml for Authors {
                         match e.local_name().as_ref() {
                             b"author" => {
                                 f_author.push(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1666,6 +1884,8 @@ impl FromXml for CommentList {
         let mut f_comment = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -1676,12 +1896,20 @@ impl FromXml for CommentList {
                         match e.local_name().as_ref() {
                             b"comment" => {
                                 f_comment.push(Box::new(Comment::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1694,12 +1922,20 @@ impl FromXml for CommentList {
                         match e.local_name().as_ref() {
                             b"comment" => {
                                 f_comment.push(Box::new(Comment::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1742,6 +1978,8 @@ impl FromXml for Comment {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -1783,16 +2021,28 @@ impl FromXml for Comment {
                             #[cfg(feature = "sml-comments")]
                             b"text" => {
                                 f_text = Some(Box::new(RichString::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"commentPr" => {
                                 f_comment_pr =
                                     Some(Box::new(CTCommentPr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1806,16 +2056,28 @@ impl FromXml for Comment {
                             #[cfg(feature = "sml-comments")]
                             b"text" => {
                                 f_text = Some(Box::new(RichString::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"commentPr" => {
                                 f_comment_pr =
                                     Some(Box::new(CTCommentPr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -1874,6 +2136,8 @@ impl FromXml for CTCommentPr {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -1935,12 +2199,20 @@ impl FromXml for CTCommentPr {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -1954,12 +2226,20 @@ impl FromXml for CTCommentPr {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2008,6 +2288,8 @@ impl FromXml for MapInfo {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -2035,15 +2317,27 @@ impl FromXml for MapInfo {
                         match e.local_name().as_ref() {
                             b"Schema" => {
                                 f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"Map" => {
                                 f_map.push(Box::new(XmlMap::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2056,15 +2350,27 @@ impl FromXml for MapInfo {
                         match e.local_name().as_ref() {
                             b"Schema" => {
                                 f_schema.push(Box::new(XmlSchema::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"Map" => {
                                 f_map.push(Box::new(XmlMap::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2099,6 +2405,8 @@ impl FromXml for XmlSchema {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -2106,7 +2414,9 @@ impl FromXml for XmlSchema {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -2115,7 +2425,9 @@ impl FromXml for XmlSchema {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -2153,6 +2465,8 @@ impl FromXml for XmlMap {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -2205,12 +2519,20 @@ impl FromXml for XmlMap {
                             b"DataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(DataBinding::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2224,12 +2546,20 @@ impl FromXml for XmlMap {
                             b"DataBinding" => {
                                 f_data_binding =
                                     Some(Box::new(DataBinding::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2347,6 +2677,8 @@ impl FromXml for Connections {
         let mut f_connection = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -2358,12 +2690,20 @@ impl FromXml for Connections {
                             b"connection" => {
                                 f_connection
                                     .push(Box::new(Connection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2377,12 +2717,20 @@ impl FromXml for Connections {
                             b"connection" => {
                                 f_connection
                                     .push(Box::new(Connection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2440,6 +2788,8 @@ impl FromXml for Connection {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -2526,34 +2876,62 @@ impl FromXml for Connection {
                                 f_db_pr = Some(Box::new(DatabaseProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"olapPr" => {
                                 f_olap_pr =
                                     Some(Box::new(OlapProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"webPr" => {
                                 f_web_pr = Some(Box::new(WebQueryProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"textPr" => {
                                 f_text_pr = Some(Box::new(TextImportProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"parameters" => {
                                 f_parameters =
                                     Some(Box::new(Parameters::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2567,33 +2945,61 @@ impl FromXml for Connection {
                             b"dbPr" => {
                                 f_db_pr =
                                     Some(Box::new(DatabaseProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"olapPr" => {
                                 f_olap_pr =
                                     Some(Box::new(OlapProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"webPr" => {
                                 f_web_pr =
                                     Some(Box::new(WebQueryProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"textPr" => {
                                 f_text_pr = Some(Box::new(TextImportProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"parameters" => {
                                 f_parameters =
                                     Some(Box::new(Parameters::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2817,6 +3223,8 @@ impl FromXml for WebQueryProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -2880,12 +3288,20 @@ impl FromXml for WebQueryProperties {
                         match e.local_name().as_ref() {
                             b"tables" => {
                                 f_tables = Some(Box::new(DataTables::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2898,12 +3314,20 @@ impl FromXml for WebQueryProperties {
                         match e.local_name().as_ref() {
                             b"tables" => {
                                 f_tables = Some(Box::new(DataTables::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -2952,6 +3376,8 @@ impl FromXml for Parameters {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -2979,12 +3405,20 @@ impl FromXml for Parameters {
                         match e.local_name().as_ref() {
                             b"parameter" => {
                                 f_parameter.push(Box::new(Parameter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -2997,12 +3431,20 @@ impl FromXml for Parameters {
                         match e.local_name().as_ref() {
                             b"parameter" => {
                                 f_parameter.push(Box::new(Parameter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -3221,6 +3663,8 @@ impl FromXml for TextImportProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -3294,12 +3738,20 @@ impl FromXml for TextImportProperties {
                             b"textFields" => {
                                 f_text_fields =
                                     Some(Box::new(TextFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -3313,12 +3765,20 @@ impl FromXml for TextImportProperties {
                             b"textFields" => {
                                 f_text_fields =
                                     Some(Box::new(TextFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -3370,6 +3830,8 @@ impl FromXml for TextFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -3398,12 +3860,20 @@ impl FromXml for TextFields {
                             b"textField" => {
                                 f_text_field
                                     .push(Box::new(TextField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -3416,12 +3886,20 @@ impl FromXml for TextFields {
                         match e.local_name().as_ref() {
                             b"textField" => {
                                 f_text_field.push(Box::new(TextField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -3536,6 +4014,8 @@ impl FromXml for PivotCacheDefinition {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -3615,50 +4095,94 @@ impl FromXml for PivotCacheDefinition {
                             b"cacheSource" => {
                                 f_cache_source =
                                     Some(Box::new(CacheSource::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cacheFields" => {
                                 f_cache_fields =
                                     Some(Box::new(CacheFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cacheHierarchies" => {
                                 f_cache_hierarchies = Some(Box::new(CTCacheHierarchies::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"kpis" => {
                                 f_kpis = Some(Box::new(CTPCDKPIs::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"calculatedItems" => {
                                 f_calculated_items =
                                     Some(Box::new(CTCalculatedItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"calculatedMembers" => {
                                 f_calculated_members = Some(Box::new(
                                     CTCalculatedMembers::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimensions" => {
                                 f_dimensions =
                                     Some(Box::new(CTDimensions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"measureGroups" => {
                                 f_measure_groups =
                                     Some(Box::new(CTMeasureGroups::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"maps" => {
                                 f_maps = Some(Box::new(CTMeasureDimensionMaps::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -3672,49 +4196,93 @@ impl FromXml for PivotCacheDefinition {
                             b"cacheSource" => {
                                 f_cache_source =
                                     Some(Box::new(CacheSource::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cacheFields" => {
                                 f_cache_fields =
                                     Some(Box::new(CacheFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cacheHierarchies" => {
                                 f_cache_hierarchies =
                                     Some(Box::new(CTCacheHierarchies::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"kpis" => {
                                 f_kpis = Some(Box::new(CTPCDKPIs::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"calculatedItems" => {
                                 f_calculated_items =
                                     Some(Box::new(CTCalculatedItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"calculatedMembers" => {
                                 f_calculated_members = Some(Box::new(
                                     CTCalculatedMembers::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimensions" => {
                                 f_dimensions =
                                     Some(Box::new(CTDimensions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"measureGroups" => {
                                 f_measure_groups =
                                     Some(Box::new(CTMeasureGroups::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"maps" => {
                                 f_maps = Some(Box::new(CTMeasureDimensionMaps::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -3779,6 +4347,8 @@ impl FromXml for CacheFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -3807,12 +4377,20 @@ impl FromXml for CacheFields {
                             b"cacheField" => {
                                 f_cache_field
                                     .push(Box::new(CacheField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -3826,12 +4404,20 @@ impl FromXml for CacheFields {
                             b"cacheField" => {
                                 f_cache_field
                                     .push(Box::new(CacheField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -3883,6 +4469,8 @@ impl FromXml for CacheField {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -3947,23 +4535,43 @@ impl FromXml for CacheField {
                             b"sharedItems" => {
                                 f_shared_items =
                                     Some(Box::new(SharedItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fieldGroup" => {
                                 f_field_group =
                                     Some(Box::new(FieldGroup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mpMap" => {
                                 f_mp_map.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -3977,23 +4585,43 @@ impl FromXml for CacheField {
                             b"sharedItems" => {
                                 f_shared_items =
                                     Some(Box::new(SharedItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fieldGroup" => {
                                 f_field_group =
                                     Some(Box::new(FieldGroup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mpMap" => {
                                 f_mp_map.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4155,6 +4783,8 @@ impl FromXml for Consolidation {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4182,16 +4812,28 @@ impl FromXml for Consolidation {
                         match e.local_name().as_ref() {
                             b"pages" => {
                                 f_pages = Some(Box::new(CTPages::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rangeSets" => {
                                 f_range_sets =
                                     Some(Box::new(CTRangeSets::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4204,16 +4846,28 @@ impl FromXml for Consolidation {
                         match e.local_name().as_ref() {
                             b"pages" => {
                                 f_pages = Some(Box::new(CTPages::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rangeSets" => {
                                 f_range_sets =
                                     Some(Box::new(CTRangeSets::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4252,6 +4906,8 @@ impl FromXml for CTPages {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4279,12 +4935,20 @@ impl FromXml for CTPages {
                         match e.local_name().as_ref() {
                             b"page" => {
                                 f_page.push(Box::new(CTPCDSCPage::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4297,12 +4961,20 @@ impl FromXml for CTPages {
                         match e.local_name().as_ref() {
                             b"page" => {
                                 f_page.push(Box::new(CTPCDSCPage::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4339,6 +5011,8 @@ impl FromXml for CTPCDSCPage {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4367,12 +5041,20 @@ impl FromXml for CTPCDSCPage {
                             b"pageItem" => {
                                 f_page_item
                                     .push(Box::new(CTPageItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4385,12 +5067,20 @@ impl FromXml for CTPCDSCPage {
                         match e.local_name().as_ref() {
                             b"pageItem" => {
                                 f_page_item.push(Box::new(CTPageItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4474,6 +5164,8 @@ impl FromXml for CTRangeSets {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4502,12 +5194,20 @@ impl FromXml for CTRangeSets {
                             b"rangeSet" => {
                                 f_range_set
                                     .push(Box::new(CTRangeSet::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4520,12 +5220,20 @@ impl FromXml for CTRangeSets {
                         match e.local_name().as_ref() {
                             b"rangeSet" => {
                                 f_range_set.push(Box::new(CTRangeSet::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4762,6 +5470,8 @@ impl FromXml for CTMissing {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4819,15 +5529,27 @@ impl FromXml for CTMissing {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4840,15 +5562,27 @@ impl FromXml for CTMissing {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -4908,6 +5642,8 @@ impl FromXml for CTNumber {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -4968,15 +5704,27 @@ impl FromXml for CTNumber {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -4989,15 +5737,27 @@ impl FromXml for CTNumber {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5050,6 +5810,8 @@ impl FromXml for CTBoolean {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5089,12 +5851,20 @@ impl FromXml for CTBoolean {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5107,12 +5877,20 @@ impl FromXml for CTBoolean {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5165,6 +5943,8 @@ impl FromXml for CTError {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5225,15 +6005,27 @@ impl FromXml for CTError {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5246,15 +6038,27 @@ impl FromXml for CTError {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5315,6 +6119,8 @@ impl FromXml for CTString {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5375,15 +6181,27 @@ impl FromXml for CTString {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5396,15 +6214,27 @@ impl FromXml for CTString {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5457,6 +6287,8 @@ impl FromXml for CTDateTime {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5496,12 +6328,20 @@ impl FromXml for CTDateTime {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5514,12 +6354,20 @@ impl FromXml for CTDateTime {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5563,6 +6411,8 @@ impl FromXml for FieldGroup {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5594,20 +6444,36 @@ impl FromXml for FieldGroup {
                             b"rangePr" => {
                                 f_range_pr =
                                     Some(Box::new(CTRangePr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"discretePr" => {
                                 f_discrete_pr =
                                     Some(Box::new(CTDiscretePr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"groupItems" => {
                                 f_group_items =
                                     Some(Box::new(GroupItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5620,20 +6486,36 @@ impl FromXml for FieldGroup {
                         match e.local_name().as_ref() {
                             b"rangePr" => {
                                 f_range_pr = Some(Box::new(CTRangePr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"discretePr" => {
                                 f_discrete_pr =
                                     Some(Box::new(CTDiscretePr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"groupItems" => {
                                 f_group_items =
                                     Some(Box::new(GroupItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5755,6 +6637,8 @@ impl FromXml for CTDiscretePr {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5782,12 +6666,20 @@ impl FromXml for CTDiscretePr {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5800,12 +6692,20 @@ impl FromXml for CTDiscretePr {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5890,6 +6790,8 @@ impl FromXml for PivotCacheRecords {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -5917,16 +6819,28 @@ impl FromXml for PivotCacheRecords {
                         match e.local_name().as_ref() {
                             b"r" => {
                                 f_reference.push(Box::new(CTRecord::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -5939,16 +6853,28 @@ impl FromXml for PivotCacheRecords {
                         match e.local_name().as_ref() {
                             b"r" => {
                                 f_reference.push(Box::new(CTRecord::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -5982,6 +6908,8 @@ impl FromXml for CTRecord {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -5989,7 +6917,9 @@ impl FromXml for CTRecord {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -5998,7 +6928,9 @@ impl FromXml for CTRecord {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -6028,6 +6960,8 @@ impl FromXml for CTPCDKPIs {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6055,12 +6989,20 @@ impl FromXml for CTPCDKPIs {
                         match e.local_name().as_ref() {
                             b"kpi" => {
                                 f_kpi.push(Box::new(CTPCDKPI::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6073,12 +7015,20 @@ impl FromXml for CTPCDKPIs {
                         match e.local_name().as_ref() {
                             b"kpi" => {
                                 f_kpi.push(Box::new(CTPCDKPI::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6213,6 +7163,8 @@ impl FromXml for CTCacheHierarchies {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6241,12 +7193,20 @@ impl FromXml for CTCacheHierarchies {
                             b"cacheHierarchy" => {
                                 f_cache_hierarchy
                                     .push(Box::new(CTCacheHierarchy::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6260,12 +7220,20 @@ impl FromXml for CTCacheHierarchies {
                             b"cacheHierarchy" => {
                                 f_cache_hierarchy
                                     .push(Box::new(CTCacheHierarchy::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6325,6 +7293,8 @@ impl FromXml for CTCacheHierarchy {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6416,20 +7386,36 @@ impl FromXml for CTCacheHierarchy {
                             b"fieldsUsage" => {
                                 f_fields_usage =
                                     Some(Box::new(CTFieldsUsage::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"groupLevels" => {
                                 f_group_levels =
                                     Some(Box::new(CTGroupLevels::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6443,20 +7429,36 @@ impl FromXml for CTCacheHierarchy {
                             b"fieldsUsage" => {
                                 f_fields_usage =
                                     Some(Box::new(CTFieldsUsage::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"groupLevels" => {
                                 f_group_levels =
                                     Some(Box::new(CTGroupLevels::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6517,6 +7519,8 @@ impl FromXml for CTFieldsUsage {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6545,12 +7549,20 @@ impl FromXml for CTFieldsUsage {
                             b"fieldUsage" => {
                                 f_field_usage
                                     .push(Box::new(CTFieldUsage::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6564,12 +7576,20 @@ impl FromXml for CTFieldsUsage {
                             b"fieldUsage" => {
                                 f_field_usage
                                     .push(Box::new(CTFieldUsage::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6653,6 +7673,8 @@ impl FromXml for CTGroupLevels {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6681,12 +7703,20 @@ impl FromXml for CTGroupLevels {
                             b"groupLevel" => {
                                 f_group_level
                                     .push(Box::new(CTGroupLevel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6700,12 +7730,20 @@ impl FromXml for CTGroupLevels {
                             b"groupLevel" => {
                                 f_group_level
                                     .push(Box::new(CTGroupLevel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6746,6 +7784,8 @@ impl FromXml for CTGroupLevel {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6782,16 +7822,28 @@ impl FromXml for CTGroupLevel {
                         match e.local_name().as_ref() {
                             b"groups" => {
                                 f_groups = Some(Box::new(CTGroups::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6804,16 +7856,28 @@ impl FromXml for CTGroupLevel {
                         match e.local_name().as_ref() {
                             b"groups" => {
                                 f_groups = Some(Box::new(CTGroups::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6856,6 +7920,8 @@ impl FromXml for CTGroups {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6883,12 +7949,20 @@ impl FromXml for CTGroups {
                         match e.local_name().as_ref() {
                             b"group" => {
                                 f_group.push(Box::new(CTLevelGroup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -6901,12 +7975,20 @@ impl FromXml for CTGroups {
                         match e.local_name().as_ref() {
                             b"group" => {
                                 f_group.push(Box::new(CTLevelGroup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -6947,6 +8029,8 @@ impl FromXml for CTLevelGroup {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -6987,12 +8071,20 @@ impl FromXml for CTLevelGroup {
                             b"groupMembers" => {
                                 f_group_members =
                                     Some(Box::new(CTGroupMembers::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7006,12 +8098,20 @@ impl FromXml for CTLevelGroup {
                             b"groupMembers" => {
                                 f_group_members =
                                     Some(Box::new(CTGroupMembers::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7055,6 +8155,8 @@ impl FromXml for CTGroupMembers {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7083,12 +8185,20 @@ impl FromXml for CTGroupMembers {
                             b"groupMember" => {
                                 f_group_member
                                     .push(Box::new(CTGroupMember::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7102,12 +8212,20 @@ impl FromXml for CTGroupMembers {
                             b"groupMember" => {
                                 f_group_member
                                     .push(Box::new(CTGroupMember::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7198,6 +8316,8 @@ impl FromXml for CTTupleCache {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -7209,27 +8329,51 @@ impl FromXml for CTTupleCache {
                             b"entries" => {
                                 f_entries =
                                     Some(Box::new(CTPCDSDTCEntries::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sets" => {
                                 f_sets = Some(Box::new(CTSets::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"queryCache" => {
                                 f_query_cache =
                                     Some(Box::new(CTQueryCache::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"serverFormats" => {
                                 f_server_formats =
                                     Some(Box::new(CTServerFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7243,27 +8387,51 @@ impl FromXml for CTTupleCache {
                             b"entries" => {
                                 f_entries =
                                     Some(Box::new(CTPCDSDTCEntries::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sets" => {
                                 f_sets = Some(Box::new(CTSets::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"queryCache" => {
                                 f_query_cache =
                                     Some(Box::new(CTQueryCache::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"serverFormats" => {
                                 f_server_formats =
                                     Some(Box::new(CTServerFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7353,6 +8521,8 @@ impl FromXml for CTServerFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7381,12 +8551,20 @@ impl FromXml for CTServerFormats {
                             b"serverFormat" => {
                                 f_server_format
                                     .push(Box::new(CTServerFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7400,12 +8578,20 @@ impl FromXml for CTServerFormats {
                             b"serverFormat" => {
                                 f_server_format
                                     .push(Box::new(CTServerFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7489,6 +8675,8 @@ impl FromXml for CTTuples {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7516,12 +8704,20 @@ impl FromXml for CTTuples {
                         match e.local_name().as_ref() {
                             b"tpl" => {
                                 f_tpl.push(Box::new(CTTuple::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7534,12 +8730,20 @@ impl FromXml for CTTuples {
                         match e.local_name().as_ref() {
                             b"tpl" => {
                                 f_tpl.push(Box::new(CTTuple::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7633,6 +8837,8 @@ impl FromXml for CTSets {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7660,12 +8866,20 @@ impl FromXml for CTSets {
                         match e.local_name().as_ref() {
                             b"set" => {
                                 f_set.push(Box::new(CTSet::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7678,12 +8892,20 @@ impl FromXml for CTSets {
                         match e.local_name().as_ref() {
                             b"set" => {
                                 f_set.push(Box::new(CTSet::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7725,6 +8947,8 @@ impl FromXml for CTSet {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7764,16 +8988,28 @@ impl FromXml for CTSet {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortByTuple" => {
                                 f_sort_by_tuple =
                                     Some(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7786,16 +9022,28 @@ impl FromXml for CTSet {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls.push(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortByTuple" => {
                                 f_sort_by_tuple =
                                     Some(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7839,6 +9087,8 @@ impl FromXml for CTQueryCache {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7866,12 +9116,20 @@ impl FromXml for CTQueryCache {
                         match e.local_name().as_ref() {
                             b"query" => {
                                 f_query.push(Box::new(CTQuery::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7884,12 +9142,20 @@ impl FromXml for CTQueryCache {
                         match e.local_name().as_ref() {
                             b"query" => {
                                 f_query.push(Box::new(CTQuery::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -7926,6 +9192,8 @@ impl FromXml for CTQuery {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -7953,12 +9221,20 @@ impl FromXml for CTQuery {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -7971,12 +9247,20 @@ impl FromXml for CTQuery {
                         match e.local_name().as_ref() {
                             b"tpls" => {
                                 f_tpls = Some(Box::new(CTTuples::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -8013,6 +9297,8 @@ impl FromXml for CTCalculatedItems {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8041,12 +9327,20 @@ impl FromXml for CTCalculatedItems {
                             b"calculatedItem" => {
                                 f_calculated_item
                                     .push(Box::new(CTCalculatedItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -8060,12 +9354,20 @@ impl FromXml for CTCalculatedItems {
                             b"calculatedItem" => {
                                 f_calculated_item
                                     .push(Box::new(CTCalculatedItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -8104,6 +9406,8 @@ impl FromXml for CTCalculatedItem {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8135,16 +9439,28 @@ impl FromXml for CTCalculatedItem {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -8158,16 +9474,28 @@ impl FromXml for CTCalculatedItem {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -8207,6 +9535,8 @@ impl FromXml for CTCalculatedMembers {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8236,12 +9566,20 @@ impl FromXml for CTCalculatedMembers {
                                 f_calculated_member.push(Box::new(CTCalculatedMember::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -8256,12 +9594,20 @@ impl FromXml for CTCalculatedMembers {
                                 f_calculated_member.push(Box::new(CTCalculatedMember::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -8304,6 +9650,8 @@ impl FromXml for CTCalculatedMember {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8350,12 +9698,20 @@ impl FromXml for CTCalculatedMember {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -8369,12 +9725,20 @@ impl FromXml for CTCalculatedMember {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -8500,6 +9864,8 @@ impl FromXml for CTPivotTableDefinition {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -8729,79 +10095,151 @@ impl FromXml for CTPivotTableDefinition {
                             b"location" => {
                                 f_location =
                                     Some(Box::new(PivotLocation::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotFields" => {
                                 f_pivot_fields =
                                     Some(Box::new(PivotFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowFields" => {
                                 f_row_fields =
                                     Some(Box::new(RowFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowItems" => {
                                 f_row_items =
                                     Some(Box::new(CTRowItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colFields" => {
                                 f_col_fields =
                                     Some(Box::new(ColFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colItems" => {
                                 f_col_items =
                                     Some(Box::new(CTColItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageFields" => {
                                 f_page_fields =
                                     Some(Box::new(PageFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dataFields" => {
                                 f_data_fields =
                                     Some(Box::new(DataFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"formats" => {
                                 f_formats = Some(Box::new(CTFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"conditionalFormats" => {
                                 f_conditional_formats = Some(Box::new(
                                     CTConditionalFormats::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"chartFormats" => {
                                 f_chart_formats =
                                     Some(Box::new(CTChartFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotHierarchies" => {
                                 f_pivot_hierarchies = Some(Box::new(CTPivotHierarchies::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotTableStyleInfo" => {
                                 f_pivot_table_style_info =
                                     Some(Box::new(CTPivotTableStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"filters" => {
                                 f_filters =
                                     Some(Box::new(PivotFilters::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowHierarchiesUsage" => {
                                 f_row_hierarchies_usage = Some(Box::new(
                                     CTRowHierarchiesUsage::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colHierarchiesUsage" => {
                                 f_col_hierarchies_usage = Some(Box::new(
                                     CTColHierarchiesUsage::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -8815,78 +10253,150 @@ impl FromXml for CTPivotTableDefinition {
                             b"location" => {
                                 f_location =
                                     Some(Box::new(PivotLocation::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotFields" => {
                                 f_pivot_fields =
                                     Some(Box::new(PivotFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowFields" => {
                                 f_row_fields =
                                     Some(Box::new(RowFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowItems" => {
                                 f_row_items =
                                     Some(Box::new(CTRowItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colFields" => {
                                 f_col_fields =
                                     Some(Box::new(ColFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colItems" => {
                                 f_col_items =
                                     Some(Box::new(CTColItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageFields" => {
                                 f_page_fields =
                                     Some(Box::new(PageFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dataFields" => {
                                 f_data_fields =
                                     Some(Box::new(DataFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"formats" => {
                                 f_formats = Some(Box::new(CTFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"conditionalFormats" => {
                                 f_conditional_formats = Some(Box::new(
                                     CTConditionalFormats::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"chartFormats" => {
                                 f_chart_formats =
                                     Some(Box::new(CTChartFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotHierarchies" => {
                                 f_pivot_hierarchies =
                                     Some(Box::new(CTPivotHierarchies::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pivotTableStyleInfo" => {
                                 f_pivot_table_style_info =
                                     Some(Box::new(CTPivotTableStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"filters" => {
                                 f_filters =
                                     Some(Box::new(PivotFilters::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowHierarchiesUsage" => {
                                 f_row_hierarchies_usage = Some(Box::new(
                                     CTRowHierarchiesUsage::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colHierarchiesUsage" => {
                                 f_col_hierarchies_usage = Some(Box::new(
                                     CTColHierarchiesUsage::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9085,6 +10595,8 @@ impl FromXml for PivotFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9113,12 +10625,20 @@ impl FromXml for PivotFields {
                             b"pivotField" => {
                                 f_pivot_field
                                     .push(Box::new(PivotField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9132,12 +10652,20 @@ impl FromXml for PivotFields {
                             b"pivotField" => {
                                 f_pivot_field
                                     .push(Box::new(PivotField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9223,6 +10751,8 @@ impl FromXml for PivotField {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9391,21 +10921,37 @@ impl FromXml for PivotField {
                         match e.local_name().as_ref() {
                             b"items" => {
                                 f_items = Some(Box::new(PivotItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoSortScope" => {
                                 f_auto_sort_scope = Some(Box::new(Box::new(PivotArea::from_xml(
                                     reader, &e, false,
                                 )?)));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9418,21 +10964,37 @@ impl FromXml for PivotField {
                         match e.local_name().as_ref() {
                             b"items" => {
                                 f_items = Some(Box::new(PivotItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoSortScope" => {
                                 f_auto_sort_scope = Some(Box::new(Box::new(PivotArea::from_xml(
                                     reader, &e, true,
                                 )?)));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9518,6 +11080,8 @@ impl FromXml for PivotItems {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9545,12 +11109,20 @@ impl FromXml for PivotItems {
                         match e.local_name().as_ref() {
                             b"item" => {
                                 f_item.push(Box::new(PivotItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9563,12 +11135,20 @@ impl FromXml for PivotItems {
                         match e.local_name().as_ref() {
                             b"item" => {
                                 f_item.push(Box::new(PivotItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9702,6 +11282,8 @@ impl FromXml for PageFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9730,12 +11312,20 @@ impl FromXml for PageFields {
                             b"pageField" => {
                                 f_page_field
                                     .push(Box::new(PageField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9748,12 +11338,20 @@ impl FromXml for PageFields {
                         match e.local_name().as_ref() {
                             b"pageField" => {
                                 f_page_field.push(Box::new(PageField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9794,6 +11392,8 @@ impl FromXml for PageField {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9834,12 +11434,20 @@ impl FromXml for PageField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9853,12 +11461,20 @@ impl FromXml for PageField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9899,6 +11515,8 @@ impl FromXml for DataFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -9927,12 +11545,20 @@ impl FromXml for DataFields {
                             b"dataField" => {
                                 f_data_field
                                     .push(Box::new(DataField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -9945,12 +11571,20 @@ impl FromXml for DataFields {
                         match e.local_name().as_ref() {
                             b"dataField" => {
                                 f_data_field.push(Box::new(DataField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -9993,6 +11627,8 @@ impl FromXml for DataField {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10039,12 +11675,20 @@ impl FromXml for DataField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10058,12 +11702,20 @@ impl FromXml for DataField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10106,6 +11758,8 @@ impl FromXml for CTRowItems {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10133,12 +11787,20 @@ impl FromXml for CTRowItems {
                         match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10151,12 +11813,20 @@ impl FromXml for CTRowItems {
                         match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10193,6 +11863,8 @@ impl FromXml for CTColItems {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10220,12 +11892,20 @@ impl FromXml for CTColItems {
                         match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10238,12 +11918,20 @@ impl FromXml for CTColItems {
                         match e.local_name().as_ref() {
                             b"i" => {
                                 f_i.push(Box::new(CTI::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10282,6 +11970,8 @@ impl FromXml for CTI {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10315,12 +12005,20 @@ impl FromXml for CTI {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10333,12 +12031,20 @@ impl FromXml for CTI {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTX::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10424,6 +12130,8 @@ impl FromXml for RowFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10451,12 +12159,20 @@ impl FromXml for RowFields {
                         match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10469,12 +12185,20 @@ impl FromXml for RowFields {
                         match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10511,6 +12235,8 @@ impl FromXml for ColFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10538,12 +12264,20 @@ impl FromXml for ColFields {
                         match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10556,12 +12290,20 @@ impl FromXml for ColFields {
                         match e.local_name().as_ref() {
                             b"field" => {
                                 f_field.push(Box::new(CTField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10645,6 +12387,8 @@ impl FromXml for CTFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10672,12 +12416,20 @@ impl FromXml for CTFormats {
                         match e.local_name().as_ref() {
                             b"format" => {
                                 f_format.push(Box::new(CTFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10690,12 +12442,20 @@ impl FromXml for CTFormats {
                         match e.local_name().as_ref() {
                             b"format" => {
                                 f_format.push(Box::new(CTFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10734,6 +12494,8 @@ impl FromXml for CTFormat {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10765,16 +12527,28 @@ impl FromXml for CTFormat {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10788,16 +12562,28 @@ impl FromXml for CTFormat {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10837,6 +12623,8 @@ impl FromXml for CTConditionalFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10866,12 +12654,20 @@ impl FromXml for CTConditionalFormats {
                                 f_conditional_format.push(Box::new(CTConditionalFormat::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10886,12 +12682,20 @@ impl FromXml for CTConditionalFormats {
                                 f_conditional_format.push(Box::new(CTConditionalFormat::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -10931,6 +12735,8 @@ impl FromXml for CTConditionalFormat {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -10965,16 +12771,28 @@ impl FromXml for CTConditionalFormat {
                             b"pivotAreas" => {
                                 f_pivot_areas =
                                     Some(Box::new(PivotAreas::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -10988,16 +12806,28 @@ impl FromXml for CTConditionalFormat {
                             b"pivotAreas" => {
                                 f_pivot_areas =
                                     Some(Box::new(PivotAreas::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11039,6 +12869,8 @@ impl FromXml for PivotAreas {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11067,12 +12899,20 @@ impl FromXml for PivotAreas {
                             b"pivotArea" => {
                                 f_pivot_area
                                     .push(Box::new(PivotArea::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11085,12 +12925,20 @@ impl FromXml for PivotAreas {
                         match e.local_name().as_ref() {
                             b"pivotArea" => {
                                 f_pivot_area.push(Box::new(PivotArea::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11127,6 +12975,8 @@ impl FromXml for CTChartFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11155,12 +13005,20 @@ impl FromXml for CTChartFormats {
                             b"chartFormat" => {
                                 f_chart_format
                                     .push(Box::new(CTChartFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11174,12 +13032,20 @@ impl FromXml for CTChartFormats {
                             b"chartFormat" => {
                                 f_chart_format
                                     .push(Box::new(CTChartFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11218,6 +13084,8 @@ impl FromXml for CTChartFormat {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11252,12 +13120,20 @@ impl FromXml for CTChartFormat {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11271,12 +13147,20 @@ impl FromXml for CTChartFormat {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11316,6 +13200,8 @@ impl FromXml for CTPivotHierarchies {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11344,12 +13230,20 @@ impl FromXml for CTPivotHierarchies {
                             b"pivotHierarchy" => {
                                 f_pivot_hierarchy
                                     .push(Box::new(CTPivotHierarchy::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11363,12 +13257,20 @@ impl FromXml for CTPivotHierarchies {
                             b"pivotHierarchy" => {
                                 f_pivot_hierarchy
                                     .push(Box::new(CTPivotHierarchy::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11417,6 +13319,8 @@ impl FromXml for CTPivotHierarchy {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11476,19 +13380,35 @@ impl FromXml for CTPivotHierarchy {
                                 f_mps = Some(Box::new(CTMemberProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"members" => {
                                 f_members.push(Box::new(CTMembers::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11502,19 +13422,35 @@ impl FromXml for CTPivotHierarchy {
                             b"mps" => {
                                 f_mps =
                                     Some(Box::new(CTMemberProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"members" => {
                                 f_members.push(Box::new(CTMembers::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11563,6 +13499,8 @@ impl FromXml for CTRowHierarchiesUsage {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11591,12 +13529,20 @@ impl FromXml for CTRowHierarchiesUsage {
                             b"rowHierarchyUsage" => {
                                 f_row_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11610,12 +13556,20 @@ impl FromXml for CTRowHierarchiesUsage {
                             b"rowHierarchyUsage" => {
                                 f_row_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11652,6 +13606,8 @@ impl FromXml for CTColHierarchiesUsage {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11680,12 +13636,20 @@ impl FromXml for CTColHierarchiesUsage {
                             b"colHierarchyUsage" => {
                                 f_col_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11699,12 +13663,20 @@ impl FromXml for CTColHierarchiesUsage {
                             b"colHierarchyUsage" => {
                                 f_col_hierarchy_usage
                                     .push(Box::new(CTHierarchyUsage::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11789,6 +13761,8 @@ impl FromXml for CTMemberProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11816,12 +13790,20 @@ impl FromXml for CTMemberProperties {
                         match e.local_name().as_ref() {
                             b"mp" => {
                                 f_mp.push(Box::new(CTMemberProperty::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -11834,12 +13816,20 @@ impl FromXml for CTMemberProperties {
                         match e.local_name().as_ref() {
                             b"mp" => {
                                 f_mp.push(Box::new(CTMemberProperty::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -11964,6 +13954,8 @@ impl FromXml for CTMembers {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -11994,12 +13986,20 @@ impl FromXml for CTMembers {
                         match e.local_name().as_ref() {
                             b"member" => {
                                 f_member.push(Box::new(CTMember::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12012,12 +14012,20 @@ impl FromXml for CTMembers {
                         match e.local_name().as_ref() {
                             b"member" => {
                                 f_member.push(Box::new(CTMember::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12102,6 +14110,8 @@ impl FromXml for CTDimensions {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12130,12 +14140,20 @@ impl FromXml for CTDimensions {
                             b"dimension" => {
                                 f_dimension
                                     .push(Box::new(CTPivotDimension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12149,12 +14167,20 @@ impl FromXml for CTDimensions {
                             b"dimension" => {
                                 f_dimension
                                     .push(Box::new(CTPivotDimension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12255,6 +14281,8 @@ impl FromXml for CTMeasureGroups {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12283,12 +14311,20 @@ impl FromXml for CTMeasureGroups {
                             b"measureGroup" => {
                                 f_measure_group
                                     .push(Box::new(CTMeasureGroup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12302,12 +14338,20 @@ impl FromXml for CTMeasureGroups {
                             b"measureGroup" => {
                                 f_measure_group
                                     .push(Box::new(CTMeasureGroup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12344,6 +14388,8 @@ impl FromXml for CTMeasureDimensionMaps {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12373,12 +14419,20 @@ impl FromXml for CTMeasureDimensionMaps {
                                 f_map.push(Box::new(CTMeasureDimensionMap::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12393,12 +14447,20 @@ impl FromXml for CTMeasureDimensionMaps {
                                 f_map.push(Box::new(CTMeasureDimensionMap::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12612,6 +14674,8 @@ impl FromXml for PivotFilters {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12639,12 +14703,20 @@ impl FromXml for PivotFilters {
                         match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12657,12 +14729,20 @@ impl FromXml for PivotFilters {
                         match e.local_name().as_ref() {
                             b"filter" => {
                                 f_filter.push(Box::new(PivotFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12710,6 +14790,8 @@ impl FromXml for PivotFilter {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12768,16 +14850,28 @@ impl FromXml for PivotFilter {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12791,16 +14885,28 @@ impl FromXml for PivotFilter {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -12861,6 +14967,8 @@ impl FromXml for PivotArea {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -12923,16 +15031,28 @@ impl FromXml for PivotArea {
                                 f_references = Some(Box::new(CTPivotAreaReferences::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -12947,16 +15067,28 @@ impl FromXml for PivotArea {
                                 f_references = Some(Box::new(CTPivotAreaReferences::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13005,6 +15137,8 @@ impl FromXml for CTPivotAreaReferences {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13034,12 +15168,20 @@ impl FromXml for CTPivotAreaReferences {
                                 f_reference.push(Box::new(CTPivotAreaReference::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13054,12 +15196,20 @@ impl FromXml for CTPivotAreaReferences {
                                 f_reference.push(Box::new(CTPivotAreaReference::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13113,6 +15263,8 @@ impl FromXml for CTPivotAreaReference {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13188,16 +15340,28 @@ impl FromXml for CTPivotAreaReference {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13210,16 +15374,28 @@ impl FromXml for CTPivotAreaReference {
                         match e.local_name().as_ref() {
                             b"x" => {
                                 f_x.push(Box::new(CTIndex::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13342,6 +15518,8 @@ impl FromXml for QueryTable {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13433,16 +15611,28 @@ impl FromXml for QueryTable {
                             b"queryTableRefresh" => {
                                 f_query_table_refresh =
                                     Some(Box::new(QueryTableRefresh::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13456,16 +15646,28 @@ impl FromXml for QueryTable {
                             b"queryTableRefresh" => {
                                 f_query_table_refresh =
                                     Some(Box::new(QueryTableRefresh::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13534,6 +15736,8 @@ impl FromXml for QueryTableRefresh {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13580,25 +15784,45 @@ impl FromXml for QueryTableRefresh {
                             b"queryTableFields" => {
                                 f_query_table_fields =
                                     Some(Box::new(QueryTableFields::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"queryTableDeletedFields" => {
                                 f_query_table_deleted_fields = Some(Box::new(
                                     QueryTableDeletedFields::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13612,25 +15836,45 @@ impl FromXml for QueryTableRefresh {
                             b"queryTableFields" => {
                                 f_query_table_fields =
                                     Some(Box::new(QueryTableFields::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"queryTableDeletedFields" => {
                                 f_query_table_deleted_fields = Some(Box::new(
                                     QueryTableDeletedFields::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13677,6 +15921,8 @@ impl FromXml for QueryTableDeletedFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13705,12 +15951,20 @@ impl FromXml for QueryTableDeletedFields {
                             b"deletedField" => {
                                 f_deleted_field
                                     .push(Box::new(CTDeletedField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13724,12 +15978,20 @@ impl FromXml for QueryTableDeletedFields {
                             b"deletedField" => {
                                 f_deleted_field
                                     .push(Box::new(CTDeletedField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13813,6 +16075,8 @@ impl FromXml for QueryTableFields {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13841,12 +16105,20 @@ impl FromXml for QueryTableFields {
                             b"queryTableField" => {
                                 f_query_table_field
                                     .push(Box::new(QueryTableField::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13860,12 +16132,20 @@ impl FromXml for QueryTableFields {
                             b"queryTableField" => {
                                 f_query_table_field
                                     .push(Box::new(QueryTableField::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -13908,6 +16188,8 @@ impl FromXml for QueryTableField {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -13954,12 +16236,20 @@ impl FromXml for QueryTableField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -13973,12 +16263,20 @@ impl FromXml for QueryTableField {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14023,6 +16321,8 @@ impl FromXml for SharedStrings {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -14053,16 +16353,28 @@ impl FromXml for SharedStrings {
                         match e.local_name().as_ref() {
                             b"si" => {
                                 f_si.push(Box::new(RichString::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14075,16 +16387,28 @@ impl FromXml for SharedStrings {
                         match e.local_name().as_ref() {
                             b"si" => {
                                 f_si.push(Box::new(RichString::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14124,6 +16448,8 @@ impl FromXml for PhoneticRun {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -14154,12 +16480,20 @@ impl FromXml for PhoneticRun {
                         match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14172,12 +16506,20 @@ impl FromXml for PhoneticRun {
                         match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14213,6 +16555,8 @@ impl FromXml for RichTextElement {
         let mut f_cell_type: Option<XmlString> = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -14225,15 +16569,27 @@ impl FromXml for RichTextElement {
                                 f_r_pr = Some(Box::new(RichTextRunProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14248,15 +16604,27 @@ impl FromXml for RichTextElement {
                                 f_r_pr = Some(Box::new(RichTextRunProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"t" => {
                                 f_cell_type = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14287,6 +16655,8 @@ impl FromXml for RichTextRunProperties {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -14294,7 +16664,9 @@ impl FromXml for RichTextRunProperties {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -14303,7 +16675,9 @@ impl FromXml for RichTextRunProperties {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -14333,6 +16707,8 @@ impl FromXml for RichString {
         let mut f_phonetic_pr = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -14343,24 +16719,44 @@ impl FromXml for RichString {
                         match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"r" => {
                                 f_reference
                                     .push(Box::new(RichTextElement::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rPh" => {
                                 f_r_ph.push(Box::new(PhoneticRun::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"phoneticPr" => {
                                 f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14373,23 +16769,43 @@ impl FromXml for RichString {
                         match e.local_name().as_ref() {
                             b"t" => {
                                 f_cell_type = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"r" => {
                                 f_reference
                                     .push(Box::new(RichTextElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rPh" => {
                                 f_r_ph.push(Box::new(PhoneticRun::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"phoneticPr" => {
                                 f_phonetic_pr =
                                     Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14494,6 +16910,8 @@ impl FromXml for RevisionHeaders {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -14555,12 +16973,20 @@ impl FromXml for RevisionHeaders {
                             b"header" => {
                                 f_header
                                     .push(Box::new(RevisionHeader::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14574,12 +17000,20 @@ impl FromXml for RevisionHeaders {
                             b"header" => {
                                 f_header
                                     .push(Box::new(RevisionHeader::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14623,6 +17057,8 @@ impl FromXml for Revisions {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -14630,7 +17066,9 @@ impl FromXml for Revisions {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -14639,7 +17077,9 @@ impl FromXml for Revisions {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -14733,6 +17173,8 @@ impl FromXml for RevisionHeader {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -14776,20 +17218,36 @@ impl FromXml for RevisionHeader {
                             b"sheetIdMap" => {
                                 f_sheet_id_map =
                                     Some(Box::new(CTSheetIdMap::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"reviewedList" => {
                                 f_reviewed_list =
                                     Some(Box::new(ReviewedRevisions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14803,20 +17261,36 @@ impl FromXml for RevisionHeader {
                             b"sheetIdMap" => {
                                 f_sheet_id_map =
                                     Some(Box::new(CTSheetIdMap::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"reviewedList" => {
                                 f_reviewed_list =
                                     Some(Box::new(ReviewedRevisions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14864,6 +17338,8 @@ impl FromXml for CTSheetIdMap {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -14891,12 +17367,20 @@ impl FromXml for CTSheetIdMap {
                         match e.local_name().as_ref() {
                             b"sheetId" => {
                                 f_sheet_id.push(Box::new(CTSheetId::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -14909,12 +17393,20 @@ impl FromXml for CTSheetIdMap {
                         match e.local_name().as_ref() {
                             b"sheetId" => {
                                 f_sheet_id.push(Box::new(CTSheetId::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -14998,6 +17490,8 @@ impl FromXml for ReviewedRevisions {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -15025,12 +17519,20 @@ impl FromXml for ReviewedRevisions {
                         match e.local_name().as_ref() {
                             b"reviewed" => {
                                 f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -15043,12 +17545,20 @@ impl FromXml for ReviewedRevisions {
                         match e.local_name().as_ref() {
                             b"reviewed" => {
                                 f_reviewed.push(Box::new(Reviewed::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -15448,6 +17958,8 @@ impl FromXml for RevisionSheetRename {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -15491,12 +18003,20 @@ impl FromXml for RevisionSheetRename {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -15510,12 +18030,20 @@ impl FromXml for RevisionSheetRename {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -15650,6 +18178,8 @@ impl FromXml for RevisionCellChange {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -15716,24 +18246,44 @@ impl FromXml for RevisionCellChange {
                         match e.local_name().as_ref() {
                             b"oc" => {
                                 f_oc = Some(Box::new(Cell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"nc" => {
                                 f_nc = Some(Box::new(Cell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"ndxf" => {
                                 f_ndxf = Some(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -15746,23 +18296,43 @@ impl FromXml for RevisionCellChange {
                         match e.local_name().as_ref() {
                             b"oc" => {
                                 f_oc = Some(Box::new(Cell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"nc" => {
                                 f_nc = Some(Box::new(Cell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"ndxf" => {
                                 f_ndxf =
                                     Some(Box::new(DifferentialFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -15821,6 +18391,8 @@ impl FromXml for RevisionFormatting {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -15865,16 +18437,28 @@ impl FromXml for RevisionFormatting {
                                 f_dxf = Some(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -15888,16 +18472,28 @@ impl FromXml for RevisionFormatting {
                             b"dxf" => {
                                 f_dxf =
                                     Some(Box::new(DifferentialFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -16154,6 +18750,8 @@ impl FromXml for RevisionDefinedName {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -16250,19 +18848,35 @@ impl FromXml for RevisionDefinedName {
                         match e.local_name().as_ref() {
                             b"formula" => {
                                 f_formula = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oldFormula" => {
                                 f_old_formula = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -16275,19 +18889,35 @@ impl FromXml for RevisionDefinedName {
                         match e.local_name().as_ref() {
                             b"formula" => {
                                 f_formula = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oldFormula" => {
                                 f_old_formula = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -16471,6 +19101,8 @@ impl FromXml for Users {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -16499,12 +19131,20 @@ impl FromXml for Users {
                             b"userInfo" => {
                                 f_user_info
                                     .push(Box::new(SharedUser::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -16517,12 +19157,20 @@ impl FromXml for Users {
                         match e.local_name().as_ref() {
                             b"userInfo" => {
                                 f_user_info.push(Box::new(SharedUser::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -16562,6 +19210,8 @@ impl FromXml for SharedUser {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -16599,12 +19249,20 @@ impl FromXml for SharedUser {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -16618,12 +19276,20 @@ impl FromXml for SharedUser {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -16687,6 +19353,8 @@ impl FromXml for CTMacrosheet {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -16698,119 +19366,231 @@ impl FromXml for CTMacrosheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimension" => {
                                 f_dimension =
                                     Some(Box::new(SheetDimension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cols" => {
                                 f_cols.push(Box::new(Columns::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetData" => {
                                 f_sheet_data =
                                     Some(Box::new(SheetData::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dataConsolidate" => {
                                 f_data_consolidate =
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"phoneticPr" => {
                                 f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
                                     ConditionalFormatting::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customProperties" => {
                                 f_custom_properties = Some(Box::new(CTCustomProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -16824,117 +19604,229 @@ impl FromXml for CTMacrosheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimension" => {
                                 f_dimension =
                                     Some(Box::new(SheetDimension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cols" => {
                                 f_cols.push(Box::new(Columns::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetData" => {
                                 f_sheet_data =
                                     Some(Box::new(SheetData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dataConsolidate" => {
                                 f_data_consolidate =
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"phoneticPr" => {
                                 f_phonetic_pr =
                                     Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
                                     ConditionalFormatting::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customProperties" => {
                                 f_custom_properties =
                                     Some(Box::new(CTCustomProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -17007,6 +19899,8 @@ impl FromXml for CTDialogsheet {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -17018,71 +19912,139 @@ impl FromXml for CTDialogsheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"controls" => {
                                 f_controls = Some(Box::new(Controls::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -17096,71 +20058,139 @@ impl FromXml for CTDialogsheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"controls" => {
                                 f_controls = Some(Box::new(Controls::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -17279,6 +20309,8 @@ impl FromXml for Worksheet {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -17291,201 +20323,361 @@ impl FromXml for Worksheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimension" => {
                                 f_dimension =
                                     Some(Box::new(SheetDimension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cols" => {
                                 f_cols.push(Box::new(Columns::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetData" => {
                                 f_sheet_data =
                                     Some(Box::new(SheetData::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas")]
                             b"sheetCalcPr" => {
                                 f_sheet_calc_pr = Some(Box::new(SheetCalcProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"protectedRanges" => {
                                 f_protected_ranges =
                                     Some(Box::new(ProtectedRanges::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"scenarios" => {
                                 f_scenarios =
                                     Some(Box::new(Scenarios::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"dataConsolidate" => {
                                 f_data_consolidate =
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-structure")]
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mergeCells" => {
                                 f_merged_cells =
                                     Some(Box::new(MergedCells::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-i18n")]
                             b"phoneticPr" => {
                                 f_phonetic_pr = Some(Box::new(PhoneticProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
                                     ConditionalFormatting::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"dataValidations" => {
                                 f_data_validations =
                                     Some(Box::new(DataValidations::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-hyperlinks")]
                             b"hyperlinks" => {
                                 f_hyperlinks =
                                     Some(Box::new(Hyperlinks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"customProperties" => {
                                 f_custom_properties = Some(Box::new(CTCustomProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"cellWatches" => {
                                 f_cell_watches =
                                     Some(Box::new(CellWatches::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"ignoredErrors" => {
                                 f_ignored_errors =
                                     Some(Box::new(IgnoredErrors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTags" => {
                                 f_smart_tags =
                                     Some(Box::new(SmartTags::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-comments")]
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"controls" => {
                                 f_controls = Some(Box::new(Controls::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishItems" => {
                                 f_web_publish_items =
                                     Some(Box::new(WebPublishItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableParts" => {
                                 f_table_parts =
                                     Some(Box::new(TableParts::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -17500,199 +20692,359 @@ impl FromXml for Worksheet {
                             b"sheetPr" => {
                                 f_sheet_properties =
                                     Some(Box::new(SheetProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"dimension" => {
                                 f_dimension =
                                     Some(Box::new(SheetDimension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(SheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"sheetFormatPr" => {
                                 f_sheet_format =
                                     Some(Box::new(SheetFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cols" => {
                                 f_cols.push(Box::new(Columns::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetData" => {
                                 f_sheet_data =
                                     Some(Box::new(SheetData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas")]
                             b"sheetCalcPr" => {
                                 f_sheet_calc_pr = Some(Box::new(SheetCalcProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"sheetProtection" => {
                                 f_sheet_protection =
                                     Some(Box::new(SheetProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"protectedRanges" => {
                                 f_protected_ranges =
                                     Some(Box::new(ProtectedRanges::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"scenarios" => {
                                 f_scenarios =
                                     Some(Box::new(Scenarios::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-filtering")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"dataConsolidate" => {
                                 f_data_consolidate =
                                     Some(Box::new(CTDataConsolidate::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-structure")]
                             b"customSheetViews" => {
                                 f_custom_sheet_views =
                                     Some(Box::new(CustomSheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mergeCells" => {
                                 f_merged_cells =
                                     Some(Box::new(MergedCells::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-i18n")]
                             b"phoneticPr" => {
                                 f_phonetic_pr =
                                     Some(Box::new(PhoneticProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"conditionalFormatting" => {
                                 f_conditional_formatting.push(Box::new(
                                     ConditionalFormatting::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"dataValidations" => {
                                 f_data_validations =
                                     Some(Box::new(DataValidations::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-hyperlinks")]
                             b"hyperlinks" => {
                                 f_hyperlinks =
                                     Some(Box::new(Hyperlinks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"customProperties" => {
                                 f_custom_properties =
                                     Some(Box::new(CTCustomProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"cellWatches" => {
                                 f_cell_watches =
                                     Some(Box::new(CellWatches::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"ignoredErrors" => {
                                 f_ignored_errors =
                                     Some(Box::new(IgnoredErrors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTags" => {
                                 f_smart_tags =
                                     Some(Box::new(SmartTags::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-comments")]
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-drawings")]
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"oleObjects" => {
                                 f_ole_objects =
                                     Some(Box::new(OleObjects::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"controls" => {
                                 f_controls = Some(Box::new(Controls::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishItems" => {
                                 f_web_publish_items =
                                     Some(Box::new(WebPublishItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableParts" => {
                                 f_table_parts =
                                     Some(Box::new(TableParts::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -17797,6 +21149,8 @@ impl FromXml for SheetData {
         let mut f_row = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -17807,12 +21161,20 @@ impl FromXml for SheetData {
                         match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(Row::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -17825,12 +21187,20 @@ impl FromXml for SheetData {
                         match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(Row::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -17996,6 +21366,8 @@ impl FromXml for Columns {
         let mut f_col = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -18006,12 +21378,20 @@ impl FromXml for Columns {
                         match e.local_name().as_ref() {
                             b"col" => {
                                 f_col.push(Box::new(Column::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18024,12 +21404,20 @@ impl FromXml for Columns {
                         match e.local_name().as_ref() {
                             b"col" => {
                                 f_col.push(Box::new(Column::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -18209,6 +21597,8 @@ impl FromXml for Row {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -18278,17 +21668,29 @@ impl FromXml for Row {
                         match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(Cell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18301,17 +21703,29 @@ impl FromXml for Row {
                         match e.local_name().as_ref() {
                             b"c" => {
                                 f_cells.push(Box::new(Cell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -18382,6 +21796,8 @@ impl FromXml for Cell {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -18428,23 +21844,43 @@ impl FromXml for Cell {
                             b"f" => {
                                 f_formula =
                                     Some(Box::new(CellFormula::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"v" => {
                                 f_value = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"is" => {
                                 f_is = Some(Box::new(RichString::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18458,23 +21894,43 @@ impl FromXml for Cell {
                             b"f" => {
                                 f_formula =
                                     Some(Box::new(CellFormula::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"v" => {
                                 f_value = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"is" => {
                                 f_is = Some(Box::new(RichString::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -18533,6 +21989,8 @@ impl FromXml for SheetProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -18584,21 +22042,37 @@ impl FromXml for SheetProperties {
                         match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"outlinePr" => {
                                 f_outline_pr =
                                     Some(Box::new(OutlineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetUpPr" => {
                                 f_page_set_up_pr = Some(Box::new(PageSetupProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18611,21 +22085,37 @@ impl FromXml for SheetProperties {
                         match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"outlinePr" => {
                                 f_outline_pr =
                                     Some(Box::new(OutlineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetUpPr" => {
                                 f_page_set_up_pr = Some(Box::new(PageSetupProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -18718,6 +22208,8 @@ impl FromXml for SheetViews {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -18729,16 +22221,28 @@ impl FromXml for SheetViews {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(SheetView::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18751,16 +22255,28 @@ impl FromXml for SheetViews {
                         match e.local_name().as_ref() {
                             b"sheetView" => {
                                 f_sheet_view.push(Box::new(SheetView::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -18832,6 +22348,8 @@ impl FromXml for SheetView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -18927,25 +22445,45 @@ impl FromXml for SheetView {
                             #[cfg(feature = "sml-structure")]
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"selection" => {
                                 f_selection.push(Box::new(Selection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-pivot")]
                             b"pivotSelection" => {
                                 f_pivot_selection
                                     .push(Box::new(CTPivotSelection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -18959,25 +22497,45 @@ impl FromXml for SheetView {
                             #[cfg(feature = "sml-structure")]
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"selection" => {
                                 f_selection.push(Box::new(Selection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-pivot")]
                             b"pivotSelection" => {
                                 f_pivot_selection
                                     .push(Box::new(CTPivotSelection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -19149,6 +22707,8 @@ impl FromXml for CTPivotSelection {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19222,12 +22782,20 @@ impl FromXml for CTPivotSelection {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -19241,12 +22809,20 @@ impl FromXml for CTPivotSelection {
                             b"pivotArea" => {
                                 f_pivot_area =
                                     Some(Box::new(PivotArea::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -19362,6 +22938,8 @@ impl FromXml for PageBreaks {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19392,12 +22970,20 @@ impl FromXml for PageBreaks {
                         match e.local_name().as_ref() {
                             b"brk" => {
                                 f_brk.push(Box::new(PageBreak::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -19410,12 +22996,20 @@ impl FromXml for PageBreaks {
                         match e.local_name().as_ref() {
                             b"brk" => {
                                 f_brk.push(Box::new(PageBreak::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -19638,6 +23232,8 @@ impl FromXml for CTDataConsolidate {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19678,12 +23274,20 @@ impl FromXml for CTDataConsolidate {
                             b"dataRefs" => {
                                 f_data_refs =
                                     Some(Box::new(CTDataRefs::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -19697,12 +23301,20 @@ impl FromXml for CTDataConsolidate {
                             b"dataRefs" => {
                                 f_data_refs =
                                     Some(Box::new(CTDataRefs::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -19743,6 +23355,8 @@ impl FromXml for CTDataRefs {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19770,12 +23384,20 @@ impl FromXml for CTDataRefs {
                         match e.local_name().as_ref() {
                             b"dataRef" => {
                                 f_data_ref.push(Box::new(CTDataRef::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -19788,12 +23410,20 @@ impl FromXml for CTDataRefs {
                         match e.local_name().as_ref() {
                             b"dataRef" => {
                                 f_data_ref.push(Box::new(CTDataRef::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -19887,6 +23517,8 @@ impl FromXml for MergedCells {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19915,12 +23547,20 @@ impl FromXml for MergedCells {
                             b"mergeCell" => {
                                 f_merge_cell
                                     .push(Box::new(MergedCell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -19934,12 +23574,20 @@ impl FromXml for MergedCells {
                             b"mergeCell" => {
                                 f_merge_cell
                                     .push(Box::new(MergedCell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20021,6 +23669,8 @@ impl FromXml for SmartTags {
         let mut f_cell_smart_tags = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -20032,12 +23682,20 @@ impl FromXml for SmartTags {
                             b"cellSmartTags" => {
                                 f_cell_smart_tags
                                     .push(Box::new(CellSmartTags::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20051,12 +23709,20 @@ impl FromXml for SmartTags {
                             b"cellSmartTags" => {
                                 f_cell_smart_tags
                                     .push(Box::new(CellSmartTags::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20090,6 +23756,8 @@ impl FromXml for CellSmartTags {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -20118,12 +23786,20 @@ impl FromXml for CellSmartTags {
                             b"cellSmartTag" => {
                                 f_cell_smart_tag
                                     .push(Box::new(CellSmartTag::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20137,12 +23813,20 @@ impl FromXml for CellSmartTags {
                             b"cellSmartTag" => {
                                 f_cell_smart_tag
                                     .push(Box::new(CellSmartTag::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20181,6 +23865,8 @@ impl FromXml for CellSmartTag {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -20215,12 +23901,20 @@ impl FromXml for CellSmartTag {
                             b"cellSmartTagPr" => {
                                 f_cell_smart_tag_pr
                                     .push(Box::new(CTCellSmartTagPr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20234,12 +23928,20 @@ impl FromXml for CellSmartTag {
                             b"cellSmartTagPr" => {
                                 f_cell_smart_tag_pr
                                     .push(Box::new(CTCellSmartTagPr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20326,6 +24028,8 @@ impl FromXml for Drawing {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -20333,7 +24037,9 @@ impl FromXml for Drawing {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -20342,7 +24048,9 @@ impl FromXml for Drawing {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -20368,6 +24076,8 @@ impl FromXml for LegacyDrawing {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -20375,7 +24085,9 @@ impl FromXml for LegacyDrawing {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -20384,7 +24096,9 @@ impl FromXml for LegacyDrawing {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -20543,6 +24257,8 @@ impl FromXml for CustomSheetViews {
         let mut f_custom_sheet_view = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -20554,12 +24270,20 @@ impl FromXml for CustomSheetViews {
                             b"customSheetView" => {
                                 f_custom_sheet_view
                                     .push(Box::new(CustomSheetView::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20573,12 +24297,20 @@ impl FromXml for CustomSheetViews {
                             b"customSheetView" => {
                                 f_custom_sheet_view
                                     .push(Box::new(CustomSheetView::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20640,6 +24372,8 @@ impl FromXml for CustomSheetView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -20724,48 +24458,92 @@ impl FromXml for CustomSheetView {
                         match e.local_name().as_ref() {
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"selection" => {
                                 f_selection =
                                     Some(Box::new(Selection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20778,48 +24556,92 @@ impl FromXml for CustomSheetView {
                         match e.local_name().as_ref() {
                             b"pane" => {
                                 f_pane = Some(Box::new(Pane::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"selection" => {
                                 f_selection =
                                     Some(Box::new(Selection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"rowBreaks" => {
                                 f_row_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"colBreaks" => {
                                 f_col_breaks =
                                     Some(Box::new(PageBreaks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"printOptions" => {
                                 f_print_options =
                                     Some(Box::new(PrintOptions::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup =
                                     Some(Box::new(PageSetup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -20887,6 +24709,8 @@ impl FromXml for DataValidations {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -20924,12 +24748,20 @@ impl FromXml for DataValidations {
                             b"dataValidation" => {
                                 f_data_validation
                                     .push(Box::new(DataValidation::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -20943,12 +24775,20 @@ impl FromXml for DataValidations {
                             b"dataValidation" => {
                                 f_data_validation
                                     .push(Box::new(DataValidation::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21016,6 +24856,8 @@ impl FromXml for DataValidation {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -21093,16 +24935,28 @@ impl FromXml for DataValidation {
                             #[cfg(feature = "sml-validation")]
                             b"formula1" => {
                                 f_formula1 = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"formula2" => {
                                 f_formula2 = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21116,16 +24970,28 @@ impl FromXml for DataValidation {
                             #[cfg(feature = "sml-validation")]
                             b"formula1" => {
                                 f_formula1 = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-validation")]
                             b"formula2" => {
                                 f_formula2 = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21197,6 +25063,8 @@ impl FromXml for ConditionalFormatting {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -21231,17 +25099,29 @@ impl FromXml for ConditionalFormatting {
                             b"cfRule" => {
                                 f_cf_rule
                                     .push(Box::new(ConditionalRule::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21256,17 +25136,29 @@ impl FromXml for ConditionalFormatting {
                             b"cfRule" => {
                                 f_cf_rule
                                     .push(Box::new(ConditionalRule::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21343,6 +25235,8 @@ impl FromXml for ConditionalRule {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -21420,30 +25314,54 @@ impl FromXml for ConditionalRule {
                             #[cfg(feature = "sml-styling")]
                             b"formula" => {
                                 f_formula.push(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"colorScale" => {
                                 f_color_scale =
                                     Some(Box::new(ColorScale::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"dataBar" => {
                                 f_data_bar = Some(Box::new(DataBar::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"iconSet" => {
                                 f_icon_set = Some(Box::new(IconSet::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21457,30 +25375,54 @@ impl FromXml for ConditionalRule {
                             #[cfg(feature = "sml-styling")]
                             b"formula" => {
                                 f_formula.push(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"colorScale" => {
                                 f_color_scale =
                                     Some(Box::new(ColorScale::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"dataBar" => {
                                 f_data_bar = Some(Box::new(DataBar::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"iconSet" => {
                                 f_icon_set = Some(Box::new(IconSet::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21549,6 +25491,8 @@ impl FromXml for Hyperlinks {
         let mut f_hyperlink = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -21559,12 +25503,20 @@ impl FromXml for Hyperlinks {
                         match e.local_name().as_ref() {
                             b"hyperlink" => {
                                 f_hyperlink.push(Box::new(Hyperlink::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21577,12 +25529,20 @@ impl FromXml for Hyperlinks {
                         match e.local_name().as_ref() {
                             b"hyperlink" => {
                                 f_hyperlink.push(Box::new(Hyperlink::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21711,6 +25671,8 @@ impl FromXml for CellFormula {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -21782,7 +25744,11 @@ impl FromXml for CellFormula {
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21797,7 +25763,11 @@ impl FromXml for CellFormula {
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21855,6 +25825,8 @@ impl FromXml for ColorScale {
         let mut f_color = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -21867,15 +25839,27 @@ impl FromXml for ColorScale {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21890,15 +25874,27 @@ impl FromXml for ColorScale {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -21936,6 +25932,8 @@ impl FromXml for DataBar {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -21971,15 +25969,27 @@ impl FromXml for DataBar {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -21994,15 +26004,27 @@ impl FromXml for DataBar {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -22045,6 +26067,8 @@ impl FromXml for IconSet {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -22083,12 +26107,20 @@ impl FromXml for IconSet {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -22103,12 +26135,20 @@ impl FromXml for IconSet {
                                 f_cfvo.push(Box::new(ConditionalFormatValue::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -22150,6 +26190,8 @@ impl FromXml for ConditionalFormatValue {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -22184,12 +26226,20 @@ impl FromXml for ConditionalFormatValue {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -22203,12 +26253,20 @@ impl FromXml for ConditionalFormatValue {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -22608,6 +26666,8 @@ impl FromXml for HeaderFooter {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -22649,32 +26709,60 @@ impl FromXml for HeaderFooter {
                             #[cfg(feature = "sml-layout")]
                             b"oddHeader" => {
                                 f_odd_header = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"oddFooter" => {
                                 f_odd_footer = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"evenHeader" => {
                                 f_even_header = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"evenFooter" => {
                                 f_even_footer = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"firstHeader" => {
                                 f_first_header = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"firstFooter" => {
                                 f_first_footer = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -22688,32 +26776,60 @@ impl FromXml for HeaderFooter {
                             #[cfg(feature = "sml-layout")]
                             b"oddHeader" => {
                                 f_odd_header = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"oddFooter" => {
                                 f_odd_footer = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"evenHeader" => {
                                 f_even_header = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"evenFooter" => {
                                 f_even_footer = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"firstHeader" => {
                                 f_first_header = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-layout")]
                             b"firstFooter" => {
                                 f_first_footer = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -22770,6 +26886,8 @@ impl FromXml for Scenarios {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -22803,12 +26921,20 @@ impl FromXml for Scenarios {
                         match e.local_name().as_ref() {
                             b"scenario" => {
                                 f_scenario.push(Box::new(Scenario::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -22821,12 +26947,20 @@ impl FromXml for Scenarios {
                         match e.local_name().as_ref() {
                             b"scenario" => {
                                 f_scenario.push(Box::new(Scenario::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23009,6 +27143,8 @@ impl FromXml for ProtectedRanges {
         let mut f_protected_range = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -23020,12 +27156,20 @@ impl FromXml for ProtectedRanges {
                             b"protectedRange" => {
                                 f_protected_range
                                     .push(Box::new(ProtectedRange::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23039,12 +27183,20 @@ impl FromXml for ProtectedRanges {
                             b"protectedRange" => {
                                 f_protected_range
                                     .push(Box::new(ProtectedRange::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23166,6 +27318,8 @@ impl FromXml for Scenario {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -23209,12 +27363,20 @@ impl FromXml for Scenario {
                             b"inputCells" => {
                                 f_input_cells
                                     .push(Box::new(InputCells::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23228,12 +27390,20 @@ impl FromXml for Scenario {
                             b"inputCells" => {
                                 f_input_cells
                                     .push(Box::new(InputCells::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23339,6 +27509,8 @@ impl FromXml for CellWatches {
         let mut f_cell_watch = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -23350,12 +27522,20 @@ impl FromXml for CellWatches {
                             b"cellWatch" => {
                                 f_cell_watch
                                     .push(Box::new(CellWatch::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23368,12 +27548,20 @@ impl FromXml for CellWatches {
                         match e.local_name().as_ref() {
                             b"cellWatch" => {
                                 f_cell_watch.push(Box::new(CellWatch::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23464,6 +27652,8 @@ impl FromXml for Chartsheet {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -23476,68 +27666,128 @@ impl FromXml for Chartsheet {
                                 f_sheet_properties = Some(Box::new(
                                     ChartsheetProperties::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(ChartsheetViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection = Some(Box::new(
                                     ChartsheetProtection::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views = Some(Box::new(
                                     CustomChartsheetViews::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"webPublishItems" => {
                                 f_web_publish_items =
                                     Some(Box::new(WebPublishItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23552,68 +27802,128 @@ impl FromXml for Chartsheet {
                                 f_sheet_properties = Some(Box::new(
                                     ChartsheetProperties::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetViews" => {
                                 f_sheet_views =
                                     Some(Box::new(ChartsheetViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetProtection" => {
                                 f_sheet_protection = Some(Box::new(
                                     ChartsheetProtection::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"customSheetViews" => {
                                 f_custom_sheet_views = Some(Box::new(
                                     CustomChartsheetViews::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawing" => {
                                 f_drawing = Some(Box::new(Drawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawing" => {
                                 f_legacy_drawing =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"legacyDrawingHF" => {
                                 f_legacy_drawing_h_f =
                                     Some(Box::new(LegacyDrawing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"drawingHF" => {
                                 f_drawing_h_f = Some(Box::new(DrawingHeaderFooter::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"picture" => {
                                 f_picture = Some(Box::new(SheetBackgroundPicture::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"webPublishItems" => {
                                 f_web_publish_items =
                                     Some(Box::new(WebPublishItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23663,6 +27973,8 @@ impl FromXml for ChartsheetProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -23693,12 +28005,20 @@ impl FromXml for ChartsheetProperties {
                         match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23711,12 +28031,20 @@ impl FromXml for ChartsheetProperties {
                         match e.local_name().as_ref() {
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23752,6 +28080,8 @@ impl FromXml for ChartsheetViews {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -23763,16 +28093,28 @@ impl FromXml for ChartsheetViews {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(ChartsheetView::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23786,16 +28128,28 @@ impl FromXml for ChartsheetViews {
                             b"sheetView" => {
                                 f_sheet_view
                                     .push(Box::new(ChartsheetView::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -23833,6 +28187,8 @@ impl FromXml for ChartsheetView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -23870,12 +28226,20 @@ impl FromXml for ChartsheetView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -23889,12 +28253,20 @@ impl FromXml for ChartsheetView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24111,6 +28483,8 @@ impl FromXml for CustomChartsheetViews {
         let mut f_custom_sheet_view = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -24123,12 +28497,20 @@ impl FromXml for CustomChartsheetViews {
                                 f_custom_sheet_view.push(Box::new(CustomChartsheetView::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24143,12 +28525,20 @@ impl FromXml for CustomChartsheetViews {
                                 f_custom_sheet_view.push(Box::new(CustomChartsheetView::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24187,6 +28577,8 @@ impl FromXml for CustomChartsheetView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -24224,21 +28616,37 @@ impl FromXml for CustomChartsheetView {
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24252,21 +28660,37 @@ impl FromXml for CustomChartsheetView {
                             b"pageMargins" => {
                                 f_page_margins =
                                     Some(Box::new(PageMargins::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"pageSetup" => {
                                 f_page_setup = Some(Box::new(ChartsheetPageSetup::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"headerFooter" => {
                                 f_header_footer =
                                     Some(Box::new(HeaderFooter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24305,6 +28729,8 @@ impl FromXml for CTCustomProperties {
         let mut f_custom_pr = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -24316,12 +28742,20 @@ impl FromXml for CTCustomProperties {
                             b"customPr" => {
                                 f_custom_pr
                                     .push(Box::new(CTCustomProperty::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24335,12 +28769,20 @@ impl FromXml for CTCustomProperties {
                             b"customPr" => {
                                 f_custom_pr
                                     .push(Box::new(CTCustomProperty::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24418,6 +28860,8 @@ impl FromXml for OleObjects {
         let mut f_ole_object = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -24429,12 +28873,20 @@ impl FromXml for OleObjects {
                             b"oleObject" => {
                                 f_ole_object
                                     .push(Box::new(OleObject::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24447,12 +28899,20 @@ impl FromXml for OleObjects {
                         match e.local_name().as_ref() {
                             b"oleObject" => {
                                 f_ole_object.push(Box::new(OleObject::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24491,6 +28951,8 @@ impl FromXml for OleObject {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -24534,12 +28996,20 @@ impl FromXml for OleObject {
                             b"objectPr" => {
                                 f_object_pr =
                                     Some(Box::new(ObjectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24553,12 +29023,20 @@ impl FromXml for OleObject {
                             b"objectPr" => {
                                 f_object_pr =
                                     Some(Box::new(ObjectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24611,6 +29089,8 @@ impl FromXml for ObjectProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -24669,12 +29149,20 @@ impl FromXml for ObjectProperties {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24688,12 +29176,20 @@ impl FromXml for ObjectProperties {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24740,6 +29236,8 @@ impl FromXml for WebPublishItems {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -24768,12 +29266,20 @@ impl FromXml for WebPublishItems {
                             b"webPublishItem" => {
                                 f_web_publish_item
                                     .push(Box::new(WebPublishItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24787,12 +29293,20 @@ impl FromXml for WebPublishItems {
                             b"webPublishItem" => {
                                 f_web_publish_item
                                     .push(Box::new(WebPublishItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24910,6 +29424,8 @@ impl FromXml for Controls {
         let mut f_control = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -24920,12 +29436,20 @@ impl FromXml for Controls {
                         match e.local_name().as_ref() {
                             b"control" => {
                                 f_control.push(Box::new(Control::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -24938,12 +29462,20 @@ impl FromXml for Controls {
                         match e.local_name().as_ref() {
                             b"control" => {
                                 f_control.push(Box::new(Control::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -24978,6 +29510,8 @@ impl FromXml for Control {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -25009,12 +29543,20 @@ impl FromXml for Control {
                             b"controlPr" => {
                                 f_control_pr =
                                     Some(Box::new(CTControlPr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25028,12 +29570,20 @@ impl FromXml for Control {
                             b"controlPr" => {
                                 f_control_pr =
                                     Some(Box::new(CTControlPr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25085,6 +29635,8 @@ impl FromXml for CTControlPr {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -25152,12 +29704,20 @@ impl FromXml for CTControlPr {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25171,12 +29731,20 @@ impl FromXml for CTControlPr {
                             b"anchor" => {
                                 f_anchor =
                                     Some(Box::new(ObjectAnchor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25224,6 +29792,8 @@ impl FromXml for IgnoredErrors {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -25235,16 +29805,28 @@ impl FromXml for IgnoredErrors {
                             b"ignoredError" => {
                                 f_ignored_error
                                     .push(Box::new(IgnoredError::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25258,16 +29840,28 @@ impl FromXml for IgnoredErrors {
                             b"ignoredError" => {
                                 f_ignored_error
                                     .push(Box::new(IgnoredError::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25395,6 +29989,8 @@ impl FromXml for TableParts {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -25423,12 +30019,20 @@ impl FromXml for TableParts {
                             b"tablePart" => {
                                 f_table_part
                                     .push(Box::new(TablePart::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25441,12 +30045,20 @@ impl FromXml for TableParts {
                         match e.local_name().as_ref() {
                             b"tablePart" => {
                                 f_table_part.push(Box::new(TablePart::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25479,6 +30091,8 @@ impl FromXml for TablePart {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -25486,7 +30100,9 @@ impl FromXml for TablePart {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -25495,7 +30111,9 @@ impl FromXml for TablePart {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -25528,6 +30146,8 @@ impl FromXml for Metadata {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -25539,36 +30159,68 @@ impl FromXml for Metadata {
                             b"metadataTypes" => {
                                 f_metadata_types =
                                     Some(Box::new(MetadataTypes::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"metadataStrings" => {
                                 f_metadata_strings =
                                     Some(Box::new(MetadataStrings::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mdxMetadata" => {
                                 f_mdx_metadata =
                                     Some(Box::new(CTMdxMetadata::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"futureMetadata" => {
                                 f_future_metadata
                                     .push(Box::new(CTFutureMetadata::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cellMetadata" => {
                                 f_cell_metadata =
                                     Some(Box::new(MetadataBlocks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"valueMetadata" => {
                                 f_value_metadata =
                                     Some(Box::new(MetadataBlocks::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25582,36 +30234,68 @@ impl FromXml for Metadata {
                             b"metadataTypes" => {
                                 f_metadata_types =
                                     Some(Box::new(MetadataTypes::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"metadataStrings" => {
                                 f_metadata_strings =
                                     Some(Box::new(MetadataStrings::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mdxMetadata" => {
                                 f_mdx_metadata =
                                     Some(Box::new(CTMdxMetadata::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"futureMetadata" => {
                                 f_future_metadata
                                     .push(Box::new(CTFutureMetadata::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"cellMetadata" => {
                                 f_cell_metadata =
                                     Some(Box::new(MetadataBlocks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"valueMetadata" => {
                                 f_value_metadata =
                                     Some(Box::new(MetadataBlocks::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25651,6 +30335,8 @@ impl FromXml for MetadataTypes {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -25679,12 +30365,20 @@ impl FromXml for MetadataTypes {
                             b"metadataType" => {
                                 f_metadata_type
                                     .push(Box::new(MetadataType::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25698,12 +30392,20 @@ impl FromXml for MetadataTypes {
                             b"metadataType" => {
                                 f_metadata_type
                                     .push(Box::new(MetadataType::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -25923,6 +30625,8 @@ impl FromXml for MetadataBlocks {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -25950,12 +30654,20 @@ impl FromXml for MetadataBlocks {
                         match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -25968,12 +30680,20 @@ impl FromXml for MetadataBlocks {
                         match e.local_name().as_ref() {
                             b"bk" => {
                                 f_bk.push(Box::new(MetadataBlock::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26007,6 +30727,8 @@ impl FromXml for MetadataBlock {
         let mut f_rc = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -26017,12 +30739,20 @@ impl FromXml for MetadataBlock {
                         match e.local_name().as_ref() {
                             b"rc" => {
                                 f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26035,12 +30765,20 @@ impl FromXml for MetadataBlock {
                         match e.local_name().as_ref() {
                             b"rc" => {
                                 f_rc.push(Box::new(MetadataRecord::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26128,6 +30866,8 @@ impl FromXml for CTFutureMetadata {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -26160,16 +30900,28 @@ impl FromXml for CTFutureMetadata {
                                 f_bk.push(Box::new(CTFutureMetadataBlock::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26184,16 +30936,28 @@ impl FromXml for CTFutureMetadata {
                                 f_bk.push(Box::new(CTFutureMetadataBlock::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26229,6 +30993,8 @@ impl FromXml for CTFutureMetadataBlock {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -26240,12 +31006,20 @@ impl FromXml for CTFutureMetadataBlock {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26259,12 +31033,20 @@ impl FromXml for CTFutureMetadataBlock {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26298,6 +31080,8 @@ impl FromXml for CTMdxMetadata {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -26325,12 +31109,20 @@ impl FromXml for CTMdxMetadata {
                         match e.local_name().as_ref() {
                             b"mdx" => {
                                 f_mdx.push(Box::new(CTMdx::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26343,12 +31135,20 @@ impl FromXml for CTMdxMetadata {
                         match e.local_name().as_ref() {
                             b"mdx" => {
                                 f_mdx.push(Box::new(CTMdx::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26446,6 +31246,8 @@ impl FromXml for CTMdxTuple {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -26502,12 +31304,20 @@ impl FromXml for CTMdxTuple {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26522,12 +31332,20 @@ impl FromXml for CTMdxTuple {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26575,6 +31393,8 @@ impl FromXml for CTMdxSet {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -26610,12 +31430,20 @@ impl FromXml for CTMdxSet {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26630,12 +31458,20 @@ impl FromXml for CTMdxSet {
                                 f_n.push(Box::new(CTMetadataStringIndex::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26835,6 +31671,8 @@ impl FromXml for MetadataStrings {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -26863,12 +31701,20 @@ impl FromXml for MetadataStrings {
                             b"s" => {
                                 f_style_index
                                     .push(Box::new(CTXStringElement::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26882,12 +31728,20 @@ impl FromXml for MetadataStrings {
                             b"s" => {
                                 f_style_index
                                     .push(Box::new(CTXStringElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26921,6 +31775,8 @@ impl FromXml for SingleXmlCells {
         let mut f_single_xml_cell = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -26932,12 +31788,20 @@ impl FromXml for SingleXmlCells {
                             b"singleXmlCell" => {
                                 f_single_xml_cell
                                     .push(Box::new(SingleXmlCell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -26951,12 +31815,20 @@ impl FromXml for SingleXmlCells {
                             b"singleXmlCell" => {
                                 f_single_xml_cell
                                     .push(Box::new(SingleXmlCell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -26993,6 +31865,8 @@ impl FromXml for SingleXmlCell {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27027,16 +31901,28 @@ impl FromXml for SingleXmlCell {
                             b"xmlCellPr" => {
                                 f_xml_cell_pr =
                                     Some(Box::new(XmlCellProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27050,16 +31936,28 @@ impl FromXml for SingleXmlCell {
                             b"xmlCellPr" => {
                                 f_xml_cell_pr =
                                     Some(Box::new(XmlCellProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27103,6 +32001,8 @@ impl FromXml for XmlCellProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27134,16 +32034,28 @@ impl FromXml for XmlCellProperties {
                             b"xmlPr" => {
                                 f_xml_pr =
                                     Some(Box::new(XmlProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27157,16 +32069,28 @@ impl FromXml for XmlCellProperties {
                             b"xmlPr" => {
                                 f_xml_pr =
                                     Some(Box::new(XmlProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27207,6 +32131,8 @@ impl FromXml for XmlProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27241,12 +32167,20 @@ impl FromXml for XmlProperties {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27260,12 +32194,20 @@ impl FromXml for XmlProperties {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27323,6 +32265,8 @@ impl FromXml for Stylesheet {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -27335,59 +32279,107 @@ impl FromXml for Stylesheet {
                             b"numFmts" => {
                                 f_num_fmts =
                                     Some(Box::new(NumberFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"fonts" => {
                                 f_fonts = Some(Box::new(Fonts::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"fills" => {
                                 f_fills = Some(Box::new(Fills::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"borders" => {
                                 f_borders = Some(Box::new(Borders::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellStyleXfs" => {
                                 f_cell_style_xfs =
                                     Some(Box::new(CellStyleFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellXfs" => {
                                 f_cell_xfs =
                                     Some(Box::new(CellFormats::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellStyles" => {
                                 f_cell_styles =
                                     Some(Box::new(CellStyles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"dxfs" => {
                                 f_dxfs = Some(Box::new(DifferentialFormats::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"tableStyles" => {
                                 f_table_styles =
                                     Some(Box::new(TableStyles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"colors" => {
                                 f_colors = Some(Box::new(Colors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27402,59 +32394,107 @@ impl FromXml for Stylesheet {
                             b"numFmts" => {
                                 f_num_fmts =
                                     Some(Box::new(NumberFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"fonts" => {
                                 f_fonts = Some(Box::new(Fonts::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"fills" => {
                                 f_fills = Some(Box::new(Fills::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"borders" => {
                                 f_borders = Some(Box::new(Borders::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellStyleXfs" => {
                                 f_cell_style_xfs =
                                     Some(Box::new(CellStyleFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellXfs" => {
                                 f_cell_xfs =
                                     Some(Box::new(CellFormats::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"cellStyles" => {
                                 f_cell_styles =
                                     Some(Box::new(CellStyles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"dxfs" => {
                                 f_dxfs = Some(Box::new(DifferentialFormats::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"tableStyles" => {
                                 f_table_styles =
                                     Some(Box::new(TableStyles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"colors" => {
                                 f_colors = Some(Box::new(Colors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27596,6 +32636,8 @@ impl FromXml for Borders {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27623,12 +32665,20 @@ impl FromXml for Borders {
                         match e.local_name().as_ref() {
                             b"border" => {
                                 f_border.push(Box::new(Border::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27641,12 +32691,20 @@ impl FromXml for Borders {
                         match e.local_name().as_ref() {
                             b"border" => {
                                 f_border.push(Box::new(Border::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27703,6 +32761,8 @@ impl FromXml for Border {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27740,51 +32800,91 @@ impl FromXml for Border {
                             b"start" => {
                                 f_start =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"end" => {
                                 f_end =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"left" => {
                                 f_left =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"right" => {
                                 f_right =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"top" => {
                                 f_top =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"bottom" => {
                                 f_bottom =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"diagonal" => {
                                 f_diagonal =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"vertical" => {
                                 f_vertical =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"horizontal" => {
                                 f_horizontal =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27798,51 +32898,91 @@ impl FromXml for Border {
                             b"start" => {
                                 f_start =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"end" => {
                                 f_end =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"left" => {
                                 f_left =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"right" => {
                                 f_right =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"top" => {
                                 f_top =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"bottom" => {
                                 f_bottom =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"diagonal" => {
                                 f_diagonal =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"vertical" => {
                                 f_vertical =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-styling")]
                             b"horizontal" => {
                                 f_horizontal =
                                     Some(Box::new(BorderProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -27899,6 +33039,8 @@ impl FromXml for BorderProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -27926,12 +33068,20 @@ impl FromXml for BorderProperties {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -27944,12 +33094,20 @@ impl FromXml for BorderProperties {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28038,6 +33196,8 @@ impl FromXml for Fonts {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28065,12 +33225,20 @@ impl FromXml for Fonts {
                         match e.local_name().as_ref() {
                             b"font" => {
                                 f_font.push(Box::new(Font::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28083,12 +33251,20 @@ impl FromXml for Fonts {
                         match e.local_name().as_ref() {
                             b"font" => {
                                 f_font.push(Box::new(Font::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28125,6 +33301,8 @@ impl FromXml for Fills {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28152,12 +33330,20 @@ impl FromXml for Fills {
                         match e.local_name().as_ref() {
                             b"fill" => {
                                 f_fill.push(Box::new(Fill::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28170,12 +33356,20 @@ impl FromXml for Fills {
                         match e.local_name().as_ref() {
                             b"fill" => {
                                 f_fill.push(Box::new(Fill::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28208,6 +33402,8 @@ impl FromXml for Fill {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -28215,7 +33411,9 @@ impl FromXml for Fill {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -28224,7 +33422,9 @@ impl FromXml for Fill {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -28255,6 +33455,8 @@ impl FromXml for PatternFill {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28282,15 +33484,27 @@ impl FromXml for PatternFill {
                         match e.local_name().as_ref() {
                             b"fgColor" => {
                                 f_fg_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"bgColor" => {
                                 f_bg_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28303,15 +33517,27 @@ impl FromXml for PatternFill {
                         match e.local_name().as_ref() {
                             b"fgColor" => {
                                 f_fg_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"bgColor" => {
                                 f_bg_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28421,6 +33647,8 @@ impl FromXml for GradientFill {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28463,12 +33691,20 @@ impl FromXml for GradientFill {
                         match e.local_name().as_ref() {
                             b"stop" => {
                                 f_stop.push(Box::new(GradientStop::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28481,12 +33717,20 @@ impl FromXml for GradientFill {
                         match e.local_name().as_ref() {
                             b"stop" => {
                                 f_stop.push(Box::new(GradientStop::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28528,6 +33772,8 @@ impl FromXml for GradientStop {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28555,12 +33801,20 @@ impl FromXml for GradientStop {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28573,12 +33827,20 @@ impl FromXml for GradientStop {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28616,6 +33878,8 @@ impl FromXml for NumberFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28644,12 +33908,20 @@ impl FromXml for NumberFormats {
                             b"numFmt" => {
                                 f_num_fmt
                                     .push(Box::new(NumberFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28662,12 +33934,20 @@ impl FromXml for NumberFormats {
                         match e.local_name().as_ref() {
                             b"numFmt" => {
                                 f_num_fmt.push(Box::new(NumberFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28758,6 +34038,8 @@ impl FromXml for CellStyleFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28785,12 +34067,20 @@ impl FromXml for CellStyleFormats {
                         match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28803,12 +34093,20 @@ impl FromXml for CellStyleFormats {
                         match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28845,6 +34143,8 @@ impl FromXml for CellFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -28872,12 +34172,20 @@ impl FromXml for CellFormats {
                         match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -28890,12 +34198,20 @@ impl FromXml for CellFormats {
                         match e.local_name().as_ref() {
                             b"xf" => {
                                 f_xf.push(Box::new(Format::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -28962,6 +34278,8 @@ impl FromXml for Format {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29040,22 +34358,38 @@ impl FromXml for Format {
                             b"alignment" => {
                                 f_alignment =
                                     Some(Box::new(CellAlignment::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"protection" => {
                                 f_protection =
                                     Some(Box::new(CellProtection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29070,22 +34404,38 @@ impl FromXml for Format {
                             b"alignment" => {
                                 f_alignment =
                                     Some(Box::new(CellAlignment::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"protection" => {
                                 f_protection =
                                     Some(Box::new(CellProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29152,6 +34502,8 @@ impl FromXml for CellStyles {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29180,12 +34532,20 @@ impl FromXml for CellStyles {
                             b"cellStyle" => {
                                 f_cell_style
                                     .push(Box::new(CellStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29198,12 +34558,20 @@ impl FromXml for CellStyles {
                         match e.local_name().as_ref() {
                             b"cellStyle" => {
                                 f_cell_style.push(Box::new(CellStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29245,6 +34613,8 @@ impl FromXml for CellStyle {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29288,12 +34658,20 @@ impl FromXml for CellStyle {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29307,12 +34685,20 @@ impl FromXml for CellStyle {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29355,6 +34741,8 @@ impl FromXml for DifferentialFormats {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29384,12 +34772,20 @@ impl FromXml for DifferentialFormats {
                                 f_dxf.push(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29404,12 +34800,20 @@ impl FromXml for DifferentialFormats {
                                 f_dxf.push(Box::new(DifferentialFormat::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29449,6 +34853,8 @@ impl FromXml for DifferentialFormat {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -29459,34 +34865,66 @@ impl FromXml for DifferentialFormat {
                         match e.local_name().as_ref() {
                             b"font" => {
                                 f_font = Some(Box::new(Font::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"numFmt" => {
                                 f_num_fmt =
                                     Some(Box::new(NumberFormat::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fill" => {
                                 f_fill = Some(Box::new(Fill::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"alignment" => {
                                 f_alignment =
                                     Some(Box::new(CellAlignment::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"border" => {
                                 f_border = Some(Box::new(Border::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"protection" => {
                                 f_protection =
                                     Some(Box::new(CellProtection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29499,34 +34937,66 @@ impl FromXml for DifferentialFormat {
                         match e.local_name().as_ref() {
                             b"font" => {
                                 f_font = Some(Box::new(Font::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"numFmt" => {
                                 f_num_fmt =
                                     Some(Box::new(NumberFormat::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fill" => {
                                 f_fill = Some(Box::new(Fill::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"alignment" => {
                                 f_alignment =
                                     Some(Box::new(CellAlignment::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"border" => {
                                 f_border = Some(Box::new(Border::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"protection" => {
                                 f_protection =
                                     Some(Box::new(CellProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29564,6 +35034,8 @@ impl FromXml for Colors {
         let mut f_mru_colors = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -29575,16 +35047,28 @@ impl FromXml for Colors {
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mruColors" => {
                                 f_mru_colors =
                                     Some(Box::new(MostRecentColors::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29598,16 +35082,28 @@ impl FromXml for Colors {
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"mruColors" => {
                                 f_mru_colors =
                                     Some(Box::new(MostRecentColors::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29639,6 +35135,8 @@ impl FromXml for IndexedColors {
         let mut f_rgb_color = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -29649,12 +35147,20 @@ impl FromXml for IndexedColors {
                         match e.local_name().as_ref() {
                             b"rgbColor" => {
                                 f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29667,12 +35173,20 @@ impl FromXml for IndexedColors {
                         match e.local_name().as_ref() {
                             b"rgbColor" => {
                                 f_rgb_color.push(Box::new(RgbColor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29703,6 +35217,8 @@ impl FromXml for MostRecentColors {
         let mut f_color = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -29713,12 +35229,20 @@ impl FromXml for MostRecentColors {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29731,12 +35255,20 @@ impl FromXml for MostRecentColors {
                         match e.local_name().as_ref() {
                             b"color" => {
                                 f_color.push(Box::new(Color::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29819,6 +35351,8 @@ impl FromXml for TableStyles {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29853,12 +35387,20 @@ impl FromXml for TableStyles {
                             b"tableStyle" => {
                                 f_table_style
                                     .push(Box::new(TableStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29872,12 +35414,20 @@ impl FromXml for TableStyles {
                             b"tableStyle" => {
                                 f_table_style
                                     .push(Box::new(TableStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -29919,6 +35469,8 @@ impl FromXml for TableStyle {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -29957,12 +35509,20 @@ impl FromXml for TableStyle {
                                 f_table_style_element.push(Box::new(TableStyleElement::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -29976,12 +35536,20 @@ impl FromXml for TableStyle {
                             b"tableStyleElement" => {
                                 f_table_style_element
                                     .push(Box::new(TableStyleElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -30403,6 +35971,8 @@ impl FromXml for Font {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -30410,7 +35980,9 @@ impl FromXml for Font {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -30419,7 +35991,9 @@ impl FromXml for Font {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -30570,6 +36144,8 @@ impl FromXml for ExternalLink {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -30581,12 +36157,20 @@ impl FromXml for ExternalLink {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -30600,12 +36184,20 @@ impl FromXml for ExternalLink {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -30638,6 +36230,8 @@ impl FromXml for ExternalBook {
         let mut f_sheet_data_set = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -30650,22 +36244,38 @@ impl FromXml for ExternalBook {
                                 f_sheet_names = Some(Box::new(CTExternalSheetNames::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"definedNames" => {
                                 f_defined_names = Some(Box::new(CTExternalDefinedNames::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetDataSet" => {
                                 f_sheet_data_set = Some(Box::new(ExternalSheetDataSet::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -30680,22 +36290,38 @@ impl FromXml for ExternalBook {
                                 f_sheet_names = Some(Box::new(CTExternalSheetNames::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"definedNames" => {
                                 f_defined_names = Some(Box::new(CTExternalDefinedNames::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheetDataSet" => {
                                 f_sheet_data_set = Some(Box::new(ExternalSheetDataSet::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -30728,6 +36354,8 @@ impl FromXml for CTExternalSheetNames {
         let mut f_sheet_name = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -30740,12 +36368,20 @@ impl FromXml for CTExternalSheetNames {
                                 f_sheet_name.push(Box::new(CTExternalSheetName::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -30760,12 +36396,20 @@ impl FromXml for CTExternalSheetNames {
                                 f_sheet_name.push(Box::new(CTExternalSheetName::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -30843,6 +36487,8 @@ impl FromXml for CTExternalDefinedNames {
         let mut f_defined_name = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -30855,12 +36501,20 @@ impl FromXml for CTExternalDefinedNames {
                                 f_defined_name.push(Box::new(CTExternalDefinedName::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -30875,12 +36529,20 @@ impl FromXml for CTExternalDefinedNames {
                                 f_defined_name.push(Box::new(CTExternalDefinedName::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -30968,6 +36630,8 @@ impl FromXml for ExternalSheetDataSet {
         let mut f_sheet_data = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -30980,12 +36644,20 @@ impl FromXml for ExternalSheetDataSet {
                                 f_sheet_data.push(Box::new(ExternalSheetData::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -30999,12 +36671,20 @@ impl FromXml for ExternalSheetDataSet {
                             b"sheetData" => {
                                 f_sheet_data
                                     .push(Box::new(ExternalSheetData::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31039,6 +36719,8 @@ impl FromXml for ExternalSheetData {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31069,12 +36751,20 @@ impl FromXml for ExternalSheetData {
                         match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(ExternalRow::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31087,12 +36777,20 @@ impl FromXml for ExternalSheetData {
                         match e.local_name().as_ref() {
                             b"row" => {
                                 f_row.push(Box::new(ExternalRow::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31131,6 +36829,8 @@ impl FromXml for ExternalRow {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31158,12 +36858,20 @@ impl FromXml for ExternalRow {
                         match e.local_name().as_ref() {
                             b"cell" => {
                                 f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31176,12 +36884,20 @@ impl FromXml for ExternalRow {
                         match e.local_name().as_ref() {
                             b"cell" => {
                                 f_cell.push(Box::new(ExternalCell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31220,6 +36936,8 @@ impl FromXml for ExternalCell {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31253,12 +36971,20 @@ impl FromXml for ExternalCell {
                         match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31271,12 +36997,20 @@ impl FromXml for ExternalCell {
                         match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31316,6 +37050,8 @@ impl FromXml for DdeLink {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31347,12 +37083,20 @@ impl FromXml for DdeLink {
                             b"ddeItems" => {
                                 f_dde_items =
                                     Some(Box::new(DdeItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31365,12 +37109,20 @@ impl FromXml for DdeLink {
                         match e.local_name().as_ref() {
                             b"ddeItems" => {
                                 f_dde_items = Some(Box::new(DdeItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31407,6 +37159,8 @@ impl FromXml for DdeItems {
         let mut f_dde_item = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -31417,12 +37171,20 @@ impl FromXml for DdeItems {
                         match e.local_name().as_ref() {
                             b"ddeItem" => {
                                 f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31435,12 +37197,20 @@ impl FromXml for DdeItems {
                         match e.local_name().as_ref() {
                             b"ddeItem" => {
                                 f_dde_item.push(Box::new(DdeItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31477,6 +37247,8 @@ impl FromXml for DdeItem {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31514,12 +37286,20 @@ impl FromXml for DdeItem {
                             b"values" => {
                                 f_values =
                                     Some(Box::new(CTDdeValues::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31532,12 +37312,20 @@ impl FromXml for DdeItem {
                         match e.local_name().as_ref() {
                             b"values" => {
                                 f_values = Some(Box::new(CTDdeValues::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31578,6 +37366,8 @@ impl FromXml for CTDdeValues {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31608,12 +37398,20 @@ impl FromXml for CTDdeValues {
                         match e.local_name().as_ref() {
                             b"value" => {
                                 f_value.push(Box::new(CTDdeValue::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31626,12 +37424,20 @@ impl FromXml for CTDdeValues {
                         match e.local_name().as_ref() {
                             b"value" => {
                                 f_value.push(Box::new(CTDdeValue::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31669,6 +37475,8 @@ impl FromXml for CTDdeValue {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31696,12 +37504,20 @@ impl FromXml for CTDdeValue {
                         match e.local_name().as_ref() {
                             b"val" => {
                                 f_value = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31714,12 +37530,20 @@ impl FromXml for CTDdeValue {
                         match e.local_name().as_ref() {
                             b"val" => {
                                 f_value = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31756,6 +37580,8 @@ impl FromXml for OleLink {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -31784,12 +37610,20 @@ impl FromXml for OleLink {
                             b"oleItems" => {
                                 f_ole_items =
                                     Some(Box::new(OleItems::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31802,12 +37636,20 @@ impl FromXml for OleLink {
                         match e.local_name().as_ref() {
                             b"oleItems" => {
                                 f_ole_items = Some(Box::new(OleItems::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -31841,6 +37683,8 @@ impl FromXml for OleItems {
         let mut f_ole_item = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -31851,12 +37695,20 @@ impl FromXml for OleItems {
                         match e.local_name().as_ref() {
                             b"oleItem" => {
                                 f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -31869,12 +37721,20 @@ impl FromXml for OleItems {
                         match e.local_name().as_ref() {
                             b"oleItem" => {
                                 f_ole_item.push(Box::new(OleItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32022,6 +37882,8 @@ impl FromXml for Table {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32136,32 +37998,56 @@ impl FromXml for Table {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableColumns" => {
                                 f_table_columns =
                                     Some(Box::new(TableColumns::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableStyleInfo" => {
                                 f_table_style_info =
                                     Some(Box::new(TableStyleInfo::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32176,32 +38062,56 @@ impl FromXml for Table {
                             b"autoFilter" => {
                                 f_auto_filter =
                                     Some(Box::new(AutoFilter::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"sortState" => {
                                 f_sort_state =
                                     Some(Box::new(SortState::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableColumns" => {
                                 f_table_columns =
                                     Some(Box::new(TableColumns::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-tables")]
                             b"tableStyleInfo" => {
                                 f_table_style_info =
                                     Some(Box::new(TableStyleInfo::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32360,6 +38270,8 @@ impl FromXml for TableColumns {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32388,12 +38300,20 @@ impl FromXml for TableColumns {
                             b"tableColumn" => {
                                 f_table_column
                                     .push(Box::new(TableColumn::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32407,12 +38327,20 @@ impl FromXml for TableColumns {
                             b"tableColumn" => {
                                 f_table_column
                                     .push(Box::new(TableColumn::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32463,6 +38391,8 @@ impl FromXml for TableColumn {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32524,25 +38454,45 @@ impl FromXml for TableColumn {
                             b"calculatedColumnFormula" => {
                                 f_calculated_column_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"totalsRowFormula" => {
                                 f_totals_row_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"xmlColumnPr" => {
                                 f_xml_column_pr = Some(Box::new(XmlColumnProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32556,25 +38506,45 @@ impl FromXml for TableColumn {
                             b"calculatedColumnFormula" => {
                                 f_calculated_column_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"totalsRowFormula" => {
                                 f_totals_row_formula =
                                     Some(Box::new(TableFormula::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"xmlColumnPr" => {
                                 f_xml_column_pr = Some(Box::new(XmlColumnProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32625,6 +38595,8 @@ impl FromXml for TableFormula {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32654,7 +38626,11 @@ impl FromXml for TableFormula {
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32669,7 +38645,11 @@ impl FromXml for TableFormula {
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32712,6 +38692,8 @@ impl FromXml for XmlColumnProperties {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32749,12 +38731,20 @@ impl FromXml for XmlColumnProperties {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32768,12 +38758,20 @@ impl FromXml for XmlColumnProperties {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32812,6 +38810,8 @@ impl FromXml for CTVolTypes {
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -32822,16 +38822,28 @@ impl FromXml for CTVolTypes {
                         match e.local_name().as_ref() {
                             b"volType" => {
                                 f_vol_type.push(Box::new(CTVolType::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32844,16 +38856,28 @@ impl FromXml for CTVolTypes {
                         match e.local_name().as_ref() {
                             b"volType" => {
                                 f_vol_type.push(Box::new(CTVolType::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32888,6 +38912,8 @@ impl FromXml for CTVolType {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -32915,12 +38941,20 @@ impl FromXml for CTVolType {
                         match e.local_name().as_ref() {
                             b"main" => {
                                 f_main.push(Box::new(CTVolMain::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -32933,12 +38967,20 @@ impl FromXml for CTVolType {
                         match e.local_name().as_ref() {
                             b"main" => {
                                 f_main.push(Box::new(CTVolMain::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -32975,6 +39017,8 @@ impl FromXml for CTVolMain {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -33002,12 +39046,20 @@ impl FromXml for CTVolMain {
                         match e.local_name().as_ref() {
                             b"tp" => {
                                 f_tp.push(Box::new(CTVolTopic::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33020,12 +39072,20 @@ impl FromXml for CTVolMain {
                         match e.local_name().as_ref() {
                             b"tp" => {
                                 f_tp.push(Box::new(CTVolTopic::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33064,6 +39124,8 @@ impl FromXml for CTVolTopic {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -33091,18 +39153,34 @@ impl FromXml for CTVolTopic {
                         match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"stp" => {
                                 f_stp.push(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"tr" => {
                                 f_tr.push(Box::new(CTVolTopicRef::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33115,18 +39193,34 @@ impl FromXml for CTVolTopic {
                         match e.local_name().as_ref() {
                             b"v" => {
                                 f_value = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"stp" => {
                                 f_stp.push(String::new());
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"tr" => {
                                 f_tr.push(Box::new(CTVolTopicRef::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33249,6 +39343,8 @@ impl FromXml for Workbook {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -33277,103 +39373,183 @@ impl FromXml for Workbook {
                             b"fileVersion" => {
                                 f_file_version =
                                     Some(Box::new(FileVersion::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"fileSharing" => {
                                 f_file_sharing =
                                     Some(Box::new(FileSharing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"workbookPr" => {
                                 f_workbook_pr = Some(Box::new(WorkbookProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"workbookProtection" => {
                                 f_workbook_protection = Some(Box::new(
                                     WorkbookProtection::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"bookViews" => {
                                 f_book_views =
                                     Some(Box::new(BookViews::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheets" => {
                                 f_sheets = Some(Box::new(Sheets::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"functionGroups" => {
                                 f_function_groups =
                                     Some(Box::new(CTFunctionGroups::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"externalReferences" => {
                                 f_external_references = Some(Box::new(
                                     ExternalReferences::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"definedNames" => {
                                 f_defined_names =
                                     Some(Box::new(DefinedNames::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas")]
                             b"calcPr" => {
                                 f_calc_pr = Some(Box::new(CalculationProperties::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"oleSize" => {
                                 f_ole_size =
                                     Some(Box::new(CTOleSize::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-structure")]
                             b"customWorkbookViews" => {
                                 f_custom_workbook_views = Some(Box::new(
                                     CustomWorkbookViews::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-pivot")]
                             b"pivotCaches" => {
                                 f_pivot_caches =
                                     Some(Box::new(PivotCaches::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTagPr" => {
                                 f_smart_tag_pr =
                                     Some(Box::new(CTSmartTagPr::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTagTypes" => {
                                 f_smart_tag_types =
                                     Some(Box::new(CTSmartTagTypes::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishing" => {
                                 f_web_publishing =
                                     Some(Box::new(WebPublishing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fileRecoveryPr" => {
                                 f_file_recovery_pr.push(Box::new(
                                     FileRecoveryProperties::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishObjects" => {
                                 f_web_publish_objects = Some(Box::new(
                                     CTWebPublishObjects::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33387,99 +39563,179 @@ impl FromXml for Workbook {
                             b"fileVersion" => {
                                 f_file_version =
                                     Some(Box::new(FileVersion::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"fileSharing" => {
                                 f_file_sharing =
                                     Some(Box::new(FileSharing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"workbookPr" => {
                                 f_workbook_pr =
                                     Some(Box::new(WorkbookProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-protection")]
                             b"workbookProtection" => {
                                 f_workbook_protection =
                                     Some(Box::new(WorkbookProtection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"bookViews" => {
                                 f_book_views =
                                     Some(Box::new(BookViews::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"sheets" => {
                                 f_sheets = Some(Box::new(Sheets::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas-advanced")]
                             b"functionGroups" => {
                                 f_function_groups =
                                     Some(Box::new(CTFunctionGroups::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"externalReferences" => {
                                 f_external_references =
                                     Some(Box::new(ExternalReferences::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"definedNames" => {
                                 f_defined_names =
                                     Some(Box::new(DefinedNames::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-formulas")]
                             b"calcPr" => {
                                 f_calc_pr = Some(Box::new(CalculationProperties::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"oleSize" => {
                                 f_ole_size = Some(Box::new(CTOleSize::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-structure")]
                             b"customWorkbookViews" => {
                                 f_custom_workbook_views = Some(Box::new(
                                     CustomWorkbookViews::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-pivot")]
                             b"pivotCaches" => {
                                 f_pivot_caches =
                                     Some(Box::new(PivotCaches::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTagPr" => {
                                 f_smart_tag_pr =
                                     Some(Box::new(CTSmartTagPr::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-metadata")]
                             b"smartTagTypes" => {
                                 f_smart_tag_types =
                                     Some(Box::new(CTSmartTagTypes::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishing" => {
                                 f_web_publishing =
                                     Some(Box::new(WebPublishing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             b"fileRecoveryPr" => {
                                 f_file_recovery_pr.push(Box::new(
                                     FileRecoveryProperties::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-external")]
                             b"webPublishObjects" => {
                                 f_web_publish_objects = Some(Box::new(
                                     CTWebPublishObjects::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33611,6 +39867,8 @@ impl FromXml for BookViews {
         let mut f_workbook_view = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -33622,12 +39880,20 @@ impl FromXml for BookViews {
                             b"workbookView" => {
                                 f_workbook_view
                                     .push(Box::new(BookView::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33641,12 +39907,20 @@ impl FromXml for BookViews {
                             b"workbookView" => {
                                 f_workbook_view
                                     .push(Box::new(BookView::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33692,6 +39966,8 @@ impl FromXml for BookView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -33756,12 +40032,20 @@ impl FromXml for BookView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33775,12 +40059,20 @@ impl FromXml for BookView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33826,6 +40118,8 @@ impl FromXml for CustomWorkbookViews {
         let mut f_custom_workbook_view = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -33838,12 +40132,20 @@ impl FromXml for CustomWorkbookViews {
                                 f_custom_workbook_view.push(Box::new(
                                     CustomWorkbookView::from_xml(reader, &e, false)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -33858,12 +40160,20 @@ impl FromXml for CustomWorkbookViews {
                                 f_custom_workbook_view.push(Box::new(
                                     CustomWorkbookView::from_xml(reader, &e, true)?,
                                 ));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -33920,6 +40230,8 @@ impl FromXml for CustomWorkbookView {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -34017,12 +40329,20 @@ impl FromXml for CustomWorkbookView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34036,12 +40356,20 @@ impl FromXml for CustomWorkbookView {
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -34101,6 +40429,8 @@ impl FromXml for Sheets {
         let mut f_sheet = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -34111,12 +40441,20 @@ impl FromXml for Sheets {
                         match e.local_name().as_ref() {
                             b"sheet" => {
                                 f_sheet.push(Box::new(Sheet::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34129,12 +40467,20 @@ impl FromXml for Sheets {
                         match e.local_name().as_ref() {
                             b"sheet" => {
                                 f_sheet.push(Box::new(Sheet::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -34410,6 +40756,8 @@ impl FromXml for CTSmartTagTypes {
         let mut f_smart_tag_type = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -34421,12 +40769,20 @@ impl FromXml for CTSmartTagTypes {
                             b"smartTagType" => {
                                 f_smart_tag_type
                                     .push(Box::new(CTSmartTagType::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34440,12 +40796,20 @@ impl FromXml for CTSmartTagTypes {
                             b"smartTagType" => {
                                 f_smart_tag_type
                                     .push(Box::new(CTSmartTagType::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -34702,6 +41066,8 @@ impl FromXml for DefinedNames {
         let mut f_defined_name = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -34713,12 +41079,20 @@ impl FromXml for DefinedNames {
                             b"definedName" => {
                                 f_defined_name
                                     .push(Box::new(DefinedName::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34732,12 +41106,20 @@ impl FromXml for DefinedNames {
                             b"definedName" => {
                                 f_defined_name
                                     .push(Box::new(DefinedName::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -34796,6 +41178,8 @@ impl FromXml for DefinedName {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -34878,7 +41262,11 @@ impl FromXml for DefinedName {
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34893,7 +41281,11 @@ impl FromXml for DefinedName {
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -34955,6 +41347,8 @@ impl FromXml for ExternalReferences {
         let mut f_external_reference = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -34967,12 +41361,20 @@ impl FromXml for ExternalReferences {
                                 f_external_reference.push(Box::new(ExternalReference::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -34986,12 +41388,20 @@ impl FromXml for ExternalReferences {
                             b"externalReference" => {
                                 f_external_reference
                                     .push(Box::new(ExternalReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -35021,6 +41431,8 @@ impl FromXml for ExternalReference {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -35028,7 +41440,9 @@ impl FromXml for ExternalReference {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -35037,7 +41451,9 @@ impl FromXml for ExternalReference {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -35063,6 +41479,8 @@ impl FromXml for SheetBackgroundPicture {
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
         if !is_empty {
             let mut buf = Vec::new();
             loop {
@@ -35070,7 +41488,9 @@ impl FromXml for SheetBackgroundPicture {
                     #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
                         let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Start(_) => {
@@ -35079,7 +41499,9 @@ impl FromXml for SheetBackgroundPicture {
                     #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
                         let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
                     #[cfg(not(feature = "extra-children"))]
                     Event::Empty(_) => {}
@@ -35106,6 +41528,8 @@ impl FromXml for PivotCaches {
         let mut f_pivot_cache = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse child elements
         if !is_empty {
@@ -35117,12 +41541,20 @@ impl FromXml for PivotCaches {
                             b"pivotCache" => {
                                 f_pivot_cache
                                     .push(Box::new(CTPivotCache::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -35136,12 +41568,20 @@ impl FromXml for PivotCaches {
                             b"pivotCache" => {
                                 f_pivot_cache
                                     .push(Box::new(CTPivotCache::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -35552,6 +41992,8 @@ impl FromXml for CTFunctionGroups {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -35580,12 +42022,20 @@ impl FromXml for CTFunctionGroups {
                             b"functionGroup" => {
                                 f_function_group
                                     .push(Box::new(CTFunctionGroup::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -35599,12 +42049,20 @@ impl FromXml for CTFunctionGroups {
                             b"functionGroup" => {
                                 f_function_group
                                     .push(Box::new(CTFunctionGroup::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}
@@ -35688,6 +42146,8 @@ impl FromXml for CTWebPublishObjects {
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -35717,12 +42177,20 @@ impl FromXml for CTWebPublishObjects {
                                 f_web_publish_object.push(Box::new(CTWebPublishObject::from_xml(
                                     reader, &e, false,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
                                 let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {
@@ -35737,12 +42205,20 @@ impl FromXml for CTWebPublishObjects {
                                 f_web_publish_object.push(Box::new(CTWebPublishObject::from_xml(
                                     reader, &e, true,
                                 )?));
+                                #[cfg(feature = "extra-children")]
+                                {
+                                    child_idx += 1;
+                                }
                             }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
                                 let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(RawXmlNode::Element(elem));
+                                extra_children.push(PositionedNode::new(
+                                    child_idx,
+                                    RawXmlNode::Element(elem),
+                                ));
+                                child_idx += 1;
                             }
                             #[cfg(not(feature = "extra-children"))]
                             _ => {}

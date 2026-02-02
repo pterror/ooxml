@@ -443,7 +443,7 @@ fn test_roundtrip_paragraph_properties() {
 /// Test that unknown XML elements survive a roundtrip.
 #[test]
 fn test_roundtrip_unknown_elements() {
-    use ooxml_wml::{RawXmlElement, RawXmlNode};
+    use ooxml_wml::{PositionedNode, RawXmlElement, RawXmlNode};
 
     let mut builder = DocumentBuilder::new();
 
@@ -462,7 +462,8 @@ fn test_roundtrip_unknown_elements() {
         let rpr = run
             .r_pr
             .get_or_insert_with(|| Box::new(ooxml_wml::types::RunProperties::default()));
-        rpr.extra_children.push(RawXmlNode::Element(unknown_elem));
+        rpr.extra_children
+            .push(PositionedNode::new(0, RawXmlNode::Element(unknown_elem)));
     }
 
     let mut buffer = Cursor::new(Vec::new());
@@ -483,7 +484,7 @@ fn test_roundtrip_unknown_elements() {
     );
 
     let found = rpr.extra_children.iter().any(|node| {
-        if let RawXmlNode::Element(elem) = node {
+        if let RawXmlNode::Element(elem) = &node.node {
             elem.name.ends_with("customTracking")
         } else {
             false

@@ -739,7 +739,11 @@ impl<'a> Generator<'a> {
                     writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
                     writeln!(code, "    #[serde(skip)]").unwrap();
                     writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
-                    writeln!(code, "    pub extra_children: Vec<ooxml_xml::RawXmlNode>,").unwrap();
+                    writeln!(
+                        code,
+                        "    pub extra_children: Vec<ooxml_xml::PositionedNode>,"
+                    )
+                    .unwrap();
                 }
                 writeln!(code, "}}").unwrap();
             } else {
@@ -865,7 +869,11 @@ impl<'a> Generator<'a> {
                 writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
                 writeln!(code, "    #[serde(skip)]").unwrap();
                 writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
-                writeln!(code, "    pub extra_children: Vec<ooxml_xml::RawXmlNode>,").unwrap();
+                writeln!(
+                    code,
+                    "    pub extra_children: Vec<ooxml_xml::PositionedNode>,"
+                )
+                .unwrap();
             }
 
             writeln!(code, "}}").unwrap();
