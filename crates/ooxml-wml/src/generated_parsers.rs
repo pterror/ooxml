@@ -3035,6 +3035,7 @@ impl FromXml for CTTrackChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
         #[cfg(feature = "extra-attrs")]
@@ -3044,6 +3045,9 @@ impl FromXml for CTTrackChange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
@@ -3073,6 +3077,7 @@ impl FromXml for CTTrackChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date,
             #[cfg(feature = "extra-attrs")]
@@ -3087,6 +3092,9 @@ impl FromXml for CTCellMergeTrackChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_vertical_merge = None;
         let mut f_v_merge_orig = None;
         #[cfg(feature = "extra-attrs")]
@@ -3096,6 +3104,15 @@ impl FromXml for CTCellMergeTrackChange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
                 b"vMerge" => {
                     f_vertical_merge = val.parse().ok();
                 }
@@ -3125,6 +3142,9 @@ impl FromXml for CTCellMergeTrackChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             vertical_merge: f_vertical_merge,
             v_merge_orig: f_v_merge_orig,
             #[cfg(feature = "extra-attrs")]
@@ -3139,6 +3159,9 @@ impl FromXml for CTTrackChangeRange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_displaced_by_custom_xml = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3147,6 +3170,15 @@ impl FromXml for CTTrackChangeRange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
@@ -3173,6 +3205,9 @@ impl FromXml for CTTrackChangeRange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             displaced_by_custom_xml: f_displaced_by_custom_xml,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3186,6 +3221,7 @@ impl FromXml for CTMarkupRange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
         let mut f_displaced_by_custom_xml = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3194,6 +3230,9 @@ impl FromXml for CTMarkupRange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
                 b"displacedByCustomXml" => {
                     f_displaced_by_custom_xml = val.parse().ok();
                 }
@@ -3220,6 +3259,7 @@ impl FromXml for CTMarkupRange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             displaced_by_custom_xml: f_displaced_by_custom_xml,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3233,6 +3273,8 @@ impl FromXml for CTBookmarkRange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_displaced_by_custom_xml = None;
         let mut f_col_first = None;
         let mut f_col_last = None;
         #[cfg(feature = "extra-attrs")]
@@ -3242,6 +3284,12 @@ impl FromXml for CTBookmarkRange {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"displacedByCustomXml" => {
+                    f_displaced_by_custom_xml = val.parse().ok();
+                }
                 b"colFirst" => {
                     f_col_first = val.parse().ok();
                 }
@@ -3271,6 +3319,8 @@ impl FromXml for CTBookmarkRange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            displaced_by_custom_xml: f_displaced_by_custom_xml,
             col_first: f_col_first,
             col_last: f_col_last,
             #[cfg(feature = "extra-attrs")]
@@ -3285,6 +3335,10 @@ impl FromXml for Bookmark {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_displaced_by_custom_xml = None;
+        let mut f_col_first = None;
+        let mut f_col_last = None;
         let mut f_name: Option<STString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3293,6 +3347,18 @@ impl FromXml for Bookmark {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"displacedByCustomXml" => {
+                    f_displaced_by_custom_xml = val.parse().ok();
+                }
+                b"colFirst" => {
+                    f_col_first = val.parse().ok();
+                }
+                b"colLast" => {
+                    f_col_last = val.parse().ok();
+                }
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -3319,6 +3385,10 @@ impl FromXml for Bookmark {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            displaced_by_custom_xml: f_displaced_by_custom_xml,
+            col_first: f_col_first,
+            col_last: f_col_last,
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3332,6 +3402,11 @@ impl FromXml for CTMoveBookmark {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_displaced_by_custom_xml = None;
+        let mut f_col_first = None;
+        let mut f_col_last = None;
+        let mut f_name: Option<STString> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date: Option<STDateTime> = None;
         #[cfg(feature = "extra-attrs")]
@@ -3341,6 +3416,21 @@ impl FromXml for CTMoveBookmark {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"displacedByCustomXml" => {
+                    f_displaced_by_custom_xml = val.parse().ok();
+                }
+                b"colFirst" => {
+                    f_col_first = val.parse().ok();
+                }
+                b"colLast" => {
+                    f_col_last = val.parse().ok();
+                }
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
                 b"author" => {
                     f_author = Some(val.into_owned());
                 }
@@ -3370,6 +3460,11 @@ impl FromXml for CTMoveBookmark {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            displaced_by_custom_xml: f_displaced_by_custom_xml,
+            col_first: f_col_first,
+            col_last: f_col_last,
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
             author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
             date: f_date.ok_or_else(|| ParseError::MissingAttribute("date".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -3384,6 +3479,9 @@ impl FromXml for Comment {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_block_level_elts = Vec::new();
         let mut f_initials = None;
         #[cfg(feature = "extra-attrs")]
@@ -3395,6 +3493,15 @@ impl FromXml for Comment {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
                 b"initials" => {
                     f_initials = Some(val.into_owned());
                 }
@@ -3511,6 +3618,9 @@ impl FromXml for Comment {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             block_level_elts: f_block_level_elts,
             initials: f_initials,
             #[cfg(feature = "extra-attrs")]
@@ -3527,6 +3637,9 @@ impl FromXml for CTTrackChangeNumbering {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_original = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -3535,6 +3648,15 @@ impl FromXml for CTTrackChangeNumbering {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
                 b"original" => {
                     f_original = Some(val.into_owned());
                 }
@@ -3561,6 +3683,9 @@ impl FromXml for CTTrackChangeNumbering {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             original: f_original,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -3574,9 +3699,37 @@ impl FromXml for CTTblPrExChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_tbl_pr_ex: Option<Box<CTTblPrExBase>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3627,8 +3780,13 @@ impl FromXml for CTTblPrExChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             tbl_pr_ex: f_tbl_pr_ex
                 .ok_or_else(|| ParseError::MissingAttribute("tblPrEx".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3641,9 +3799,37 @@ impl FromXml for CTTcPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_cell_properties: Option<Box<CTTcPrInner>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3694,8 +3880,13 @@ impl FromXml for CTTcPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             cell_properties: f_cell_properties
                 .ok_or_else(|| ParseError::MissingAttribute("tcPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3708,9 +3899,37 @@ impl FromXml for CTTrPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_row_properties: Option<Box<CTTrPrBase>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3761,8 +3980,13 @@ impl FromXml for CTTrPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             row_properties: f_row_properties
                 .ok_or_else(|| ParseError::MissingAttribute("trPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3775,9 +3999,29 @@ impl FromXml for CTTblGridChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
         let mut f_tbl_grid: Option<Box<CTTblGridBase>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3828,8 +4072,11 @@ impl FromXml for CTTblGridChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             tbl_grid: f_tbl_grid
                 .ok_or_else(|| ParseError::MissingAttribute("tblGrid".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3842,9 +4089,37 @@ impl FromXml for CTTblPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_table_properties: Option<Box<CTTblPrBase>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3895,8 +4170,13 @@ impl FromXml for CTTblPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             table_properties: f_table_properties
                 .ok_or_else(|| ParseError::MissingAttribute("tblPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3909,9 +4189,37 @@ impl FromXml for CTSectPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_sect_pr = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -3962,7 +4270,12 @@ impl FromXml for CTSectPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             sect_pr: f_sect_pr,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -3975,9 +4288,37 @@ impl FromXml for CTPPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_p_pr: Option<Box<CTPPrBase>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -4026,7 +4367,12 @@ impl FromXml for CTPPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             p_pr: f_p_pr.ok_or_else(|| ParseError::MissingAttribute("pPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -4039,9 +4385,37 @@ impl FromXml for CTRPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_r_pr: Option<Box<CTRPrOriginal>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -4091,7 +4465,12 @@ impl FromXml for CTRPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             r_pr: f_r_pr.ok_or_else(|| ParseError::MissingAttribute("rPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -4104,9 +4483,37 @@ impl FromXml for CTParaRPrChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_r_pr: Option<Box<CTParaRPrOriginal>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -4157,7 +4564,12 @@ impl FromXml for CTParaRPrChange {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             r_pr: f_r_pr.ok_or_else(|| ParseError::MissingAttribute("rPr".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -4170,36 +4582,39 @@ impl FromXml for CTRunTrackChange {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-attrs")]
+
+        // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
-            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
-            let val = String::from_utf8_lossy(&attr.value).into_owned();
-            extra_attrs.insert(key, val);
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
         }
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -4207,11 +4622,13 @@ impl FromXml for CTRunTrackChange {
                 buf.clear();
             }
         }
+
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -4823,6 +5240,39 @@ impl FromXml for ParagraphProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_paragraph_style = None;
+        let mut f_keep_next = None;
+        let mut f_keep_lines = None;
+        let mut f_page_break_before = None;
+        let mut f_frame_pr = None;
+        let mut f_widow_control = None;
+        let mut f_num_pr = None;
+        let mut f_suppress_line_numbers = None;
+        let mut f_paragraph_border = None;
+        let mut f_shading = None;
+        let mut f_tabs = None;
+        let mut f_suppress_auto_hyphens = None;
+        let mut f_kinsoku = None;
+        let mut f_word_wrap = None;
+        let mut f_overflow_punct = None;
+        let mut f_top_line_punct = None;
+        let mut f_auto_space_d_e = None;
+        let mut f_auto_space_d_n = None;
+        let mut f_bidi = None;
+        let mut f_adjust_right_ind = None;
+        let mut f_snap_to_grid = None;
+        let mut f_spacing = None;
+        let mut f_indentation = None;
+        let mut f_contextual_spacing = None;
+        let mut f_mirror_indents = None;
+        let mut f_suppress_overlap = None;
+        let mut f_justification = None;
+        let mut f_text_direction = None;
+        let mut f_text_alignment = None;
+        let mut f_textbox_tight_wrap = None;
+        let mut f_outline_lvl = None;
+        let mut f_div_id = None;
+        let mut f_cnf_style = None;
         let mut f_r_pr = None;
         let mut f_sect_pr = None;
         let mut f_p_pr_change = None;
@@ -4836,6 +5286,129 @@ impl FromXml for ParagraphProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"pStyle" => {
+                                f_paragraph_style =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                            }
+                            b"keepNext" => {
+                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"keepLines" => {
+                                f_keep_lines =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"pageBreakBefore" => {
+                                f_page_break_before =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"framePr" => {
+                                f_frame_pr =
+                                    Some(Box::new(CTFramePr::from_xml(reader, &e, false)?));
+                            }
+                            b"widowControl" => {
+                                f_widow_control =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"numPr" => {
+                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressLineNumbers" => {
+                                f_suppress_line_numbers =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"pBdr" => {
+                                f_paragraph_border =
+                                    Some(Box::new(CTPBdr::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"tabs" => {
+                                f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressAutoHyphens" => {
+                                f_suppress_auto_hyphens =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"kinsoku" => {
+                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"wordWrap" => {
+                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"overflowPunct" => {
+                                f_overflow_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"topLinePunct" => {
+                                f_top_line_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"autoSpaceDE" => {
+                                f_auto_space_d_e =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"autoSpaceDN" => {
+                                f_auto_space_d_n =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"bidi" => {
+                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"adjustRightInd" => {
+                                f_adjust_right_ind =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"snapToGrid" => {
+                                f_snap_to_grid =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"spacing" => {
+                                f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, false)?));
+                            }
+                            b"ind" => {
+                                f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, false)?));
+                            }
+                            b"contextualSpacing" => {
+                                f_contextual_spacing =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"mirrorIndents" => {
+                                f_mirror_indents =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressOverlap" => {
+                                f_suppress_overlap =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJc::from_xml(reader, &e, false)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
+                            }
+                            b"textAlignment" => {
+                                f_text_alignment =
+                                    Some(Box::new(CTTextAlignment::from_xml(reader, &e, false)?));
+                            }
+                            b"textboxTightWrap" => {
+                                f_textbox_tight_wrap = Some(Box::new(
+                                    CTTextboxTightWrap::from_xml(reader, &e, false)?,
+                                ));
+                            }
+                            b"outlineLvl" => {
+                                f_outline_lvl =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"divId" => {
+                                f_div_id =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
+                            }
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(CTParaRPr::from_xml(reader, &e, false)?));
                             }
@@ -4862,6 +5435,125 @@ impl FromXml for ParagraphProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"pStyle" => {
+                                f_paragraph_style =
+                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                            }
+                            b"keepNext" => {
+                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"keepLines" => {
+                                f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"pageBreakBefore" => {
+                                f_page_break_before =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"framePr" => {
+                                f_frame_pr = Some(Box::new(CTFramePr::from_xml(reader, &e, true)?));
+                            }
+                            b"widowControl" => {
+                                f_widow_control =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"numPr" => {
+                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressLineNumbers" => {
+                                f_suppress_line_numbers =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"pBdr" => {
+                                f_paragraph_border =
+                                    Some(Box::new(CTPBdr::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"tabs" => {
+                                f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressAutoHyphens" => {
+                                f_suppress_auto_hyphens =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"kinsoku" => {
+                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"wordWrap" => {
+                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"overflowPunct" => {
+                                f_overflow_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"topLinePunct" => {
+                                f_top_line_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"autoSpaceDE" => {
+                                f_auto_space_d_e =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"autoSpaceDN" => {
+                                f_auto_space_d_n =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"bidi" => {
+                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"adjustRightInd" => {
+                                f_adjust_right_ind =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"snapToGrid" => {
+                                f_snap_to_grid =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"spacing" => {
+                                f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, true)?));
+                            }
+                            b"ind" => {
+                                f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, true)?));
+                            }
+                            b"contextualSpacing" => {
+                                f_contextual_spacing =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"mirrorIndents" => {
+                                f_mirror_indents =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressOverlap" => {
+                                f_suppress_overlap =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"jc" => {
+                                f_justification = Some(Box::new(CTJc::from_xml(reader, &e, true)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
+                            }
+                            b"textAlignment" => {
+                                f_text_alignment =
+                                    Some(Box::new(CTTextAlignment::from_xml(reader, &e, true)?));
+                            }
+                            b"textboxTightWrap" => {
+                                f_textbox_tight_wrap =
+                                    Some(Box::new(CTTextboxTightWrap::from_xml(reader, &e, true)?));
+                            }
+                            b"outlineLvl" => {
+                                f_outline_lvl =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"divId" => {
+                                f_div_id =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
+                            }
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(CTParaRPr::from_xml(reader, &e, true)?));
                             }
@@ -4892,6 +5584,39 @@ impl FromXml for ParagraphProperties {
         }
 
         Ok(Self {
+            paragraph_style: f_paragraph_style,
+            keep_next: f_keep_next,
+            keep_lines: f_keep_lines,
+            page_break_before: f_page_break_before,
+            frame_pr: f_frame_pr,
+            widow_control: f_widow_control,
+            num_pr: f_num_pr,
+            suppress_line_numbers: f_suppress_line_numbers,
+            paragraph_border: f_paragraph_border,
+            shading: f_shading,
+            tabs: f_tabs,
+            suppress_auto_hyphens: f_suppress_auto_hyphens,
+            kinsoku: f_kinsoku,
+            word_wrap: f_word_wrap,
+            overflow_punct: f_overflow_punct,
+            top_line_punct: f_top_line_punct,
+            auto_space_d_e: f_auto_space_d_e,
+            auto_space_d_n: f_auto_space_d_n,
+            bidi: f_bidi,
+            adjust_right_ind: f_adjust_right_ind,
+            snap_to_grid: f_snap_to_grid,
+            spacing: f_spacing,
+            indentation: f_indentation,
+            contextual_spacing: f_contextual_spacing,
+            mirror_indents: f_mirror_indents,
+            suppress_overlap: f_suppress_overlap,
+            justification: f_justification,
+            text_direction: f_text_direction,
+            text_alignment: f_text_alignment,
+            textbox_tight_wrap: f_textbox_tight_wrap,
+            outline_lvl: f_outline_lvl,
+            div_id: f_div_id,
+            cnf_style: f_cnf_style,
             r_pr: f_r_pr,
             sect_pr: f_sect_pr,
             p_pr_change: f_p_pr_change,
@@ -5271,6 +5996,39 @@ impl FromXml for CTPPrGeneral {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_paragraph_style = None;
+        let mut f_keep_next = None;
+        let mut f_keep_lines = None;
+        let mut f_page_break_before = None;
+        let mut f_frame_pr = None;
+        let mut f_widow_control = None;
+        let mut f_num_pr = None;
+        let mut f_suppress_line_numbers = None;
+        let mut f_paragraph_border = None;
+        let mut f_shading = None;
+        let mut f_tabs = None;
+        let mut f_suppress_auto_hyphens = None;
+        let mut f_kinsoku = None;
+        let mut f_word_wrap = None;
+        let mut f_overflow_punct = None;
+        let mut f_top_line_punct = None;
+        let mut f_auto_space_d_e = None;
+        let mut f_auto_space_d_n = None;
+        let mut f_bidi = None;
+        let mut f_adjust_right_ind = None;
+        let mut f_snap_to_grid = None;
+        let mut f_spacing = None;
+        let mut f_indentation = None;
+        let mut f_contextual_spacing = None;
+        let mut f_mirror_indents = None;
+        let mut f_suppress_overlap = None;
+        let mut f_justification = None;
+        let mut f_text_direction = None;
+        let mut f_text_alignment = None;
+        let mut f_textbox_tight_wrap = None;
+        let mut f_outline_lvl = None;
+        let mut f_div_id = None;
+        let mut f_cnf_style = None;
         let mut f_p_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -5282,6 +6040,129 @@ impl FromXml for CTPPrGeneral {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"pStyle" => {
+                                f_paragraph_style =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                            }
+                            b"keepNext" => {
+                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"keepLines" => {
+                                f_keep_lines =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"pageBreakBefore" => {
+                                f_page_break_before =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"framePr" => {
+                                f_frame_pr =
+                                    Some(Box::new(CTFramePr::from_xml(reader, &e, false)?));
+                            }
+                            b"widowControl" => {
+                                f_widow_control =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"numPr" => {
+                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressLineNumbers" => {
+                                f_suppress_line_numbers =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"pBdr" => {
+                                f_paragraph_border =
+                                    Some(Box::new(CTPBdr::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"tabs" => {
+                                f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressAutoHyphens" => {
+                                f_suppress_auto_hyphens =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"kinsoku" => {
+                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"wordWrap" => {
+                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"overflowPunct" => {
+                                f_overflow_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"topLinePunct" => {
+                                f_top_line_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"autoSpaceDE" => {
+                                f_auto_space_d_e =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"autoSpaceDN" => {
+                                f_auto_space_d_n =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"bidi" => {
+                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"adjustRightInd" => {
+                                f_adjust_right_ind =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"snapToGrid" => {
+                                f_snap_to_grid =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"spacing" => {
+                                f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, false)?));
+                            }
+                            b"ind" => {
+                                f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, false)?));
+                            }
+                            b"contextualSpacing" => {
+                                f_contextual_spacing =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"mirrorIndents" => {
+                                f_mirror_indents =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"suppressOverlap" => {
+                                f_suppress_overlap =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJc::from_xml(reader, &e, false)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
+                            }
+                            b"textAlignment" => {
+                                f_text_alignment =
+                                    Some(Box::new(CTTextAlignment::from_xml(reader, &e, false)?));
+                            }
+                            b"textboxTightWrap" => {
+                                f_textbox_tight_wrap = Some(Box::new(
+                                    CTTextboxTightWrap::from_xml(reader, &e, false)?,
+                                ));
+                            }
+                            b"outlineLvl" => {
+                                f_outline_lvl =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"divId" => {
+                                f_div_id =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
+                            }
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, false)?));
@@ -5301,6 +6182,125 @@ impl FromXml for CTPPrGeneral {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"pStyle" => {
+                                f_paragraph_style =
+                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                            }
+                            b"keepNext" => {
+                                f_keep_next = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"keepLines" => {
+                                f_keep_lines = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"pageBreakBefore" => {
+                                f_page_break_before =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"framePr" => {
+                                f_frame_pr = Some(Box::new(CTFramePr::from_xml(reader, &e, true)?));
+                            }
+                            b"widowControl" => {
+                                f_widow_control =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"numPr" => {
+                                f_num_pr = Some(Box::new(CTNumPr::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressLineNumbers" => {
+                                f_suppress_line_numbers =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"pBdr" => {
+                                f_paragraph_border =
+                                    Some(Box::new(CTPBdr::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"tabs" => {
+                                f_tabs = Some(Box::new(CTTabs::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressAutoHyphens" => {
+                                f_suppress_auto_hyphens =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"kinsoku" => {
+                                f_kinsoku = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"wordWrap" => {
+                                f_word_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"overflowPunct" => {
+                                f_overflow_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"topLinePunct" => {
+                                f_top_line_punct =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"autoSpaceDE" => {
+                                f_auto_space_d_e =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"autoSpaceDN" => {
+                                f_auto_space_d_n =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"bidi" => {
+                                f_bidi = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"adjustRightInd" => {
+                                f_adjust_right_ind =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"snapToGrid" => {
+                                f_snap_to_grid =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"spacing" => {
+                                f_spacing = Some(Box::new(CTSpacing::from_xml(reader, &e, true)?));
+                            }
+                            b"ind" => {
+                                f_indentation = Some(Box::new(CTInd::from_xml(reader, &e, true)?));
+                            }
+                            b"contextualSpacing" => {
+                                f_contextual_spacing =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"mirrorIndents" => {
+                                f_mirror_indents =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"suppressOverlap" => {
+                                f_suppress_overlap =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"jc" => {
+                                f_justification = Some(Box::new(CTJc::from_xml(reader, &e, true)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
+                            }
+                            b"textAlignment" => {
+                                f_text_alignment =
+                                    Some(Box::new(CTTextAlignment::from_xml(reader, &e, true)?));
+                            }
+                            b"textboxTightWrap" => {
+                                f_textbox_tight_wrap =
+                                    Some(Box::new(CTTextboxTightWrap::from_xml(reader, &e, true)?));
+                            }
+                            b"outlineLvl" => {
+                                f_outline_lvl =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"divId" => {
+                                f_div_id =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
+                            }
                             b"pPrChange" => {
                                 f_p_pr_change =
                                     Some(Box::new(CTPPrChange::from_xml(reader, &e, true)?));
@@ -5324,6 +6324,39 @@ impl FromXml for CTPPrGeneral {
         }
 
         Ok(Self {
+            paragraph_style: f_paragraph_style,
+            keep_next: f_keep_next,
+            keep_lines: f_keep_lines,
+            page_break_before: f_page_break_before,
+            frame_pr: f_frame_pr,
+            widow_control: f_widow_control,
+            num_pr: f_num_pr,
+            suppress_line_numbers: f_suppress_line_numbers,
+            paragraph_border: f_paragraph_border,
+            shading: f_shading,
+            tabs: f_tabs,
+            suppress_auto_hyphens: f_suppress_auto_hyphens,
+            kinsoku: f_kinsoku,
+            word_wrap: f_word_wrap,
+            overflow_punct: f_overflow_punct,
+            top_line_punct: f_top_line_punct,
+            auto_space_d_e: f_auto_space_d_e,
+            auto_space_d_n: f_auto_space_d_n,
+            bidi: f_bidi,
+            adjust_right_ind: f_adjust_right_ind,
+            snap_to_grid: f_snap_to_grid,
+            spacing: f_spacing,
+            indentation: f_indentation,
+            contextual_spacing: f_contextual_spacing,
+            mirror_indents: f_mirror_indents,
+            suppress_overlap: f_suppress_overlap,
+            justification: f_justification,
+            text_direction: f_text_direction,
+            text_alignment: f_text_alignment,
+            textbox_tight_wrap: f_textbox_tight_wrap,
+            outline_lvl: f_outline_lvl,
+            div_id: f_div_id,
+            cnf_style: f_cnf_style,
             p_pr_change: f_p_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -5759,6 +6792,10 @@ impl FromXml for CTObjectLink {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_draw_aspect = None;
+        let mut f_prog_id = None;
+        let mut f_shape_id = None;
+        let mut f_field_codes = None;
         let mut f_update_mode: Option<STObjectUpdateMode> = None;
         let mut f_locked_field = None;
         #[cfg(feature = "extra-attrs")]
@@ -5768,6 +6805,18 @@ impl FromXml for CTObjectLink {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"drawAspect" => {
+                    f_draw_aspect = val.parse().ok();
+                }
+                b"progId" => {
+                    f_prog_id = Some(val.into_owned());
+                }
+                b"shapeId" => {
+                    f_shape_id = Some(val.into_owned());
+                }
+                b"fieldCodes" => {
+                    f_field_codes = Some(val.into_owned());
+                }
                 b"updateMode" => {
                     f_update_mode = val.parse().ok();
                 }
@@ -5797,6 +6846,10 @@ impl FromXml for CTObjectLink {
         }
 
         Ok(Self {
+            draw_aspect: f_draw_aspect,
+            prog_id: f_prog_id,
+            shape_id: f_shape_id,
+            field_codes: f_field_codes,
             update_mode: f_update_mode
                 .ok_or_else(|| ParseError::MissingAttribute("updateMode".to_string()))?,
             locked_field: f_locked_field,
@@ -7101,36 +8154,63 @@ impl FromXml for CTPageBorder {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_value: Option<STBorder> = None;
+        let mut f_color = None;
+        let mut f_theme_color = None;
+        let mut f_theme_tint = None;
+        let mut f_theme_shade = None;
+        let mut f_size = None;
+        let mut f_space = None;
+        let mut f_shadow = None;
+        let mut f_frame = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-attrs")]
+
+        // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
-            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
-            let val = String::from_utf8_lossy(&attr.value).into_owned();
-            extra_attrs.insert(key, val);
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                b"color" => {
+                    f_color = Some(val.into_owned());
+                }
+                b"themeColor" => {
+                    f_theme_color = val.parse().ok();
+                }
+                b"themeTint" => {
+                    f_theme_tint = decode_hex(&val);
+                }
+                b"themeShade" => {
+                    f_theme_shade = decode_hex(&val);
+                }
+                b"sz" => {
+                    f_size = val.parse().ok();
+                }
+                b"space" => {
+                    f_space = val.parse().ok();
+                }
+                b"shadow" => {
+                    f_shadow = Some(val.into_owned());
+                }
+                b"frame" => {
+                    f_frame = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
         }
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -7138,11 +8218,19 @@ impl FromXml for CTPageBorder {
                 buf.clear();
             }
         }
+
         Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color: f_color,
+            theme_color: f_theme_color,
+            theme_tint: f_theme_tint,
+            theme_shade: f_theme_shade,
+            size: f_size,
+            space: f_space,
+            shadow: f_shadow,
+            frame: f_frame,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -7153,36 +8241,63 @@ impl FromXml for CTBottomPageBorder {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_value: Option<STBorder> = None;
+        let mut f_color = None;
+        let mut f_theme_color = None;
+        let mut f_theme_tint = None;
+        let mut f_theme_shade = None;
+        let mut f_size = None;
+        let mut f_space = None;
+        let mut f_shadow = None;
+        let mut f_frame = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-attrs")]
+
+        // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
-            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
-            let val = String::from_utf8_lossy(&attr.value).into_owned();
-            extra_attrs.insert(key, val);
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                b"color" => {
+                    f_color = Some(val.into_owned());
+                }
+                b"themeColor" => {
+                    f_theme_color = val.parse().ok();
+                }
+                b"themeTint" => {
+                    f_theme_tint = decode_hex(&val);
+                }
+                b"themeShade" => {
+                    f_theme_shade = decode_hex(&val);
+                }
+                b"sz" => {
+                    f_size = val.parse().ok();
+                }
+                b"space" => {
+                    f_space = val.parse().ok();
+                }
+                b"shadow" => {
+                    f_shadow = Some(val.into_owned());
+                }
+                b"frame" => {
+                    f_frame = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
         }
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -7190,11 +8305,19 @@ impl FromXml for CTBottomPageBorder {
                 buf.clear();
             }
         }
+
         Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color: f_color,
+            theme_color: f_theme_color,
+            theme_tint: f_theme_tint,
+            theme_shade: f_theme_shade,
+            size: f_size,
+            space: f_space,
+            shadow: f_shadow,
+            frame: f_frame,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -7205,36 +8328,63 @@ impl FromXml for CTTopPageBorder {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_value: Option<STBorder> = None;
+        let mut f_color = None;
+        let mut f_theme_color = None;
+        let mut f_theme_tint = None;
+        let mut f_theme_shade = None;
+        let mut f_size = None;
+        let mut f_space = None;
+        let mut f_shadow = None;
+        let mut f_frame = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-attrs")]
+
+        // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
-            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
-            let val = String::from_utf8_lossy(&attr.value).into_owned();
-            extra_attrs.insert(key, val);
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                b"color" => {
+                    f_color = Some(val.into_owned());
+                }
+                b"themeColor" => {
+                    f_theme_color = val.parse().ok();
+                }
+                b"themeTint" => {
+                    f_theme_tint = decode_hex(&val);
+                }
+                b"themeShade" => {
+                    f_theme_shade = decode_hex(&val);
+                }
+                b"sz" => {
+                    f_size = val.parse().ok();
+                }
+                b"space" => {
+                    f_space = val.parse().ok();
+                }
+                b"shadow" => {
+                    f_shadow = Some(val.into_owned());
+                }
+                b"frame" => {
+                    f_frame = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
         }
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -7242,11 +8392,19 @@ impl FromXml for CTTopPageBorder {
                 buf.clear();
             }
         }
+
         Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color: f_color,
+            theme_color: f_theme_color,
+            theme_tint: f_theme_tint,
+            theme_shade: f_theme_shade,
+            size: f_size,
+            space: f_space,
+            shadow: f_shadow,
+            frame: f_frame,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -8944,6 +10102,8 @@ impl FromXml for CTPermStart {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STString> = None;
+        let mut f_displaced_by_custom_xml = None;
         let mut f_ed_grp = None;
         let mut f_ed = None;
         let mut f_col_first = None;
@@ -8955,6 +10115,12 @@ impl FromXml for CTPermStart {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                b"displacedByCustomXml" => {
+                    f_displaced_by_custom_xml = val.parse().ok();
+                }
                 b"edGrp" => {
                     f_ed_grp = val.parse().ok();
                 }
@@ -8990,6 +10156,8 @@ impl FromXml for CTPermStart {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            displaced_by_custom_xml: f_displaced_by_custom_xml,
             ed_grp: f_ed_grp,
             ed: f_ed,
             col_first: f_col_first,
@@ -10784,36 +11952,39 @@ impl FromXml for CTMathCtrlIns {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-attrs")]
+
+        // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
-            let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
-            let val = String::from_utf8_lossy(&attr.value).into_owned();
-            extra_attrs.insert(key, val);
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
         }
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children.push(RawXmlNode::Element(elem));
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -10821,11 +11992,13 @@ impl FromXml for CTMathCtrlIns {
                 buf.clear();
             }
         }
+
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -10836,9 +12009,37 @@ impl FromXml for CTMathCtrlDel {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDecimalNumber> = None;
+        let mut f_author: Option<STString> = None;
+        let mut f_date = None;
         let mut f_r_pr = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"author" => {
+                    f_author = Some(val.into_owned());
+                }
+                b"date" => {
+                    f_date = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -10888,7 +12089,12 @@ impl FromXml for CTMathCtrlDel {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            author: f_author.ok_or_else(|| ParseError::MissingAttribute("author".to_string()))?,
+            date: f_date,
             r_pr: f_r_pr,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -16904,6 +18110,7 @@ impl FromXml for TableGrid {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_grid_col = Vec::new();
         let mut f_tbl_grid_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -16915,6 +18122,10 @@ impl FromXml for TableGrid {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"gridCol" => {
+                                f_grid_col
+                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, false)?));
+                            }
                             b"tblGridChange" => {
                                 f_tbl_grid_change =
                                     Some(Box::new(CTTblGridChange::from_xml(reader, &e, false)?));
@@ -16934,6 +18145,10 @@ impl FromXml for TableGrid {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"gridCol" => {
+                                f_grid_col
+                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, true)?));
+                            }
                             b"tblGridChange" => {
                                 f_tbl_grid_change =
                                     Some(Box::new(CTTblGridChange::from_xml(reader, &e, true)?));
@@ -16957,6 +18172,7 @@ impl FromXml for TableGrid {
         }
 
         Ok(Self {
+            grid_col: f_grid_col,
             tbl_grid_change: f_tbl_grid_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -17486,6 +18702,21 @@ impl FromXml for TableCellProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_cnf_style = None;
+        let mut f_tc_w = None;
+        let mut f_grid_span = None;
+        let mut f_horizontal_merge = None;
+        let mut f_vertical_merge = None;
+        let mut f_tc_borders = None;
+        let mut f_shading = None;
+        let mut f_no_wrap = None;
+        let mut f_tc_mar = None;
+        let mut f_text_direction = None;
+        let mut f_tc_fit_text = None;
+        let mut f_v_align = None;
+        let mut f_hide_mark = None;
+        let mut f_headers = None;
+        let mut f_cell_markup_elements = None;
         let mut f_tc_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -17497,6 +18728,60 @@ impl FromXml for TableCellProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
+                            }
+                            b"tcW" => {
+                                f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"gridSpan" => {
+                                f_grid_span =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"hMerge" => {
+                                f_horizontal_merge =
+                                    Some(Box::new(CTHMerge::from_xml(reader, &e, false)?));
+                            }
+                            b"vMerge" => {
+                                f_vertical_merge =
+                                    Some(Box::new(CTVMerge::from_xml(reader, &e, false)?));
+                            }
+                            b"tcBorders" => {
+                                f_tc_borders =
+                                    Some(Box::new(CTTcBorders::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"noWrap" => {
+                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"tcMar" => {
+                                f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, false)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
+                            }
+                            b"tcFitText" => {
+                                f_tc_fit_text =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"vAlign" => {
+                                f_v_align =
+                                    Some(Box::new(CTVerticalJc::from_xml(reader, &e, false)?));
+                            }
+                            b"hideMark" => {
+                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
+                            }
+                            b"cellIns" | b"cellDel" | b"cellMerge" => {
+                                f_cell_markup_elements = Some(Box::new(
+                                    EGCellMarkupElements::from_xml(reader, &e, false)?,
+                                ));
+                            }
                             b"tcPrChange" => {
                                 f_tc_pr_change =
                                     Some(Box::new(CTTcPrChange::from_xml(reader, &e, false)?));
@@ -17516,6 +18801,60 @@ impl FromXml for TableCellProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
+                            }
+                            b"tcW" => {
+                                f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"gridSpan" => {
+                                f_grid_span =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"hMerge" => {
+                                f_horizontal_merge =
+                                    Some(Box::new(CTHMerge::from_xml(reader, &e, true)?));
+                            }
+                            b"vMerge" => {
+                                f_vertical_merge =
+                                    Some(Box::new(CTVMerge::from_xml(reader, &e, true)?));
+                            }
+                            b"tcBorders" => {
+                                f_tc_borders =
+                                    Some(Box::new(CTTcBorders::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"noWrap" => {
+                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"tcMar" => {
+                                f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, true)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
+                            }
+                            b"tcFitText" => {
+                                f_tc_fit_text =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"vAlign" => {
+                                f_v_align =
+                                    Some(Box::new(CTVerticalJc::from_xml(reader, &e, true)?));
+                            }
+                            b"hideMark" => {
+                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
+                            }
+                            b"cellIns" | b"cellDel" | b"cellMerge" => {
+                                f_cell_markup_elements = Some(Box::new(
+                                    EGCellMarkupElements::from_xml(reader, &e, true)?,
+                                ));
+                            }
                             b"tcPrChange" => {
                                 f_tc_pr_change =
                                     Some(Box::new(CTTcPrChange::from_xml(reader, &e, true)?));
@@ -17539,6 +18878,21 @@ impl FromXml for TableCellProperties {
         }
 
         Ok(Self {
+            cnf_style: f_cnf_style,
+            tc_w: f_tc_w,
+            grid_span: f_grid_span,
+            horizontal_merge: f_horizontal_merge,
+            vertical_merge: f_vertical_merge,
+            tc_borders: f_tc_borders,
+            shading: f_shading,
+            no_wrap: f_no_wrap,
+            tc_mar: f_tc_mar,
+            text_direction: f_text_direction,
+            tc_fit_text: f_tc_fit_text,
+            v_align: f_v_align,
+            hide_mark: f_hide_mark,
+            headers: f_headers,
+            cell_markup_elements: f_cell_markup_elements,
             tc_pr_change: f_tc_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -17552,6 +18906,20 @@ impl FromXml for CTTcPrInner {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_cnf_style = None;
+        let mut f_tc_w = None;
+        let mut f_grid_span = None;
+        let mut f_horizontal_merge = None;
+        let mut f_vertical_merge = None;
+        let mut f_tc_borders = None;
+        let mut f_shading = None;
+        let mut f_no_wrap = None;
+        let mut f_tc_mar = None;
+        let mut f_text_direction = None;
+        let mut f_tc_fit_text = None;
+        let mut f_v_align = None;
+        let mut f_hide_mark = None;
+        let mut f_headers = None;
         let mut f_cell_markup_elements = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -17563,6 +18931,55 @@ impl FromXml for CTTcPrInner {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, false)?));
+                            }
+                            b"tcW" => {
+                                f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"gridSpan" => {
+                                f_grid_span =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"hMerge" => {
+                                f_horizontal_merge =
+                                    Some(Box::new(CTHMerge::from_xml(reader, &e, false)?));
+                            }
+                            b"vMerge" => {
+                                f_vertical_merge =
+                                    Some(Box::new(CTVMerge::from_xml(reader, &e, false)?));
+                            }
+                            b"tcBorders" => {
+                                f_tc_borders =
+                                    Some(Box::new(CTTcBorders::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"noWrap" => {
+                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"tcMar" => {
+                                f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, false)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, false)?));
+                            }
+                            b"tcFitText" => {
+                                f_tc_fit_text =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"vAlign" => {
+                                f_v_align =
+                                    Some(Box::new(CTVerticalJc::from_xml(reader, &e, false)?));
+                            }
+                            b"hideMark" => {
+                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
+                            }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
                                 f_cell_markup_elements = Some(Box::new(
                                     EGCellMarkupElements::from_xml(reader, &e, false)?,
@@ -17583,6 +19000,55 @@ impl FromXml for CTTcPrInner {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"cnfStyle" => {
+                                f_cnf_style = Some(Box::new(CTCnf::from_xml(reader, &e, true)?));
+                            }
+                            b"tcW" => {
+                                f_tc_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"gridSpan" => {
+                                f_grid_span =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"hMerge" => {
+                                f_horizontal_merge =
+                                    Some(Box::new(CTHMerge::from_xml(reader, &e, true)?));
+                            }
+                            b"vMerge" => {
+                                f_vertical_merge =
+                                    Some(Box::new(CTVMerge::from_xml(reader, &e, true)?));
+                            }
+                            b"tcBorders" => {
+                                f_tc_borders =
+                                    Some(Box::new(CTTcBorders::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"noWrap" => {
+                                f_no_wrap = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"tcMar" => {
+                                f_tc_mar = Some(Box::new(CTTcMar::from_xml(reader, &e, true)?));
+                            }
+                            b"textDirection" => {
+                                f_text_direction =
+                                    Some(Box::new(CTTextDirection::from_xml(reader, &e, true)?));
+                            }
+                            b"tcFitText" => {
+                                f_tc_fit_text =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"vAlign" => {
+                                f_v_align =
+                                    Some(Box::new(CTVerticalJc::from_xml(reader, &e, true)?));
+                            }
+                            b"hideMark" => {
+                                f_hide_mark = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
+                            }
                             b"cellIns" | b"cellDel" | b"cellMerge" => {
                                 f_cell_markup_elements = Some(Box::new(
                                     EGCellMarkupElements::from_xml(reader, &e, true)?,
@@ -17607,6 +19073,20 @@ impl FromXml for CTTcPrInner {
         }
 
         Ok(Self {
+            cnf_style: f_cnf_style,
+            tc_w: f_tc_w,
+            grid_span: f_grid_span,
+            horizontal_merge: f_horizontal_merge,
+            vertical_merge: f_vertical_merge,
+            tc_borders: f_tc_borders,
+            shading: f_shading,
+            no_wrap: f_no_wrap,
+            tc_mar: f_tc_mar,
+            text_direction: f_text_direction,
+            tc_fit_text: f_tc_fit_text,
+            v_align: f_v_align,
+            hide_mark: f_hide_mark,
+            headers: f_headers,
             cell_markup_elements: f_cell_markup_elements,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -18874,6 +20354,23 @@ impl FromXml for TableProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_tbl_style = None;
+        let mut f_tblp_pr = None;
+        let mut f_tbl_overlap = None;
+        let mut f_bidi_visual = None;
+        let mut f_tbl_style_row_band_size = None;
+        let mut f_tbl_style_col_band_size = None;
+        let mut f_tbl_w = None;
+        let mut f_justification = None;
+        let mut f_tbl_cell_spacing = None;
+        let mut f_tbl_ind = None;
+        let mut f_tbl_borders = None;
+        let mut f_shading = None;
+        let mut f_tbl_layout = None;
+        let mut f_tbl_cell_mar = None;
+        let mut f_tbl_look = None;
+        let mut f_tbl_caption = None;
+        let mut f_tbl_description = None;
         let mut f_tbl_pr_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -18885,6 +20382,71 @@ impl FromXml for TableProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"tblStyle" => {
+                                f_tbl_style =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                            }
+                            b"tblpPr" => {
+                                f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, false)?));
+                            }
+                            b"tblOverlap" => {
+                                f_tbl_overlap =
+                                    Some(Box::new(CTTblOverlap::from_xml(reader, &e, false)?));
+                            }
+                            b"bidiVisual" => {
+                                f_bidi_visual =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                            }
+                            b"tblStyleRowBandSize" => {
+                                f_tbl_style_row_band_size =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"tblStyleColBandSize" => {
+                                f_tbl_style_col_band_size =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"tblW" => {
+                                f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
+                            }
+                            b"tblCellSpacing" => {
+                                f_tbl_cell_spacing =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"tblInd" => {
+                                f_tbl_ind =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"tblBorders" => {
+                                f_tbl_borders =
+                                    Some(Box::new(CTTblBorders::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"tblLayout" => {
+                                f_tbl_layout =
+                                    Some(Box::new(CTTblLayoutType::from_xml(reader, &e, false)?));
+                            }
+                            b"tblCellMar" => {
+                                f_tbl_cell_mar =
+                                    Some(Box::new(CTTblCellMar::from_xml(reader, &e, false)?));
+                            }
+                            b"tblLook" => {
+                                f_tbl_look =
+                                    Some(Box::new(CTTblLook::from_xml(reader, &e, false)?));
+                            }
+                            b"tblCaption" => {
+                                f_tbl_caption =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                            }
+                            b"tblDescription" => {
+                                f_tbl_description =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                            }
                             b"tblPrChange" => {
                                 f_tbl_pr_change =
                                     Some(Box::new(CTTblPrChange::from_xml(reader, &e, false)?));
@@ -18904,6 +20466,68 @@ impl FromXml for TableProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"tblStyle" => {
+                                f_tbl_style = Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                            }
+                            b"tblpPr" => {
+                                f_tblp_pr = Some(Box::new(CTTblPPr::from_xml(reader, &e, true)?));
+                            }
+                            b"tblOverlap" => {
+                                f_tbl_overlap =
+                                    Some(Box::new(CTTblOverlap::from_xml(reader, &e, true)?));
+                            }
+                            b"bidiVisual" => {
+                                f_bidi_visual =
+                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                            }
+                            b"tblStyleRowBandSize" => {
+                                f_tbl_style_row_band_size =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"tblStyleColBandSize" => {
+                                f_tbl_style_col_band_size =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"tblW" => {
+                                f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
+                            }
+                            b"tblCellSpacing" => {
+                                f_tbl_cell_spacing =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"tblInd" => {
+                                f_tbl_ind = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"tblBorders" => {
+                                f_tbl_borders =
+                                    Some(Box::new(CTTblBorders::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"tblLayout" => {
+                                f_tbl_layout =
+                                    Some(Box::new(CTTblLayoutType::from_xml(reader, &e, true)?));
+                            }
+                            b"tblCellMar" => {
+                                f_tbl_cell_mar =
+                                    Some(Box::new(CTTblCellMar::from_xml(reader, &e, true)?));
+                            }
+                            b"tblLook" => {
+                                f_tbl_look = Some(Box::new(CTTblLook::from_xml(reader, &e, true)?));
+                            }
+                            b"tblCaption" => {
+                                f_tbl_caption =
+                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                            }
+                            b"tblDescription" => {
+                                f_tbl_description =
+                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                            }
                             b"tblPrChange" => {
                                 f_tbl_pr_change =
                                     Some(Box::new(CTTblPrChange::from_xml(reader, &e, true)?));
@@ -18927,6 +20551,23 @@ impl FromXml for TableProperties {
         }
 
         Ok(Self {
+            tbl_style: f_tbl_style,
+            tblp_pr: f_tblp_pr,
+            tbl_overlap: f_tbl_overlap,
+            bidi_visual: f_bidi_visual,
+            tbl_style_row_band_size: f_tbl_style_row_band_size,
+            tbl_style_col_band_size: f_tbl_style_col_band_size,
+            tbl_w: f_tbl_w,
+            justification: f_justification,
+            tbl_cell_spacing: f_tbl_cell_spacing,
+            tbl_ind: f_tbl_ind,
+            tbl_borders: f_tbl_borders,
+            shading: f_shading,
+            tbl_layout: f_tbl_layout,
+            tbl_cell_mar: f_tbl_cell_mar,
+            tbl_look: f_tbl_look,
+            tbl_caption: f_tbl_caption,
+            tbl_description: f_tbl_description,
             tbl_pr_change: f_tbl_pr_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -19080,6 +20721,15 @@ impl FromXml for CTTblPrEx {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_tbl_w = None;
+        let mut f_justification = None;
+        let mut f_tbl_cell_spacing = None;
+        let mut f_tbl_ind = None;
+        let mut f_tbl_borders = None;
+        let mut f_shading = None;
+        let mut f_tbl_layout = None;
+        let mut f_tbl_cell_mar = None;
+        let mut f_tbl_look = None;
         let mut f_tbl_pr_ex_change = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -19091,6 +20741,40 @@ impl FromXml for CTTblPrEx {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"tblW" => {
+                                f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJcTable::from_xml(reader, &e, false)?));
+                            }
+                            b"tblCellSpacing" => {
+                                f_tbl_cell_spacing =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"tblInd" => {
+                                f_tbl_ind =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, false)?));
+                            }
+                            b"tblBorders" => {
+                                f_tbl_borders =
+                                    Some(Box::new(CTTblBorders::from_xml(reader, &e, false)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, false)?));
+                            }
+                            b"tblLayout" => {
+                                f_tbl_layout =
+                                    Some(Box::new(CTTblLayoutType::from_xml(reader, &e, false)?));
+                            }
+                            b"tblCellMar" => {
+                                f_tbl_cell_mar =
+                                    Some(Box::new(CTTblCellMar::from_xml(reader, &e, false)?));
+                            }
+                            b"tblLook" => {
+                                f_tbl_look =
+                                    Some(Box::new(CTTblLook::from_xml(reader, &e, false)?));
+                            }
                             b"tblPrExChange" => {
                                 f_tbl_pr_ex_change =
                                     Some(Box::new(CTTblPrExChange::from_xml(reader, &e, false)?));
@@ -19110,6 +20794,38 @@ impl FromXml for CTTblPrEx {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"tblW" => {
+                                f_tbl_w = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"jc" => {
+                                f_justification =
+                                    Some(Box::new(CTJcTable::from_xml(reader, &e, true)?));
+                            }
+                            b"tblCellSpacing" => {
+                                f_tbl_cell_spacing =
+                                    Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"tblInd" => {
+                                f_tbl_ind = Some(Box::new(CTTblWidth::from_xml(reader, &e, true)?));
+                            }
+                            b"tblBorders" => {
+                                f_tbl_borders =
+                                    Some(Box::new(CTTblBorders::from_xml(reader, &e, true)?));
+                            }
+                            b"shd" => {
+                                f_shading = Some(Box::new(CTShd::from_xml(reader, &e, true)?));
+                            }
+                            b"tblLayout" => {
+                                f_tbl_layout =
+                                    Some(Box::new(CTTblLayoutType::from_xml(reader, &e, true)?));
+                            }
+                            b"tblCellMar" => {
+                                f_tbl_cell_mar =
+                                    Some(Box::new(CTTblCellMar::from_xml(reader, &e, true)?));
+                            }
+                            b"tblLook" => {
+                                f_tbl_look = Some(Box::new(CTTblLook::from_xml(reader, &e, true)?));
+                            }
                             b"tblPrExChange" => {
                                 f_tbl_pr_ex_change =
                                     Some(Box::new(CTTblPrExChange::from_xml(reader, &e, true)?));
@@ -19133,6 +20849,15 @@ impl FromXml for CTTblPrEx {
         }
 
         Ok(Self {
+            tbl_w: f_tbl_w,
+            justification: f_justification,
+            tbl_cell_spacing: f_tbl_cell_spacing,
+            tbl_ind: f_tbl_ind,
+            tbl_borders: f_tbl_borders,
+            shading: f_shading,
+            tbl_layout: f_tbl_layout,
+            tbl_cell_mar: f_tbl_cell_mar,
+            tbl_look: f_tbl_look,
             tbl_pr_ex_change: f_tbl_pr_ex_change,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -20056,6 +21781,10 @@ impl FromXml for CTFtnDocProps {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_pos = None;
+        let mut f_num_fmt = None;
+        let mut f_num_start = None;
+        let mut f_num_restart = None;
         let mut f_footnote = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -20067,6 +21796,20 @@ impl FromXml for CTFtnDocProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTFtnPos::from_xml(reader, &e, false)?));
+                            }
+                            b"numFmt" => {
+                                f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, false)?));
+                            }
+                            b"numStart" => {
+                                f_num_start =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"numRestart" => {
+                                f_num_restart =
+                                    Some(Box::new(CTNumRestart::from_xml(reader, &e, false)?));
+                            }
                             b"footnote" => {
                                 f_footnote
                                     .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, false)?));
@@ -20086,6 +21829,20 @@ impl FromXml for CTFtnDocProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTFtnPos::from_xml(reader, &e, true)?));
+                            }
+                            b"numFmt" => {
+                                f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, true)?));
+                            }
+                            b"numStart" => {
+                                f_num_start =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"numRestart" => {
+                                f_num_restart =
+                                    Some(Box::new(CTNumRestart::from_xml(reader, &e, true)?));
+                            }
                             b"footnote" => {
                                 f_footnote
                                     .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, true)?));
@@ -20109,6 +21866,10 @@ impl FromXml for CTFtnDocProps {
         }
 
         Ok(Self {
+            pos: f_pos,
+            num_fmt: f_num_fmt,
+            num_start: f_num_start,
+            num_restart: f_num_restart,
             footnote: f_footnote,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -20122,6 +21883,10 @@ impl FromXml for CTEdnDocProps {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_pos = None;
+        let mut f_num_fmt = None;
+        let mut f_num_start = None;
+        let mut f_num_restart = None;
         let mut f_endnote = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -20133,6 +21898,20 @@ impl FromXml for CTEdnDocProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTEdnPos::from_xml(reader, &e, false)?));
+                            }
+                            b"numFmt" => {
+                                f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, false)?));
+                            }
+                            b"numStart" => {
+                                f_num_start =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, false)?));
+                            }
+                            b"numRestart" => {
+                                f_num_restart =
+                                    Some(Box::new(CTNumRestart::from_xml(reader, &e, false)?));
+                            }
                             b"endnote" => {
                                 f_endnote
                                     .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, false)?));
@@ -20152,6 +21931,20 @@ impl FromXml for CTEdnDocProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTEdnPos::from_xml(reader, &e, true)?));
+                            }
+                            b"numFmt" => {
+                                f_num_fmt = Some(Box::new(CTNumFmt::from_xml(reader, &e, true)?));
+                            }
+                            b"numStart" => {
+                                f_num_start =
+                                    Some(Box::new(CTDecimalNumber::from_xml(reader, &e, true)?));
+                            }
+                            b"numRestart" => {
+                                f_num_restart =
+                                    Some(Box::new(CTNumRestart::from_xml(reader, &e, true)?));
+                            }
                             b"endnote" => {
                                 f_endnote
                                     .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, true)?));
@@ -20175,6 +21968,10 @@ impl FromXml for CTEdnDocProps {
         }
 
         Ok(Self {
+            pos: f_pos,
+            num_fmt: f_num_fmt,
+            num_start: f_num_start,
+            num_restart: f_num_restart,
             endnote: f_endnote,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -23912,6 +25709,7 @@ impl FromXml for CTOptimizeForBrowser {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_value = None;
         let mut f_target = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -23920,6 +25718,9 @@ impl FromXml for CTOptimizeForBrowser {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
                 b"target" => {
                     f_target = Some(val.into_owned());
                 }
@@ -23946,6 +25747,7 @@ impl FromXml for CTOptimizeForBrowser {
         }
 
         Ok(Self {
+            value: f_value,
             target: f_target,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -28708,6 +30510,7 @@ impl FromXml for Document {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_background = None;
         let mut f_body = None;
         let mut f_conformance = None;
         #[cfg(feature = "extra-attrs")]
@@ -28739,6 +30542,10 @@ impl FromXml for Document {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"background" => {
+                                f_background =
+                                    Some(Box::new(CTBackground::from_xml(reader, &e, false)?));
+                            }
                             b"body" => {
                                 f_body = Some(Box::new(Body::from_xml(reader, &e, false)?));
                             }
@@ -28757,6 +30564,10 @@ impl FromXml for Document {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"background" => {
+                                f_background =
+                                    Some(Box::new(CTBackground::from_xml(reader, &e, true)?));
+                            }
                             b"body" => {
                                 f_body = Some(Box::new(Body::from_xml(reader, &e, true)?));
                             }
@@ -28779,6 +30590,7 @@ impl FromXml for Document {
         }
 
         Ok(Self {
+            background: f_background,
             body: f_body,
             conformance: f_conformance,
             #[cfg(feature = "extra-attrs")]
@@ -28795,6 +30607,7 @@ impl FromXml for CTGlossaryDocument {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_background = None;
         let mut f_doc_parts = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -28806,6 +30619,10 @@ impl FromXml for CTGlossaryDocument {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            b"background" => {
+                                f_background =
+                                    Some(Box::new(CTBackground::from_xml(reader, &e, false)?));
+                            }
                             b"docParts" => {
                                 f_doc_parts =
                                     Some(Box::new(CTDocParts::from_xml(reader, &e, false)?));
@@ -28825,6 +30642,10 @@ impl FromXml for CTGlossaryDocument {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            b"background" => {
+                                f_background =
+                                    Some(Box::new(CTBackground::from_xml(reader, &e, true)?));
+                            }
                             b"docParts" => {
                                 f_doc_parts =
                                     Some(Box::new(CTDocParts::from_xml(reader, &e, true)?));
@@ -28848,6 +30669,7 @@ impl FromXml for CTGlossaryDocument {
         }
 
         Ok(Self {
+            background: f_background,
             doc_parts: f_doc_parts,
             #[cfg(feature = "extra-children")]
             extra_children,

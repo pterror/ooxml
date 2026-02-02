@@ -1236,6 +1236,10 @@ impl<'a> SerializerGenerator<'a> {
                 });
             }
             Pattern::Element { name, pattern } => {
+                // Skip wildcard elements (element * { ... }) — handled by extra_children
+                if name.local == "_any" {
+                    return;
+                }
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
@@ -1256,7 +1260,7 @@ impl<'a> SerializerGenerator<'a> {
                 self.collect_fields(inner, fields, true);
             }
             Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => match inner.as_ref() {
-                Pattern::Element { name, pattern } => {
+                Pattern::Element { name, pattern } if name.local != "_any" => {
                     fields.push(Field {
                         name: self.qname_to_field_name(name),
                         xml_name: name.local.clone(),
@@ -1328,6 +1332,9 @@ impl<'a> SerializerGenerator<'a> {
                             is_vec: false,
                             is_text_content: true,
                         });
+                    } else {
+                        // CT_* mixin or base type — inline its fields
+                        self.collect_fields(def_pattern, fields, is_optional);
                     }
                 }
             }

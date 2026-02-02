@@ -75,19 +75,15 @@ impl types::Paragraph {
 
     /// Add a bookmark start marker.
     pub fn add_bookmark_start(&mut self, id: i64, name: &str) {
-        let mut bookmark = types::Bookmark {
+        let bookmark = types::Bookmark {
+            id,
             name: name.to_string(),
+            displaced_by_custom_xml: None,
+            col_first: None,
+            col_last: None,
             #[cfg(feature = "extra-attrs")]
-            extra_attrs: std::collections::HashMap::new(),
+            extra_attrs: Default::default(),
         };
-        // id is an inherited attr from CT_MarkupRange → CT_Markup, stored in extra_attrs
-        #[cfg(feature = "extra-attrs")]
-        {
-            bookmark
-                .extra_attrs
-                .insert("w:id".to_string(), id.to_string());
-        }
-        let _ = id; // suppress unused warning when extra-attrs is off
         self.p_content
             .push(Box::new(types::EGPContent::BookmarkStart(Box::new(
                 bookmark,
@@ -96,33 +92,24 @@ impl types::Paragraph {
 
     /// Add a bookmark end marker.
     pub fn add_bookmark_end(&mut self, id: i64) {
-        let mut range = types::CTMarkupRange {
+        let range = types::CTMarkupRange {
+            id,
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
-            extra_attrs: std::collections::HashMap::new(),
+            extra_attrs: Default::default(),
         };
-        // id is inherited from CT_Markup, stored in extra_attrs
-        #[cfg(feature = "extra-attrs")]
-        {
-            range.extra_attrs.insert("w:id".to_string(), id.to_string());
-        }
-        let _ = id;
         self.p_content
             .push(Box::new(types::EGPContent::BookmarkEnd(Box::new(range))));
     }
 
     /// Add a comment range start marker.
     pub fn add_comment_range_start(&mut self, id: u32) {
-        let mut range = types::CTMarkupRange {
+        let range = types::CTMarkupRange {
+            id: id as i64,
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
-            extra_attrs: std::collections::HashMap::new(),
+            extra_attrs: Default::default(),
         };
-        #[cfg(feature = "extra-attrs")]
-        {
-            range.extra_attrs.insert("w:id".to_string(), id.to_string());
-        }
-        let _ = id;
         self.p_content
             .push(Box::new(types::EGPContent::CommentRangeStart(Box::new(
                 range,
@@ -131,16 +118,12 @@ impl types::Paragraph {
 
     /// Add a comment range end marker.
     pub fn add_comment_range_end(&mut self, id: u32) {
-        let mut range = types::CTMarkupRange {
+        let range = types::CTMarkupRange {
+            id: id as i64,
             displaced_by_custom_xml: None,
             #[cfg(feature = "extra-attrs")]
-            extra_attrs: std::collections::HashMap::new(),
+            extra_attrs: Default::default(),
         };
-        #[cfg(feature = "extra-attrs")]
-        {
-            range.extra_attrs.insert("w:id".to_string(), id.to_string());
-        }
-        let _ = id;
         self.p_content
             .push(Box::new(types::EGPContent::CommentRangeEnd(Box::new(
                 range,
@@ -154,109 +137,68 @@ impl types::Paragraph {
     }
 
     /// Set numbering properties (list membership) on this paragraph.
-    ///
-    /// This creates a `w:numPr` element with `w:ilvl` and `w:numId` children
-    /// inside the paragraph properties' extra_children, since the generated
-    /// ParagraphProperties doesn't yet flatten CTPPrBase fields.
-    #[cfg(all(feature = "wml-styling", feature = "extra-children"))]
+    #[cfg(feature = "wml-styling")]
     pub fn set_numbering(&mut self, num_id: u32, ilvl: u32) {
-        use ooxml_xml::{RawXmlElement, RawXmlNode};
-
         let ppr = self
             .p_pr
             .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
-        let num_pr = RawXmlElement {
-            name: "w:numPr".to_string(),
-            attributes: vec![],
-            children: vec![
-                RawXmlNode::Element(RawXmlElement {
-                    name: "w:ilvl".to_string(),
-                    attributes: vec![("w:val".to_string(), ilvl.to_string())],
-                    children: vec![],
-                    self_closing: true,
-                }),
-                RawXmlNode::Element(RawXmlElement {
-                    name: "w:numId".to_string(),
-                    attributes: vec![("w:val".to_string(), num_id.to_string())],
-                    children: vec![],
-                    self_closing: true,
-                }),
-            ],
-            self_closing: false,
-        };
-        ppr.extra_children.push(RawXmlNode::Element(num_pr));
+        ppr.num_pr = Some(Box::new(types::CTNumPr {
+            ilvl: Some(Box::new(types::CTDecimalNumber {
+                value: ilvl as i64,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })),
+            num_id: Some(Box::new(types::CTDecimalNumber {
+                value: num_id as i64,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })),
+            numbering_change: None,
+            ins: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }));
     }
 
     /// Set paragraph alignment.
     ///
-    /// Creates a `w:jc` element in the paragraph properties' extra_children.
-    /// Common values: "left", "center", "right", "both" (justified).
-    #[cfg(all(feature = "wml-styling", feature = "extra-children"))]
-    pub fn set_alignment(&mut self, alignment: &str) {
-        use ooxml_xml::{RawXmlElement, RawXmlNode};
-
+    /// Use `STJc` variants: `Left`, `Center`, `Right`, `Both` (justified), etc.
+    #[cfg(feature = "wml-styling")]
+    pub fn set_alignment(&mut self, alignment: types::STJc) {
         let ppr = self
             .p_pr
             .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
-        let jc = RawXmlElement {
-            name: "w:jc".to_string(),
-            attributes: vec![("w:val".to_string(), alignment.to_string())],
-            children: vec![],
-            self_closing: true,
-        };
-        ppr.extra_children.push(RawXmlNode::Element(jc));
+        ppr.justification = Some(Box::new(types::CTJc {
+            value: alignment,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }));
     }
 
     /// Set paragraph spacing (before and after, in twips).
-    ///
-    /// Creates a `w:spacing` element in the paragraph properties' extra_children.
-    #[cfg(all(feature = "wml-styling", feature = "extra-children"))]
+    #[cfg(feature = "wml-styling")]
     pub fn set_spacing(&mut self, before: Option<u32>, after: Option<u32>) {
-        use ooxml_xml::{RawXmlElement, RawXmlNode};
-
         let ppr = self
             .p_pr
             .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
-        let mut attrs = vec![];
-        if let Some(b) = before {
-            attrs.push(("w:before".to_string(), b.to_string()));
-        }
-        if let Some(a) = after {
-            attrs.push(("w:after".to_string(), a.to_string()));
-        }
-        let spacing = RawXmlElement {
-            name: "w:spacing".to_string(),
-            attributes: attrs,
-            children: vec![],
-            self_closing: true,
-        };
-        ppr.extra_children.push(RawXmlNode::Element(spacing));
+        ppr.spacing = Some(Box::new(types::CTSpacing {
+            before: before.map(|b| b.to_string()),
+            after: after.map(|a| a.to_string()),
+            ..Default::default()
+        }));
     }
 
     /// Set paragraph indentation.
-    ///
-    /// Creates a `w:ind` element in the paragraph properties' extra_children.
-    #[cfg(all(feature = "wml-styling", feature = "extra-children"))]
+    #[cfg(feature = "wml-styling")]
     pub fn set_indent(&mut self, left: Option<u32>, first_line: Option<u32>) {
-        use ooxml_xml::{RawXmlElement, RawXmlNode};
-
         let ppr = self
             .p_pr
             .get_or_insert_with(|| Box::new(types::ParagraphProperties::default()));
-        let mut attrs = vec![];
-        if let Some(l) = left {
-            attrs.push(("w:left".to_string(), l.to_string()));
-        }
-        if let Some(fl) = first_line {
-            attrs.push(("w:firstLine".to_string(), fl.to_string()));
-        }
-        let ind = RawXmlElement {
-            name: "w:ind".to_string(),
-            attributes: attrs,
-            children: vec![],
-            self_closing: true,
-        };
-        ppr.extra_children.push(RawXmlNode::Element(ind));
+        ppr.indentation = Some(Box::new(types::CTInd {
+            left: left.map(|l| l.to_string()),
+            first_line: first_line.map(|fl| fl.to_string()),
+            ..Default::default()
+        }));
     }
 }
 

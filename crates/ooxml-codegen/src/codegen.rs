@@ -892,6 +892,10 @@ impl<'a> Generator<'a> {
                 });
             }
             Pattern::Element { name, pattern } => {
+                // Skip wildcard elements (element * { ... }) — handled by extra_children
+                if name.local == "_any" {
+                    return;
+                }
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
@@ -914,7 +918,7 @@ impl<'a> Generator<'a> {
             Pattern::ZeroOrMore(inner) | Pattern::OneOrMore(inner) => {
                 // These become Vec<T> fields
                 match inner.as_ref() {
-                    Pattern::Element { name, pattern } => {
+                    Pattern::Element { name, pattern } if name.local != "_any" => {
                         fields.push(Field {
                             name: self.qname_to_field_name(name),
                             xml_name: name.local.clone(),
@@ -957,29 +961,26 @@ impl<'a> Generator<'a> {
                 self.collect_fields(inner, fields, is_optional);
             }
             Pattern::Ref(name) => {
-                // Check if this is a reference to a simple type (text content)
-                if let Some(pattern) = self.definitions.get(name.as_str())
-                    && self.is_string_type(pattern)
-                {
-                    // This is text content - always optional since elements
-                    // can be self-closing (e.g. shared formula refs: <f t="shared" si="0"/>)
-                    fields.push(Field {
-                        name: "text".to_string(),
-                        xml_name: "$text".to_string(),
-                        xml_prefix: None,
-                        pattern: Pattern::Datatype {
-                            library: "xsd".to_string(),
-                            name: "string".to_string(),
-                            params: vec![],
-                        },
-                        is_optional: true,
-                        is_attribute: false,
-                        is_vec: false,
-                        is_text_content: true,
-                    });
-                } else if name.contains("_EG_") {
-                    // Element group reference
-                    if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    if self.is_string_type(def_pattern) {
+                        // Text content - always optional since elements
+                        // can be self-closing (e.g. shared formula refs: <f t="shared" si="0"/>)
+                        fields.push(Field {
+                            name: "text".to_string(),
+                            xml_name: "$text".to_string(),
+                            xml_prefix: None,
+                            pattern: Pattern::Datatype {
+                                library: "xsd".to_string(),
+                                name: "string".to_string(),
+                                params: vec![],
+                            },
+                            is_optional: true,
+                            is_attribute: false,
+                            is_vec: false,
+                            is_text_content: true,
+                        });
+                    } else if name.contains("_EG_") {
+                        // Element group reference
                         if self.is_element_choice(def_pattern) {
                             // Element group choice → add as content field
                             fields.push(Field {
@@ -996,14 +997,14 @@ impl<'a> Generator<'a> {
                             // Struct-like property group → inline its fields
                             self.collect_fields(def_pattern, fields, is_optional);
                         }
-                    }
-                } else if name.contains("_AG_") {
-                    // Attribute group reference → inline its attribute fields
-                    if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    } else if name.contains("_AG_") {
+                        // Attribute group reference → inline its attribute fields
+                        self.collect_fields(def_pattern, fields, is_optional);
+                    } else {
+                        // CT_* mixin or base type — inline its fields
                         self.collect_fields(def_pattern, fields, is_optional);
                     }
                 }
-                // Other bare refs (CT_* mixins, etc.) are skipped for now
             }
             Pattern::Choice(_) => {
                 // Choice patterns at the field level represent variant content.

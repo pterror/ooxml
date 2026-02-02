@@ -1795,6 +1795,13 @@ impl ToXml for CTTrackChange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
         }
@@ -1816,6 +1823,20 @@ impl ToXml for CTTrackChange {
 impl ToXml for CTCellMergeTrackChange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         if let Some(ref val) = self.vertical_merge {
             {
                 let s = val.to_string();
@@ -1843,6 +1864,20 @@ impl ToXml for CTCellMergeTrackChange {
 impl ToXml for CTTrackChangeRange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
@@ -1864,6 +1899,13 @@ impl ToXml for CTTrackChangeRange {
 impl ToXml for CTMarkupRange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
         if let Some(ref val) = self.displaced_by_custom_xml {
             {
                 let s = val.to_string();
@@ -1885,6 +1927,19 @@ impl ToXml for CTMarkupRange {
 impl ToXml for CTBookmarkRange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.displaced_by_custom_xml {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:displacedByCustomXml", s.as_str()));
+            }
+        }
         if let Some(ref val) = self.col_first {
             {
                 let s = val.to_string();
@@ -1913,6 +1968,31 @@ impl ToXml for Bookmark {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.displaced_by_custom_xml {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:displacedByCustomXml", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.col_first {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:colFirst", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.col_last {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:colLast", s.as_str()));
+            }
+        }
+        {
             let val = &self.name;
             start.push_attribute(("w:name", val.as_str()));
         }
@@ -1931,6 +2011,35 @@ impl ToXml for Bookmark {
 impl ToXml for CTMoveBookmark {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.displaced_by_custom_xml {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:displacedByCustomXml", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.col_first {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:colFirst", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.col_last {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:colLast", s.as_str()));
+            }
+        }
+        {
+            let val = &self.name;
+            start.push_attribute(("w:name", val.as_str()));
+        }
         {
             let val = &self.author;
             start.push_attribute(("w:author", val.as_str()));
@@ -1954,6 +2063,20 @@ impl ToXml for CTMoveBookmark {
 impl ToXml for Comment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         if let Some(ref val) = self.initials {
             start.push_attribute(("w:initials", val.as_str()));
         }
@@ -1990,6 +2113,20 @@ impl ToXml for Comment {
 impl ToXml for CTTrackChangeNumbering {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         if let Some(ref val) = self.original {
             start.push_attribute(("w:original", val.as_str()));
         }
@@ -2006,6 +2143,29 @@ impl ToXml for CTTrackChangeNumbering {
 }
 
 impl ToXml for CTTblPrExChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.tbl_pr_ex;
@@ -2024,6 +2184,29 @@ impl ToXml for CTTblPrExChange {
 }
 
 impl ToXml for CTTcPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.cell_properties;
@@ -2042,6 +2225,29 @@ impl ToXml for CTTcPrChange {
 }
 
 impl ToXml for CTTrPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.row_properties;
@@ -2060,6 +2266,22 @@ impl ToXml for CTTrPrChange {
 }
 
 impl ToXml for CTTblGridChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.tbl_grid;
@@ -2078,6 +2300,29 @@ impl ToXml for CTTblGridChange {
 }
 
 impl ToXml for CTTblPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.table_properties;
@@ -2096,6 +2341,29 @@ impl ToXml for CTTblPrChange {
 }
 
 impl ToXml for CTSectPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         if let Some(ref val) = self.sect_pr {
             val.write_element("w:sectPr", writer)?;
@@ -2120,6 +2388,29 @@ impl ToXml for CTSectPrChange {
 }
 
 impl ToXml for CTPPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.p_pr;
@@ -2138,6 +2429,29 @@ impl ToXml for CTPPrChange {
 }
 
 impl ToXml for CTRPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.r_pr;
@@ -2156,6 +2470,29 @@ impl ToXml for CTRPrChange {
 }
 
 impl ToXml for CTParaRPrChange {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         {
             let val = &self.r_pr;
@@ -2175,8 +2512,21 @@ impl ToXml for CTParaRPrChange {
 
 impl ToXml for CTRunTrackChange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        #[allow(unused_mut)]
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -2184,19 +2534,7 @@ impl ToXml for CTRunTrackChange {
         start
     }
 
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.write_to(writer).map_err(SerializeError::from)?;
-        }
-        Ok(())
-    }
-
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -2494,6 +2832,105 @@ impl ToXml for CTTextboxTightWrap {
 
 impl ToXml for ParagraphProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.paragraph_style {
+            val.write_element("w:pStyle", writer)?;
+        }
+        if let Some(ref val) = self.keep_next {
+            val.write_element("w:keepNext", writer)?;
+        }
+        if let Some(ref val) = self.keep_lines {
+            val.write_element("w:keepLines", writer)?;
+        }
+        if let Some(ref val) = self.page_break_before {
+            val.write_element("w:pageBreakBefore", writer)?;
+        }
+        if let Some(ref val) = self.frame_pr {
+            val.write_element("w:framePr", writer)?;
+        }
+        if let Some(ref val) = self.widow_control {
+            val.write_element("w:widowControl", writer)?;
+        }
+        if let Some(ref val) = self.num_pr {
+            val.write_element("w:numPr", writer)?;
+        }
+        if let Some(ref val) = self.suppress_line_numbers {
+            val.write_element("w:suppressLineNumbers", writer)?;
+        }
+        if let Some(ref val) = self.paragraph_border {
+            val.write_element("w:pBdr", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.tabs {
+            val.write_element("w:tabs", writer)?;
+        }
+        if let Some(ref val) = self.suppress_auto_hyphens {
+            val.write_element("w:suppressAutoHyphens", writer)?;
+        }
+        if let Some(ref val) = self.kinsoku {
+            val.write_element("w:kinsoku", writer)?;
+        }
+        if let Some(ref val) = self.word_wrap {
+            val.write_element("w:wordWrap", writer)?;
+        }
+        if let Some(ref val) = self.overflow_punct {
+            val.write_element("w:overflowPunct", writer)?;
+        }
+        if let Some(ref val) = self.top_line_punct {
+            val.write_element("w:topLinePunct", writer)?;
+        }
+        if let Some(ref val) = self.auto_space_d_e {
+            val.write_element("w:autoSpaceDE", writer)?;
+        }
+        if let Some(ref val) = self.auto_space_d_n {
+            val.write_element("w:autoSpaceDN", writer)?;
+        }
+        if let Some(ref val) = self.bidi {
+            val.write_element("w:bidi", writer)?;
+        }
+        if let Some(ref val) = self.adjust_right_ind {
+            val.write_element("w:adjustRightInd", writer)?;
+        }
+        if let Some(ref val) = self.snap_to_grid {
+            val.write_element("w:snapToGrid", writer)?;
+        }
+        if let Some(ref val) = self.spacing {
+            val.write_element("w:spacing", writer)?;
+        }
+        if let Some(ref val) = self.indentation {
+            val.write_element("w:ind", writer)?;
+        }
+        if let Some(ref val) = self.contextual_spacing {
+            val.write_element("w:contextualSpacing", writer)?;
+        }
+        if let Some(ref val) = self.mirror_indents {
+            val.write_element("w:mirrorIndents", writer)?;
+        }
+        if let Some(ref val) = self.suppress_overlap {
+            val.write_element("w:suppressOverlap", writer)?;
+        }
+        if let Some(ref val) = self.justification {
+            val.write_element("w:jc", writer)?;
+        }
+        if let Some(ref val) = self.text_direction {
+            val.write_element("w:textDirection", writer)?;
+        }
+        if let Some(ref val) = self.text_alignment {
+            val.write_element("w:textAlignment", writer)?;
+        }
+        if let Some(ref val) = self.textbox_tight_wrap {
+            val.write_element("w:textboxTightWrap", writer)?;
+        }
+        if let Some(ref val) = self.outline_lvl {
+            val.write_element("w:outlineLvl", writer)?;
+        }
+        if let Some(ref val) = self.div_id {
+            val.write_element("w:divId", writer)?;
+        }
+        if let Some(ref val) = self.cnf_style {
+            val.write_element("w:cnfStyle", writer)?;
+        }
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
         }
@@ -2511,6 +2948,105 @@ impl ToXml for ParagraphProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.paragraph_style.is_some() {
+            return false;
+        }
+        if self.keep_next.is_some() {
+            return false;
+        }
+        if self.keep_lines.is_some() {
+            return false;
+        }
+        if self.page_break_before.is_some() {
+            return false;
+        }
+        if self.frame_pr.is_some() {
+            return false;
+        }
+        if self.widow_control.is_some() {
+            return false;
+        }
+        if self.num_pr.is_some() {
+            return false;
+        }
+        if self.suppress_line_numbers.is_some() {
+            return false;
+        }
+        if self.paragraph_border.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.tabs.is_some() {
+            return false;
+        }
+        if self.suppress_auto_hyphens.is_some() {
+            return false;
+        }
+        if self.kinsoku.is_some() {
+            return false;
+        }
+        if self.word_wrap.is_some() {
+            return false;
+        }
+        if self.overflow_punct.is_some() {
+            return false;
+        }
+        if self.top_line_punct.is_some() {
+            return false;
+        }
+        if self.auto_space_d_e.is_some() {
+            return false;
+        }
+        if self.auto_space_d_n.is_some() {
+            return false;
+        }
+        if self.bidi.is_some() {
+            return false;
+        }
+        if self.adjust_right_ind.is_some() {
+            return false;
+        }
+        if self.snap_to_grid.is_some() {
+            return false;
+        }
+        if self.spacing.is_some() {
+            return false;
+        }
+        if self.indentation.is_some() {
+            return false;
+        }
+        if self.contextual_spacing.is_some() {
+            return false;
+        }
+        if self.mirror_indents.is_some() {
+            return false;
+        }
+        if self.suppress_overlap.is_some() {
+            return false;
+        }
+        if self.justification.is_some() {
+            return false;
+        }
+        if self.text_direction.is_some() {
+            return false;
+        }
+        if self.text_alignment.is_some() {
+            return false;
+        }
+        if self.textbox_tight_wrap.is_some() {
+            return false;
+        }
+        if self.outline_lvl.is_some() {
+            return false;
+        }
+        if self.div_id.is_some() {
+            return false;
+        }
+        if self.cnf_style.is_some() {
+            return false;
+        }
         if self.r_pr.is_some() {
             return false;
         }
@@ -2746,6 +3282,105 @@ impl ToXml for CTPPrBase {
 
 impl ToXml for CTPPrGeneral {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.paragraph_style {
+            val.write_element("w:pStyle", writer)?;
+        }
+        if let Some(ref val) = self.keep_next {
+            val.write_element("w:keepNext", writer)?;
+        }
+        if let Some(ref val) = self.keep_lines {
+            val.write_element("w:keepLines", writer)?;
+        }
+        if let Some(ref val) = self.page_break_before {
+            val.write_element("w:pageBreakBefore", writer)?;
+        }
+        if let Some(ref val) = self.frame_pr {
+            val.write_element("w:framePr", writer)?;
+        }
+        if let Some(ref val) = self.widow_control {
+            val.write_element("w:widowControl", writer)?;
+        }
+        if let Some(ref val) = self.num_pr {
+            val.write_element("w:numPr", writer)?;
+        }
+        if let Some(ref val) = self.suppress_line_numbers {
+            val.write_element("w:suppressLineNumbers", writer)?;
+        }
+        if let Some(ref val) = self.paragraph_border {
+            val.write_element("w:pBdr", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.tabs {
+            val.write_element("w:tabs", writer)?;
+        }
+        if let Some(ref val) = self.suppress_auto_hyphens {
+            val.write_element("w:suppressAutoHyphens", writer)?;
+        }
+        if let Some(ref val) = self.kinsoku {
+            val.write_element("w:kinsoku", writer)?;
+        }
+        if let Some(ref val) = self.word_wrap {
+            val.write_element("w:wordWrap", writer)?;
+        }
+        if let Some(ref val) = self.overflow_punct {
+            val.write_element("w:overflowPunct", writer)?;
+        }
+        if let Some(ref val) = self.top_line_punct {
+            val.write_element("w:topLinePunct", writer)?;
+        }
+        if let Some(ref val) = self.auto_space_d_e {
+            val.write_element("w:autoSpaceDE", writer)?;
+        }
+        if let Some(ref val) = self.auto_space_d_n {
+            val.write_element("w:autoSpaceDN", writer)?;
+        }
+        if let Some(ref val) = self.bidi {
+            val.write_element("w:bidi", writer)?;
+        }
+        if let Some(ref val) = self.adjust_right_ind {
+            val.write_element("w:adjustRightInd", writer)?;
+        }
+        if let Some(ref val) = self.snap_to_grid {
+            val.write_element("w:snapToGrid", writer)?;
+        }
+        if let Some(ref val) = self.spacing {
+            val.write_element("w:spacing", writer)?;
+        }
+        if let Some(ref val) = self.indentation {
+            val.write_element("w:ind", writer)?;
+        }
+        if let Some(ref val) = self.contextual_spacing {
+            val.write_element("w:contextualSpacing", writer)?;
+        }
+        if let Some(ref val) = self.mirror_indents {
+            val.write_element("w:mirrorIndents", writer)?;
+        }
+        if let Some(ref val) = self.suppress_overlap {
+            val.write_element("w:suppressOverlap", writer)?;
+        }
+        if let Some(ref val) = self.justification {
+            val.write_element("w:jc", writer)?;
+        }
+        if let Some(ref val) = self.text_direction {
+            val.write_element("w:textDirection", writer)?;
+        }
+        if let Some(ref val) = self.text_alignment {
+            val.write_element("w:textAlignment", writer)?;
+        }
+        if let Some(ref val) = self.textbox_tight_wrap {
+            val.write_element("w:textboxTightWrap", writer)?;
+        }
+        if let Some(ref val) = self.outline_lvl {
+            val.write_element("w:outlineLvl", writer)?;
+        }
+        if let Some(ref val) = self.div_id {
+            val.write_element("w:divId", writer)?;
+        }
+        if let Some(ref val) = self.cnf_style {
+            val.write_element("w:cnfStyle", writer)?;
+        }
         if let Some(ref val) = self.p_pr_change {
             val.write_element("w:pPrChange", writer)?;
         }
@@ -2757,6 +3392,105 @@ impl ToXml for CTPPrGeneral {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.paragraph_style.is_some() {
+            return false;
+        }
+        if self.keep_next.is_some() {
+            return false;
+        }
+        if self.keep_lines.is_some() {
+            return false;
+        }
+        if self.page_break_before.is_some() {
+            return false;
+        }
+        if self.frame_pr.is_some() {
+            return false;
+        }
+        if self.widow_control.is_some() {
+            return false;
+        }
+        if self.num_pr.is_some() {
+            return false;
+        }
+        if self.suppress_line_numbers.is_some() {
+            return false;
+        }
+        if self.paragraph_border.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.tabs.is_some() {
+            return false;
+        }
+        if self.suppress_auto_hyphens.is_some() {
+            return false;
+        }
+        if self.kinsoku.is_some() {
+            return false;
+        }
+        if self.word_wrap.is_some() {
+            return false;
+        }
+        if self.overflow_punct.is_some() {
+            return false;
+        }
+        if self.top_line_punct.is_some() {
+            return false;
+        }
+        if self.auto_space_d_e.is_some() {
+            return false;
+        }
+        if self.auto_space_d_n.is_some() {
+            return false;
+        }
+        if self.bidi.is_some() {
+            return false;
+        }
+        if self.adjust_right_ind.is_some() {
+            return false;
+        }
+        if self.snap_to_grid.is_some() {
+            return false;
+        }
+        if self.spacing.is_some() {
+            return false;
+        }
+        if self.indentation.is_some() {
+            return false;
+        }
+        if self.contextual_spacing.is_some() {
+            return false;
+        }
+        if self.mirror_indents.is_some() {
+            return false;
+        }
+        if self.suppress_overlap.is_some() {
+            return false;
+        }
+        if self.justification.is_some() {
+            return false;
+        }
+        if self.text_direction.is_some() {
+            return false;
+        }
+        if self.text_alignment.is_some() {
+            return false;
+        }
+        if self.textbox_tight_wrap.is_some() {
+            return false;
+        }
+        if self.outline_lvl.is_some() {
+            return false;
+        }
+        if self.div_id.is_some() {
+            return false;
+        }
+        if self.cnf_style.is_some() {
+            return false;
+        }
         if self.p_pr_change.is_some() {
             return false;
         }
@@ -2972,6 +3706,21 @@ impl ToXml for CTObjectEmbed {
 impl ToXml for CTObjectLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        if let Some(ref val) = self.draw_aspect {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:drawAspect", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.prog_id {
+            start.push_attribute(("w:progId", val.as_str()));
+        }
+        if let Some(ref val) = self.shape_id {
+            start.push_attribute(("w:shapeId", val.as_str()));
+        }
+        if let Some(ref val) = self.field_codes {
+            start.push_attribute(("w:fieldCodes", val.as_str()));
+        }
         {
             let val = &self.update_mode;
             {
@@ -3591,8 +4340,62 @@ impl ToXml for CTPageBorders {
 
 impl ToXml for CTPageBorder {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        #[allow(unused_mut)]
         let mut start = start;
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:val", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:color", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:themeColor", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_tint {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeTint", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_shade {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeShade", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.size {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:sz", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.space {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:space", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.shadow {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:shadow", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.frame {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:frame", s.as_str()));
+            }
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -3600,27 +4403,69 @@ impl ToXml for CTPageBorder {
         start
     }
 
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.write_to(writer).map_err(SerializeError::from)?;
-        }
-        Ok(())
-    }
-
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
 
 impl ToXml for CTBottomPageBorder {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        #[allow(unused_mut)]
         let mut start = start;
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:val", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:color", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:themeColor", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_tint {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeTint", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_shade {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeShade", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.size {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:sz", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.space {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:space", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.shadow {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:shadow", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.frame {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:frame", s.as_str()));
+            }
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -3628,27 +4473,69 @@ impl ToXml for CTBottomPageBorder {
         start
     }
 
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.write_to(writer).map_err(SerializeError::from)?;
-        }
-        Ok(())
-    }
-
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
 
 impl ToXml for CTTopPageBorder {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        #[allow(unused_mut)]
         let mut start = start;
+        {
+            let val = &self.value;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:val", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:color", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_color {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:themeColor", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_tint {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeTint", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.theme_shade {
+            {
+                let hex = encode_hex(val);
+                start.push_attribute(("w:themeShade", hex.as_str()));
+            }
+        }
+        if let Some(ref val) = self.size {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:sz", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.space {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:space", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.shadow {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:shadow", s.as_str()));
+            }
+        }
+        if let Some(ref val) = self.frame {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:frame", s.as_str()));
+            }
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -3656,19 +4543,7 @@ impl ToXml for CTTopPageBorder {
         start
     }
 
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.write_to(writer).map_err(SerializeError::from)?;
-        }
-        Ok(())
-    }
-
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -4600,6 +5475,16 @@ impl ToXml for CTPerm {
 impl ToXml for CTPermStart {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("w:id", val.as_str()));
+        }
+        if let Some(ref val) = self.displaced_by_custom_xml {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:displacedByCustomXml", s.as_str()));
+            }
+        }
         if let Some(ref val) = self.ed_grp {
             {
                 let s = val.to_string();
@@ -5631,8 +6516,21 @@ impl ToXml for EGRPrMath {
 
 impl ToXml for CTMathCtrlIns {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        #[allow(unused_mut)]
         let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -5640,24 +6538,35 @@ impl ToXml for CTMathCtrlIns {
         start
     }
 
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.write_to(writer).map_err(SerializeError::from)?;
-        }
-        Ok(())
-    }
-
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
 
 impl ToXml for CTMathCtrlDel {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:id", s.as_str()));
+            }
+        }
+        {
+            let val = &self.author;
+            start.push_attribute(("w:author", val.as_str()));
+        }
+        if let Some(ref val) = self.date {
+            start.push_attribute(("w:date", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         if let Some(ref val) = self.r_pr {
             val.write_element("w:rPr", writer)?;
@@ -8229,6 +9138,9 @@ impl ToXml for CTTblGridBase {
 
 impl ToXml for TableGrid {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        for item in &self.grid_col {
+            item.write_element("w:gridCol", writer)?;
+        }
         if let Some(ref val) = self.tbl_grid_change {
             val.write_element("w:tblGridChange", writer)?;
         }
@@ -8240,6 +9152,9 @@ impl ToXml for TableGrid {
     }
 
     fn is_empty_element(&self) -> bool {
+        if !self.grid_col.is_empty() {
+            return false;
+        }
         if self.tbl_grid_change.is_some() {
             return false;
         }
@@ -8529,6 +9444,51 @@ impl ToXml for CTTcPrBase {
 
 impl ToXml for TableCellProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.cnf_style {
+            val.write_element("w:cnfStyle", writer)?;
+        }
+        if let Some(ref val) = self.tc_w {
+            val.write_element("w:tcW", writer)?;
+        }
+        if let Some(ref val) = self.grid_span {
+            val.write_element("w:gridSpan", writer)?;
+        }
+        if let Some(ref val) = self.horizontal_merge {
+            val.write_element("w:hMerge", writer)?;
+        }
+        if let Some(ref val) = self.vertical_merge {
+            val.write_element("w:vMerge", writer)?;
+        }
+        if let Some(ref val) = self.tc_borders {
+            val.write_element("w:tcBorders", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.no_wrap {
+            val.write_element("w:noWrap", writer)?;
+        }
+        if let Some(ref val) = self.tc_mar {
+            val.write_element("w:tcMar", writer)?;
+        }
+        if let Some(ref val) = self.text_direction {
+            val.write_element("w:textDirection", writer)?;
+        }
+        if let Some(ref val) = self.tc_fit_text {
+            val.write_element("w:tcFitText", writer)?;
+        }
+        if let Some(ref val) = self.v_align {
+            val.write_element("w:vAlign", writer)?;
+        }
+        if let Some(ref val) = self.hide_mark {
+            val.write_element("w:hideMark", writer)?;
+        }
+        if let Some(ref val) = self.headers {
+            val.write_element("w:headers", writer)?;
+        }
+        if let Some(ref val) = self.cell_markup_elements {
+            val.write_element("", writer)?;
+        }
         if let Some(ref val) = self.tc_pr_change {
             val.write_element("w:tcPrChange", writer)?;
         }
@@ -8540,6 +9500,51 @@ impl ToXml for TableCellProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.cnf_style.is_some() {
+            return false;
+        }
+        if self.tc_w.is_some() {
+            return false;
+        }
+        if self.grid_span.is_some() {
+            return false;
+        }
+        if self.horizontal_merge.is_some() {
+            return false;
+        }
+        if self.vertical_merge.is_some() {
+            return false;
+        }
+        if self.tc_borders.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.no_wrap.is_some() {
+            return false;
+        }
+        if self.tc_mar.is_some() {
+            return false;
+        }
+        if self.text_direction.is_some() {
+            return false;
+        }
+        if self.tc_fit_text.is_some() {
+            return false;
+        }
+        if self.v_align.is_some() {
+            return false;
+        }
+        if self.hide_mark.is_some() {
+            return false;
+        }
+        if self.headers.is_some() {
+            return false;
+        }
+        if self.cell_markup_elements.is_some() {
+            return false;
+        }
         if self.tc_pr_change.is_some() {
             return false;
         }
@@ -8553,6 +9558,48 @@ impl ToXml for TableCellProperties {
 
 impl ToXml for CTTcPrInner {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.cnf_style {
+            val.write_element("w:cnfStyle", writer)?;
+        }
+        if let Some(ref val) = self.tc_w {
+            val.write_element("w:tcW", writer)?;
+        }
+        if let Some(ref val) = self.grid_span {
+            val.write_element("w:gridSpan", writer)?;
+        }
+        if let Some(ref val) = self.horizontal_merge {
+            val.write_element("w:hMerge", writer)?;
+        }
+        if let Some(ref val) = self.vertical_merge {
+            val.write_element("w:vMerge", writer)?;
+        }
+        if let Some(ref val) = self.tc_borders {
+            val.write_element("w:tcBorders", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.no_wrap {
+            val.write_element("w:noWrap", writer)?;
+        }
+        if let Some(ref val) = self.tc_mar {
+            val.write_element("w:tcMar", writer)?;
+        }
+        if let Some(ref val) = self.text_direction {
+            val.write_element("w:textDirection", writer)?;
+        }
+        if let Some(ref val) = self.tc_fit_text {
+            val.write_element("w:tcFitText", writer)?;
+        }
+        if let Some(ref val) = self.v_align {
+            val.write_element("w:vAlign", writer)?;
+        }
+        if let Some(ref val) = self.hide_mark {
+            val.write_element("w:hideMark", writer)?;
+        }
+        if let Some(ref val) = self.headers {
+            val.write_element("w:headers", writer)?;
+        }
         if let Some(ref val) = self.cell_markup_elements {
             val.write_element("", writer)?;
         }
@@ -8564,6 +9611,48 @@ impl ToXml for CTTcPrInner {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.cnf_style.is_some() {
+            return false;
+        }
+        if self.tc_w.is_some() {
+            return false;
+        }
+        if self.grid_span.is_some() {
+            return false;
+        }
+        if self.horizontal_merge.is_some() {
+            return false;
+        }
+        if self.vertical_merge.is_some() {
+            return false;
+        }
+        if self.tc_borders.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.no_wrap.is_some() {
+            return false;
+        }
+        if self.tc_mar.is_some() {
+            return false;
+        }
+        if self.text_direction.is_some() {
+            return false;
+        }
+        if self.tc_fit_text.is_some() {
+            return false;
+        }
+        if self.v_align.is_some() {
+            return false;
+        }
+        if self.hide_mark.is_some() {
+            return false;
+        }
+        if self.headers.is_some() {
+            return false;
+        }
         if self.cell_markup_elements.is_some() {
             return false;
         }
@@ -9214,6 +10303,57 @@ impl ToXml for CTTblPrBase {
 
 impl ToXml for TableProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.tbl_style {
+            val.write_element("w:tblStyle", writer)?;
+        }
+        if let Some(ref val) = self.tblp_pr {
+            val.write_element("w:tblpPr", writer)?;
+        }
+        if let Some(ref val) = self.tbl_overlap {
+            val.write_element("w:tblOverlap", writer)?;
+        }
+        if let Some(ref val) = self.bidi_visual {
+            val.write_element("w:bidiVisual", writer)?;
+        }
+        if let Some(ref val) = self.tbl_style_row_band_size {
+            val.write_element("w:tblStyleRowBandSize", writer)?;
+        }
+        if let Some(ref val) = self.tbl_style_col_band_size {
+            val.write_element("w:tblStyleColBandSize", writer)?;
+        }
+        if let Some(ref val) = self.tbl_w {
+            val.write_element("w:tblW", writer)?;
+        }
+        if let Some(ref val) = self.justification {
+            val.write_element("w:jc", writer)?;
+        }
+        if let Some(ref val) = self.tbl_cell_spacing {
+            val.write_element("w:tblCellSpacing", writer)?;
+        }
+        if let Some(ref val) = self.tbl_ind {
+            val.write_element("w:tblInd", writer)?;
+        }
+        if let Some(ref val) = self.tbl_borders {
+            val.write_element("w:tblBorders", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.tbl_layout {
+            val.write_element("w:tblLayout", writer)?;
+        }
+        if let Some(ref val) = self.tbl_cell_mar {
+            val.write_element("w:tblCellMar", writer)?;
+        }
+        if let Some(ref val) = self.tbl_look {
+            val.write_element("w:tblLook", writer)?;
+        }
+        if let Some(ref val) = self.tbl_caption {
+            val.write_element("w:tblCaption", writer)?;
+        }
+        if let Some(ref val) = self.tbl_description {
+            val.write_element("w:tblDescription", writer)?;
+        }
         if let Some(ref val) = self.tbl_pr_change {
             val.write_element("w:tblPrChange", writer)?;
         }
@@ -9225,6 +10365,57 @@ impl ToXml for TableProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.tbl_style.is_some() {
+            return false;
+        }
+        if self.tblp_pr.is_some() {
+            return false;
+        }
+        if self.tbl_overlap.is_some() {
+            return false;
+        }
+        if self.bidi_visual.is_some() {
+            return false;
+        }
+        if self.tbl_style_row_band_size.is_some() {
+            return false;
+        }
+        if self.tbl_style_col_band_size.is_some() {
+            return false;
+        }
+        if self.tbl_w.is_some() {
+            return false;
+        }
+        if self.justification.is_some() {
+            return false;
+        }
+        if self.tbl_cell_spacing.is_some() {
+            return false;
+        }
+        if self.tbl_ind.is_some() {
+            return false;
+        }
+        if self.tbl_borders.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.tbl_layout.is_some() {
+            return false;
+        }
+        if self.tbl_cell_mar.is_some() {
+            return false;
+        }
+        if self.tbl_look.is_some() {
+            return false;
+        }
+        if self.tbl_caption.is_some() {
+            return false;
+        }
+        if self.tbl_description.is_some() {
+            return false;
+        }
         if self.tbl_pr_change.is_some() {
             return false;
         }
@@ -9310,6 +10501,33 @@ impl ToXml for CTTblPrExBase {
 
 impl ToXml for CTTblPrEx {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.tbl_w {
+            val.write_element("w:tblW", writer)?;
+        }
+        if let Some(ref val) = self.justification {
+            val.write_element("w:jc", writer)?;
+        }
+        if let Some(ref val) = self.tbl_cell_spacing {
+            val.write_element("w:tblCellSpacing", writer)?;
+        }
+        if let Some(ref val) = self.tbl_ind {
+            val.write_element("w:tblInd", writer)?;
+        }
+        if let Some(ref val) = self.tbl_borders {
+            val.write_element("w:tblBorders", writer)?;
+        }
+        if let Some(ref val) = self.shading {
+            val.write_element("w:shd", writer)?;
+        }
+        if let Some(ref val) = self.tbl_layout {
+            val.write_element("w:tblLayout", writer)?;
+        }
+        if let Some(ref val) = self.tbl_cell_mar {
+            val.write_element("w:tblCellMar", writer)?;
+        }
+        if let Some(ref val) = self.tbl_look {
+            val.write_element("w:tblLook", writer)?;
+        }
         if let Some(ref val) = self.tbl_pr_ex_change {
             val.write_element("w:tblPrExChange", writer)?;
         }
@@ -9321,6 +10539,33 @@ impl ToXml for CTTblPrEx {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.tbl_w.is_some() {
+            return false;
+        }
+        if self.justification.is_some() {
+            return false;
+        }
+        if self.tbl_cell_spacing.is_some() {
+            return false;
+        }
+        if self.tbl_ind.is_some() {
+            return false;
+        }
+        if self.tbl_borders.is_some() {
+            return false;
+        }
+        if self.shading.is_some() {
+            return false;
+        }
+        if self.tbl_layout.is_some() {
+            return false;
+        }
+        if self.tbl_cell_mar.is_some() {
+            return false;
+        }
+        if self.tbl_look.is_some() {
+            return false;
+        }
         if self.tbl_pr_ex_change.is_some() {
             return false;
         }
@@ -9723,6 +10968,18 @@ impl ToXml for CTEdnProps {
 
 impl ToXml for CTFtnDocProps {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.pos {
+            val.write_element("w:pos", writer)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("w:numFmt", writer)?;
+        }
+        if let Some(ref val) = self.num_start {
+            val.write_element("w:numStart", writer)?;
+        }
+        if let Some(ref val) = self.num_restart {
+            val.write_element("w:numRestart", writer)?;
+        }
         for item in &self.footnote {
             item.write_element("w:footnote", writer)?;
         }
@@ -9734,6 +10991,18 @@ impl ToXml for CTFtnDocProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.pos.is_some() {
+            return false;
+        }
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        if self.num_start.is_some() {
+            return false;
+        }
+        if self.num_restart.is_some() {
+            return false;
+        }
         if !self.footnote.is_empty() {
             return false;
         }
@@ -9747,6 +11016,18 @@ impl ToXml for CTFtnDocProps {
 
 impl ToXml for CTEdnDocProps {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.pos {
+            val.write_element("w:pos", writer)?;
+        }
+        if let Some(ref val) = self.num_fmt {
+            val.write_element("w:numFmt", writer)?;
+        }
+        if let Some(ref val) = self.num_start {
+            val.write_element("w:numStart", writer)?;
+        }
+        if let Some(ref val) = self.num_restart {
+            val.write_element("w:numRestart", writer)?;
+        }
         for item in &self.endnote {
             item.write_element("w:endnote", writer)?;
         }
@@ -9758,6 +11039,18 @@ impl ToXml for CTEdnDocProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.pos.is_some() {
+            return false;
+        }
+        if self.num_fmt.is_some() {
+            return false;
+        }
+        if self.num_start.is_some() {
+            return false;
+        }
+        if self.num_restart.is_some() {
+            return false;
+        }
         if !self.endnote.is_empty() {
             return false;
         }
@@ -11787,6 +13080,12 @@ impl ToXml for CTFrameScrollbar {
 impl ToXml for CTOptimizeForBrowser {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        if let Some(ref val) = self.value {
+            {
+                let s = val.to_string();
+                start.push_attribute(("w:val", s.as_str()));
+            }
+        }
         if let Some(ref val) = self.target {
             start.push_attribute(("w:target", val.as_str()));
         }
@@ -13986,6 +15285,9 @@ impl ToXml for Document {
     }
 
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.background {
+            val.write_element("w:background", writer)?;
+        }
         if let Some(ref val) = self.body {
             val.write_element("w:body", writer)?;
         }
@@ -13997,6 +15299,9 @@ impl ToXml for Document {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.background.is_some() {
+            return false;
+        }
         if self.body.is_some() {
             return false;
         }
@@ -14010,6 +15315,9 @@ impl ToXml for Document {
 
 impl ToXml for CTGlossaryDocument {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        if let Some(ref val) = self.background {
+            val.write_element("w:background", writer)?;
+        }
         if let Some(ref val) = self.doc_parts {
             val.write_element("w:docParts", writer)?;
         }
@@ -14021,6 +15329,9 @@ impl ToXml for CTGlossaryDocument {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.background.is_some() {
+            return false;
+        }
         if self.doc_parts.is_some() {
             return false;
         }
