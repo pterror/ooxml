@@ -3,7 +3,11 @@
 //! This module provides tools to analyze what features a document uses,
 //! enabling corpus-wide statistics and pattern detection.
 
-use ooxml_wml::{Alignment, BlockContent, Document, ParagraphContent};
+use ooxml_wml::Document;
+use ooxml_wml::ext::{
+    CellExt, DrawingExt, HyperlinkExt, ParagraphExt, RowExt, RunExt, RunPropertiesExt, TableExt,
+};
+use ooxml_wml::types::EGBlockLevelElts;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::io::{Read, Seek};
@@ -218,182 +222,119 @@ impl CorpusFeatureStats {
 /// Extract features from a parsed document.
 pub fn extract_features<R: Read + Seek>(doc: &Document<R>) -> DocumentFeatures {
     let mut features = DocumentFeatures {
-        style_count: doc.styles().iter().count() as u32,
+        style_count: doc.styles().style.len() as u32,
         ..Default::default()
     };
 
     // Process body content
-    for block in doc.body().content() {
-        process_block(block, &mut features, 0);
+    for block in &doc.body().block_level_elts {
+        process_block(block.as_ref(), &mut features, 0);
     }
 
     features
 }
 
 /// Process a block-level element (paragraph or table).
-fn process_block(block: &BlockContent, features: &mut DocumentFeatures, table_depth: u8) {
+fn process_block(block: &EGBlockLevelElts, features: &mut DocumentFeatures, table_depth: u8) {
     match block {
-        BlockContent::Paragraph(para) => {
+        EGBlockLevelElts::P(para) => {
             features.paragraph_count += 1;
 
-            // Process paragraph properties
-            if let Some(props) = para.properties() {
-                if let Some(style) = &props.style {
-                    features.paragraph_style_refs.insert(style.clone());
-                }
+            // Process paragraph content: runs and hyperlinks
+            for run in para.runs() {
+                process_run(run, features);
+            }
 
-                if props.numbering.is_some() {
-                    features.has_numbering = true;
-                    features.list_item_count += 1;
-                }
-
-                if let Some(alignment) = props.alignment {
-                    features.has_alignment = true;
-                    features
-                        .alignment_types
-                        .insert(alignment_to_string(alignment));
-                }
-
-                if props.spacing_before.is_some()
-                    || props.spacing_after.is_some()
-                    || props.spacing_line.is_some()
-                {
-                    features.has_spacing = true;
-                }
-
-                if props.indent_left.is_some()
-                    || props.indent_right.is_some()
-                    || props.indent_first_line.is_some()
-                    || props.indent_hanging.is_some()
-                {
-                    features.has_indentation = true;
+            let hyperlinks = para.hyperlinks();
+            features.hyperlink_count += hyperlinks.len() as u32;
+            for link in hyperlinks {
+                for run in link.runs() {
+                    process_run(run, features);
                 }
             }
 
-            // Process paragraph content
-            for content in para.content() {
-                match content {
-                    ParagraphContent::Run(run) => {
-                        process_run(run, features);
-                    }
-                    ParagraphContent::Hyperlink(link) => {
-                        features.hyperlink_count += 1;
-                        for run in link.runs() {
-                            process_run(run, features);
-                        }
-                    }
-                    ParagraphContent::SimpleField(field) => {
-                        for run in &field.runs {
-                            process_run(run, features);
-                        }
-                    }
-                    ParagraphContent::BookmarkStart(_)
-                    | ParagraphContent::BookmarkEnd(_)
-                    | ParagraphContent::CommentRangeStart(_)
-                    | ParagraphContent::CommentRangeEnd(_) => {
-                        // Bookmarks and comment ranges don't affect feature counts currently
-                    }
-                    ParagraphContent::Math(_) => {
-                        // Math equations - could add a counter in the future
-                    }
-                    ParagraphContent::Insertion(ins) => {
-                        // Process runs inside insertions (tracked changes)
-                        for run in &ins.runs {
-                            process_run(run, features);
-                        }
-                    }
-                    ParagraphContent::Deletion(del) => {
-                        // Process runs inside deletions (tracked changes)
-                        for run in &del.runs {
-                            process_run(run, features);
-                        }
-                    }
-                }
-            }
+            // NOTE: Paragraph-level properties (style, numbering, alignment, spacing, indent)
+            // are stored in CTPPrBase which is not yet flattened into generated ParagraphProperties.
+            // These fields are captured in extra_children raw XML. Feature detection for paragraph
+            // properties will be restored when codegen inlines CTPPrBase fields (Phase 2 WML migration).
         }
-        BlockContent::Table(table) => {
+        EGBlockLevelElts::Tbl(table) => {
             features.table_count += 1;
             let new_depth = table_depth + 1;
             features.max_table_nesting = features.max_table_nesting.max(new_depth);
 
-            // Process table cells (which contain paragraphs)
+            // Process table cells
             for row in table.rows() {
                 for cell in row.cells() {
                     for para in cell.paragraphs() {
-                        // Create a temporary block to reuse process_block
-                        process_block(&BlockContent::Paragraph(para.clone()), features, new_depth);
+                        features.paragraph_count += 1;
+                        for run in para.runs() {
+                            process_run(run, features);
+                        }
                     }
                 }
             }
         }
-        BlockContent::ContentControl(sdt) => {
-            // Process content control's nested content
-            for block in sdt.content() {
-                process_block(block, features, table_depth);
-            }
+        EGBlockLevelElts::Sdt(_) => {
+            // Content controls contain nested block content, but the type hierarchy
+            // (EGContentBlockContent vs EGBlockLevelElts) differs. Skip for now.
         }
-        BlockContent::CustomXml(custom) => {
-            // Process custom XML's nested content
-            for block in &custom.content {
-                process_block(block, features, table_depth);
-            }
+        EGBlockLevelElts::CustomXml(_) => {
+            // Custom XML blocks contain nested block content. Skip for now.
+        }
+        _ => {
+            // Other block-level elements (bookmarks, proof errors, etc.)
         }
     }
 }
 
 /// Process a run and update features.
-fn process_run(run: &ooxml_wml::Run, features: &mut DocumentFeatures) {
+fn process_run(run: &ooxml_wml::types::Run, features: &mut DocumentFeatures) {
     features.run_count += 1;
 
     if run.has_page_break() {
         features.page_break_count += 1;
     }
 
-    // Check for images (both inline and anchored)
+    // Check for images via DrawingExt
     for drawing in run.drawings() {
-        features.image_count += drawing.images().len() as u32;
-        features.image_count += drawing.anchored_images().len() as u32;
+        features.image_count += drawing.all_image_rel_ids().len() as u32;
     }
 
     // Check run properties
     if let Some(props) = run.properties() {
-        if props.bold {
+        if props.is_bold() {
             features.has_bold = true;
         }
-        if props.italic {
+        if props.is_italic() {
             features.has_italic = true;
         }
-        if props.underline.is_some() {
+        if props.is_underline() {
             features.has_underline = true;
         }
-        if props.strike {
+        if props.is_strikethrough() {
             features.has_strike = true;
         }
 
-        if let Some(color) = &props.color {
+        if let Some(color) = props.color_hex() {
             features.has_color = true;
-            features.unique_colors.insert(color.clone());
+            features.unique_colors.insert(color.to_string());
         }
 
-        if let Some(size) = props.size {
+        if let Some(size) = props.font_size_half_points() {
             features.has_font_size = true;
             features.font_sizes.insert(size);
         }
 
-        if let Some(font) = &props.font {
+        if let Some(font) = props.font_ascii() {
             features.has_font_name = true;
-            features.unique_fonts.insert(font.clone());
+            features.unique_fonts.insert(font.to_string());
         }
 
-        if let Some(style) = &props.style {
-            features.character_style_refs.insert(style.clone());
+        if let Some(style) = &props.run_style {
+            features.character_style_refs.insert(style.value.clone());
         }
     }
-}
-
-/// Convert alignment enum to string for storage.
-fn alignment_to_string(alignment: Alignment) -> String {
-    alignment.as_str().to_string()
 }
 
 #[cfg(test)]

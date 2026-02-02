@@ -246,6 +246,36 @@ pub trait RunExt {
 
     /// Check if this run contains a page break.
     fn has_page_break(&self) -> bool;
+
+    /// Get all drawings in this run.
+    #[cfg(feature = "wml-drawings")]
+    fn drawings(&self) -> Vec<&types::CTDrawing>;
+
+    /// Convenience: check if bold (delegates to properties).
+    #[cfg(feature = "wml-styling")]
+    fn is_bold(&self) -> bool;
+
+    /// Convenience: check if italic (delegates to properties).
+    #[cfg(feature = "wml-styling")]
+    fn is_italic(&self) -> bool;
+
+    /// Convenience: check if underlined (delegates to properties).
+    #[cfg(feature = "wml-styling")]
+    fn is_underline(&self) -> bool;
+
+    /// Convenience: check if strikethrough (delegates to properties).
+    #[cfg(feature = "wml-styling")]
+    fn is_strikethrough(&self) -> bool;
+
+    /// Check if this run contains any drawing elements (images).
+    #[cfg(feature = "wml-drawings")]
+    fn has_images(&self) -> bool;
+
+    /// Get the footnote reference in this run, if any.
+    fn footnote_ref(&self) -> Option<&types::CTFtnEdnRef>;
+
+    /// Get the endnote reference in this run, if any.
+    fn endnote_ref(&self) -> Option<&types::CTFtnEdnRef>;
 }
 
 impl RunExt for types::Run {
@@ -287,6 +317,140 @@ impl RunExt for types::Run {
                 types::EGRunInnerContent::Br(br) if br.r#type == Some(types::STBrType::Page)
             )
         })
+    }
+
+    #[cfg(feature = "wml-drawings")]
+    fn drawings(&self) -> Vec<&types::CTDrawing> {
+        self.run_inner_content
+            .iter()
+            .filter_map(|item| match item.as_ref() {
+                types::EGRunInnerContent::Drawing(d) => Some(d.as_ref()),
+                _ => None,
+            })
+            .collect()
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn is_bold(&self) -> bool {
+        self.properties().is_some_and(|p| p.is_bold())
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn is_italic(&self) -> bool {
+        self.properties().is_some_and(|p| p.is_italic())
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn is_underline(&self) -> bool {
+        self.properties().is_some_and(|p| p.is_underline())
+    }
+
+    #[cfg(feature = "wml-styling")]
+    fn is_strikethrough(&self) -> bool {
+        self.properties().is_some_and(|p| p.is_strikethrough())
+    }
+
+    #[cfg(feature = "wml-drawings")]
+    fn has_images(&self) -> bool {
+        self.run_inner_content
+            .iter()
+            .any(|item| matches!(item.as_ref(), types::EGRunInnerContent::Drawing(_)))
+    }
+
+    fn footnote_ref(&self) -> Option<&types::CTFtnEdnRef> {
+        self.run_inner_content
+            .iter()
+            .find_map(|item| match item.as_ref() {
+                types::EGRunInnerContent::FootnoteReference(r) => Some(r.as_ref()),
+                _ => None,
+            })
+    }
+
+    fn endnote_ref(&self) -> Option<&types::CTFtnEdnRef> {
+        self.run_inner_content
+            .iter()
+            .find_map(|item| match item.as_ref() {
+                types::EGRunInnerContent::EndnoteReference(r) => Some(r.as_ref()),
+                _ => None,
+            })
+    }
+}
+
+// =============================================================================
+// DrawingExt
+// =============================================================================
+
+/// Extension methods for `CTDrawing` — extract image relationship IDs from raw XML.
+///
+/// Since `CTDrawing` captures its children as raw XML, this trait walks the tree
+/// to find `<a:blip r:embed="..."/>` inside `<wp:inline>` and `<wp:anchor>` elements.
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+pub trait DrawingExt {
+    /// Get relationship IDs for inline images (`<wp:inline>` → `<a:blip r:embed="rId"/>`).
+    fn inline_image_rel_ids(&self) -> Vec<&str>;
+
+    /// Get relationship IDs for anchored images (`<wp:anchor>` → `<a:blip r:embed="rId"/>`).
+    fn anchored_image_rel_ids(&self) -> Vec<&str>;
+
+    /// Get all image relationship IDs (inline + anchored).
+    fn all_image_rel_ids(&self) -> Vec<&str>;
+}
+
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+impl DrawingExt for types::CTDrawing {
+    fn inline_image_rel_ids(&self) -> Vec<&str> {
+        let mut ids = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = child
+                && local_name_of(&elem.name) == "inline"
+            {
+                collect_blip_rel_ids(elem, &mut ids);
+            }
+        }
+        ids
+    }
+
+    fn anchored_image_rel_ids(&self) -> Vec<&str> {
+        let mut ids = Vec::new();
+        for child in &self.extra_children {
+            if let ooxml_xml::RawXmlNode::Element(elem) = child
+                && local_name_of(&elem.name) == "anchor"
+            {
+                collect_blip_rel_ids(elem, &mut ids);
+            }
+        }
+        ids
+    }
+
+    fn all_image_rel_ids(&self) -> Vec<&str> {
+        let mut ids = self.inline_image_rel_ids();
+        ids.extend(self.anchored_image_rel_ids());
+        ids
+    }
+}
+
+/// Extract the local name from a possibly-namespaced XML element name.
+/// e.g. "wp:inline" → "inline", "a:blip" → "blip", "blip" → "blip".
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+fn local_name_of(name: &str) -> &str {
+    name.rsplit(':').next().unwrap_or(name)
+}
+
+/// Recursively walk a raw XML element tree and collect `r:embed` attribute values
+/// from `<a:blip>` elements.
+#[cfg(all(feature = "wml-drawings", feature = "extra-children"))]
+fn collect_blip_rel_ids<'a>(elem: &'a ooxml_xml::RawXmlElement, ids: &mut Vec<&'a str>) {
+    if local_name_of(&elem.name) == "blip" {
+        for (attr_name, attr_val) in &elem.attributes {
+            if attr_name == "r:embed" || local_name_of(attr_name) == "embed" {
+                ids.push(attr_val.as_str());
+            }
+        }
+    }
+    for child in &elem.children {
+        if let ooxml_xml::RawXmlNode::Element(child_elem) = child {
+            collect_blip_rel_ids(child_elem, ids);
+        }
     }
 }
 
@@ -461,6 +625,14 @@ pub trait HyperlinkExt {
 
     /// Get the anchor string (in-document bookmark reference).
     fn anchor_str(&self) -> Option<&str>;
+
+    /// Get the relationship ID (`r:id` attribute) for external hyperlinks.
+    #[cfg(feature = "extra-attrs")]
+    fn rel_id(&self) -> Option<&str>;
+
+    /// Check if this is an external hyperlink (has a relationship ID).
+    #[cfg(feature = "extra-attrs")]
+    fn is_external(&self) -> bool;
 }
 
 impl HyperlinkExt for types::Hyperlink {
@@ -478,6 +650,16 @@ impl HyperlinkExt for types::Hyperlink {
 
     fn anchor_str(&self) -> Option<&str> {
         self.anchor.as_deref()
+    }
+
+    #[cfg(feature = "extra-attrs")]
+    fn rel_id(&self) -> Option<&str> {
+        self.extra_attrs.get("r:id").map(|s| s.as_str())
+    }
+
+    #[cfg(feature = "extra-attrs")]
+    fn is_external(&self) -> bool {
+        self.extra_attrs.contains_key("r:id")
     }
 }
 
@@ -623,6 +805,14 @@ pub trait SectionPropertiesExt {
 
     /// Check if the section has a distinct title (first) page.
     fn has_title_page(&self) -> bool;
+
+    /// Get header references (type + relationship ID from extra_attrs).
+    #[cfg(feature = "extra-attrs")]
+    fn header_references(&self) -> Vec<(&types::STHdrFtr, &str)>;
+
+    /// Get footer references (type + relationship ID from extra_attrs).
+    #[cfg(feature = "extra-attrs")]
+    fn footer_references(&self) -> Vec<(&types::STHdrFtr, &str)>;
 }
 
 #[cfg(feature = "wml-layout")]
@@ -655,6 +845,32 @@ impl SectionPropertiesExt for types::SectionProperties {
 
     fn has_title_page(&self) -> bool {
         is_on(&self.title_pg)
+    }
+
+    #[cfg(feature = "extra-attrs")]
+    fn header_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
+        self.hdr_ftr_references
+            .iter()
+            .filter_map(|r| match r.as_ref() {
+                types::EGHdrFtrReferences::HeaderReference(h) => {
+                    h.extra_attrs.get("r:id").map(|id| (&h.r#type, id.as_str()))
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    #[cfg(feature = "extra-attrs")]
+    fn footer_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
+        self.hdr_ftr_references
+            .iter()
+            .filter_map(|r| match r.as_ref() {
+                types::EGHdrFtrReferences::FooterReference(f) => {
+                    f.extra_attrs.get("r:id").map(|id| (&f.r#type, id.as_str()))
+                }
+                _ => None,
+            })
+            .collect()
     }
 }
 

@@ -4,6 +4,8 @@
 //! checking reference integrity, style definitions, and relationships.
 
 use ooxml_wml::Document;
+use ooxml_wml::ext::{CellExt, ParagraphExt, RowExt, RunExt, RunPropertiesExt, TableExt};
+use ooxml_wml::types::EGBlockLevelElts;
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::io::{Read, Seek};
@@ -172,8 +174,9 @@ pub fn validate_document<R: Read + Seek>(doc: &Document<R>) -> ValidationResult 
     // Get defined style IDs
     let defined_styles: HashSet<String> = doc
         .styles()
+        .style
         .iter()
-        .map(|(style_id, _style)| style_id.to_string())
+        .filter_map(|s| s.style_id.as_ref().map(|id| id.to_string()))
         .collect();
 
     // Check style references
@@ -198,70 +201,55 @@ fn validate_style_references<R: Read + Seek>(
 ) {
     let mut checked_styles: HashSet<String> = HashSet::new();
 
-    for block in doc.body().content() {
-        match block {
-            ooxml_wml::BlockContent::Paragraph(para) => {
-                if let Some(props) = para.properties()
-                    && let Some(style_id) = &props.style
-                    && !defined_styles.contains(style_id)
-                    && !checked_styles.contains(style_id)
-                {
-                    result.add_warning(ValidationWarning {
-                        code: WarningCode::UnresolvedStyleReference,
-                        message: format!("Paragraph style '{}' is not defined", style_id),
-                        location: None,
-                    });
-                    checked_styles.insert(style_id.clone());
-                }
+    for block in &doc.body().block_level_elts {
+        match block.as_ref() {
+            EGBlockLevelElts::P(para) => {
+                // NOTE: Paragraph style references are in CTPPrBase (not yet flattened).
+                // Checking character style references in runs instead.
 
                 // Check run styles
-                for content in para.content() {
-                    if let ooxml_wml::ParagraphContent::Run(run) = content
-                        && let Some(props) = run.properties()
-                        && let Some(style_id) = &props.style
-                        && !defined_styles.contains(style_id)
-                        && !checked_styles.contains(style_id)
+                for run in para.runs() {
+                    if let Some(props) = run.properties()
+                        && let Some(style) = &props.run_style
+                        && !defined_styles.contains(&*style.value)
+                        && !checked_styles.contains(&*style.value)
                     {
                         result.add_warning(ValidationWarning {
                             code: WarningCode::UnresolvedStyleReference,
-                            message: format!("Character style '{}' is not defined", style_id),
+                            message: format!("Character style '{}' is not defined", style.value),
                             location: None,
                         });
-                        checked_styles.insert(style_id.clone());
+                        checked_styles.insert(style.value.clone());
                     }
                 }
             }
-            ooxml_wml::BlockContent::Table(table) => {
+            EGBlockLevelElts::Tbl(table) => {
                 // Check styles in table cells
                 for row in table.rows() {
                     for cell in row.cells() {
                         for para in cell.paragraphs() {
-                            if let Some(props) = para.properties()
-                                && let Some(style_id) = &props.style
-                                && !defined_styles.contains(style_id)
-                                && !checked_styles.contains(style_id)
-                            {
-                                result.add_warning(ValidationWarning {
-                                    code: WarningCode::UnresolvedStyleReference,
-                                    message: format!(
-                                        "Paragraph style '{}' is not defined",
-                                        style_id
-                                    ),
-                                    location: Some("table cell".to_string()),
-                                });
-                                checked_styles.insert(style_id.clone());
+                            for run in para.runs() {
+                                if let Some(props) = run.properties()
+                                    && let Some(style) = &props.run_style
+                                    && !defined_styles.contains(&*style.value)
+                                    && !checked_styles.contains(&*style.value)
+                                {
+                                    result.add_warning(ValidationWarning {
+                                        code: WarningCode::UnresolvedStyleReference,
+                                        message: format!(
+                                            "Character style '{}' is not defined",
+                                            style.value
+                                        ),
+                                        location: Some("table cell".to_string()),
+                                    });
+                                    checked_styles.insert(style.value.clone());
+                                }
                             }
                         }
                     }
                 }
             }
-            ooxml_wml::BlockContent::ContentControl(_sdt) => {
-                // Content controls can contain paragraphs, but we would need recursive
-                // handling similar to Body::paragraphs(). For now, skip validation inside SDT.
-            }
-            ooxml_wml::BlockContent::CustomXml(_custom) => {
-                // Custom XML blocks can contain paragraphs. For now, skip validation inside.
-            }
+            _ => {}
         }
     }
 }
@@ -272,12 +260,11 @@ fn validate_fonts<R: Read + Seek>(doc: &Document<R>, result: &mut ValidationResu
     let common_fonts_lower: HashSet<String> =
         COMMON_FONTS.iter().map(|f| f.to_lowercase()).collect();
 
-    for block in doc.body().content() {
-        if let ooxml_wml::BlockContent::Paragraph(para) = block {
-            for content in para.content() {
-                if let ooxml_wml::ParagraphContent::Run(run) = content
-                    && let Some(props) = run.properties()
-                    && let Some(font) = &props.font
+    for block in &doc.body().block_level_elts {
+        if let EGBlockLevelElts::P(para) = block.as_ref() {
+            for run in para.runs() {
+                if let Some(props) = run.properties()
+                    && let Some(font) = props.font_ascii()
                 {
                     let font_lower = font.to_lowercase();
                     if !common_fonts_lower.contains(&font_lower)
