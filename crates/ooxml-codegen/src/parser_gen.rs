@@ -124,7 +124,11 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "use quick_xml::events::{{Event, BytesStart}};").unwrap();
         writeln!(self.output, "use std::io::BufRead;").unwrap();
         writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
-        writeln!(self.output, "use ooxml_xml::{{RawXmlElement, RawXmlNode}};").unwrap();
+        writeln!(
+            self.output,
+            "use ooxml_xml::{{PositionedNode, RawXmlElement, RawXmlNode}};"
+        )
+        .unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "/// Error type for XML parsing.").unwrap();
         writeln!(self.output, "#[derive(Debug)]").unwrap();
@@ -546,6 +550,8 @@ impl<'a> ParserGenerator<'a> {
                 if has_unresolved_children {
                     writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
                     writeln!(code, "        let mut extra_children = Vec::new();").unwrap();
+                    writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "        let mut child_idx: usize = 0;").unwrap();
                 }
                 writeln!(code, "        if !is_empty {{").unwrap();
                 writeln!(code, "            let mut buf = Vec::new();").unwrap();
@@ -569,9 +575,10 @@ impl<'a> ParserGenerator<'a> {
                     .unwrap();
                     writeln!(
                         code,
-                        "                        extra_children.push(RawXmlNode::Element(elem));"
+                        "                        extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));"
                     )
                     .unwrap();
+                    writeln!(code, "                        child_idx += 1;").unwrap();
                     writeln!(code, "                    }}").unwrap();
                     writeln!(
                         code,
@@ -596,9 +603,10 @@ impl<'a> ParserGenerator<'a> {
                     .unwrap();
                     writeln!(
                         code,
-                        "                        extra_children.push(RawXmlNode::Element(elem));"
+                        "                        extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));"
                     )
                     .unwrap();
+                    writeln!(code, "                        child_idx += 1;").unwrap();
                     writeln!(code, "                    }}").unwrap();
                     writeln!(
                         code,
@@ -727,6 +735,8 @@ impl<'a> ParserGenerator<'a> {
             // Declare extra_children for capturing unknown child elements (feature-gated)
             writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
             writeln!(code, "        let mut extra_children = Vec::new();").unwrap();
+            writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+            writeln!(code, "        let mut child_idx: usize = 0;").unwrap();
         }
         if has_attrs || has_parsing_loop {
             writeln!(code).unwrap();
@@ -869,6 +879,16 @@ impl<'a> ParserGenerator<'a> {
                     )
                     .unwrap();
                 }
+                writeln!(
+                    code,
+                    "                                #[cfg(feature = \"extra-children\")]"
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "                                {{ child_idx += 1; }}"
+                )
+                .unwrap();
                 writeln!(code, "                            }}").unwrap();
             }
 
@@ -887,9 +907,10 @@ impl<'a> ParserGenerator<'a> {
             writeln!(code, "                                let elem = RawXmlElement::from_reader(reader, &e)?;").unwrap();
             writeln!(
                 code,
-                "                                extra_children.push(RawXmlNode::Element(elem));"
+                "                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));"
             )
             .unwrap();
+            writeln!(code, "                                child_idx += 1;").unwrap();
             writeln!(code, "                            }}").unwrap();
             writeln!(
                 code,
@@ -985,6 +1006,16 @@ impl<'a> ParserGenerator<'a> {
                     )
                     .unwrap();
                 }
+                writeln!(
+                    code,
+                    "                                #[cfg(feature = \"extra-children\")]"
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "                                {{ child_idx += 1; }}"
+                )
+                .unwrap();
                 writeln!(code, "                            }}").unwrap();
             }
 
@@ -1007,9 +1038,10 @@ impl<'a> ParserGenerator<'a> {
             .unwrap();
             writeln!(
                 code,
-                "                                extra_children.push(RawXmlNode::Element(elem));"
+                "                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));"
             )
             .unwrap();
+            writeln!(code, "                                child_idx += 1;").unwrap();
             writeln!(code, "                            }}").unwrap();
             writeln!(
                 code,

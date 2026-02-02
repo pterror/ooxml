@@ -95,9 +95,14 @@ impl<'a> SerializerGenerator<'a> {
         )
         .unwrap();
         writeln!(self.output).unwrap();
-        writeln!(self.output, "#![allow(unused_variables)]").unwrap();
+        writeln!(
+            self.output,
+            "#![allow(unused_variables, unused_assignments)]"
+        )
+        .unwrap();
         writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();
         writeln!(self.output, "#![allow(clippy::match_single_binding)]").unwrap();
+        writeln!(self.output, "#![allow(clippy::explicit_counter_loop)]").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "use super::generated::*;").unwrap();
         writeln!(self.output, "use quick_xml::Writer;").unwrap();
@@ -373,7 +378,7 @@ impl<'a> SerializerGenerator<'a> {
                 writeln!(code, "        for child in &self.extra_children {{").unwrap();
                 writeln!(
                     code,
-                    "            child.write_to(writer).map_err(SerializeError::from)?;"
+                    "            child.node.write_to(writer).map_err(SerializeError::from)?;"
                 )
                 .unwrap();
                 writeln!(code, "        }}").unwrap();
@@ -479,42 +484,47 @@ impl<'a> SerializerGenerator<'a> {
                 writeln!(code, "        }}").unwrap();
             }
 
+            // Position-interleaved extra_children (ADR-004)
+            if !child_fields.is_empty() {
+                // Declare iterator and position counter for interleaving unknown children
+                // among known children by their original parse position.
+                writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(
+                    code,
+                    "        let mut extra_iter = self.extra_children.iter().peekable();"
+                )
+                .unwrap();
+                writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(code, "        let mut emit_idx: usize = 0;").unwrap();
+            }
+
             // Child element fields (in schema order)
             for field in &child_fields {
                 let feature = self.get_field_feature(&rust_name, &field.xml_name);
-                if let Some(ref feat) = feature {
-                    writeln!(code, "        #[cfg(feature = \"{}\")]", feat).unwrap();
-                }
 
-                if self.is_eg_content_field(field) {
-                    // EG content field — delegates to enum's write_element
-                    if field.is_vec {
+                if field.is_vec {
+                    // Vec field — flush and increment inside loop (per item)
+                    if let Some(ref feat) = feature {
+                        writeln!(code, "        #[cfg(feature = \"{}\")]", feat).unwrap();
+                    }
+                    if self.is_eg_content_field(field) {
                         writeln!(code, "        for item in &self.{} {{", field.name).unwrap();
+                        writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+                        writeln!(code, "            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {{").unwrap();
+                        writeln!(code, "                extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;").unwrap();
+                        writeln!(code, "            }}").unwrap();
                         writeln!(code, "            item.write_element(\"\", writer)?;").unwrap();
-                        writeln!(code, "        }}").unwrap();
-                    } else if field.is_optional {
-                        writeln!(
-                            code,
-                            "        if let Some(ref val) = self.{} {{",
-                            field.name
-                        )
-                        .unwrap();
-                        writeln!(code, "            val.write_element(\"\", writer)?;").unwrap();
+                        writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+                        writeln!(code, "            {{ emit_idx += 1; }}").unwrap();
                         writeln!(code, "        }}").unwrap();
                     } else {
-                        writeln!(
-                            code,
-                            "        self.{}.write_element(\"\", writer)?;",
-                            field.name
-                        )
-                        .unwrap();
-                    }
-                } else {
-                    let tag = self.qualified_element_name(field);
-                    let strategy = self.get_write_strategy(&field.pattern);
-
-                    if field.is_vec {
+                        let tag = self.qualified_element_name(field);
+                        let strategy = self.get_write_strategy(&field.pattern);
                         writeln!(code, "        for item in &self.{} {{", field.name).unwrap();
+                        writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+                        writeln!(code, "            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {{").unwrap();
+                        writeln!(code, "                extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;").unwrap();
+                        writeln!(code, "            }}").unwrap();
                         self.write_child_element(
                             &mut code,
                             &tag,
@@ -523,48 +533,106 @@ impl<'a> SerializerGenerator<'a> {
                             false,
                             "            ",
                         );
-                        writeln!(code, "        }}").unwrap();
-                    } else if field.is_optional {
-                        writeln!(
-                            code,
-                            "        if let Some(ref val) = self.{} {{",
-                            field.name
-                        )
-                        .unwrap();
-                        self.write_child_element(
-                            &mut code,
-                            &tag,
-                            strategy,
-                            "val",
-                            false,
-                            "            ",
-                        );
-                        writeln!(code, "        }}").unwrap();
-                    } else {
-                        writeln!(code, "        {{").unwrap();
-                        writeln!(code, "            let val = &self.{};", field.name).unwrap();
-                        self.write_child_element(
-                            &mut code,
-                            &tag,
-                            strategy,
-                            "val",
-                            true,
-                            "            ",
-                        );
+                        writeln!(code, "            #[cfg(feature = \"extra-children\")]").unwrap();
+                        writeln!(code, "            {{ emit_idx += 1; }}").unwrap();
                         writeln!(code, "        }}").unwrap();
                     }
+                } else {
+                    // Scalar field — flush before write, increment after (both outside feature gate)
+                    writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(
+                        code,
+                        "        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {{"
+                    )
+                    .unwrap();
+                    writeln!(code, "            extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;").unwrap();
+                    writeln!(code, "        }}").unwrap();
+
+                    if let Some(ref feat) = feature {
+                        writeln!(code, "        #[cfg(feature = \"{}\")]", feat).unwrap();
+                    }
+
+                    if self.is_eg_content_field(field) {
+                        if field.is_optional {
+                            writeln!(
+                                code,
+                                "        if let Some(ref val) = self.{} {{",
+                                field.name
+                            )
+                            .unwrap();
+                            writeln!(code, "            val.write_element(\"\", writer)?;")
+                                .unwrap();
+                            writeln!(code, "        }}").unwrap();
+                        } else {
+                            writeln!(
+                                code,
+                                "        self.{}.write_element(\"\", writer)?;",
+                                field.name
+                            )
+                            .unwrap();
+                        }
+                    } else {
+                        let tag = self.qualified_element_name(field);
+                        let strategy = self.get_write_strategy(&field.pattern);
+
+                        if field.is_optional {
+                            writeln!(
+                                code,
+                                "        if let Some(ref val) = self.{} {{",
+                                field.name
+                            )
+                            .unwrap();
+                            self.write_child_element(
+                                &mut code,
+                                &tag,
+                                strategy,
+                                "val",
+                                false,
+                                "            ",
+                            );
+                            writeln!(code, "        }}").unwrap();
+                        } else {
+                            writeln!(code, "        {{").unwrap();
+                            writeln!(code, "            let val = &self.{};", field.name).unwrap();
+                            self.write_child_element(
+                                &mut code,
+                                &tag,
+                                strategy,
+                                "val",
+                                true,
+                                "            ",
+                            );
+                            writeln!(code, "        }}").unwrap();
+                        }
+                    }
+
+                    // Always increment position counter (outside feature gate)
+                    writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "        {{ emit_idx += 1; }}").unwrap();
                 }
             }
 
-            // extra_children
-            writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
-            writeln!(code, "        for child in &self.extra_children {{").unwrap();
-            writeln!(
-                code,
-                "            child.write_to(writer).map_err(SerializeError::from)?;"
-            )
-            .unwrap();
-            writeln!(code, "        }}").unwrap();
+            // Flush remaining extra_children at end
+            if !child_fields.is_empty() {
+                writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(code, "        for extra in extra_iter {{").unwrap();
+                writeln!(
+                    code,
+                    "            extra.node.write_to(writer).map_err(SerializeError::from)?;"
+                )
+                .unwrap();
+                writeln!(code, "        }}").unwrap();
+            } else {
+                // No child fields — just emit all extras in order (no interleaving needed)
+                writeln!(code, "        #[cfg(feature = \"extra-children\")]").unwrap();
+                writeln!(code, "        for extra in &self.extra_children {{").unwrap();
+                writeln!(
+                    code,
+                    "            extra.node.write_to(writer).map_err(SerializeError::from)?;"
+                )
+                .unwrap();
+                writeln!(code, "        }}").unwrap();
+            }
 
             writeln!(code, "        Ok(())").unwrap();
             writeln!(code, "    }}").unwrap();

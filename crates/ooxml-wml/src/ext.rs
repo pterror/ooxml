@@ -403,7 +403,7 @@ impl DrawingExt for types::CTDrawing {
     fn inline_image_rel_ids(&self) -> Vec<&str> {
         let mut ids = Vec::new();
         for child in &self.extra_children {
-            if let ooxml_xml::RawXmlNode::Element(elem) = child
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node
                 && local_name_of(&elem.name) == "inline"
             {
                 collect_blip_rel_ids(elem, &mut ids);
@@ -415,7 +415,7 @@ impl DrawingExt for types::CTDrawing {
     fn anchored_image_rel_ids(&self) -> Vec<&str> {
         let mut ids = Vec::new();
         for child in &self.extra_children {
-            if let ooxml_xml::RawXmlNode::Element(elem) = child
+            if let ooxml_xml::RawXmlNode::Element(elem) = &child.node
                 && local_name_of(&elem.name) == "anchor"
             {
                 collect_blip_rel_ids(elem, &mut ids);

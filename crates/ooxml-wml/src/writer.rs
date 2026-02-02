@@ -7,7 +7,7 @@ use crate::error::Result;
 use crate::generated_serializers::ToXml;
 use crate::types;
 use ooxml_opc::{PackageWriter, Relationship, Relationships, content_type, rel_type};
-use ooxml_xml::{RawXmlElement, RawXmlNode};
+use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufWriter, Seek, Write};
@@ -439,16 +439,19 @@ impl Drawing {
     /// The `doc_id` counter is incremented for each image to produce unique IDs.
     pub fn build(self, doc_id: &mut usize) -> types::CTDrawing {
         let mut children = Vec::new();
+        let mut child_idx = 0usize;
 
         for image in &self.images {
             let elem = build_inline_image_element(image, *doc_id);
-            children.push(RawXmlNode::Element(elem));
+            children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+            child_idx += 1;
             *doc_id += 1;
         }
 
         for image in &self.anchored_images {
             let elem = build_anchored_image_element(image, *doc_id);
-            children.push(RawXmlNode::Element(elem));
+            children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+            child_idx += 1;
             *doc_id += 1;
         }
 

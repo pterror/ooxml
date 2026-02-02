@@ -4422,7 +4422,7 @@ pub struct AutoFilter {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4486,7 +4486,7 @@ pub struct Filters {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4527,7 +4527,7 @@ pub struct CustomFilters {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4678,7 +4678,7 @@ pub struct SortState {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4811,7 +4811,7 @@ pub struct EGExtensionList {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4824,7 +4824,7 @@ pub struct ExtensionList {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlCalcChain = Box<CalcChain>;
@@ -4842,7 +4842,7 @@ pub struct CalcChain {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4905,7 +4905,7 @@ pub struct Comments {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4918,7 +4918,7 @@ pub struct Authors {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -4931,7 +4931,7 @@ pub struct CommentList {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -4968,7 +4968,7 @@ pub struct Comment {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5058,7 +5058,7 @@ pub struct CTCommentPr {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlMapInfo = Box<MapInfo>;
@@ -5084,7 +5084,7 @@ pub struct MapInfo {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5093,7 +5093,7 @@ pub struct XmlSchema {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type CTSchemaAny = String;
@@ -5137,7 +5137,7 @@ pub struct XmlMap {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5182,7 +5182,7 @@ pub struct Connections {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5306,7 +5306,7 @@ pub struct Connection {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5488,7 +5488,7 @@ pub struct WebQueryProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5510,7 +5510,7 @@ pub struct Parameters {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5671,7 +5671,7 @@ pub struct TextImportProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5693,7 +5693,7 @@ pub struct TextFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5854,7 +5854,7 @@ pub struct PivotCacheDefinition {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5876,7 +5876,7 @@ pub struct CacheFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5958,7 +5958,7 @@ pub struct CacheField {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6022,7 +6022,7 @@ pub struct Consolidation {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6044,7 +6044,7 @@ pub struct CTPages {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6066,7 +6066,7 @@ pub struct CTPCDSCPage {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6101,7 +6101,7 @@ pub struct CTRangeSets {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6301,7 +6301,7 @@ pub struct CTMissing {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6382,7 +6382,7 @@ pub struct CTNumber {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6424,7 +6424,7 @@ pub struct CTBoolean {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6505,7 +6505,7 @@ pub struct CTError {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6586,7 +6586,7 @@ pub struct CTString {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6627,7 +6627,7 @@ pub struct CTDateTime {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6658,7 +6658,7 @@ pub struct FieldGroup {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6723,7 +6723,7 @@ pub struct CTDiscretePr {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6762,7 +6762,7 @@ pub struct PivotCacheRecords {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6771,7 +6771,7 @@ pub struct CTRecord {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6793,7 +6793,7 @@ pub struct CTPCDKPIs {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6857,7 +6857,7 @@ pub struct CTCacheHierarchies {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -6986,7 +6986,7 @@ pub struct CTCacheHierarchy {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7008,7 +7008,7 @@ pub struct CTFieldsUsage {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7043,7 +7043,7 @@ pub struct CTGroupLevels {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7083,7 +7083,7 @@ pub struct CTGroupLevel {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7105,7 +7105,7 @@ pub struct CTGroups {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7135,7 +7135,7 @@ pub struct CTLevelGroup {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7157,7 +7157,7 @@ pub struct CTGroupMembers {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7201,7 +7201,7 @@ pub struct CTTupleCache {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7240,7 +7240,7 @@ pub struct CTServerFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7276,7 +7276,7 @@ pub struct CTTuples {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7317,7 +7317,7 @@ pub struct CTSets {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7356,7 +7356,7 @@ pub struct CTSet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7378,7 +7378,7 @@ pub struct CTQueryCache {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7399,7 +7399,7 @@ pub struct CTQuery {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7421,7 +7421,7 @@ pub struct CTCalculatedItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7448,7 +7448,7 @@ pub struct CTCalculatedItem {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7470,7 +7470,7 @@ pub struct CTCalculatedMembers {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7512,7 +7512,7 @@ pub struct CTCalculatedMember {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -7971,7 +7971,7 @@ pub struct CTPivotTableDefinition {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8018,7 +8018,7 @@ pub struct PivotFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8347,7 +8347,7 @@ pub struct PivotField {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type CTAutoSortScope = Box<PivotArea>;
@@ -8371,7 +8371,7 @@ pub struct PivotItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8469,7 +8469,7 @@ pub struct PageFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8502,7 +8502,7 @@ pub struct PageField {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8524,7 +8524,7 @@ pub struct DataFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8563,7 +8563,7 @@ pub struct DataField {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8585,7 +8585,7 @@ pub struct CTRowItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8607,7 +8607,7 @@ pub struct CTColItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8635,7 +8635,7 @@ pub struct CTI {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8671,7 +8671,7 @@ pub struct RowFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8693,7 +8693,7 @@ pub struct ColFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8728,7 +8728,7 @@ pub struct CTFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8755,7 +8755,7 @@ pub struct CTFormat {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8777,7 +8777,7 @@ pub struct CTConditionalFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8806,7 +8806,7 @@ pub struct CTConditionalFormat {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8828,7 +8828,7 @@ pub struct PivotAreas {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8850,7 +8850,7 @@ pub struct CTChartFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -8879,7 +8879,7 @@ pub struct CTChartFormat {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8901,7 +8901,7 @@ pub struct CTPivotHierarchies {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -8999,7 +8999,7 @@ pub struct CTPivotHierarchy {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9021,7 +9021,7 @@ pub struct CTRowHierarchiesUsage {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9043,7 +9043,7 @@ pub struct CTColHierarchiesUsage {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9078,7 +9078,7 @@ pub struct CTMemberProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9152,7 +9152,7 @@ pub struct CTMembers {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9187,7 +9187,7 @@ pub struct CTDimensions {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9233,7 +9233,7 @@ pub struct CTMeasureGroups {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9255,7 +9255,7 @@ pub struct CTMeasureDimensionMaps {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9358,7 +9358,7 @@ pub struct PivotFilters {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9409,7 +9409,7 @@ pub struct PivotFilter {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9495,7 +9495,7 @@ pub struct PivotArea {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9517,7 +9517,7 @@ pub struct CTPivotAreaReferences {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9650,7 +9650,7 @@ pub struct CTPivotAreaReference {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9823,7 +9823,7 @@ pub struct QueryTable {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9883,7 +9883,7 @@ pub struct QueryTableRefresh {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9905,7 +9905,7 @@ pub struct QueryTableDeletedFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9940,7 +9940,7 @@ pub struct QueryTableFields {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -9995,7 +9995,7 @@ pub struct QueryTableField {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlSst = Box<SharedStrings>;
@@ -10026,7 +10026,7 @@ pub struct SharedStrings {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10048,7 +10048,7 @@ pub struct PhoneticRun {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10063,7 +10063,7 @@ pub struct RichTextElement {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10073,7 +10073,7 @@ pub struct RichTextRunProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10095,7 +10095,7 @@ pub struct RichString {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10200,7 +10200,7 @@ pub struct RevisionHeaders {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10209,7 +10209,7 @@ pub struct Revisions {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10274,7 +10274,7 @@ pub struct RevisionHeader {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10296,7 +10296,7 @@ pub struct CTSheetIdMap {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10331,7 +10331,7 @@ pub struct ReviewedRevisions {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10544,7 +10544,7 @@ pub struct RevisionSheetRename {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10688,7 +10688,7 @@ pub struct RevisionCellChange {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10734,7 +10734,7 @@ pub struct RevisionFormatting {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10973,7 +10973,7 @@ pub struct RevisionDefinedName {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11044,7 +11044,7 @@ pub struct Users {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11071,7 +11071,7 @@ pub struct SharedUser {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlWorksheet = Box<Worksheet>;
@@ -11166,7 +11166,7 @@ pub struct CTMacrosheet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11223,7 +11223,7 @@ pub struct CTDialogsheet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11384,7 +11384,7 @@ pub struct Worksheet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11397,7 +11397,7 @@ pub struct SheetData {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11482,7 +11482,7 @@ pub struct Columns {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11649,7 +11649,7 @@ pub struct Row {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11704,7 +11704,7 @@ pub struct Cell {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -11785,7 +11785,7 @@ pub struct SheetProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11815,7 +11815,7 @@ pub struct SheetViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -11960,7 +11960,7 @@ pub struct SheetView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12074,7 +12074,7 @@ pub struct CTPivotSelection {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12124,7 +12124,7 @@ pub struct PageBreaks {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12272,7 +12272,7 @@ pub struct CTDataConsolidate {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12294,7 +12294,7 @@ pub struct CTDataRefs {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12337,7 +12337,7 @@ pub struct MergedCells {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12363,7 +12363,7 @@ pub struct SmartTags {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12384,7 +12384,7 @@ pub struct CellSmartTags {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12419,7 +12419,7 @@ pub struct CellSmartTag {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12443,7 +12443,7 @@ pub struct Drawing {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12452,7 +12452,7 @@ pub struct LegacyDrawing {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12529,7 +12529,7 @@ pub struct CustomSheetViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12690,7 +12690,7 @@ pub struct CustomSheetView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12726,7 +12726,7 @@ pub struct DataValidations {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12818,7 +12818,7 @@ pub struct DataValidation {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12855,7 +12855,7 @@ pub struct ConditionalFormatting {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -12963,7 +12963,7 @@ pub struct ConditionalRule {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -12976,7 +12976,7 @@ pub struct Hyperlinks {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13096,7 +13096,7 @@ pub struct CellFormula {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13112,7 +13112,7 @@ pub struct ColorScale {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13147,7 +13147,7 @@ pub struct DataBar {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13191,7 +13191,7 @@ pub struct IconSet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13223,7 +13223,7 @@ pub struct ConditionalFormatValue {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13473,7 +13473,7 @@ pub struct HeaderFooter {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13501,7 +13501,7 @@ pub struct Scenarios {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13653,7 +13653,7 @@ pub struct ProtectedRanges {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13731,7 +13731,7 @@ pub struct Scenario {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13775,7 +13775,7 @@ pub struct CellWatches {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13837,7 +13837,7 @@ pub struct Chartsheet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13866,7 +13866,7 @@ pub struct ChartsheetProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -13881,7 +13881,7 @@ pub struct ChartsheetViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -13919,7 +13919,7 @@ pub struct ChartsheetView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14034,7 +14034,7 @@ pub struct CustomChartsheetViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14074,7 +14074,7 @@ pub struct CustomChartsheetView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14086,7 +14086,7 @@ pub struct CTCustomProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14111,7 +14111,7 @@ pub struct OleObjects {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14151,7 +14151,7 @@ pub struct OleObject {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14238,7 +14238,7 @@ pub struct ObjectProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14260,7 +14260,7 @@ pub struct WebPublishItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14307,7 +14307,7 @@ pub struct Controls {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14331,7 +14331,7 @@ pub struct Control {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14427,7 +14427,7 @@ pub struct CTControlPr {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14442,7 +14442,7 @@ pub struct IgnoredErrors {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14541,7 +14541,7 @@ pub struct TableParts {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14551,7 +14551,7 @@ pub struct TablePart {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlMetadata = Box<Metadata>;
@@ -14583,7 +14583,7 @@ pub struct Metadata {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14605,7 +14605,7 @@ pub struct MetadataTypes {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14824,7 +14824,7 @@ pub struct MetadataBlocks {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14836,7 +14836,7 @@ pub struct MetadataBlock {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14878,7 +14878,7 @@ pub struct CTFutureMetadata {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14890,7 +14890,7 @@ pub struct CTFutureMetadataBlock {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -14912,7 +14912,7 @@ pub struct CTMdxMetadata {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14992,7 +14992,7 @@ pub struct CTMdxTuple {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15019,7 +15019,7 @@ pub struct CTMdxSet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15093,7 +15093,7 @@ pub struct MetadataStrings {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlSingleXmlCells = Box<SingleXmlCells>;
@@ -15107,7 +15107,7 @@ pub struct SingleXmlCells {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15134,7 +15134,7 @@ pub struct SingleXmlCell {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15160,7 +15160,7 @@ pub struct XmlCellProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15185,7 +15185,7 @@ pub struct XmlProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlStyleSheet = Box<Stylesheet>;
@@ -15241,7 +15241,7 @@ pub struct Stylesheet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15315,7 +15315,7 @@ pub struct Borders {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15390,7 +15390,7 @@ pub struct Border {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15413,7 +15413,7 @@ pub struct BorderProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15462,7 +15462,7 @@ pub struct Fonts {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15485,7 +15485,7 @@ pub struct Fills {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15495,7 +15495,7 @@ pub struct Fill {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15521,7 +15521,7 @@ pub struct PatternFill {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15590,7 +15590,7 @@ pub struct GradientFill {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15611,7 +15611,7 @@ pub struct GradientStop {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15634,7 +15634,7 @@ pub struct NumberFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15673,7 +15673,7 @@ pub struct CellStyleFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15696,7 +15696,7 @@ pub struct CellFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15809,7 +15809,7 @@ pub struct Format {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15832,7 +15832,7 @@ pub struct CellStyles {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15877,7 +15877,7 @@ pub struct CellStyle {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15900,7 +15900,7 @@ pub struct DifferentialFormats {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15931,7 +15931,7 @@ pub struct DifferentialFormat {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15947,7 +15947,7 @@ pub struct Colors {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15959,7 +15959,7 @@ pub struct IndexedColors {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15971,7 +15971,7 @@ pub struct MostRecentColors {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16013,7 +16013,7 @@ pub struct TableStyles {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16051,7 +16051,7 @@ pub struct TableStyle {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16177,7 +16177,7 @@ pub struct Font {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16260,7 +16260,7 @@ pub struct ExternalLink {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16278,7 +16278,7 @@ pub struct ExternalBook {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16290,7 +16290,7 @@ pub struct CTExternalSheetNames {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16316,7 +16316,7 @@ pub struct CTExternalDefinedNames {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16347,7 +16347,7 @@ pub struct ExternalSheetDataSet {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16375,7 +16375,7 @@ pub struct ExternalSheetData {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16396,7 +16396,7 @@ pub struct ExternalRow {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16424,7 +16424,7 @@ pub struct ExternalCell {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16447,7 +16447,7 @@ pub struct DdeLink {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16459,7 +16459,7 @@ pub struct DdeItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16502,7 +16502,7 @@ pub struct DdeItem {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16527,7 +16527,7 @@ pub struct CTDdeValues {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16548,7 +16548,7 @@ pub struct CTDdeValue {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16569,7 +16569,7 @@ pub struct OleLink {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16581,7 +16581,7 @@ pub struct OleItems {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16754,7 +16754,7 @@ pub struct Table {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16819,7 +16819,7 @@ pub struct TableColumns {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16882,7 +16882,7 @@ pub struct TableColumn {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -16908,7 +16908,7 @@ pub struct TableFormula {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16940,7 +16940,7 @@ pub struct XmlColumnProperties {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type SmlVolTypes = Box<CTVolTypes>;
@@ -16957,7 +16957,7 @@ pub struct CTVolTypes {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16978,7 +16978,7 @@ pub struct CTVolType {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -16999,7 +16999,7 @@ pub struct CTVolMain {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17026,7 +17026,7 @@ pub struct CTVolTopic {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17132,7 +17132,7 @@ pub struct Workbook {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17171,7 +17171,7 @@ pub struct BookViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17250,7 +17250,7 @@ pub struct BookView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17262,7 +17262,7 @@ pub struct CustomWorkbookViews {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17400,7 +17400,7 @@ pub struct CustomWorkbookView {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17413,7 +17413,7 @@ pub struct Sheets {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17588,7 +17588,7 @@ pub struct CTSmartTagTypes {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17739,7 +17739,7 @@ pub struct DefinedNames {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17838,7 +17838,7 @@ pub struct DefinedName {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17850,7 +17850,7 @@ pub struct ExternalReferences {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17859,7 +17859,7 @@ pub struct ExternalReference {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17868,7 +17868,7 @@ pub struct SheetBackgroundPicture {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17880,7 +17880,7 @@ pub struct PivotCaches {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -18091,7 +18091,7 @@ pub struct CTFunctionGroups {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -18127,7 +18127,7 @@ pub struct CTWebPublishObjects {
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
     #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
