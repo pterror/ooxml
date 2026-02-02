@@ -2506,7 +2506,7 @@ pub enum EGBackground {
     BgRef(String),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSideDirectionTransition {
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2520,7 +2520,7 @@ pub struct CTSideDirectionTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCornerDirectionTransition {
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2534,7 +2534,7 @@ pub struct CTCornerDirectionTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEightDirectionTransition {
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2548,7 +2548,7 @@ pub struct CTEightDirectionTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOrientationTransition {
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2562,7 +2562,7 @@ pub struct CTOrientationTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTInOutTransition {
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2576,7 +2576,7 @@ pub struct CTInOutTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOptionalBlackTransition {
     #[serde(rename = "@thruBlk")]
     #[serde(
@@ -2594,7 +2594,7 @@ pub struct CTOptionalBlackTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSplitTransition {
     #[serde(rename = "@orient")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2611,7 +2611,7 @@ pub struct CTSplitTransition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWheelTransition {
     #[serde(rename = "@spokes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2651,9 +2651,15 @@ pub struct CTTransitionStartSoundAction {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTransitionSoundAction;
+pub struct CTTransitionSoundAction {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SlideTransition {
     #[serde(rename = "@spd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2714,7 +2720,7 @@ pub struct CTTLIterateIntervalPercentage {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLIterateData {
     #[serde(rename = "@type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2749,7 +2755,13 @@ pub struct CTTLSubShapeId {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTLTextTargetElement;
+pub struct CTTLTextTargetElement {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLOleChartTargetElement {
@@ -2781,7 +2793,13 @@ pub struct CTTLShapeTargetElement {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTLTimeTargetElement;
+pub struct CTTLTimeTargetElement {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLTriggerTimeNodeID {
@@ -2809,7 +2827,7 @@ pub struct CTTLTriggerRuntimeNode {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTimeCondition {
     #[serde(rename = "@evt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2826,7 +2844,7 @@ pub struct CTTLTimeCondition {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTimeConditionList {
     #[serde(rename = "cond")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -2839,9 +2857,15 @@ pub struct CTTLTimeConditionList {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTimeNodeList;
+pub struct CTTimeNodeList {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLCommonTimeNodeData {
     #[serde(rename = "@id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3001,7 +3025,7 @@ pub struct CTTLTimeNodeSequence {
 
 pub type CTTLTimeNodeExclusive = Box<CTTLCommonTimeNodeData>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLBehaviorAttributeNameList {
     #[serde(rename = "attrName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3114,9 +3138,15 @@ pub struct CTTLAnimVariantStringVal {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTLAnimVariant;
+pub struct CTTLAnimVariant {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTimeAnimateValue {
     #[serde(rename = "@tm")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3141,7 +3171,7 @@ pub struct CTTLTimeAnimateValue {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTimeAnimateValueList {
     #[serde(rename = "tav")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3224,7 +3254,13 @@ pub struct CTTLByHslColorTransform {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTLByAnimateColorTransform;
+pub struct CTTLByAnimateColorTransform {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLAnimateColorBehavior {
@@ -3581,7 +3617,7 @@ pub struct CTTLTemplate {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTemplateList {
     #[serde(rename = "tmpl")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3595,6 +3631,17 @@ pub struct CTTLTemplateList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLBuildParagraph {
+    #[serde(rename = "@spid")]
+    pub spid: String,
+    #[serde(rename = "@grpId")]
+    pub grp_id: u32,
+    #[serde(rename = "@uiExpand")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ui_expand: Option<bool>,
     #[serde(rename = "@build")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub build: Option<STTLParaBuildType>,
@@ -3644,6 +3691,17 @@ pub struct CTTLBuildParagraph {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLBuildDiagram {
+    #[serde(rename = "@spid")]
+    pub spid: String,
+    #[serde(rename = "@grpId")]
+    pub grp_id: u32,
+    #[serde(rename = "@uiExpand")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ui_expand: Option<bool>,
     #[serde(rename = "@bld")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld: Option<STTLDiagramBuildType>,
@@ -3658,6 +3716,17 @@ pub struct CTTLBuildDiagram {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLOleBuildChart {
+    #[serde(rename = "@spid")]
+    pub spid: String,
+    #[serde(rename = "@grpId")]
+    pub grp_id: u32,
+    #[serde(rename = "@uiExpand")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ui_expand: Option<bool>,
     #[serde(rename = "@bld")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld: Option<STTLOleChartBuildType>,
@@ -3677,13 +3746,38 @@ pub struct CTTLOleBuildChart {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTLGraphicalObjectBuild;
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTBuildList;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTTLGraphicalObjectBuild {
+    #[serde(rename = "@spid")]
+    pub spid: String,
+    #[serde(rename = "@grpId")]
+    pub grp_id: u32,
+    #[serde(rename = "@uiExpand")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub ui_expand: Option<bool>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CTBuildList {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SlideTiming {
     #[serde(rename = "tnLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3720,9 +3814,15 @@ pub struct CTIndexRange {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTSlideRelationshipListEntry;
+pub struct CTSlideRelationshipListEntry {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideRelationshipList {
     #[serde(rename = "sld")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3748,12 +3848,24 @@ pub struct CTCustomShowId {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTCustomerData;
+pub struct CTCustomerData {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTTagsData;
+pub struct CTTagsData {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCustomerDataList {
     #[serde(rename = "custData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3783,7 +3895,7 @@ pub struct CTExtension {
 
 pub type CTExtensionAny = String;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3796,9 +3908,18 @@ pub struct EGExtensionList {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTExtensionList;
+pub struct CTExtensionList {
+    #[serde(rename = "ext")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ext: Vec<Box<CTExtension>>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTExtensionListModify {
     #[serde(rename = "@mod")]
     #[serde(
@@ -3807,6 +3928,9 @@ pub struct CTExtensionListModify {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub r#mod: Option<bool>,
+    #[serde(rename = "ext")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ext: Vec<Box<CTExtension>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3814,6 +3938,11 @@ pub struct CTExtensionListModify {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -3845,7 +3974,7 @@ pub struct CTCommentAuthor {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCommentAuthorList {
     #[serde(rename = "cmAuthor")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3889,7 +4018,7 @@ pub struct CTComment {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCommentList {
     #[serde(rename = "cm")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -3903,7 +4032,7 @@ pub struct CTCommentList {
 
 pub type PCmLst = Box<CTCommentList>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PAGOle {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3930,7 +4059,7 @@ pub struct PAGOle {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOleObjectEmbed {
     #[serde(rename = "@followColorScheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3952,7 +4081,7 @@ pub struct CTOleObjectEmbed {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOleObjectLink {
     #[serde(rename = "@updateAutomatic")]
     #[serde(
@@ -3978,8 +4107,24 @@ pub struct CTOleObjectLink {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOleObject {
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(rename = "@showAsIcon")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_as_icon: Option<bool>,
+    #[serde(rename = "@imgW")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub img_w: Option<String>,
+    #[serde(rename = "@imgH")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub img_h: Option<String>,
     #[serde(rename = "@progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<String>,
@@ -3994,11 +4139,34 @@ pub struct CTOleObject {
 
 pub type POleObj = Box<CTOleObject>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTControl {
+    #[serde(rename = "@name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(rename = "@showAsIcon")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_as_icon: Option<bool>,
+    #[serde(rename = "@imgW")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub img_w: Option<String>,
+    #[serde(rename = "@imgH")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub img_h: Option<String>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4006,7 +4174,7 @@ pub struct CTControl {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTControlList {
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4039,7 +4207,7 @@ pub struct CTSlideIdListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SlideIdList {
     #[serde(rename = "sldId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4051,7 +4219,7 @@ pub struct SlideIdList {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideMasterIdListEntry {
     #[serde(rename = "@id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4073,7 +4241,7 @@ pub struct CTSlideMasterIdListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideMasterIdList {
     #[serde(rename = "sldMasterId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4085,7 +4253,7 @@ pub struct CTSlideMasterIdList {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNotesMasterIdListEntry {
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4097,7 +4265,7 @@ pub struct CTNotesMasterIdListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNotesMasterIdList {
     #[serde(rename = "notesMasterId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4109,7 +4277,7 @@ pub struct CTNotesMasterIdList {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHandoutMasterIdListEntry {
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4121,7 +4289,7 @@ pub struct CTHandoutMasterIdListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHandoutMasterIdList {
     #[serde(rename = "handoutMasterId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4134,7 +4302,13 @@ pub struct CTHandoutMasterIdList {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTEmbeddedFontDataId;
+pub struct CTEmbeddedFontDataId {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEmbeddedFontListEntry {
@@ -4159,7 +4333,7 @@ pub struct CTEmbeddedFontListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEmbeddedFontList {
     #[serde(rename = "embeddedFont")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4172,7 +4346,13 @@ pub struct CTEmbeddedFontList {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTSmartTags;
+pub struct CTSmartTags {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomShow {
@@ -4199,7 +4379,7 @@ pub struct CTCustomShow {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCustomShowList {
     #[serde(rename = "custShow")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -4211,7 +4391,7 @@ pub struct CTCustomShowList {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPhotoAlbum {
     #[serde(rename = "@bw")]
     #[serde(
@@ -4286,7 +4466,7 @@ pub struct CTKinsoku {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTModifyVerifier {
     #[serde(rename = "@algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4475,7 +4655,7 @@ pub struct Presentation {
 
 pub type PPresentation = Box<Presentation>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHtmlPublishProperties {
     #[serde(rename = "@showSpeakerNotes")]
     #[serde(
@@ -4490,6 +4670,9 @@ pub struct CTHtmlPublishProperties {
     #[serde(rename = "@title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub slide_list_choice: Option<Box<EGSlideListChoice>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -4507,7 +4690,7 @@ pub struct CTHtmlPublishProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWebProperties {
     #[serde(rename = "@showAnimation")]
     #[serde(
@@ -4577,7 +4760,7 @@ pub struct CTWebProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPrintProperties {
     #[serde(rename = "@prnWhat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4623,7 +4806,7 @@ pub struct CTPrintProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTShowInfoBrowse {
     #[serde(rename = "@showScrollbar")]
     #[serde(
@@ -4641,7 +4824,7 @@ pub struct CTShowInfoBrowse {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTShowInfoKiosk {
     #[serde(rename = "@restart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4655,7 +4838,7 @@ pub struct CTShowInfoKiosk {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTShowProperties {
     #[serde(rename = "@loop")]
     #[serde(
@@ -4685,6 +4868,12 @@ pub struct CTShowProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub use_timings: Option<bool>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub show_type: Option<Box<EGShowType>>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub slide_list_choice: Option<Box<EGSlideListChoice>>,
     #[serde(rename = "penClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pen_clr: Option<String>,
@@ -4705,7 +4894,7 @@ pub struct CTShowProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPresentationProperties {
     #[serde(rename = "htmlPubPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4734,7 +4923,7 @@ pub struct CTPresentationProperties {
 
 pub type PPresentationPr = Box<CTPresentationProperties>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHeaderFooter {
     #[serde(rename = "@sldNum")]
     #[serde(
@@ -4781,7 +4970,7 @@ pub struct CTHeaderFooter {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPlaceholder {
     #[serde(rename = "@type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4819,7 +5008,7 @@ pub struct CTPlaceholder {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTApplicationNonVisualDrawingProps {
     #[serde(rename = "@isPhoto")]
     #[serde(
@@ -5052,11 +5241,17 @@ pub struct GroupShape {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRel;
+pub struct CTRel {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 pub type EGTopLevelSlide = String;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EGChildSlide {
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5068,7 +5263,7 @@ pub struct EGChildSlide {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PAGChildSlide {
     #[serde(rename = "@showMasterSp")]
     #[serde(
@@ -5093,7 +5288,7 @@ pub struct PAGChildSlide {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBackgroundProperties {
     #[serde(rename = "@shadeToTitle")]
     #[serde(
@@ -5119,11 +5314,14 @@ pub struct CTBackgroundProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBackground {
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<String>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub background: Option<Box<EGBackground>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5131,6 +5329,11 @@ pub struct CTBackground {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5168,6 +5371,20 @@ pub struct CommonSlideData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Slide {
+    #[serde(rename = "@showMasterSp")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_sp: Option<bool>,
+    #[serde(rename = "@showMasterPhAnim")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_ph_anim: Option<bool>,
     #[serde(rename = "@show")]
     #[serde(
         default,
@@ -5177,6 +5394,9 @@ pub struct Slide {
     pub show: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMapOvr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_map_ovr: Option<String>,
     #[cfg(feature = "pml-transitions")]
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5206,6 +5426,20 @@ pub type PSld = Box<Slide>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlideLayout {
+    #[serde(rename = "@showMasterSp")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_sp: Option<bool>,
+    #[serde(rename = "@showMasterPhAnim")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_ph_anim: Option<bool>,
     #[serde(rename = "@matchingName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub matching_name: Option<String>,
@@ -5228,6 +5462,9 @@ pub struct SlideLayout {
     pub user_drawn: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMapOvr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_map_ovr: Option<String>,
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition: Option<Box<SlideTransition>>,
@@ -5256,7 +5493,7 @@ pub struct SlideLayout {
 
 pub type PSldLayout = Box<SlideLayout>;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideMasterTextStyles {
     #[serde(rename = "titleStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5277,7 +5514,7 @@ pub struct CTSlideMasterTextStyles {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideLayoutIdListEntry {
     #[serde(rename = "@id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5299,7 +5536,7 @@ pub struct CTSlideLayoutIdListEntry {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSlideLayoutIdList {
     #[serde(rename = "sldLayoutId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5322,6 +5559,8 @@ pub struct SlideMaster {
     pub preserve: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMap")]
+    pub clr_map: String,
     #[serde(rename = "sldLayoutIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_layout_id_lst: Option<Box<CTSlideLayoutIdList>>,
@@ -5360,6 +5599,8 @@ pub type PSldMaster = Box<SlideMaster>;
 pub struct HandoutMaster {
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMap")]
+    pub clr_map: String,
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
@@ -5379,6 +5620,8 @@ pub type PHandoutMaster = Box<HandoutMaster>;
 pub struct NotesMaster {
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMap")]
+    pub clr_map: String,
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
@@ -5399,11 +5642,35 @@ pub type PNotesMaster = Box<NotesMaster>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NotesSlide {
+    #[serde(rename = "@showMasterSp")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_sp: Option<bool>,
+    #[serde(rename = "@showMasterPhAnim")]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "ooxml_xml::ooxml_bool"
+    )]
+    pub show_master_ph_anim: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[serde(rename = "clrMapOvr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_map_ovr: Option<String>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5455,7 +5722,7 @@ pub struct CTStringTag {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTagList {
     #[serde(rename = "tag")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5580,7 +5847,7 @@ pub struct CTNotesTextViewProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOutlineViewSlideEntry {
     #[serde(rename = "@collapse")]
     #[serde(
@@ -5598,7 +5865,7 @@ pub struct CTOutlineViewSlideEntry {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOutlineViewSlideList {
     #[serde(rename = "sld")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5655,7 +5922,7 @@ pub struct CTSlideSorterViewProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGuide {
     #[serde(rename = "@orient")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5672,7 +5939,7 @@ pub struct CTGuide {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGuideList {
     #[serde(rename = "guide")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -5754,7 +6021,7 @@ pub struct CTNotesViewProperties {
     pub extra_children: Vec<ooxml_xml::RawXmlNode>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTViewProperties {
     #[serde(rename = "@lastView")]
     #[serde(default, skip_serializing_if = "Option::is_none")]

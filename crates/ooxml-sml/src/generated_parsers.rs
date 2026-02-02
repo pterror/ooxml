@@ -2094,29 +2094,42 @@ impl FromXml for MapInfo {
 impl FromXml for XmlSchema {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -3160,7 +3173,6 @@ impl FromXml for TableMissing {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
             let mut depth = 1u32;
             loop {
@@ -5965,29 +5977,42 @@ impl FromXml for PivotCacheRecords {
 impl FromXml for CTRecord {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -14257,29 +14282,42 @@ impl FromXml for RichTextElement {
 impl FromXml for RichTextRunProperties {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -14580,29 +14618,42 @@ impl FromXml for RevisionHeaders {
 impl FromXml for Revisions {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -20270,58 +20321,84 @@ impl FromXml for CTCellSmartTagPr {
 impl FromXml for Drawing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
 impl FromXml for LegacyDrawing {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -25397,29 +25474,42 @@ impl FromXml for TableParts {
 impl FromXml for TablePart {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -28113,29 +28203,42 @@ impl FromXml for Fills {
 impl FromXml for Fill {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -30295,29 +30398,42 @@ impl FromXml for UnderlineProperty {
 impl FromXml for Font {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
@@ -34900,58 +35016,84 @@ impl FromXml for ExternalReferences {
 impl FromXml for ExternalReference {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 
 impl FromXml for SheetBackgroundPicture {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
-        _start: &BytesStart,
+        start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
         if !is_empty {
-            // Skip to matching end tag with depth tracking
             let mut buf = Vec::new();
-            let mut depth = 1u32;
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(_) => depth += 1,
-                    Event::End(_) => {
-                        depth -= 1;
-                        if depth == 0 {
-                            break;
-                        }
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(RawXmlNode::Element(elem));
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(RawXmlNode::Element(elem));
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
                 }
                 buf.clear();
             }
         }
-        Ok(Self {})
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
     }
 }
 

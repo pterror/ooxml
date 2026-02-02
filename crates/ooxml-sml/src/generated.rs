@@ -5088,7 +5088,13 @@ pub struct MapInfo {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct XmlSchema;
+pub struct XmlSchema {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 pub type CTSchemaAny = String;
 
@@ -6760,7 +6766,13 @@ pub struct PivotCacheRecords {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTRecord;
+pub struct CTRecord {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPCDKPIs {
@@ -10056,7 +10068,13 @@ pub struct RichTextElement {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "rPr")]
-pub struct RichTextRunProperties;
+pub struct RichTextRunProperties {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "is")]
@@ -10186,7 +10204,13 @@ pub struct RevisionHeaders {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct Revisions;
+pub struct Revisions {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SmlAGRevData {
@@ -12414,10 +12438,22 @@ pub struct CTCellSmartTagPr {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct Drawing;
+pub struct Drawing {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct LegacyDrawing;
+pub struct LegacyDrawing {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DrawingHeaderFooter {
@@ -14510,7 +14546,13 @@ pub struct TableParts {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "tablePart")]
-pub struct TablePart;
+pub struct TablePart {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 pub type SmlMetadata = Box<Metadata>;
 
@@ -15448,7 +15490,13 @@ pub struct Fills {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "fill")]
-pub struct Fill;
+pub struct Fill {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "patternFill")]
@@ -16124,7 +16172,13 @@ pub struct UnderlineProperty {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "font")]
-pub struct Font;
+pub struct Font {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FontFamily {
@@ -17800,10 +17854,22 @@ pub struct ExternalReferences {
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct ExternalReference;
+pub struct ExternalReference {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct SheetBackgroundPicture;
+pub struct SheetBackgroundPicture {
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::RawXmlNode>,
+}
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PivotCaches {

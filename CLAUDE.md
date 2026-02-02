@@ -125,6 +125,20 @@ The rescribe team is waiting on this to implement `rescribe-read-docx` and `resc
 - **Preserve unknown data** - Never silently drop XML elements or attributes we don't understand
 - **Verify roundtrips** - Changes to serialization must pass roundtrip tests
 
+## Generated Files — IMPORTANT
+
+Generated files (`generated.rs`, `generated_parsers.rs`, `generated_serializers.rs`) are **committed to the repo** so that users can build without the ECMA-376 RNC schemas in `/spec/`.
+
+**When you change `ooxml-codegen`, you MUST regenerate ALL crates and commit the results.** The codegen is shared — a change to `codegen.rs`, `parser_gen.rs`, or `serializer_gen.rs` affects every crate's generated output. Stale generated files will silently diverge from the codegen and cause confusing bugs later.
+
+```bash
+# Regenerate everything (requires schemas in /spec/)
+OOXML_REGENERATE=1 OOXML_GENERATE_PARSERS=1 OOXML_GENERATE_SERIALIZERS=1 \
+  cargo build -p ooxml-wml -p ooxml-sml -p ooxml-pml -p ooxml-dml
+```
+
+After regenerating, commit all changed `generated*.rs` files in the same commit (or immediately after) the codegen change.
+
 ## Negative Constraints
 
 Do not:
