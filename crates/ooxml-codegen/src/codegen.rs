@@ -594,6 +594,62 @@ impl<'a> Generator<'a> {
         }
     }
 
+    /// Check if a pattern contains XML child elements (even from unresolved refs).
+    /// Used to determine if empty-field structs should get extra_children.
+    fn has_xml_children_pattern(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Empty => false,
+            Pattern::Attribute { .. } => false,
+            Pattern::Element { .. } => true,
+            Pattern::Ref(name) => {
+                // Attribute groups don't produce children
+                if name.contains("_AG_") {
+                    return false;
+                }
+                // If it resolves to a known definition, check recursively
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.has_xml_children_pattern(def_pattern)
+                } else {
+                    // Unresolved ref — assume it produces children
+                    true
+                }
+            }
+            Pattern::Sequence(items) | Pattern::Interleave(items) | Pattern::Choice(items) => {
+                items.iter().any(|i| self.has_xml_children_pattern(i))
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner)
+            | Pattern::Mixed(inner) => self.has_xml_children_pattern(inner),
+            Pattern::Text => true,
+            _ => false,
+        }
+    }
+
+    /// Check if a pattern contains XML attributes (even from unresolved refs).
+    fn has_xml_attr_pattern(&self, pattern: &Pattern) -> bool {
+        match pattern {
+            Pattern::Attribute { .. } => true,
+            Pattern::Ref(name) if name.contains("_AG_") => true,
+            Pattern::Ref(name) => {
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    self.has_xml_attr_pattern(def_pattern)
+                } else {
+                    false
+                }
+            }
+            Pattern::Sequence(items) | Pattern::Interleave(items) | Pattern::Choice(items) => {
+                items.iter().any(|i| self.has_xml_attr_pattern(i))
+            }
+            Pattern::Optional(inner)
+            | Pattern::ZeroOrMore(inner)
+            | Pattern::OneOrMore(inner)
+            | Pattern::Group(inner) => self.has_xml_attr_pattern(inner),
+            _ => false,
+        }
+    }
+
     /// Check if a field holds element group content (needs serde skip).
     fn is_eg_content_field(&self, field: &Field) -> bool {
         if let Pattern::Ref(name) = &field.pattern
@@ -634,7 +690,12 @@ impl<'a> Generator<'a> {
         let element_rename = self.get_element_name(&rust_name);
 
         if fields.is_empty() {
-            // Empty struct
+            // Check if the pattern has XML content that we couldn't resolve into fields
+            // (e.g. refs to types from other schemas). If so, generate extra_children
+            // to preserve the content for roundtrip fidelity.
+            let has_unresolved_children = self.has_xml_children_pattern(&def.pattern);
+            let has_unresolved_attrs = self.has_xml_attr_pattern(&def.pattern);
+
             writeln!(
                 code,
                 "#[derive(Debug, Clone, Default, Serialize, Deserialize)]"
@@ -643,7 +704,41 @@ impl<'a> Generator<'a> {
             if let Some(xml_name) = &element_rename {
                 writeln!(code, "#[serde(rename = \"{}\")]", xml_name).unwrap();
             }
-            writeln!(code, "pub struct {};", rust_name).unwrap();
+
+            if has_unresolved_children || has_unresolved_attrs {
+                writeln!(code, "pub struct {} {{", rust_name).unwrap();
+                if has_unresolved_attrs {
+                    writeln!(
+                        code,
+                        "    /// Unknown attributes captured for roundtrip fidelity."
+                    )
+                    .unwrap();
+                    writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(code, "    #[serde(skip)]").unwrap();
+                    writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(code, "    #[serde(default)]").unwrap();
+                    writeln!(code, "    #[cfg(feature = \"extra-attrs\")]").unwrap();
+                    writeln!(
+                        code,
+                        "    pub extra_attrs: std::collections::HashMap<String, String>,"
+                    )
+                    .unwrap();
+                }
+                if has_unresolved_children {
+                    writeln!(
+                        code,
+                        "    /// Unknown child elements captured for roundtrip fidelity."
+                    )
+                    .unwrap();
+                    writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "    #[serde(skip)]").unwrap();
+                    writeln!(code, "    #[cfg(feature = \"extra-children\")]").unwrap();
+                    writeln!(code, "    pub extra_children: Vec<ooxml_xml::RawXmlNode>,").unwrap();
+                }
+                writeln!(code, "}}").unwrap();
+            } else {
+                writeln!(code, "pub struct {};", rust_name).unwrap();
+            }
         } else {
             // Derive Default when all fields are optional or vec (common for OOXML types)
             let all_defaultable = fields
@@ -784,6 +879,7 @@ impl<'a> Generator<'a> {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
+                    xml_prefix: name.prefix.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: true,
@@ -795,6 +891,7 @@ impl<'a> Generator<'a> {
                 fields.push(Field {
                     name: self.qname_to_field_name(name),
                     xml_name: name.local.clone(),
+                    xml_prefix: name.prefix.clone(),
                     pattern: pattern.as_ref().clone(),
                     is_optional,
                     is_attribute: false,
@@ -817,6 +914,7 @@ impl<'a> Generator<'a> {
                         fields.push(Field {
                             name: self.qname_to_field_name(name),
                             xml_name: name.local.clone(),
+                            xml_prefix: name.prefix.clone(),
                             pattern: pattern.as_ref().clone(),
                             is_optional: false,
                             is_attribute: false,
@@ -831,6 +929,7 @@ impl<'a> Generator<'a> {
                                 fields.push(Field {
                                     name: self.eg_ref_to_field_name(name),
                                     xml_name: name.clone(),
+                                    xml_prefix: None,
                                     pattern: Pattern::Ref(name.clone()),
                                     is_optional: false,
                                     is_attribute: false,
@@ -863,6 +962,7 @@ impl<'a> Generator<'a> {
                     fields.push(Field {
                         name: "text".to_string(),
                         xml_name: "$text".to_string(),
+                        xml_prefix: None,
                         pattern: Pattern::Datatype {
                             library: "xsd".to_string(),
                             name: "string".to_string(),
@@ -881,6 +981,7 @@ impl<'a> Generator<'a> {
                             fields.push(Field {
                                 name: self.eg_ref_to_field_name(name),
                                 xml_name: name.clone(),
+                                xml_prefix: None,
                                 pattern: Pattern::Ref(name.clone()),
                                 is_optional,
                                 is_attribute: false,
@@ -1065,6 +1166,8 @@ impl<'a> Generator<'a> {
 struct Field {
     name: String,
     xml_name: String,
+    #[allow(dead_code)]
+    xml_prefix: Option<String>,
     pattern: Pattern,
     is_optional: bool,
     is_attribute: bool,
