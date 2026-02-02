@@ -52,6 +52,17 @@ pub enum Error {
     RawXml(#[from] ooxml_xml::Error),
 }
 
+impl From<crate::generated_serializers::SerializeError> for Error {
+    fn from(e: crate::generated_serializers::SerializeError) -> Self {
+        match e {
+            crate::generated_serializers::SerializeError::Xml(x) => Error::Xml(x),
+            crate::generated_serializers::SerializeError::Io(io) => Error::Io(io),
+            #[cfg(feature = "extra-children")]
+            crate::generated_serializers::SerializeError::RawXml(r) => Error::RawXml(r),
+        }
+    }
+}
+
 impl From<crate::generated_parsers::ParseError> for Error {
     fn from(e: crate::generated_parsers::ParseError) -> Self {
         match e {
