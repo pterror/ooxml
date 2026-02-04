@@ -8786,7 +8786,7 @@ impl FromXml for CTHtmlPublishProperties {
             show_speaker_notes: f_show_speaker_notes,
             target: f_target,
             title: f_title,
-            slide_list_choice: f_slide_list_choice.ok_or_else(|| ParseError::MissingAttribute("p_EG_SlideListChoice".to_string()))?,
+            slide_list_choice: f_slide_list_choice,
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -11118,7 +11118,7 @@ impl FromXml for EGBackground {
                 Ok(Self::BgPr(Box::new(inner)))
             }
             b"bgRef" => {
-                let inner = String::from_xml(reader, start_tag, is_empty)?;
+                let inner = CTStyleMatrixReference::from_xml(reader, start_tag, is_empty)?;
                 Ok(Self::BgRef(inner))
             }
             _ => Err(ParseError::UnexpectedElement(
@@ -11210,7 +11210,7 @@ impl FromXml for CTBackground {
 
         Ok(Self {
             bw_mode: f_bw_mode,
-            background: f_background.ok_or_else(|| ParseError::MissingAttribute("p_EG_Background".to_string()))?,
+            background: f_background,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
             #[cfg(feature = "extra-children")]

@@ -30,14 +30,10 @@ pub mod text;
 pub mod generated;
 pub use generated as types;
 
-// TODO: DML parser/serializer generation has codegen issues:
-// - CT wrapper types (CTColor wraps EGColorChoice) need wrapping in parser
-// - EG_* type handling mismatches
-// Uncomment once codegen is fixed:
-// pub mod generated_parsers;
-// pub use generated_parsers as parsers;
-// pub mod generated_serializers;
-// pub use generated_serializers as serializers;
+pub mod generated_parsers;
+pub use generated_parsers as parsers;
+pub mod generated_serializers;
+pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
 pub use text::{
