@@ -46,6 +46,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
 - [x] **Remove unnecessary Box in Vec<Box<T>>** - Codegen now generates `Vec<T>` for Vec elements since the Vec provides heap indirection. Box is only used for non-Vec fields that need indirection (recursive types, large structs). Clippy `vec_box` lint now passes.
 - [x] **Handle repeating choice patterns** - Fixed codegen to handle `OneOrMore(Group(Choice([...])))` patterns. Font/Fill types now have proper optional fields for each choice alternative.
+- [ ] **Fix SML --no-default-features build** - Generated code uses `ooxml_xml::ooxml_bool` in serde attrs but `ooxml-xml` is optional. Either make it required or use a local bool module.
 
 ## Codegen Performance
 
