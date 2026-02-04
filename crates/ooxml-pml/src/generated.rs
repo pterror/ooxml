@@ -2652,6 +2652,12 @@ pub struct CTTransitionStartSoundAction {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTransitionSoundAction {
+    #[serde(rename = "stSnd")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub st_snd: Option<Box<CTTransitionStartSoundAction>>,
+    #[serde(rename = "endSnd")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub end_snd: Option<Box<CTEmpty>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -2674,6 +2680,69 @@ pub struct SlideTransition {
     #[serde(rename = "@advTm")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adv_tm: Option<u32>,
+    #[serde(rename = "blinds")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blinds: Option<Box<CTOrientationTransition>>,
+    #[serde(rename = "checker")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub checker: Option<Box<CTOrientationTransition>>,
+    #[serde(rename = "circle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub circle: Option<Box<CTEmpty>>,
+    #[serde(rename = "dissolve")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dissolve: Option<Box<CTEmpty>>,
+    #[serde(rename = "comb")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub comb: Option<Box<CTOrientationTransition>>,
+    #[serde(rename = "cover")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cover: Option<Box<CTEightDirectionTransition>>,
+    #[serde(rename = "cut")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cut: Option<Box<CTOptionalBlackTransition>>,
+    #[serde(rename = "diamond")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub diamond: Option<Box<CTEmpty>>,
+    #[serde(rename = "fade")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fade: Option<Box<CTOptionalBlackTransition>>,
+    #[serde(rename = "newsflash")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub newsflash: Option<Box<CTEmpty>>,
+    #[serde(rename = "plus")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plus: Option<Box<CTEmpty>>,
+    #[serde(rename = "pull")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pull: Option<Box<CTEightDirectionTransition>>,
+    #[serde(rename = "push")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub push: Option<Box<CTSideDirectionTransition>>,
+    #[serde(rename = "random")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub random: Option<Box<CTEmpty>>,
+    #[serde(rename = "randomBar")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub random_bar: Option<Box<CTOrientationTransition>>,
+    #[serde(rename = "split")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub split: Option<Box<CTSplitTransition>>,
+    #[serde(rename = "strips")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub strips: Option<Box<CTCornerDirectionTransition>>,
+    #[serde(rename = "wedge")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wedge: Option<Box<CTEmpty>>,
+    #[serde(rename = "wheel")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wheel: Option<Box<CTWheelTransition>>,
+    #[serde(rename = "wipe")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wipe: Option<Box<CTSideDirectionTransition>>,
+    #[serde(rename = "zoom")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub zoom: Option<Box<CTInOutTransition>>,
     #[serde(rename = "sndAc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snd_ac: Option<Box<CTTransitionSoundAction>>,
@@ -2732,6 +2801,12 @@ pub struct CTTLIterateData {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub backwards: Option<bool>,
+    #[serde(rename = "tmAbs")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tm_abs: Option<Box<CTTLIterateIntervalTime>>,
+    #[serde(rename = "tmPct")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tm_pct: Option<Box<CTTLIterateIntervalPercentage>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2739,6 +2814,11 @@ pub struct CTTLIterateData {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -2756,6 +2836,12 @@ pub struct CTTLSubShapeId {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTextTargetElement {
+    #[serde(rename = "charRg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub char_rg: Option<Box<CTIndexRange>>,
+    #[serde(rename = "pRg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub p_rg: Option<Box<CTIndexRange>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -2783,6 +2869,21 @@ pub struct CTTLOleChartTargetElement {
 pub struct CTTLShapeTargetElement {
     #[serde(rename = "@spid")]
     pub spid: String,
+    #[serde(rename = "bg")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bg: Option<Box<CTEmpty>>,
+    #[serde(rename = "subSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sub_sp: Option<Box<CTTLSubShapeId>>,
+    #[serde(rename = "oleChartEl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ole_chart_el: Option<Box<CTTLOleChartTargetElement>>,
+    #[serde(rename = "txEl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_el: Option<Box<CTTLTextTargetElement>>,
+    #[serde(rename = "graphicEl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graphic_el: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2790,10 +2891,27 @@ pub struct CTTLShapeTargetElement {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLTimeTargetElement {
+    #[serde(rename = "sldTgt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sld_tgt: Option<Box<CTEmpty>>,
+    #[serde(rename = "sndTgt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snd_tgt: Option<String>,
+    #[serde(rename = "spTgt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp_tgt: Option<Box<CTTLShapeTargetElement>>,
+    #[serde(rename = "inkTgt")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ink_tgt: Option<Box<CTTLSubShapeId>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -2835,6 +2953,15 @@ pub struct CTTLTimeCondition {
     #[serde(rename = "@delay")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub delay: Option<STTLTime>,
+    #[serde(rename = "tgtEl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tgt_el: Option<Box<CTTLTimeTargetElement>>,
+    #[serde(rename = "tn")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tn: Option<Box<CTTLTriggerTimeNodeID>>,
+    #[serde(rename = "rtn")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rtn: Option<Box<CTTLTriggerRuntimeNode>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2842,6 +2969,11 @@ pub struct CTTLTimeCondition {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -2858,6 +2990,45 @@ pub struct CTTLTimeConditionList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTimeNodeList {
+    #[serde(rename = "par")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub par: Option<Box<CTTLTimeNodeParallel>>,
+    #[serde(rename = "seq")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub seq: Option<Box<CTTLTimeNodeSequence>>,
+    #[serde(rename = "excl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub excl: Option<Box<CTTLTimeNodeExclusive>>,
+    #[serde(rename = "anim")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim: Option<Box<CTTLAnimateBehavior>>,
+    #[serde(rename = "animClr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_clr: Option<Box<CTTLAnimateColorBehavior>>,
+    #[serde(rename = "animEffect")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_effect: Option<Box<CTTLAnimateEffectBehavior>>,
+    #[serde(rename = "animMotion")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_motion: Option<Box<CTTLAnimateMotionBehavior>>,
+    #[serde(rename = "animRot")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_rot: Option<Box<CTTLAnimateRotationBehavior>>,
+    #[serde(rename = "animScale")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anim_scale: Option<Box<CTTLAnimateScaleBehavior>>,
+    #[serde(rename = "cmd")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cmd: Option<Box<CTTLCommandBehavior>>,
+    #[serde(rename = "set")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub set: Option<Box<CTTLSetBehavior>>,
+    #[serde(rename = "audio")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub audio: Option<Box<CTTLMediaNodeAudio>>,
+    #[serde(rename = "video")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub video: Option<Box<CTTLMediaNodeVideo>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -3139,6 +3310,21 @@ pub struct CTTLAnimVariantStringVal {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLAnimVariant {
+    #[serde(rename = "boolVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bool_val: Option<Box<CTTLAnimVariantBooleanVal>>,
+    #[serde(rename = "intVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub int_val: Option<Box<CTTLAnimVariantIntegerVal>>,
+    #[serde(rename = "fltVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub flt_val: Option<Box<CTTLAnimVariantFloatVal>>,
+    #[serde(rename = "strVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub str_val: Option<Box<CTTLAnimVariantStringVal>>,
+    #[serde(rename = "clrVal")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_val: Option<String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -3255,6 +3441,12 @@ pub struct CTTLByHslColorTransform {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTLByAnimateColorTransform {
+    #[serde(rename = "rgb")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rgb: Option<Box<CTTLByRgbColorTransform>>,
+    #[serde(rename = "hsl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hsl: Option<Box<CTTLByHslColorTransform>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -3759,6 +3951,12 @@ pub struct CTTLGraphicalObjectBuild {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub ui_expand: Option<bool>,
+    #[serde(rename = "bldAsOne")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_as_one: Option<Box<CTEmpty>>,
+    #[serde(rename = "bldSub")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_sub: Option<String>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3766,10 +3964,27 @@ pub struct CTTLGraphicalObjectBuild {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBuildList {
+    #[serde(rename = "bldP")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_p: Option<Box<CTTLBuildParagraph>>,
+    #[serde(rename = "bldDgm")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_dgm: Option<Box<CTTLBuildDiagram>>,
+    #[serde(rename = "bldOleChart")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_ole_chart: Option<Box<CTTLOleBuildChart>>,
+    #[serde(rename = "bldGraphic")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_graphic: Option<Box<CTTLGraphicalObjectBuild>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4128,6 +4343,18 @@ pub struct CTOleObject {
     #[serde(rename = "@progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<String>,
+    #[serde(rename = "embed")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embed: Option<Box<CTOleObjectEmbed>>,
+    #[serde(rename = "link")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub link: Option<Box<CTOleObjectLink>>,
+    #[serde(rename = "@spid")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spid: Option<String>,
+    #[serde(rename = "pic")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture: Option<Box<Picture>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4135,6 +4362,11 @@ pub struct CTOleObject {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 pub type POleObj = Box<CTOleObject>;
@@ -4160,6 +4392,12 @@ pub struct CTControl {
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
+    #[serde(rename = "@spid")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spid: Option<String>,
+    #[serde(rename = "pic")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture: Option<Box<Picture>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5230,6 +5468,24 @@ pub struct GroupShape {
     pub non_visual_group_properties: Box<CTGroupShapeNonVisual>,
     #[serde(rename = "grpSpPr")]
     pub grp_sp_pr: String,
+    #[serde(rename = "sp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shape: Option<Box<Shape>>,
+    #[serde(rename = "grpSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group_shape: Option<Box<GroupShape>>,
+    #[serde(rename = "graphicFrame")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graphic_frame: Option<Box<GraphicalObjectFrame>>,
+    #[serde(rename = "cxnSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub connector: Option<Box<Connector>>,
+    #[serde(rename = "pic")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture: Option<Box<Picture>>,
+    #[serde(rename = "contentPart")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content_part: Option<Box<CTRel>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,

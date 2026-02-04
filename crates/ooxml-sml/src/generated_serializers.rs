@@ -237,7 +237,170 @@ impl ToXml for FilterColumn {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.filters {
+            val.write_element("filters", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.top10 {
+            val.write_element("top10", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.custom_filters {
+            val.write_element("customFilters", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.dynamic_filter {
+            val.write_element("dynamicFilter", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.color_filter {
+            val.write_element("colorFilter", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if let Some(ref val) = self.icon_filter {
+            val.write_element("iconFilter", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-extensions")]
+        if let Some(ref val) = self.extension_list {
+            val.write_element("extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-filtering")]
+        if self.filters.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if self.top10.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if self.custom_filters.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if self.dynamic_filter.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if self.color_filter.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-filtering")]
+        if self.icon_filter.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-extensions")]
+        if self.extension_list.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -2092,7 +2255,80 @@ impl ToXml for DataTables {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.m {
+            val.write_element("m", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.style_index {
+            val.write_element("s", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.x {
+            val.write_element("x", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.m.is_some() {
+            return false;
+        }
+        if self.style_index.is_some() {
+            return false;
+        }
+        if self.x.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -2801,7 +3037,80 @@ impl ToXml for CacheSource {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.worksheet_source {
+            val.write_element("worksheetSource", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.consolidation {
+            val.write_element("consolidation", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.extension_list {
+            val.write_element("extLst", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.worksheet_source.is_some() {
+            return false;
+        }
+        if self.consolidation.is_some() {
+            return false;
+        }
+        if self.extension_list.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -3198,7 +3507,137 @@ impl ToXml for SharedItems {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.m {
+            val.write_element("m", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.n {
+            val.write_element("n", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.b {
+            val.write_element("b", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.e {
+            val.write_element("e", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.style_index {
+            val.write_element("s", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d {
+            val.write_element("d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.m.is_some() {
+            return false;
+        }
+        if self.n.is_some() {
+            return false;
+        }
+        if self.b.is_some() {
+            return false;
+        }
+        if self.e.is_some() {
+            return false;
+        }
+        if self.style_index.is_some() {
+            return false;
+        }
+        if self.d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -4035,7 +4474,137 @@ impl ToXml for GroupItems {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.m {
+            val.write_element("m", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.n {
+            val.write_element("n", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.b {
+            val.write_element("b", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.e {
+            val.write_element("e", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.style_index {
+            val.write_element("s", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d {
+            val.write_element("d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.m.is_some() {
+            return false;
+        }
+        if self.n.is_some() {
+            return false;
+        }
+        if self.b.is_some() {
+            return false;
+        }
+        if self.e.is_some() {
+            return false;
+        }
+        if self.style_index.is_some() {
+            return false;
+        }
+        if self.d.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -4118,13 +4687,150 @@ impl ToXml for PivotCacheRecords {
 impl ToXml for CTRecord {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.m {
+            val.write_element("m", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.n {
+            val.write_element("n", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.b {
+            val.write_element("b", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.e {
+            val.write_element("e", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.style_index {
+            val.write_element("s", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.d {
+            val.write_element("d", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.x {
+            val.write_element("x", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
         Ok(())
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.m.is_some() {
+            return false;
+        }
+        if self.n.is_some() {
+            return false;
+        }
+        if self.b.is_some() {
+            return false;
+        }
+        if self.e.is_some() {
+            return false;
+        }
+        if self.style_index.is_some() {
+            return false;
+        }
+        if self.d.is_some() {
+            return false;
+        }
+        if self.x.is_some() {
+            return false;
+        }
         #[cfg(feature = "extra-children")]
         if !self.extra_children.is_empty() {
             return false;
@@ -5089,7 +5795,99 @@ impl ToXml for CTPCDSDTCEntries {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.m {
+            val.write_element("m", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.n {
+            val.write_element("n", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.e {
+            val.write_element("e", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.style_index {
+            val.write_element("s", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.m.is_some() {
+            return false;
+        }
+        if self.n.is_some() {
+            return false;
+        }
+        if self.e.is_some() {
+            return false;
+        }
+        if self.style_index.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -9716,13 +10514,302 @@ impl ToXml for RichTextElement {
 impl ToXml for RichTextRunProperties {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.r_font {
+            val.write_element("rFont", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.charset {
+            val.write_element("charset", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.family {
+            val.write_element("family", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.b {
+            val.write_element("b", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.i {
+            val.write_element("i", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.strike {
+            val.write_element("strike", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.outline {
+            val.write_element("outline", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.shadow {
+            val.write_element("shadow", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.condense {
+            val.write_element("condense", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.extend {
+            val.write_element("extend", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.color {
+            val.write_element("color", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.sz {
+            val.write_element("sz", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.u {
+            val.write_element("u", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.vert_align {
+            val.write_element("vertAlign", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.scheme {
+            val.write_element("scheme", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
         Ok(())
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.r_font.is_some() {
+            return false;
+        }
+        if self.charset.is_some() {
+            return false;
+        }
+        if self.family.is_some() {
+            return false;
+        }
+        if self.b.is_some() {
+            return false;
+        }
+        if self.i.is_some() {
+            return false;
+        }
+        if self.strike.is_some() {
+            return false;
+        }
+        if self.outline.is_some() {
+            return false;
+        }
+        if self.shadow.is_some() {
+            return false;
+        }
+        if self.condense.is_some() {
+            return false;
+        }
+        if self.extend.is_some() {
+            return false;
+        }
+        if self.color.is_some() {
+            return false;
+        }
+        if self.sz.is_some() {
+            return false;
+        }
+        if self.u.is_some() {
+            return false;
+        }
+        if self.vert_align.is_some() {
+            return false;
+        }
+        if self.scheme.is_some() {
+            return false;
+        }
         #[cfg(feature = "extra-children")]
         if !self.extra_children.is_empty() {
             return false;
@@ -9967,13 +11054,245 @@ impl ToXml for RevisionHeaders {
 impl ToXml for Revisions {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        for item in &self.rrc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rrc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rm {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rm", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcv {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcv", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rsnm {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rsnm", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.ris {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("ris", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rfmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rfmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.raf {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("raf", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rdn {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rdn", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rqt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rqt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcft {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcft", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
         Ok(())
     }
 
     fn is_empty_element(&self) -> bool {
+        if !self.rrc.is_empty() {
+            return false;
+        }
+        if !self.rm.is_empty() {
+            return false;
+        }
+        if !self.rcv.is_empty() {
+            return false;
+        }
+        if !self.rsnm.is_empty() {
+            return false;
+        }
+        if !self.ris.is_empty() {
+            return false;
+        }
+        if !self.rcc.is_empty() {
+            return false;
+        }
+        if !self.rfmt.is_empty() {
+            return false;
+        }
+        if !self.raf.is_empty() {
+            return false;
+        }
+        if !self.rdn.is_empty() {
+            return false;
+        }
+        if !self.rcmt.is_empty() {
+            return false;
+        }
+        if !self.rqt.is_empty() {
+            return false;
+        }
+        if !self.rcft.is_empty() {
+            return false;
+        }
         #[cfg(feature = "extra-children")]
         if !self.extra_children.is_empty() {
             return false;
@@ -10384,7 +11703,80 @@ impl ToXml for RevisionRowColumn {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        for item in &self.undo {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("undo", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rfmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rfmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if !self.undo.is_empty() {
+            return false;
+        }
+        if !self.rcc.is_empty() {
+            return false;
+        }
+        if !self.rfmt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -10433,7 +11825,80 @@ impl ToXml for RevisionMove {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        for item in &self.undo {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("undo", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rcc {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rcc", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        for item in &self.rfmt {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("rfmt", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if !self.undo.is_empty() {
+            return false;
+        }
+        if !self.rcc.is_empty() {
+            return false;
+        }
+        if !self.rfmt.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -18858,7 +20323,99 @@ impl ToXml for CTMdx {
         start
     }
 
+    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.cell_type {
+            val.write_element("t", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.ms {
+            val.write_element("ms", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.p {
+            val.write_element("p", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.k {
+            val.write_element("k", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
+        }
+        Ok(())
+    }
+
     fn is_empty_element(&self) -> bool {
+        if self.cell_type.is_some() {
+            return false;
+        }
+        if self.ms.is_some() {
+            return false;
+        }
+        if self.p.is_some() {
+            return false;
+        }
+        if self.k.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
         true
     }
 }
@@ -20216,13 +21773,59 @@ impl ToXml for Fills {
 impl ToXml for Fill {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.pattern_fill {
+            val.write_element("patternFill", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.gradient_fill {
+            val.write_element("gradientFill", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
         Ok(())
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
+        if self.pattern_fill.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.gradient_fill.is_some() {
+            return false;
+        }
         #[cfg(feature = "extra-children")]
         if !self.extra_children.is_empty() {
             return false;
@@ -21659,13 +23262,332 @@ impl ToXml for UnderlineProperty {
 impl ToXml for Font {
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+        let mut extra_iter = self.extra_children.iter().peekable();
+        #[cfg(feature = "extra-children")]
+        let mut emit_idx: usize = 0;
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.name {
+            val.write_element("name", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.charset {
+            val.write_element("charset", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.family {
+            val.write_element("family", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.b {
+            val.write_element("b", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.i {
+            val.write_element("i", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.strike {
+            val.write_element("strike", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.outline {
+            val.write_element("outline", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.shadow {
+            val.write_element("shadow", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.condense {
+            val.write_element("condense", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.extend {
+            val.write_element("extend", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.color {
+            val.write_element("color", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.sz {
+            val.write_element("sz", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.u {
+            val.write_element("u", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.vert_align {
+            val.write_element("vertAlign", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        #[cfg(feature = "sml-styling")]
+        if let Some(ref val) = self.scheme {
+            val.write_element("scheme", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        for extra in extra_iter {
+            extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
         Ok(())
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
+        if self.name.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.charset.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.family.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.b.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.i.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.strike.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.outline.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.shadow.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.condense.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.extend.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.color.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.sz.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.u.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.vert_align.is_some() {
+            return false;
+        }
+        #[cfg(feature = "sml-styling")]
+        if self.scheme.is_some() {
+            return false;
+        }
         #[cfg(feature = "extra-children")]
         if !self.extra_children.is_empty() {
             return false;
@@ -21750,6 +23672,54 @@ impl ToXml for ExternalLink {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        if let Some(ref val) = self.external_book {
+            val.write_element("externalBook", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.dde_link {
+            val.write_element("ddeLink", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
+        if let Some(ref val) = self.ole_link {
+            val.write_element("oleLink", writer)?;
+        }
+        #[cfg(feature = "extra-children")]
+        {
+            emit_idx += 1;
+        }
+        #[cfg(feature = "extra-children")]
+        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+            extra_iter
+                .next()
+                .unwrap()
+                .node
+                .write_to(writer)
+                .map_err(SerializeError::from)?;
+        }
         if let Some(ref val) = self.extension_list {
             val.write_element("extLst", writer)?;
         }
@@ -21765,6 +23735,15 @@ impl ToXml for ExternalLink {
     }
 
     fn is_empty_element(&self) -> bool {
+        if self.external_book.is_some() {
+            return false;
+        }
+        if self.dde_link.is_some() {
+            return false;
+        }
+        if self.ole_link.is_some() {
+            return false;
+        }
         if self.extension_list.is_some() {
             return false;
         }

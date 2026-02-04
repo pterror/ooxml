@@ -987,9 +987,17 @@ impl<'a> Generator<'a> {
                             }
                         }
                     }
-                    Pattern::Choice(_) | Pattern::Ref(_) => {
+                    Pattern::Choice(_) => {
+                        // Complex repeated content - recurse to handle choice alternatives
+                        self.collect_fields(inner, fields, false);
+                    }
+                    Pattern::Ref(_) => {
                         // Complex repeated content - recurse but don't add directly
                         self.collect_fields(inner, fields, false);
+                    }
+                    Pattern::Group(group_inner) => {
+                        // Unwrap group and recurse (handles patterns like OneOrMore(Group(Choice)))
+                        self.collect_fields(group_inner, fields, false);
                     }
                     _ => {}
                 }
@@ -1043,10 +1051,13 @@ impl<'a> Generator<'a> {
                     }
                 }
             }
-            Pattern::Choice(_) => {
-                // Choice patterns at the field level represent variant content.
-                // For now, these are handled when the parent is an element group (enum).
-                // TODO: Handle inline choice patterns as content fields
+            Pattern::Choice(alternatives) => {
+                // Flatten choice into optional fields.
+                // In a choice, each alternative might not be selected, so all become optional.
+                // This handles patterns like (element a? | element b? | ...)+ in Font/Fill.
+                for alt in alternatives {
+                    self.collect_fields(alt, fields, true);
+                }
             }
             _ => {}
         }

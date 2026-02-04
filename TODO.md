@@ -45,7 +45,7 @@ DocumentBuilder handles common cases but doesn't expose:
 
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
 - [ ] **Remove unnecessary Box in Vec<Box<T>>** - Codegen uses `Vec<Box<T>>` for all struct types even when not recursive. This adds unnecessary indirection. Consider generating `Vec<T>` for non-recursive types and reserving `Box<T>` for recursive types only. Clippy flags this with `clippy::vec_box`.
-- [ ] **Handle repeating choice patterns** - Codegen produces empty structs for patterns like `(element a | element b | ...)+`. Affects SML Font/Fill types which need multiple optional child elements. Could generate either an enum `Vec<FontChild>` or flatten to `bold: Vec<BooleanProperty>`, `italic: Vec<BooleanProperty>`, etc.
+- [x] **Handle repeating choice patterns** - Fixed codegen to handle `OneOrMore(Group(Choice([...])))` patterns. Font/Fill types now have proper optional fields for each choice alternative.
 
 ## Codegen Performance
 
@@ -114,7 +114,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ### SML (Spreadsheet)
 - [x] **Regenerate SML types with EG_\*/AG_\* inlining** - Types, parsers, and serializers regenerated with latest codegen.
 - [x] **Add SML serializer unit tests** - 25 roundtrip tests in test_generated_serializers.rs.
-- [~] **Migrate SML writer to generated serializers** - Mostly complete. Migrated: serialize_shared_strings, serialize_comments, serialize_sheet, workbook XML. Blocked: serialize_styles (Font/Fill types are empty due to codegen issue with repeating choice patterns).
+- [~] **Migrate SML writer to generated serializers** - Mostly complete. Migrated: serialize_shared_strings, serialize_comments, serialize_sheet, workbook XML. Remaining: serialize_styles (now unblocked - Font/Fill types have proper fields).
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)

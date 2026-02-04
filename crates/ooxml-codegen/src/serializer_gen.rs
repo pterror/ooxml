@@ -1369,6 +1369,10 @@ impl<'a> SerializerGenerator<'a> {
                 Pattern::Choice(_) | Pattern::Ref(_) => {
                     self.collect_fields(inner, fields, false);
                 }
+                Pattern::Group(group_inner) => {
+                    // Unwrap group and recurse (handles patterns like OneOrMore(Group(Choice)))
+                    self.collect_fields(group_inner, fields, false);
+                }
                 _ => {}
             },
             Pattern::Group(inner) => {
@@ -1414,7 +1418,13 @@ impl<'a> SerializerGenerator<'a> {
                     }
                 }
             }
-            Pattern::Choice(_) => {}
+            Pattern::Choice(alternatives) => {
+                // Flatten choice into optional fields.
+                // In a choice, each alternative might not be selected, so all become optional.
+                for alt in alternatives {
+                    self.collect_fields(alt, fields, true);
+                }
+            }
             _ => {}
         }
     }
