@@ -553,7 +553,9 @@ impl<'a> SerializerGenerator<'a> {
                     }
 
                     if self.is_eg_content_field(field) {
-                        if field.is_optional {
+                        // Non-vec EG content fields are always Option<Box<...>> in Rust
+                        // (either because schema says optional, or for Default compatibility)
+                        if field.is_optional || !field.is_vec {
                             writeln!(
                                 code,
                                 "        if let Some(ref val) = self.{} {{",
@@ -564,12 +566,11 @@ impl<'a> SerializerGenerator<'a> {
                                 .unwrap();
                             writeln!(code, "        }}").unwrap();
                         } else {
-                            writeln!(
-                                code,
-                                "        self.{}.write_element(\"\", writer)?;",
-                                field.name
-                            )
-                            .unwrap();
+                            // Vec<Box<EG_*>> — iterate and serialize each
+                            writeln!(code, "        for val in &self.{} {{", field.name).unwrap();
+                            writeln!(code, "            val.write_element(\"\", writer)?;")
+                                .unwrap();
+                            writeln!(code, "        }}").unwrap();
                         }
                     } else {
                         let tag = self.qualified_element_name(field);

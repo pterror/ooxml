@@ -4924,7 +4924,9 @@ impl ToXml for CTHtmlPublishProperties {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.slide_list_choice.write_element("", writer)?;
+        if let Some(ref val) = self.slide_list_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -6230,7 +6232,9 @@ impl ToXml for CTBackground {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.background.write_element("", writer)?;
+        if let Some(ref val) = self.background {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
