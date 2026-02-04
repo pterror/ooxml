@@ -116,16 +116,18 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
-- [ ] **Add PML parser generation** - Add generate_parsers to build.rs, create generated_parsers.rs.
-- [ ] **Add PML serializer generation** - Add generate_serializers to build.rs, create generated_serializers.rs.
+- [~] **Add PML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by codegen issues. See DML section.
 - [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
 - [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
 
 ### DML (Drawing)
-- [ ] **Add DML parser generation** - Add generate_parsers to build.rs, create generated_parsers.rs.
-- [ ] **Add DML serializer generation** - Add generate_serializers to build.rs, create generated_serializers.rs.
+- [~] **Add DML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by codegen issues:
+  - EG_* vs CT_* type mismatches (EGOfficeArtExtensionList vs CTOfficeArtExtensionList, EGColorChoice vs CTColor)
+  - Cross-crate type references (PML→DML types like CTColor, CTTextListStyle)
+  - Optional field serialization for EG_* types
+  - Requires fixes in parser_gen.rs and serializer_gen.rs
 - [ ] **Port feature flags to DML** - Add ooxml-features.yaml mappings for DML elements.
 - [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.

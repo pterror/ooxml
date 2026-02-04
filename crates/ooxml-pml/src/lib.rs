@@ -45,6 +45,15 @@ pub mod writer;
 pub mod generated;
 pub use generated as types;
 
+// TODO: PML parser/serializer generation has codegen issues:
+// - Cross-crate DML type references (CTColor, CTTextListStyle, etc.)
+// - EG_* type handling mismatches
+// Uncomment once codegen is fixed:
+// pub mod generated_parsers;
+// pub use generated_parsers as parsers;
+// pub mod generated_serializers;
+// pub use generated_serializers as serializers;
+
 pub use error::{Error, Result};
 pub use presentation::{
     Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,
