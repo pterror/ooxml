@@ -1564,9 +1564,9 @@ impl WorkbookBuilder {
 
             // Write comments if the sheet has any
             if !sheet.comments.is_empty() {
-                let comments_xml = self.serialize_comments(sheet);
+                let comments_xml = self.serialize_comments(sheet)?;
                 let comments_part = format!("xl/comments{}.xml", sheet_num);
-                pkg.add_part(&comments_part, CT_COMMENTS, comments_xml.as_bytes())?;
+                pkg.add_part(&comments_part, CT_COMMENTS, &comments_xml)?;
 
                 // Write sheet relationships (for comments)
                 let sheet_rels = format!(
@@ -1769,59 +1769,76 @@ impl WorkbookBuilder {
     /// Serialize comments to XML.
     ///
     /// ECMA-376 Part 1, Section 18.7 (Comments).
-    fn serialize_comments(&self, sheet: &SheetBuilder) -> String {
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(r#"<comments xmlns="{}">"#, NS_SPREADSHEET));
-        xml.push('\n');
-
-        // Collect unique authors
+    fn serialize_comments(&self, sheet: &SheetBuilder) -> Result<Vec<u8>> {
+        // Collect unique authors and build author->index mapping
         let mut authors: Vec<String> = Vec::new();
-        let mut author_index: HashMap<String, usize> = HashMap::new();
+        let mut author_index: HashMap<String, u32> = HashMap::new();
 
         for comment in &sheet.comments {
             let author = comment.author.clone().unwrap_or_default();
             if !author_index.contains_key(&author) {
-                author_index.insert(author.clone(), authors.len());
+                author_index.insert(author.clone(), authors.len() as u32);
                 authors.push(author);
             }
         }
 
-        // Write authors
-        xml.push_str("  <authors>\n");
-        for author in &authors {
-            xml.push_str("    <author>");
-            xml.push_str(&escape_xml(author));
-            xml.push_str("</author>\n");
-        }
-        xml.push_str("  </authors>\n");
+        // Build comment list
+        let comment_list: Vec<Box<types::Comment>> = sheet
+            .comments
+            .iter()
+            .map(|c| {
+                let author = c.author.clone().unwrap_or_default();
+                let author_id = *author_index.get(&author).unwrap_or(&0);
 
-        // Write comment list
-        xml.push_str("  <commentList>\n");
-        for comment in &sheet.comments {
-            let author = comment.author.clone().unwrap_or_default();
-            let author_id = author_index.get(&author).unwrap_or(&0);
+                Box::new(types::Comment {
+                    #[cfg(feature = "sml-comments")]
+                    reference: c.reference.clone(),
+                    #[cfg(feature = "sml-comments")]
+                    author_id,
+                    #[cfg(feature = "sml-comments")]
+                    guid: None,
+                    #[cfg(feature = "sml-comments")]
+                    shape_id: None,
+                    #[cfg(feature = "sml-comments")]
+                    text: Box::new(types::RichString {
+                        cell_type: None,
+                        reference: vec![Box::new(types::RichTextElement {
+                            r_pr: None,
+                            cell_type: c.text.clone(),
+                            #[cfg(feature = "extra-children")]
+                            extra_children: Vec::new(),
+                        })],
+                        r_ph: Vec::new(),
+                        phonetic_pr: None,
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    }),
+                    comment_pr: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                })
+            })
+            .collect();
 
-            xml.push_str(&format!(
-                r#"    <comment ref="{}" authorId="{}">"#,
-                escape_xml(&comment.reference),
-                author_id
-            ));
-            xml.push('\n');
-            xml.push_str("      <text>\n");
-            xml.push_str("        <r>\n");
-            xml.push_str("          <t>");
-            xml.push_str(&escape_xml(&comment.text));
-            xml.push_str("</t>\n");
-            xml.push_str("        </r>\n");
-            xml.push_str("      </text>\n");
-            xml.push_str("    </comment>\n");
-        }
-        xml.push_str("  </commentList>\n");
-        xml.push_str("</comments>");
+        let comments = types::Comments {
+            authors: Box::new(types::Authors {
+                author: authors,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }),
+            comment_list: Box::new(types::CommentList {
+                comment: comment_list,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }),
+            extension_list: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
 
-        xml
+        serialize_with_namespaces(&comments, "comments")
     }
 
     /// Serialize styles to XML.
