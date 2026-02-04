@@ -115,6 +115,8 @@ fn main() {
         feature_mappings,
         // PML uses p: namespace prefix in real PPTX files
         xml_serialize_prefix: Some("p".to_string()),
+        // PML references DML types for shared drawing elements
+        cross_crate_imports: vec!["ooxml_dml::types::*".to_string()],
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);

@@ -130,62 +130,21 @@ impl<'a> ParserGenerator<'a> {
         writeln!(self.output, "#![allow(clippy::manual_is_multiple_of)]").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "use super::generated::*;").unwrap();
+        // Add cross-crate imports for types from other schemas
+        for import in &self.config.cross_crate_imports {
+            writeln!(self.output, "use {};", import).unwrap();
+        }
         writeln!(self.output, "use quick_xml::Reader;").unwrap();
         writeln!(self.output, "use quick_xml::events::{{Event, BytesStart}};").unwrap();
         writeln!(self.output, "use std::io::BufRead;").unwrap();
+        // Import shared traits and error types from ooxml-xml
+        writeln!(self.output, "pub use ooxml_xml::{{FromXml, ParseError}};").unwrap();
         writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
         writeln!(
             self.output,
             "use ooxml_xml::{{PositionedNode, RawXmlElement, RawXmlNode}};"
         )
         .unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "/// Error type for XML parsing.").unwrap();
-        writeln!(self.output, "#[derive(Debug)]").unwrap();
-        writeln!(self.output, "pub enum ParseError {{").unwrap();
-        writeln!(self.output, "    Xml(quick_xml::Error),").unwrap();
-        writeln!(self.output, "    #[cfg(feature = \"extra-children\")]").unwrap();
-        writeln!(self.output, "    RawXml(ooxml_xml::Error),").unwrap();
-        writeln!(self.output, "    UnexpectedElement(String),").unwrap();
-        writeln!(self.output, "    MissingAttribute(String),").unwrap();
-        writeln!(self.output, "    InvalidValue(String),").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "impl From<quick_xml::Error> for ParseError {{").unwrap();
-        writeln!(self.output, "    fn from(e: quick_xml::Error) -> Self {{").unwrap();
-        writeln!(self.output, "        ParseError::Xml(e)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
-        writeln!(self.output, "impl From<ooxml_xml::Error> for ParseError {{").unwrap();
-        writeln!(self.output, "    fn from(e: ooxml_xml::Error) -> Self {{").unwrap();
-        writeln!(self.output, "        ParseError::RawXml(e)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "/// Trait for types that can be parsed from XML events."
-        )
-        .unwrap();
-        writeln!(self.output, "pub trait FromXml: Sized {{").unwrap();
-        writeln!(
-            self.output,
-            "    /// Parse from a reader, given the opening tag."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    /// If `is_empty` is true, the element was self-closing (no children to read)."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start: &BytesStart, is_empty: bool) -> Result<Self, ParseError>;"
-        )
-        .unwrap();
-        writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
         // Add skip_element helper (allow dead_code since extra-children feature captures instead)
         writeln!(self.output, "#[allow(dead_code)]").unwrap();
