@@ -21,6 +21,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 impl ToXml for CTAudioFile {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-media")]
         if let Some(ref val) = self.content_type {
             start.push_attribute(("contentType", val.as_str()));
         }
@@ -74,6 +75,7 @@ impl ToXml for CTAudioFile {
 impl ToXml for CTVideoFile {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-media")]
         if let Some(ref val) = self.content_type {
             start.push_attribute(("contentType", val.as_str()));
         }
@@ -281,6 +283,7 @@ impl ToXml for EGMedia {
 impl ToXml for ColorScheme {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.name;
             start.push_attribute(("name", val.as_str()));
@@ -306,6 +309,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.dk1;
             val.write_element("a:dk1", writer)?;
@@ -323,6 +327,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.lt1;
             val.write_element("a:lt1", writer)?;
@@ -340,6 +345,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.dk2;
             val.write_element("a:dk2", writer)?;
@@ -357,6 +363,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.lt2;
             val.write_element("a:lt2", writer)?;
@@ -374,6 +381,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent1;
             val.write_element("a:accent1", writer)?;
@@ -391,6 +399,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent2;
             val.write_element("a:accent2", writer)?;
@@ -408,6 +417,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent3;
             val.write_element("a:accent3", writer)?;
@@ -425,6 +435,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent4;
             val.write_element("a:accent4", writer)?;
@@ -442,6 +453,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent5;
             val.write_element("a:accent5", writer)?;
@@ -459,6 +471,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.accent6;
             val.write_element("a:accent6", writer)?;
@@ -476,6 +489,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.hlink;
             val.write_element("a:hlink", writer)?;
@@ -493,6 +507,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.fol_hlink;
             val.write_element("a:folHlink", writer)?;
@@ -510,6 +525,7 @@ impl ToXml for ColorScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -525,7 +541,39 @@ impl ToXml for ColorScheme {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -809,6 +857,7 @@ impl ToXml for CTEffectStyleItem {
 impl ToXml for FontScheme {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.name;
             start.push_attribute(("name", val.as_str()));
@@ -834,6 +883,7 @@ impl ToXml for FontScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.major_font;
             val.write_element("a:majorFont", writer)?;
@@ -851,6 +901,7 @@ impl ToXml for FontScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.minor_font;
             val.write_element("a:minorFont", writer)?;
@@ -868,6 +919,7 @@ impl ToXml for FontScheme {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -883,7 +935,19 @@ impl ToXml for FontScheme {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -1054,6 +1118,7 @@ impl ToXml for CTBackgroundFillStyleList {
 impl ToXml for CTStyleMatrix {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
         }
@@ -1078,6 +1143,7 @@ impl ToXml for CTStyleMatrix {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.fill_style_lst;
             val.write_element("a:fillStyleLst", writer)?;
@@ -1095,6 +1161,7 @@ impl ToXml for CTStyleMatrix {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.ln_style_lst;
             val.write_element("a:lnStyleLst", writer)?;
@@ -1112,6 +1179,7 @@ impl ToXml for CTStyleMatrix {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.effect_style_lst;
             val.write_element("a:effectStyleLst", writer)?;
@@ -1129,6 +1197,7 @@ impl ToXml for CTStyleMatrix {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.bg_fill_style_lst;
             val.write_element("a:bgFillStyleLst", writer)?;
@@ -1145,7 +1214,19 @@ impl ToXml for CTStyleMatrix {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -1164,6 +1245,7 @@ impl ToXml for CTBaseStyles {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.clr_scheme;
             val.write_element("a:clrScheme", writer)?;
@@ -1181,6 +1263,7 @@ impl ToXml for CTBaseStyles {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.font_scheme;
             val.write_element("a:fontScheme", writer)?;
@@ -1198,6 +1281,7 @@ impl ToXml for CTBaseStyles {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.fmt_scheme;
             val.write_element("a:fmtScheme", writer)?;
@@ -1215,6 +1299,7 @@ impl ToXml for CTBaseStyles {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -1230,7 +1315,21 @@ impl ToXml for CTBaseStyles {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-colors")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -1616,6 +1715,7 @@ impl ToXml for CTScRgbColor {
 impl ToXml for SrgbColor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.value;
             {
@@ -1673,6 +1773,7 @@ impl ToXml for SrgbColor {
 impl ToXml for HslColor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.hue;
             {
@@ -1680,6 +1781,7 @@ impl ToXml for HslColor {
                 start.push_attribute(("hue", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.sat;
             {
@@ -1687,6 +1789,7 @@ impl ToXml for HslColor {
                 start.push_attribute(("sat", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.lum;
             {
@@ -1807,6 +1910,7 @@ impl ToXml for SystemColor {
 impl ToXml for SchemeColor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-colors")]
         {
             let val = &self.value;
             {
@@ -2531,24 +2635,31 @@ impl ToXml for CTEmbeddedWAVAudioFile {
 impl ToXml for CTHyperlink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.invalid_url {
             start.push_attribute(("invalidUrl", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.action {
             start.push_attribute(("action", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.tgt_frame {
             start.push_attribute(("tgtFrame", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.tooltip {
             start.push_attribute(("tooltip", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.history {
             start.push_attribute(("history", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.highlight_click {
             start.push_attribute(("highlightClick", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.end_snd {
             start.push_attribute(("endSnd", if *val { "1" } else { "0" }));
         }
@@ -2573,6 +2684,7 @@ impl ToXml for CTHyperlink {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.snd {
             val.write_element("a:snd", writer)?;
         }
@@ -2589,6 +2701,7 @@ impl ToXml for CTHyperlink {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -2604,9 +2717,11 @@ impl ToXml for CTHyperlink {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.snd.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3172,6 +3287,7 @@ impl ToXml for CTNonVisualDrawingProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.hlink_click {
             val.write_element("a:hlinkClick", writer)?;
         }
@@ -3188,6 +3304,7 @@ impl ToXml for CTNonVisualDrawingProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.hlink_hover {
             val.write_element("a:hlinkHover", writer)?;
         }
@@ -3204,6 +3321,7 @@ impl ToXml for CTNonVisualDrawingProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -3219,12 +3337,15 @@ impl ToXml for CTNonVisualDrawingProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.hlink_click.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.hlink_hover.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3323,6 +3444,7 @@ impl ToXml for CTNonVisualConnectorProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.cxn_sp_locks {
             val.write_element("a:cxnSpLocks", writer)?;
         }
@@ -3339,6 +3461,7 @@ impl ToXml for CTNonVisualConnectorProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.st_cxn {
             val.write_element("a:stCxn", writer)?;
         }
@@ -3355,6 +3478,7 @@ impl ToXml for CTNonVisualConnectorProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.end_cxn {
             val.write_element("a:endCxn", writer)?;
         }
@@ -3371,6 +3495,7 @@ impl ToXml for CTNonVisualConnectorProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -3386,15 +3511,19 @@ impl ToXml for CTNonVisualConnectorProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-shapes")]
         if self.cxn_sp_locks.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-shapes")]
         if self.st_cxn.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-shapes")]
         if self.end_cxn.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3409,6 +3538,7 @@ impl ToXml for CTNonVisualConnectorProperties {
 impl ToXml for CTNonVisualPictureProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.prefer_relative_resize {
             start.push_attribute(("preferRelativeResize", if *val { "1" } else { "0" }));
         }
@@ -3433,6 +3563,7 @@ impl ToXml for CTNonVisualPictureProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.pic_locks {
             val.write_element("a:picLocks", writer)?;
         }
@@ -3449,6 +3580,7 @@ impl ToXml for CTNonVisualPictureProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -3464,9 +3596,11 @@ impl ToXml for CTNonVisualPictureProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-shapes")]
         if self.pic_locks.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3493,6 +3627,7 @@ impl ToXml for CTNonVisualGroupDrawingShapeProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.grp_sp_locks {
             val.write_element("a:grpSpLocks", writer)?;
         }
@@ -3509,6 +3644,7 @@ impl ToXml for CTNonVisualGroupDrawingShapeProps {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -3524,9 +3660,11 @@ impl ToXml for CTNonVisualGroupDrawingShapeProps {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-shapes")]
         if self.grp_sp_locks.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3553,6 +3691,7 @@ impl ToXml for CTNonVisualGraphicFrameProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.graphic_frame_locks {
             val.write_element("a:graphicFrameLocks", writer)?;
         }
@@ -3569,6 +3708,7 @@ impl ToXml for CTNonVisualGraphicFrameProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -3584,9 +3724,11 @@ impl ToXml for CTNonVisualGraphicFrameProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-shapes")]
         if self.graphic_frame_locks.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -4921,6 +5063,7 @@ impl ToXml for CTGvmlGroupShape {
 impl ToXml for CTCamera {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-3d")]
         {
             let val = &self.preset;
             {
@@ -4928,12 +5071,14 @@ impl ToXml for CTCamera {
                 start.push_attribute(("prst", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.fov {
             {
                 let s = val.to_string();
                 start.push_attribute(("fov", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.zoom {
             {
                 let s = val.to_string();
@@ -4961,6 +5106,7 @@ impl ToXml for CTCamera {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.rot {
             val.write_element("a:rot", writer)?;
         }
@@ -4976,6 +5122,7 @@ impl ToXml for CTCamera {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-3d")]
         if self.rot.is_some() {
             return false;
         }
@@ -4990,6 +5137,7 @@ impl ToXml for CTCamera {
 impl ToXml for CTLightRig {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-3d")]
         {
             let val = &self.rig;
             {
@@ -4997,6 +5145,7 @@ impl ToXml for CTLightRig {
                 start.push_attribute(("rig", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         {
             let val = &self.dir;
             {
@@ -5025,6 +5174,7 @@ impl ToXml for CTLightRig {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.rot {
             val.write_element("a:rot", writer)?;
         }
@@ -5040,6 +5190,7 @@ impl ToXml for CTLightRig {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-3d")]
         if self.rot.is_some() {
             return false;
         }
@@ -5066,6 +5217,7 @@ impl ToXml for CTScene3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         {
             let val = &self.camera;
             val.write_element("a:camera", writer)?;
@@ -5083,6 +5235,7 @@ impl ToXml for CTScene3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         {
             let val = &self.light_rig;
             val.write_element("a:lightRig", writer)?;
@@ -5100,6 +5253,7 @@ impl ToXml for CTScene3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.backdrop {
             val.write_element("a:backdrop", writer)?;
         }
@@ -5116,6 +5270,7 @@ impl ToXml for CTScene3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -5131,7 +5286,23 @@ impl ToXml for CTScene3D {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-3d")]
+        return false;
+        #[cfg(feature = "dml-3d")]
+        return false;
+        #[cfg(feature = "dml-3d")]
+        if self.backdrop.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -5223,18 +5394,21 @@ impl ToXml for CTBackdrop {
 impl ToXml for CTBevel {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.height {
             {
                 let s = val.to_string();
                 start.push_attribute(("h", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.preset {
             {
                 let s = val.to_string();
@@ -5256,24 +5430,28 @@ impl ToXml for CTBevel {
 impl ToXml for CTShape3D {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.z {
             {
                 let s = val.to_string();
                 start.push_attribute(("z", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.extrusion_h {
             {
                 let s = val.to_string();
                 start.push_attribute(("extrusionH", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.contour_w {
             {
                 let s = val.to_string();
                 start.push_attribute(("contourW", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.prst_material {
             {
                 let s = val.to_string();
@@ -5301,6 +5479,7 @@ impl ToXml for CTShape3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.bevel_t {
             val.write_element("a:bevelT", writer)?;
         }
@@ -5317,6 +5496,7 @@ impl ToXml for CTShape3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.bevel_b {
             val.write_element("a:bevelB", writer)?;
         }
@@ -5333,6 +5513,7 @@ impl ToXml for CTShape3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.extrusion_clr {
             val.write_element("a:extrusionClr", writer)?;
         }
@@ -5349,6 +5530,7 @@ impl ToXml for CTShape3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.contour_clr {
             val.write_element("a:contourClr", writer)?;
         }
@@ -5365,6 +5547,7 @@ impl ToXml for CTShape3D {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -5380,18 +5563,23 @@ impl ToXml for CTShape3D {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-3d")]
         if self.bevel_t.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.bevel_b.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.extrusion_clr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.contour_clr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -5602,12 +5790,14 @@ impl ToXml for CTBiLevelEffect {
 impl ToXml for CTBlurEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.rad {
             {
                 let s = val.to_string();
                 start.push_attribute(("rad", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.grow {
             start.push_attribute(("grow", if *val { "1" } else { "0" }));
         }
@@ -5765,6 +5955,7 @@ impl ToXml for CTDuotoneEffect {
 impl ToXml for CTGlowEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.rad {
             {
                 let s = val.to_string();
@@ -5853,18 +6044,21 @@ impl ToXml for CTHSLEffect {
 impl ToXml for CTInnerShadowEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.blur_rad {
             {
                 let s = val.to_string();
                 start.push_attribute(("blurRad", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dist {
             {
                 let s = val.to_string();
                 start.push_attribute(("dist", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dir {
             {
                 let s = val.to_string();
@@ -5941,54 +6135,63 @@ impl ToXml for CTLuminanceEffect {
 impl ToXml for CTOuterShadowEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.blur_rad {
             {
                 let s = val.to_string();
                 start.push_attribute(("blurRad", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dist {
             {
                 let s = val.to_string();
                 start.push_attribute(("dist", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dir {
             {
                 let s = val.to_string();
                 start.push_attribute(("dir", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.sx {
             {
                 let s = val.to_string();
                 start.push_attribute(("sx", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.sy {
             {
                 let s = val.to_string();
                 start.push_attribute(("sy", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.kx {
             {
                 let s = val.to_string();
                 start.push_attribute(("kx", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.ky {
             {
                 let s = val.to_string();
                 start.push_attribute(("ky", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.algn {
             {
                 let s = val.to_string();
                 start.push_attribute(("algn", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.rot_with_shape {
             start.push_attribute(("rotWithShape", if *val { "1" } else { "0" }));
         }
@@ -6097,84 +6300,98 @@ impl ToXml for CTPresetShadowEffect {
 impl ToXml for CTReflectionEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.blur_rad {
             {
                 let s = val.to_string();
                 start.push_attribute(("blurRad", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.st_a {
             {
                 let s = val.to_string();
                 start.push_attribute(("stA", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.st_pos {
             {
                 let s = val.to_string();
                 start.push_attribute(("stPos", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.end_a {
             {
                 let s = val.to_string();
                 start.push_attribute(("endA", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.end_pos {
             {
                 let s = val.to_string();
                 start.push_attribute(("endPos", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dist {
             {
                 let s = val.to_string();
                 start.push_attribute(("dist", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.dir {
             {
                 let s = val.to_string();
                 start.push_attribute(("dir", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.fade_dir {
             {
                 let s = val.to_string();
                 start.push_attribute(("fadeDir", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.sx {
             {
                 let s = val.to_string();
                 start.push_attribute(("sx", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.sy {
             {
                 let s = val.to_string();
                 start.push_attribute(("sy", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.kx {
             {
                 let s = val.to_string();
                 start.push_attribute(("kx", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.ky {
             {
                 let s = val.to_string();
                 start.push_attribute(("ky", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.algn {
             {
                 let s = val.to_string();
                 start.push_attribute(("algn", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.rot_with_shape {
             start.push_attribute(("rotWithShape", if *val { "1" } else { "0" }));
         }
@@ -6220,6 +6437,7 @@ impl ToXml for CTRelativeOffsetEffect {
 impl ToXml for CTSoftEdgesEffect {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-effects")]
         {
             let val = &self.rad;
             {
@@ -6552,12 +6770,14 @@ impl ToXml for CTGradientStopList {
 impl ToXml for GradientFill {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.flip {
             {
                 let s = val.to_string();
                 start.push_attribute(("flip", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.rot_with_shape {
             start.push_attribute(("rotWithShape", if *val { "1" } else { "0" }));
         }
@@ -6582,6 +6802,7 @@ impl ToXml for GradientFill {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.gs_lst {
             val.write_element("a:gsLst", writer)?;
         }
@@ -6614,6 +6835,7 @@ impl ToXml for GradientFill {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.tile_rect {
             val.write_element("a:tileRect", writer)?;
         }
@@ -6629,12 +6851,14 @@ impl ToXml for GradientFill {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-fills")]
         if self.gs_lst.is_some() {
             return false;
         }
         if self.shade_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.tile_rect.is_some() {
             return false;
         }
@@ -6755,6 +6979,7 @@ impl ToXml for EGFillModeProperties {
 impl ToXml for Blip {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.cstate {
             {
                 let s = val.to_string();
@@ -6782,6 +7007,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_bi_level {
             val.write_element("a:alphaBiLevel", writer)?;
         }
@@ -6798,6 +7024,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_ceiling {
             val.write_element("a:alphaCeiling", writer)?;
         }
@@ -6814,6 +7041,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_floor {
             val.write_element("a:alphaFloor", writer)?;
         }
@@ -6830,6 +7058,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_inv {
             val.write_element("a:alphaInv", writer)?;
         }
@@ -6846,6 +7075,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_mod {
             val.write_element("a:alphaMod", writer)?;
         }
@@ -6862,6 +7092,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_mod_fix {
             val.write_element("a:alphaModFix", writer)?;
         }
@@ -6878,6 +7109,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.alpha_repl {
             val.write_element("a:alphaRepl", writer)?;
         }
@@ -6894,6 +7126,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.bi_level {
             val.write_element("a:biLevel", writer)?;
         }
@@ -6910,6 +7143,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.blur {
             val.write_element("a:blur", writer)?;
         }
@@ -6926,6 +7160,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.clr_change {
             val.write_element("a:clrChange", writer)?;
         }
@@ -6942,6 +7177,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.clr_repl {
             val.write_element("a:clrRepl", writer)?;
         }
@@ -6958,6 +7194,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.duotone {
             val.write_element("a:duotone", writer)?;
         }
@@ -6974,6 +7211,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.fill_overlay {
             val.write_element("a:fillOverlay", writer)?;
         }
@@ -6990,6 +7228,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.grayscl {
             val.write_element("a:grayscl", writer)?;
         }
@@ -7006,6 +7245,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.hsl {
             val.write_element("a:hsl", writer)?;
         }
@@ -7022,6 +7262,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.lum {
             val.write_element("a:lum", writer)?;
         }
@@ -7038,6 +7279,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.tint {
             val.write_element("a:tint", writer)?;
         }
@@ -7054,6 +7296,7 @@ impl ToXml for Blip {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -7069,57 +7312,75 @@ impl ToXml for Blip {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-fills")]
         if self.alpha_bi_level.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_ceiling.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_floor.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_inv.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_mod.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_mod_fix.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.alpha_repl.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.bi_level.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.blur.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.clr_change.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.clr_repl.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.duotone.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.fill_overlay.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.grayscl.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.hsl.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.lum.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.tint.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -7134,12 +7395,14 @@ impl ToXml for Blip {
 impl ToXml for BlipFillProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.dpi {
             {
                 let s = val.to_string();
                 start.push_attribute(("dpi", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.rot_with_shape {
             start.push_attribute(("rotWithShape", if *val { "1" } else { "0" }));
         }
@@ -7164,6 +7427,7 @@ impl ToXml for BlipFillProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.blip {
             val.write_element("a:blip", writer)?;
         }
@@ -7180,6 +7444,7 @@ impl ToXml for BlipFillProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.src_rect {
             val.write_element("a:srcRect", writer)?;
         }
@@ -7211,9 +7476,11 @@ impl ToXml for BlipFillProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-fills")]
         if self.blip.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.src_rect.is_some() {
             return false;
         }
@@ -7231,6 +7498,7 @@ impl ToXml for BlipFillProperties {
 impl ToXml for PatternFill {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.preset {
             {
                 let s = val.to_string();
@@ -7258,6 +7526,7 @@ impl ToXml for PatternFill {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.fg_clr {
             val.write_element("a:fgClr", writer)?;
         }
@@ -7274,6 +7543,7 @@ impl ToXml for PatternFill {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.bg_clr {
             val.write_element("a:bgClr", writer)?;
         }
@@ -7289,9 +7559,11 @@ impl ToXml for PatternFill {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-fills")]
         if self.fg_clr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-fills")]
         if self.bg_clr.is_some() {
             return false;
         }
@@ -7631,6 +7903,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.blur {
             val.write_element("a:blur", writer)?;
         }
@@ -7647,6 +7920,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.fill_overlay {
             val.write_element("a:fillOverlay", writer)?;
         }
@@ -7663,6 +7937,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.glow {
             val.write_element("a:glow", writer)?;
         }
@@ -7679,6 +7954,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.inner_shdw {
             val.write_element("a:innerShdw", writer)?;
         }
@@ -7695,6 +7971,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.outer_shdw {
             val.write_element("a:outerShdw", writer)?;
         }
@@ -7711,6 +7988,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.prst_shdw {
             val.write_element("a:prstShdw", writer)?;
         }
@@ -7727,6 +8005,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.reflection {
             val.write_element("a:reflection", writer)?;
         }
@@ -7743,6 +8022,7 @@ impl ToXml for EffectList {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-effects")]
         if let Some(ref val) = self.soft_edge {
             val.write_element("a:softEdge", writer)?;
         }
@@ -7758,27 +8038,35 @@ impl ToXml for EffectList {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-effects")]
         if self.blur.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.fill_overlay.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.glow.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.inner_shdw.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.outer_shdw.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.prst_shdw.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.reflection.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-effects")]
         if self.soft_edge.is_some() {
             return false;
         }
@@ -8919,18 +9207,21 @@ impl ToXml for EGTextGeometry {
 impl ToXml for CTLineEndProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.r#type {
             {
                 let s = val.to_string();
                 start.push_attribute(("type", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.len {
             {
                 let s = val.to_string();
@@ -9016,6 +9307,7 @@ impl ToXml for EGLineJoinProperties {
 impl ToXml for CTPresetLineDashProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.value {
             {
                 let s = val.to_string();
@@ -9037,6 +9329,7 @@ impl ToXml for CTPresetLineDashProperties {
 impl ToXml for CTDashStop {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-lines")]
         {
             let val = &self.d;
             {
@@ -9044,6 +9337,7 @@ impl ToXml for CTDashStop {
                 start.push_attribute(("d", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         {
             let val = &self.sp;
             {
@@ -9121,24 +9415,28 @@ impl ToXml for EGLineDashProperties {
 impl ToXml for LineProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.width {
             {
                 let s = val.to_string();
                 start.push_attribute(("w", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.cap {
             {
                 let s = val.to_string();
                 start.push_attribute(("cap", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.cmpd {
             {
                 let s = val.to_string();
                 start.push_attribute(("cmpd", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.algn {
             {
                 let s = val.to_string();
@@ -9214,6 +9512,7 @@ impl ToXml for LineProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.head_end {
             val.write_element("a:headEnd", writer)?;
         }
@@ -9230,6 +9529,7 @@ impl ToXml for LineProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.tail_end {
             val.write_element("a:tailEnd", writer)?;
         }
@@ -9246,6 +9546,7 @@ impl ToXml for LineProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -9270,12 +9571,15 @@ impl ToXml for LineProperties {
         if self.line_join_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-lines")]
         if self.head_end.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-lines")]
         if self.tail_end.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -9290,6 +9594,7 @@ impl ToXml for LineProperties {
 impl ToXml for CTShapeProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.bw_mode {
             {
                 let s = val.to_string();
@@ -9365,6 +9670,7 @@ impl ToXml for CTShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-lines")]
         if let Some(ref val) = self.line {
             val.write_element("a:ln", writer)?;
         }
@@ -9397,6 +9703,7 @@ impl ToXml for CTShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.scene3d {
             val.write_element("a:scene3d", writer)?;
         }
@@ -9413,6 +9720,7 @@ impl ToXml for CTShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.sp3d {
             val.write_element("a:sp3d", writer)?;
         }
@@ -9429,6 +9737,7 @@ impl ToXml for CTShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -9453,18 +9762,22 @@ impl ToXml for CTShapeProperties {
         if self.fill_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-lines")]
         if self.line.is_some() {
             return false;
         }
         if self.effect_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.scene3d.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.sp3d.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -9479,6 +9792,7 @@ impl ToXml for CTShapeProperties {
 impl ToXml for CTGroupShapeProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-shapes")]
         if let Some(ref val) = self.bw_mode {
             {
                 let s = val.to_string();
@@ -9554,6 +9868,7 @@ impl ToXml for CTGroupShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.scene3d {
             val.write_element("a:scene3d", writer)?;
         }
@@ -9570,6 +9885,7 @@ impl ToXml for CTGroupShapeProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -9594,9 +9910,11 @@ impl ToXml for CTGroupShapeProperties {
         if self.effect_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.scene3d.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -9611,6 +9929,7 @@ impl ToXml for CTGroupShapeProperties {
 impl ToXml for CTStyleMatrixReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.idx;
             {
@@ -9668,6 +9987,7 @@ impl ToXml for CTStyleMatrixReference {
 impl ToXml for CTFontReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.idx;
             {
@@ -9737,6 +10057,7 @@ impl ToXml for ShapeStyle {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         {
             let val = &self.ln_ref;
             val.write_element("a:lnRef", writer)?;
@@ -9754,6 +10075,7 @@ impl ToXml for ShapeStyle {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         {
             let val = &self.fill_ref;
             val.write_element("a:fillRef", writer)?;
@@ -9771,6 +10093,7 @@ impl ToXml for ShapeStyle {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         {
             let val = &self.effect_ref;
             val.write_element("a:effectRef", writer)?;
@@ -9788,6 +10111,7 @@ impl ToXml for ShapeStyle {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-shapes")]
         {
             let val = &self.font_ref;
             val.write_element("a:fontRef", writer)?;
@@ -9804,7 +10128,19 @@ impl ToXml for ShapeStyle {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-shapes")]
+        return false;
+        #[cfg(feature = "dml-shapes")]
+        return false;
+        #[cfg(feature = "dml-shapes")]
+        return false;
+        #[cfg(feature = "dml-shapes")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -10162,6 +10498,7 @@ impl ToXml for CTColorMappingOverride {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         if let Some(ref val) = self.master_clr_mapping {
             val.write_element("a:masterClrMapping", writer)?;
         }
@@ -10178,6 +10515,7 @@ impl ToXml for CTColorMappingOverride {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-colors")]
         if let Some(ref val) = self.override_clr_mapping {
             val.write_element("a:overrideClrMapping", writer)?;
         }
@@ -10193,9 +10531,11 @@ impl ToXml for CTColorMappingOverride {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-colors")]
         if self.master_clr_mapping.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-colors")]
         if self.override_clr_mapping.is_some() {
             return false;
         }
@@ -10302,6 +10642,7 @@ impl ToXml for CTColorSchemeList {
 impl ToXml for CTOfficeStyleSheet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-themes")]
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
         }
@@ -10326,6 +10667,7 @@ impl ToXml for CTOfficeStyleSheet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         {
             let val = &self.theme_elements;
             val.write_element("a:themeElements", writer)?;
@@ -10343,6 +10685,7 @@ impl ToXml for CTOfficeStyleSheet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         if let Some(ref val) = self.object_defaults {
             val.write_element("a:objectDefaults", writer)?;
         }
@@ -10359,6 +10702,7 @@ impl ToXml for CTOfficeStyleSheet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         if let Some(ref val) = self.extra_clr_scheme_lst {
             val.write_element("a:extraClrSchemeLst", writer)?;
         }
@@ -10375,6 +10719,7 @@ impl ToXml for CTOfficeStyleSheet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-themes")]
         if let Some(ref val) = self.cust_clr_lst {
             val.write_element("a:custClrLst", writer)?;
         }
@@ -10391,6 +10736,7 @@ impl ToXml for CTOfficeStyleSheet {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -10406,7 +10752,29 @@ impl ToXml for CTOfficeStyleSheet {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-themes")]
+        return false;
+        #[cfg(feature = "dml-themes")]
+        if self.object_defaults.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-themes")]
+        if self.extra_clr_scheme_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-themes")]
+        if self.cust_clr_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -10544,45 +10912,53 @@ impl ToXml for CTClipboardStyleSheet {
 impl ToXml for CTTableCellProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.mar_l {
             {
                 let s = val.to_string();
                 start.push_attribute(("marL", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.mar_r {
             {
                 let s = val.to_string();
                 start.push_attribute(("marR", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.mar_t {
             {
                 let s = val.to_string();
                 start.push_attribute(("marT", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.mar_b {
             {
                 let s = val.to_string();
                 start.push_attribute(("marB", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.vert {
             {
                 let s = val.to_string();
                 start.push_attribute(("vert", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("anchor", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.anchor_ctr {
             start.push_attribute(("anchorCtr", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.horz_overflow {
             {
                 let s = val.to_string();
@@ -10610,6 +10986,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_l {
             val.write_element("a:lnL", writer)?;
         }
@@ -10626,6 +11003,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_r {
             val.write_element("a:lnR", writer)?;
         }
@@ -10642,6 +11020,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_t {
             val.write_element("a:lnT", writer)?;
         }
@@ -10658,6 +11037,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_b {
             val.write_element("a:lnB", writer)?;
         }
@@ -10674,6 +11054,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_tl_to_br {
             val.write_element("a:lnTlToBr", writer)?;
         }
@@ -10690,6 +11071,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.ln_bl_to_tr {
             val.write_element("a:lnBlToTr", writer)?;
         }
@@ -10706,6 +11088,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.cell3_d {
             val.write_element("a:cell3D", writer)?;
         }
@@ -10754,6 +11137,7 @@ impl ToXml for CTTableCellProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -10769,24 +11153,31 @@ impl ToXml for CTTableCellProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-tables")]
         if self.ln_l.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.ln_r.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.ln_t.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.ln_b.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.ln_tl_to_br.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.ln_bl_to_tr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.cell3_d.is_some() {
             return false;
         }
@@ -10796,6 +11187,7 @@ impl ToXml for CTTableCellProperties {
         if self.headers.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -10916,6 +11308,7 @@ impl ToXml for CTTableGrid {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-tables")]
         for item in &self.grid_col {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -10940,6 +11333,7 @@ impl ToXml for CTTableGrid {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-tables")]
         if !self.grid_col.is_empty() {
             return false;
         }
@@ -10954,21 +11348,25 @@ impl ToXml for CTTableGrid {
 impl ToXml for CTTableCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.row_span {
             {
                 let s = val.to_string();
                 start.push_attribute(("rowSpan", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.grid_span {
             {
                 let s = val.to_string();
                 start.push_attribute(("gridSpan", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.h_merge {
             start.push_attribute(("hMerge", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.v_merge {
             start.push_attribute(("vMerge", if *val { "1" } else { "0" }));
         }
@@ -10996,6 +11394,7 @@ impl ToXml for CTTableCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.tx_body {
             val.write_element("a:txBody", writer)?;
         }
@@ -11012,6 +11411,7 @@ impl ToXml for CTTableCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.tc_pr {
             val.write_element("a:tcPr", writer)?;
         }
@@ -11028,6 +11428,7 @@ impl ToXml for CTTableCell {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -11043,12 +11444,15 @@ impl ToXml for CTTableCell {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-tables")]
         if self.tx_body.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.tc_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -11063,6 +11467,7 @@ impl ToXml for CTTableCell {
 impl ToXml for CTTableRow {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-tables")]
         {
             let val = &self.height;
             {
@@ -11082,6 +11487,7 @@ impl ToXml for CTTableRow {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "dml-tables")]
         for item in &self.tc {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -11107,6 +11513,7 @@ impl ToXml for CTTableRow {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -11122,9 +11529,11 @@ impl ToXml for CTTableRow {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-tables")]
         if !self.tc.is_empty() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -11139,24 +11548,31 @@ impl ToXml for CTTableRow {
 impl ToXml for CTTableProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.rtl {
             start.push_attribute(("rtl", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.first_row {
             start.push_attribute(("firstRow", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.first_col {
             start.push_attribute(("firstCol", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.last_row {
             start.push_attribute(("lastRow", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.last_col {
             start.push_attribute(("lastCol", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.band_row {
             start.push_attribute(("bandRow", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.band_col {
             start.push_attribute(("bandCol", if *val { "1" } else { "0" }));
         }
@@ -11229,6 +11645,7 @@ impl ToXml for CTTableProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.table_style_id {
             {
                 let start = BytesStart::new("a:tableStyleId");
@@ -11250,6 +11667,7 @@ impl ToXml for CTTableProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -11274,9 +11692,11 @@ impl ToXml for CTTableProperties {
         if self.table_style.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-tables")]
         if self.table_style_id.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -11303,6 +11723,7 @@ impl ToXml for CTTable {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         if let Some(ref val) = self.tbl_pr {
             val.write_element("a:tblPr", writer)?;
         }
@@ -11319,6 +11740,7 @@ impl ToXml for CTTable {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-tables")]
         {
             let val = &self.tbl_grid;
             val.write_element("a:tblGrid", writer)?;
@@ -11327,6 +11749,7 @@ impl ToXml for CTTable {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "dml-tables")]
         for item in &self.tr {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -11351,10 +11774,21 @@ impl ToXml for CTTable {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-tables")]
         if self.tbl_pr.is_some() {
             return false;
         }
-        false
+        #[cfg(feature = "dml-tables")]
+        return false;
+        #[cfg(feature = "dml-tables")]
+        if !self.tr.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -12427,6 +12861,7 @@ impl ToXml for TextParagraph {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.p_pr {
             val.write_element("a:pPr", writer)?;
         }
@@ -12459,6 +12894,7 @@ impl ToXml for TextParagraph {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.end_para_r_pr {
             val.write_element("a:endParaRPr", writer)?;
         }
@@ -12474,12 +12910,14 @@ impl ToXml for TextParagraph {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.p_pr.is_some() {
             return false;
         }
         if !self.text_run.is_empty() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.end_para_r_pr.is_some() {
             return false;
         }
@@ -12779,96 +13217,115 @@ impl ToXml for EGTextAutofit {
 impl ToXml for CTTextBodyProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.rot {
             {
                 let s = val.to_string();
                 start.push_attribute(("rot", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.spc_first_last_para {
             start.push_attribute(("spcFirstLastPara", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.vert_overflow {
             {
                 let s = val.to_string();
                 start.push_attribute(("vertOverflow", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.horz_overflow {
             {
                 let s = val.to_string();
                 start.push_attribute(("horzOverflow", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.vert {
             {
                 let s = val.to_string();
                 start.push_attribute(("vert", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.wrap {
             {
                 let s = val.to_string();
                 start.push_attribute(("wrap", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.l_ins {
             {
                 let s = val.to_string();
                 start.push_attribute(("lIns", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.t_ins {
             {
                 let s = val.to_string();
                 start.push_attribute(("tIns", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.r_ins {
             {
                 let s = val.to_string();
                 start.push_attribute(("rIns", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.b_ins {
             {
                 let s = val.to_string();
                 start.push_attribute(("bIns", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.num_col {
             {
                 let s = val.to_string();
                 start.push_attribute(("numCol", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.spc_col {
             {
                 let s = val.to_string();
                 start.push_attribute(("spcCol", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.rtl_col {
             start.push_attribute(("rtlCol", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.from_word_art {
             start.push_attribute(("fromWordArt", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.anchor {
             {
                 let s = val.to_string();
                 start.push_attribute(("anchor", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.anchor_ctr {
             start.push_attribute(("anchorCtr", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.force_a_a {
             start.push_attribute(("forceAA", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.upright {
             start.push_attribute(("upright", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.compat_ln_spc {
             start.push_attribute(("compatLnSpc", if *val { "1" } else { "0" }));
         }
@@ -12893,6 +13350,7 @@ impl ToXml for CTTextBodyProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.prst_tx_warp {
             val.write_element("a:prstTxWarp", writer)?;
         }
@@ -12925,6 +13383,7 @@ impl ToXml for CTTextBodyProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-3d")]
         if let Some(ref val) = self.scene3d {
             val.write_element("a:scene3d", writer)?;
         }
@@ -12957,6 +13416,7 @@ impl ToXml for CTTextBodyProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -12972,18 +13432,21 @@ impl ToXml for CTTextBodyProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.prst_tx_warp.is_some() {
             return false;
         }
         if self.text_autofit.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-3d")]
         if self.scene3d.is_some() {
             return false;
         }
         if self.text3_d.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -13010,6 +13473,7 @@ impl ToXml for TextBody {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         {
             let val = &self.body_pr;
             val.write_element("a:bodyPr", writer)?;
@@ -13027,6 +13491,7 @@ impl ToXml for TextBody {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.lst_style {
             val.write_element("a:lstStyle", writer)?;
         }
@@ -13034,6 +13499,7 @@ impl ToXml for TextBody {
         {
             emit_idx += 1;
         }
+        #[cfg(feature = "dml-text")]
         for item in &self.p {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -13058,7 +13524,21 @@ impl ToXml for TextBody {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "dml-text")]
+        return false;
+        #[cfg(feature = "dml-text")]
+        if self.lst_style.is_some() {
+            return false;
+        }
+        #[cfg(feature = "dml-text")]
+        if !self.p.is_empty() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -13236,22 +13716,26 @@ impl ToXml for EGTextBullet {
 impl ToXml for TextFont {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
         {
             let val = &self.typeface;
             start.push_attribute(("typeface", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.panose {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("panose", hex.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.pitch_family {
             {
                 let s = val.to_string();
                 start.push_attribute(("pitchFamily", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.charset {
             {
                 let s = val.to_string();
@@ -13347,84 +13831,103 @@ impl ToXml for EGTextUnderlineFill {
 impl ToXml for TextCharacterProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.kumimoji {
             start.push_attribute(("kumimoji", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.lang {
             start.push_attribute(("lang", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.alt_lang {
             start.push_attribute(("altLang", val.as_str()));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.sz {
             {
                 let s = val.to_string();
                 start.push_attribute(("sz", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.b {
             start.push_attribute(("b", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.i {
             start.push_attribute(("i", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.u {
             {
                 let s = val.to_string();
                 start.push_attribute(("u", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.strike {
             {
                 let s = val.to_string();
                 start.push_attribute(("strike", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.kern {
             {
                 let s = val.to_string();
                 start.push_attribute(("kern", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.cap {
             {
                 let s = val.to_string();
                 start.push_attribute(("cap", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.spc {
             {
                 let s = val.to_string();
                 start.push_attribute(("spc", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.normalize_h {
             start.push_attribute(("normalizeH", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.baseline {
             {
                 let s = val.to_string();
                 start.push_attribute(("baseline", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.no_proof {
             start.push_attribute(("noProof", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.dirty {
             start.push_attribute(("dirty", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.err {
             start.push_attribute(("err", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.smt_clean {
             start.push_attribute(("smtClean", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.smt_id {
             {
                 let s = val.to_string();
                 start.push_attribute(("smtId", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.bmk {
             start.push_attribute(("bmk", val.as_str()));
         }
@@ -13449,6 +13952,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.line {
             val.write_element("a:ln", writer)?;
         }
@@ -13497,6 +14001,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.highlight {
             val.write_element("a:highlight", writer)?;
         }
@@ -13545,6 +14050,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.latin {
             val.write_element("a:latin", writer)?;
         }
@@ -13561,6 +14067,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.ea {
             val.write_element("a:ea", writer)?;
         }
@@ -13577,6 +14084,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.cs {
             val.write_element("a:cs", writer)?;
         }
@@ -13593,6 +14101,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.sym {
             val.write_element("a:sym", writer)?;
         }
@@ -13609,6 +14118,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.hlink_click {
             val.write_element("a:hlinkClick", writer)?;
         }
@@ -13625,6 +14135,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.hlink_mouse_over {
             val.write_element("a:hlinkMouseOver", writer)?;
         }
@@ -13641,6 +14152,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.rtl {
             val.write_element("a:rtl", writer)?;
         }
@@ -13657,6 +14169,7 @@ impl ToXml for TextCharacterProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -13672,6 +14185,7 @@ impl ToXml for TextCharacterProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.line.is_some() {
             return false;
         }
@@ -13681,6 +14195,7 @@ impl ToXml for TextCharacterProperties {
         if self.effect_properties.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.highlight.is_some() {
             return false;
         }
@@ -13690,27 +14205,35 @@ impl ToXml for TextCharacterProperties {
         if self.text_underline_fill.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.latin.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.ea.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.cs.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.sym.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.hlink_click.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.hlink_mouse_over.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.rtl.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -13959,57 +14482,68 @@ impl ToXml for CTTextSpacing {
 impl ToXml for TextParagraphProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.mar_l {
             {
                 let s = val.to_string();
                 start.push_attribute(("marL", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.mar_r {
             {
                 let s = val.to_string();
                 start.push_attribute(("marR", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.lvl {
             {
                 let s = val.to_string();
                 start.push_attribute(("lvl", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.indent {
             {
                 let s = val.to_string();
                 start.push_attribute(("indent", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.algn {
             {
                 let s = val.to_string();
                 start.push_attribute(("algn", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.def_tab_sz {
             {
                 let s = val.to_string();
                 start.push_attribute(("defTabSz", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.rtl {
             start.push_attribute(("rtl", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.ea_ln_brk {
             start.push_attribute(("eaLnBrk", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.font_algn {
             {
                 let s = val.to_string();
                 start.push_attribute(("fontAlgn", s.as_str()));
             }
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.latin_ln_brk {
             start.push_attribute(("latinLnBrk", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.hanging_punct {
             start.push_attribute(("hangingPunct", if *val { "1" } else { "0" }));
         }
@@ -14034,6 +14568,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.ln_spc {
             val.write_element("a:lnSpc", writer)?;
         }
@@ -14050,6 +14585,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.spc_bef {
             val.write_element("a:spcBef", writer)?;
         }
@@ -14066,6 +14602,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.spc_aft {
             val.write_element("a:spcAft", writer)?;
         }
@@ -14146,6 +14683,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.tab_lst {
             val.write_element("a:tabLst", writer)?;
         }
@@ -14162,6 +14700,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.def_r_pr {
             val.write_element("a:defRPr", writer)?;
         }
@@ -14178,6 +14717,7 @@ impl ToXml for TextParagraphProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("a:extLst", writer)?;
         }
@@ -14193,12 +14733,15 @@ impl ToXml for TextParagraphProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.ln_spc.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.spc_bef.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.spc_aft.is_some() {
             return false;
         }
@@ -14214,12 +14757,15 @@ impl ToXml for TextParagraphProperties {
         if self.text_bullet.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.tab_lst.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-text")]
         if self.def_r_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "dml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -14361,6 +14907,7 @@ impl ToXml for TextRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.r_pr {
             val.write_element("a:rPr", writer)?;
         }
@@ -14377,6 +14924,7 @@ impl ToXml for TextRun {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "dml-text")]
         {
             let val = &self.t;
             {
@@ -14398,9 +14946,16 @@ impl ToXml for TextRun {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "dml-text")]
         if self.r_pr.is_some() {
             return false;
         }
-        false
+        #[cfg(feature = "dml-text")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }

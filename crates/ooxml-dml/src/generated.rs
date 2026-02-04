@@ -5385,6 +5385,7 @@ pub enum EGTextRun {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAudioFile {
+    #[cfg(feature = "dml-media")]
     #[serde(rename = "@contentType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_type: Option<String>,
@@ -5407,6 +5408,7 @@ pub struct CTAudioFile {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTVideoFile {
+    #[cfg(feature = "dml-media")]
     #[serde(rename = "@contentType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_type: Option<String>,
@@ -5475,32 +5477,46 @@ pub type AVideoFile = Box<CTVideoFile>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ColorScheme {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@name")]
     pub name: String,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "dk1")]
     pub dk1: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "lt1")]
     pub lt1: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "dk2")]
     pub dk2: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "lt2")]
     pub lt2: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent1")]
     pub accent1: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent2")]
     pub accent2: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent3")]
     pub accent3: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent4")]
     pub accent4: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent5")]
     pub accent5: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "accent6")]
     pub accent6: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "hlink")]
     pub hlink: Box<CTColor>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "folHlink")]
     pub fol_hlink: Box<CTColor>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -5608,12 +5624,16 @@ pub struct CTEffectStyleItem {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FontScheme {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@name")]
     pub name: String,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "majorFont")]
     pub major_font: Box<CTFontCollection>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "minorFont")]
     pub minor_font: Box<CTFontCollection>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -5681,15 +5701,20 @@ pub struct CTBackgroundFillStyleList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStyleMatrix {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "fillStyleLst")]
     pub fill_style_lst: Box<CTFillStyleList>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "lnStyleLst")]
     pub ln_style_lst: Box<CTLineStyleList>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "effectStyleLst")]
     pub effect_style_lst: Box<CTEffectStyleList>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "bgFillStyleLst")]
     pub bg_fill_style_lst: Box<CTBackgroundFillStyleList>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5708,12 +5733,16 @@ pub struct CTStyleMatrix {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBaseStyles {
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "clrScheme")]
     pub clr_scheme: Box<ColorScheme>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "fontScheme")]
     pub font_scheme: Box<FontScheme>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "fmtScheme")]
     pub fmt_scheme: Box<CTStyleMatrix>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -5904,6 +5933,7 @@ pub struct CTScRgbColor {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SrgbColor {
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "@val")]
     pub value: HexColorRgb,
     #[serde(skip)]
@@ -5925,10 +5955,13 @@ pub struct SrgbColor {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HslColor {
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "@hue")]
     pub hue: STPositiveFixedAngle,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "@sat")]
     pub sat: STPercentage,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "@lum")]
     pub lum: STPercentage,
     #[serde(skip)]
@@ -5974,6 +6007,7 @@ pub struct SystemColor {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SchemeColor {
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "@val")]
     pub value: STSchemeColorVal,
     #[serde(skip)]
@@ -6258,18 +6292,23 @@ pub struct CTEmbeddedWAVAudioFile {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHyperlink {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@invalidUrl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub invalid_url: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@action")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub action: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@tgtFrame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tgt_frame: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@tooltip")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tooltip: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@history")]
     #[serde(
         default,
@@ -6277,6 +6316,7 @@ pub struct CTHyperlink {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub history: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@highlightClick")]
     #[serde(
         default,
@@ -6284,6 +6324,7 @@ pub struct CTHyperlink {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub highlight_click: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@endSnd")]
     #[serde(
         default,
@@ -6291,9 +6332,11 @@ pub struct CTHyperlink {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub end_snd: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "snd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snd: Option<Box<CTEmbeddedWAVAudioFile>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -6910,12 +6953,15 @@ pub struct CTNonVisualDrawingProps {
     #[serde(rename = "@title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "hlinkClick")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_click: Option<Box<CTHyperlink>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "hlinkHover")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_hover: Option<Box<CTHyperlink>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -6964,15 +7010,19 @@ pub struct CTNonVisualDrawingShapeProps {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNonVisualConnectorProperties {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "cxnSpLocks")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cxn_sp_locks: Option<Box<CTConnectorLocking>>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "stCxn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_cxn: Option<Box<CTConnection>>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "endCxn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_cxn: Option<Box<CTConnection>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -6985,6 +7035,7 @@ pub struct CTNonVisualConnectorProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNonVisualPictureProperties {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "@preferRelativeResize")]
     #[serde(
         default,
@@ -6992,9 +7043,11 @@ pub struct CTNonVisualPictureProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub prefer_relative_resize: Option<bool>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "picLocks")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pic_locks: Option<Box<CTPictureLocking>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7014,9 +7067,11 @@ pub struct CTNonVisualPictureProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNonVisualGroupDrawingShapeProps {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "grpSpLocks")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grp_sp_locks: Option<Box<CTGroupLocking>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7029,9 +7084,11 @@ pub struct CTNonVisualGroupDrawingShapeProps {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTNonVisualGraphicFrameProperties {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "graphicFrameLocks")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub graphic_frame_locks: Option<Box<CTGraphicalObjectFrameLocking>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7432,14 +7489,18 @@ pub struct CTGvmlGroupShape {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCamera {
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@prst")]
     pub preset: STPresetCameraType,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@fov")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fov: Option<STFOVAngle>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@zoom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom: Option<STPositivePercentage>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "rot")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<Box<CTSphereCoords>>,
@@ -7459,10 +7520,13 @@ pub struct CTCamera {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLightRig {
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@rig")]
     pub rig: STLightRigType,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@dir")]
     pub dir: STLightRigDirection,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "rot")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<Box<CTSphereCoords>>,
@@ -7482,13 +7546,17 @@ pub struct CTLightRig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTScene3D {
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "camera")]
     pub camera: Box<CTCamera>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "lightRig")]
     pub light_rig: Box<CTLightRig>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "backdrop")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub backdrop: Option<Box<CTBackdrop>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7519,12 +7587,15 @@ pub struct CTBackdrop {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBevel {
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@h")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@prst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preset: Option<STBevelPresetType>,
@@ -7539,30 +7610,39 @@ pub struct CTBevel {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTShape3D {
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@z")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub z: Option<STCoordinate>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@extrusionH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extrusion_h: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@contourW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contour_w: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "@prstMaterial")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_material: Option<STPresetMaterialType>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "bevelT")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bevel_t: Option<Box<CTBevel>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "bevelB")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bevel_b: Option<Box<CTBevel>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "extrusionClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extrusion_clr: Option<Box<CTColor>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "contourClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub contour_clr: Option<Box<CTColor>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7681,9 +7761,11 @@ pub struct CTBiLevelEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBlurEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@rad")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rad: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@grow")]
     #[serde(
         default,
@@ -7753,6 +7835,7 @@ pub struct CTDuotoneEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGlowEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@rad")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rad: Option<STPositiveCoordinate>,
@@ -7798,12 +7881,15 @@ pub struct CTHSLEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTInnerShadowEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@blurRad")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dist")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
@@ -7843,30 +7929,39 @@ pub struct CTLuminanceEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOuterShadowEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@blurRad")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dist")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@sx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@sy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@kx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kx: Option<STFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@ky")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ky: Option<STFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@algn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STRectAlignment>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@rotWithShape")]
     #[serde(
         default,
@@ -7920,45 +8015,59 @@ pub struct CTPresetShadowEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTReflectionEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@blurRad")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur_rad: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@stA")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_a: Option<STPositiveFixedPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@stPos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub st_pos: Option<STPositiveFixedPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@endA")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_a: Option<STPositiveFixedPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@endPos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_pos: Option<STPositiveFixedPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dist")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dist: Option<STPositiveCoordinate>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@dir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dir: Option<STPositiveFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@fadeDir")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fade_dir: Option<STPositiveFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@sx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sx: Option<STPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@sy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sy: Option<STPercentage>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@kx")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kx: Option<STFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@ky")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ky: Option<STFixedAngle>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@algn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STRectAlignment>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@rotWithShape")]
     #[serde(
         default,
@@ -7994,6 +8103,7 @@ pub struct CTRelativeOffsetEffect {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSoftEdgesEffect {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "@rad")]
     pub rad: STPositiveCoordinate,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8144,9 +8254,11 @@ pub struct CTGradientStopList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct GradientFill {
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@flip")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub flip: Option<STTileFlipMode>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@rotWithShape")]
     #[serde(
         default,
@@ -8154,12 +8266,14 @@ pub struct GradientFill {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub rot_with_shape: Option<bool>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "gsLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gs_lst: Option<Box<CTGradientStopList>>,
     #[serde(skip)]
     #[serde(default)]
     pub shade_properties: Option<Box<EGShadeProperties>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "tileRect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tile_rect: Option<Box<CTRelativeRect>>,
@@ -8220,60 +8334,79 @@ pub struct CTStretchInfoProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Blip {
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@cstate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cstate: Option<STBlipCompression>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaBiLevel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_bi_level: Option<Box<CTAlphaBiLevelEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaCeiling")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_ceiling: Option<Box<CTAlphaCeilingEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaFloor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_floor: Option<Box<CTAlphaFloorEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaInv")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_inv: Option<Box<CTAlphaInverseEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaMod")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_mod: Option<CTAlphaModulateEffect>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaModFix")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_mod_fix: Option<Box<CTAlphaModulateFixedEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaRepl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_repl: Option<Box<CTAlphaReplaceEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "biLevel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bi_level: Option<Box<CTBiLevelEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "blur")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur: Option<Box<CTBlurEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "clrChange")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_change: Option<Box<CTColorChangeEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "clrRepl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_repl: Option<Box<CTColorReplaceEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "duotone")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub duotone: Option<Box<CTDuotoneEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "fillOverlay")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_overlay: Option<Box<CTFillOverlayEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "grayscl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grayscl: Option<Box<CTGrayscaleEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "hsl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hsl: Option<Box<CTHSLEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "lum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lum: Option<Box<CTLuminanceEffect>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "tint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tint: Option<Box<CTTintEffect>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -8293,9 +8426,11 @@ pub struct Blip {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct BlipFillProperties {
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@dpi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dpi: Option<u32>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@rotWithShape")]
     #[serde(
         default,
@@ -8303,9 +8438,11 @@ pub struct BlipFillProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub rot_with_shape: Option<bool>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "blip")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blip: Option<Box<Blip>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "srcRect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub src_rect: Option<Box<CTRelativeRect>>,
@@ -8328,12 +8465,15 @@ pub struct BlipFillProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PatternFill {
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "@prst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub preset: Option<STPresetPatternVal>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "fgClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fg_clr: Option<Box<CTColor>>,
+    #[cfg(feature = "dml-fills")]
     #[serde(rename = "bgClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg_clr: Option<Box<CTColor>>,
@@ -8461,27 +8601,35 @@ pub struct CTBlendEffect {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EffectList {
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "blur")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blur: Option<Box<CTBlurEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "fillOverlay")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill_overlay: Option<Box<CTFillOverlayEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "glow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub glow: Option<Box<CTGlowEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "innerShdw")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inner_shdw: Option<Box<CTInnerShadowEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "outerShdw")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outer_shdw: Option<Box<CTOuterShadowEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "prstShdw")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_shdw: Option<Box<CTPresetShadowEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "reflection")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reflection: Option<Box<CTReflectionEffect>>,
+    #[cfg(feature = "dml-effects")]
     #[serde(rename = "softEdge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub soft_edge: Option<Box<CTSoftEdgesEffect>>,
@@ -8890,12 +9038,15 @@ pub struct CTCustomGeometry2D {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLineEndProperties {
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STLineEndType>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STLineEndWidth>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@len")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub len: Option<STLineEndLength>,
@@ -8930,6 +9081,7 @@ pub struct CTLineJoinMiterProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPresetLineDashProperties {
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STPresetLineDashVal>,
@@ -8944,8 +9096,10 @@ pub struct CTPresetLineDashProperties {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDashStop {
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@d")]
     pub d: STPositivePercentage,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@sp")]
     pub sp: STPositivePercentage,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8971,15 +9125,19 @@ pub struct CTDashStopList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct LineProperties {
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STLineWidth>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@cap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cap: Option<STLineCap>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@cmpd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cmpd: Option<STCompoundLine>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "@algn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STPenAlignment>,
@@ -8992,12 +9150,15 @@ pub struct LineProperties {
     #[serde(skip)]
     #[serde(default)]
     pub line_join_properties: Option<Box<EGLineJoinProperties>>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "headEnd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub head_end: Option<Box<CTLineEndProperties>>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "tailEnd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tail_end: Option<Box<CTLineEndProperties>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9017,6 +9178,7 @@ pub struct LineProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTShapeProperties {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<STBlackWhiteMode>,
@@ -9029,18 +9191,22 @@ pub struct CTShapeProperties {
     #[serde(skip)]
     #[serde(default)]
     pub fill_properties: Option<Box<EGFillProperties>>,
+    #[cfg(feature = "dml-lines")]
     #[serde(rename = "ln")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line: Option<Box<LineProperties>>,
     #[serde(skip)]
     #[serde(default)]
     pub effect_properties: Option<Box<EGEffectProperties>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "scene3d")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "sp3d")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp3d: Option<Box<CTShape3D>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9060,6 +9226,7 @@ pub struct CTShapeProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGroupShapeProperties {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<STBlackWhiteMode>,
@@ -9072,9 +9239,11 @@ pub struct CTGroupShapeProperties {
     #[serde(skip)]
     #[serde(default)]
     pub effect_properties: Option<Box<EGEffectProperties>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "scene3d")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9094,6 +9263,7 @@ pub struct CTGroupShapeProperties {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStyleMatrixReference {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@idx")]
     pub idx: STStyleMatrixColumnIndex,
     #[serde(skip)]
@@ -9115,6 +9285,7 @@ pub struct CTStyleMatrixReference {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontReference {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@idx")]
     pub idx: STFontCollectionIndex,
     #[serde(skip)]
@@ -9136,12 +9307,16 @@ pub struct CTFontReference {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShapeStyle {
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "lnRef")]
     pub ln_ref: Box<CTStyleMatrixReference>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "fillRef")]
     pub fill_ref: Box<CTStyleMatrixReference>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "effectRef")]
     pub effect_ref: Box<CTStyleMatrixReference>,
+    #[cfg(feature = "dml-shapes")]
     #[serde(rename = "fontRef")]
     pub font_ref: Box<CTFontReference>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -9241,9 +9416,11 @@ pub struct CTColorMapping {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColorMappingOverride {
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "masterClrMapping")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub master_clr_mapping: Option<Box<CTEmptyElement>>,
+    #[cfg(feature = "dml-colors")]
     #[serde(rename = "overrideClrMapping")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub override_clr_mapping: Option<Box<CTColorMapping>>,
@@ -9282,20 +9459,26 @@ pub struct CTColorSchemeList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTOfficeStyleSheet {
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "themeElements")]
     pub theme_elements: Box<CTBaseStyles>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "objectDefaults")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_defaults: Option<Box<CTObjectStyleDefaults>>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "extraClrSchemeLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extra_clr_scheme_lst: Option<Box<CTColorSchemeList>>,
+    #[cfg(feature = "dml-themes")]
     #[serde(rename = "custClrLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cust_clr_lst: Option<Box<CTCustomColorList>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9352,24 +9535,31 @@ pub type AThemeManager = Box<CTEmptyElement>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTableCellProperties {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@marL")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_l: Option<STCoordinate32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@marR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_r: Option<STCoordinate32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@marT")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_t: Option<STCoordinate32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@marB")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_b: Option<STCoordinate32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@vert")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<STTextVerticalType>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@anchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STTextAnchoringType>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@anchorCtr")]
     #[serde(
         default,
@@ -9377,27 +9567,35 @@ pub struct CTTableCellProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub anchor_ctr: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@horzOverflow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_overflow: Option<STTextHorzOverflowType>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnL")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_l: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_r: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnT")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_t: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnB")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_b: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnTlToBr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_tl_to_br: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "lnBlToTr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_bl_to_tr: Option<Box<LineProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "cell3D")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell3_d: Option<Box<CTCell3D>>,
@@ -9407,6 +9605,7 @@ pub struct CTTableCellProperties {
     #[serde(rename = "headers")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<Box<CTHeaders>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9459,6 +9658,7 @@ pub struct CTTableCol {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTableGrid {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "gridCol")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub grid_col: Vec<CTTableCol>,
@@ -9471,12 +9671,15 @@ pub struct CTTableGrid {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTableCell {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@rowSpan")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub row_span: Option<i32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@gridSpan")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_span: Option<i32>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@hMerge")]
     #[serde(
         default,
@@ -9484,6 +9687,7 @@ pub struct CTTableCell {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub h_merge: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@vMerge")]
     #[serde(
         default,
@@ -9494,12 +9698,15 @@ pub struct CTTableCell {
     #[serde(rename = "@id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "txBody")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx_body: Option<Box<TextBody>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tcPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tc_pr: Option<Box<CTTableCellProperties>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9519,11 +9726,14 @@ pub struct CTTableCell {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTableRow {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@h")]
     pub height: STCoordinate,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tc: Vec<CTTableCell>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9543,6 +9753,7 @@ pub struct CTTableRow {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTableProperties {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@rtl")]
     #[serde(
         default,
@@ -9550,6 +9761,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub rtl: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@firstRow")]
     #[serde(
         default,
@@ -9557,6 +9769,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub first_row: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@firstCol")]
     #[serde(
         default,
@@ -9564,6 +9777,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub first_col: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@lastRow")]
     #[serde(
         default,
@@ -9571,6 +9785,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub last_row: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@lastCol")]
     #[serde(
         default,
@@ -9578,6 +9793,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub last_col: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@bandRow")]
     #[serde(
         default,
@@ -9585,6 +9801,7 @@ pub struct CTTableProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub band_row: Option<bool>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "@bandCol")]
     #[serde(
         default,
@@ -9601,9 +9818,11 @@ pub struct CTTableProperties {
     #[serde(rename = "tableStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_style: Option<Box<CTTableStyle>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tableStyleId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_style_id: Option<Guid>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9623,11 +9842,14 @@ pub struct CTTableProperties {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTable {
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tblPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tbl_pr: Option<Box<CTTableProperties>>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tblGrid")]
     pub tbl_grid: Box<CTTableGrid>,
+    #[cfg(feature = "dml-tables")]
     #[serde(rename = "tr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tr: Vec<CTTableRow>,
@@ -9887,12 +10109,14 @@ pub type ATblStyleLst = Box<CTTableStyleList>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextParagraph {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(skip)]
     #[serde(default)]
     pub text_run: Vec<EGTextRun>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "endParaRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_para_r_pr: Option<Box<TextCharacterProperties>>,
@@ -9970,9 +10194,11 @@ pub struct CTTextNoAutofit;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextBodyProperties {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@rot")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rot: Option<STAngle>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@spcFirstLastPara")]
     #[serde(
         default,
@@ -9980,36 +10206,47 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub spc_first_last_para: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@vertOverflow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_overflow: Option<STTextVertOverflowType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@horzOverflow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_overflow: Option<STTextHorzOverflowType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@vert")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<STTextVerticalType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@wrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap: Option<STTextWrappingType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@lIns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub l_ins: Option<STCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@tIns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t_ins: Option<STCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@rIns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_ins: Option<STCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@bIns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub b_ins: Option<STCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@numCol")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_col: Option<STTextColumnCount>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@spcCol")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_col: Option<STPositiveCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@rtlCol")]
     #[serde(
         default,
@@ -10017,6 +10254,7 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub rtl_col: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@fromWordArt")]
     #[serde(
         default,
@@ -10024,9 +10262,11 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub from_word_art: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@anchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STTextAnchoringType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@anchorCtr")]
     #[serde(
         default,
@@ -10034,6 +10274,7 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub anchor_ctr: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@forceAA")]
     #[serde(
         default,
@@ -10041,6 +10282,7 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub force_a_a: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@upright")]
     #[serde(
         default,
@@ -10048,6 +10290,7 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub upright: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@compatLnSpc")]
     #[serde(
         default,
@@ -10055,18 +10298,21 @@ pub struct CTTextBodyProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub compat_ln_spc: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "prstTxWarp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prst_tx_warp: Option<Box<CTPresetTextShape>>,
     #[serde(skip)]
     #[serde(default)]
     pub text_autofit: Option<Box<EGTextAutofit>>,
+    #[cfg(feature = "dml-3d")]
     #[serde(rename = "scene3d")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub scene3d: Option<Box<CTScene3D>>,
     #[serde(skip)]
     #[serde(default)]
     pub text3_d: Option<Box<EGText3D>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -10086,11 +10332,14 @@ pub struct CTTextBodyProperties {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextBody {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "bodyPr")]
     pub body_pr: Box<CTTextBodyProperties>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "lstStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lst_style: Option<Box<CTTextListStyle>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "p")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub p: Vec<TextParagraph>,
@@ -10172,14 +10421,18 @@ pub struct CTTextNoBullet;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextFont {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@typeface")]
     pub typeface: STTextTypeface,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@panose")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub panose: Option<Panose>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@pitchFamily")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pitch_family: Option<STPitchFamily>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@charset")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub charset: Option<i8>,
@@ -10212,6 +10465,7 @@ pub struct CTTextUnderlineFillGroupWrapper {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextCharacterProperties {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@kumimoji")]
     #[serde(
         default,
@@ -10219,15 +10473,19 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub kumimoji: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@lang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lang: Option<Language>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@altLang")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_lang: Option<Language>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sz: Option<STTextFontSize>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@b")]
     #[serde(
         default,
@@ -10235,6 +10493,7 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub b: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@i")]
     #[serde(
         default,
@@ -10242,21 +10501,27 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub i: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@u")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub u: Option<STTextUnderlineType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@strike")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub strike: Option<STTextStrikeType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@kern")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kern: Option<STTextNonNegativePoint>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@cap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cap: Option<STTextCapsType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@spc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc: Option<STTextPoint>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@normalizeH")]
     #[serde(
         default,
@@ -10264,9 +10529,11 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub normalize_h: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@baseline")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub baseline: Option<STPercentage>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@noProof")]
     #[serde(
         default,
@@ -10274,6 +10541,7 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub no_proof: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@dirty")]
     #[serde(
         default,
@@ -10281,6 +10549,7 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub dirty: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@err")]
     #[serde(
         default,
@@ -10288,6 +10557,7 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub err: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@smtClean")]
     #[serde(
         default,
@@ -10295,12 +10565,15 @@ pub struct TextCharacterProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub smt_clean: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@smtId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smt_id: Option<u32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@bmk")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bmk: Option<String>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "ln")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line: Option<Box<LineProperties>>,
@@ -10310,6 +10583,7 @@ pub struct TextCharacterProperties {
     #[serde(skip)]
     #[serde(default)]
     pub effect_properties: Option<Box<EGEffectProperties>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "highlight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlight: Option<Box<CTColor>>,
@@ -10319,27 +10593,35 @@ pub struct TextCharacterProperties {
     #[serde(skip)]
     #[serde(default)]
     pub text_underline_fill: Option<Box<EGTextUnderlineFill>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "latin")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub latin: Option<Box<TextFont>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "ea")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ea: Option<Box<TextFont>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cs: Option<Box<TextFont>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "sym")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sym: Option<Box<TextFont>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "hlinkClick")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_click: Option<Box<CTHyperlink>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "hlinkMouseOver")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hlink_mouse_over: Option<Box<CTHyperlink>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "rtl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rtl: Option<Box<CTBoolean>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -10455,24 +10737,31 @@ pub struct CTTextSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TextParagraphProperties {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@marL")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_l: Option<STTextMargin>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@marR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mar_r: Option<STTextMargin>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@lvl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lvl: Option<STTextIndentLevelType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@indent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<STTextIndent>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@algn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algn: Option<STTextAlignType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@defTabSz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_tab_sz: Option<STCoordinate32>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@rtl")]
     #[serde(
         default,
@@ -10480,6 +10769,7 @@ pub struct TextParagraphProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub rtl: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@eaLnBrk")]
     #[serde(
         default,
@@ -10487,9 +10777,11 @@ pub struct TextParagraphProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub ea_ln_brk: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@fontAlgn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_algn: Option<STTextFontAlignType>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@latinLnBrk")]
     #[serde(
         default,
@@ -10497,6 +10789,7 @@ pub struct TextParagraphProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub latin_ln_brk: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "@hangingPunct")]
     #[serde(
         default,
@@ -10504,12 +10797,15 @@ pub struct TextParagraphProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub hanging_punct: Option<bool>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "lnSpc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ln_spc: Option<Box<CTTextSpacing>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "spcBef")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_bef: Option<Box<CTTextSpacing>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "spcAft")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spc_aft: Option<Box<CTTextSpacing>>,
@@ -10525,12 +10821,15 @@ pub struct TextParagraphProperties {
     #[serde(skip)]
     #[serde(default)]
     pub text_bullet: Option<Box<EGTextBullet>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "tabLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_lst: Option<Box<CTTextTabStopList>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "defRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_r_pr: Option<Box<TextCharacterProperties>>,
+    #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -10580,9 +10879,11 @@ pub struct CTTextField {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TextRun {
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "rPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r_pr: Option<Box<TextCharacterProperties>>,
+    #[cfg(feature = "dml-text")]
     #[serde(rename = "t")]
     pub t: String,
     /// Unknown child elements captured for roundtrip fidelity.

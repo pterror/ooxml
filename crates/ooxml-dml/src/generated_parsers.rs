@@ -74,6 +74,7 @@ impl FromXml for CTAudioFile {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-media")]
         let mut f_content_type = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -87,6 +88,7 @@ impl FromXml for CTAudioFile {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-media")]
                 b"contentType" => {
                     f_content_type = Some(val.into_owned());
                 }
@@ -167,6 +169,7 @@ impl FromXml for CTAudioFile {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-media")]
             content_type: f_content_type,
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
@@ -183,6 +186,7 @@ impl FromXml for CTVideoFile {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-media")]
         let mut f_content_type = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -196,6 +200,7 @@ impl FromXml for CTVideoFile {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-media")]
                 b"contentType" => {
                     f_content_type = Some(val.into_owned());
                 }
@@ -276,6 +281,7 @@ impl FromXml for CTVideoFile {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-media")]
             content_type: f_content_type,
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
@@ -583,19 +589,33 @@ impl FromXml for ColorScheme {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_name: Option<String> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_dk1: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_lt1: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_dk2: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_lt2: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent1: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent2: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent3: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent4: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent5: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_accent6: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_hlink: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_fol_hlink: Option<Box<CTColor>> = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -608,6 +628,7 @@ impl FromXml for ColorScheme {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -628,6 +649,7 @@ impl FromXml for ColorScheme {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"dk1" => {
                                 f_dk1 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -635,6 +657,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"lt1" => {
                                 f_lt1 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -642,6 +665,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"dk2" => {
                                 f_dk2 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -649,6 +673,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"lt2" => {
                                 f_lt2 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -656,6 +681,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent1" => {
                                 f_accent1 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -663,6 +689,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent2" => {
                                 f_accent2 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -670,6 +697,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent3" => {
                                 f_accent3 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -677,6 +705,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent4" => {
                                 f_accent4 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -684,6 +713,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent5" => {
                                 f_accent5 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -691,6 +721,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent6" => {
                                 f_accent6 = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -698,6 +729,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"hlink" => {
                                 f_hlink = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -705,6 +737,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"folHlink" => {
                                 f_fol_hlink = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -712,6 +745,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -740,6 +774,7 @@ impl FromXml for ColorScheme {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"dk1" => {
                                 f_dk1 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -747,6 +782,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"lt1" => {
                                 f_lt1 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -754,6 +790,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"dk2" => {
                                 f_dk2 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -761,6 +798,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"lt2" => {
                                 f_lt2 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -768,6 +806,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent1" => {
                                 f_accent1 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -775,6 +814,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent2" => {
                                 f_accent2 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -782,6 +822,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent3" => {
                                 f_accent3 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -789,6 +830,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent4" => {
                                 f_accent4 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -796,6 +838,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent5" => {
                                 f_accent5 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -803,6 +846,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"accent6" => {
                                 f_accent6 = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -810,6 +854,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"hlink" => {
                                 f_hlink = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -817,6 +862,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"folHlink" => {
                                 f_fol_hlink = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -824,6 +870,7 @@ impl FromXml for ColorScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -856,26 +903,40 @@ impl FromXml for ColorScheme {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             dk1: f_dk1.ok_or_else(|| ParseError::MissingAttribute("dk1".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             lt1: f_lt1.ok_or_else(|| ParseError::MissingAttribute("lt1".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             dk2: f_dk2.ok_or_else(|| ParseError::MissingAttribute("dk2".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             lt2: f_lt2.ok_or_else(|| ParseError::MissingAttribute("lt2".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent1: f_accent1
                 .ok_or_else(|| ParseError::MissingAttribute("accent1".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent2: f_accent2
                 .ok_or_else(|| ParseError::MissingAttribute("accent2".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent3: f_accent3
                 .ok_or_else(|| ParseError::MissingAttribute("accent3".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent4: f_accent4
                 .ok_or_else(|| ParseError::MissingAttribute("accent4".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent5: f_accent5
                 .ok_or_else(|| ParseError::MissingAttribute("accent5".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             accent6: f_accent6
                 .ok_or_else(|| ParseError::MissingAttribute("accent6".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             hlink: f_hlink.ok_or_else(|| ParseError::MissingAttribute("hlink".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             fol_hlink: f_fol_hlink
                 .ok_or_else(|| ParseError::MissingAttribute("folHlink".to_string()))?,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1402,9 +1463,13 @@ impl FromXml for FontScheme {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_name: Option<String> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_major_font: Option<Box<CTFontCollection>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_minor_font: Option<Box<CTFontCollection>> = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1417,6 +1482,7 @@ impl FromXml for FontScheme {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -1437,6 +1503,7 @@ impl FromXml for FontScheme {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"majorFont" => {
                                 f_major_font =
                                     Some(Box::new(CTFontCollection::from_xml(reader, &e, false)?));
@@ -1445,6 +1512,7 @@ impl FromXml for FontScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"minorFont" => {
                                 f_minor_font =
                                     Some(Box::new(CTFontCollection::from_xml(reader, &e, false)?));
@@ -1453,6 +1521,7 @@ impl FromXml for FontScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -1481,6 +1550,7 @@ impl FromXml for FontScheme {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"majorFont" => {
                                 f_major_font =
                                     Some(Box::new(CTFontCollection::from_xml(reader, &e, true)?));
@@ -1489,6 +1559,7 @@ impl FromXml for FontScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"minorFont" => {
                                 f_minor_font =
                                     Some(Box::new(CTFontCollection::from_xml(reader, &e, true)?));
@@ -1497,6 +1568,7 @@ impl FromXml for FontScheme {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -1529,11 +1601,15 @@ impl FromXml for FontScheme {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             major_font: f_major_font
                 .ok_or_else(|| ParseError::MissingAttribute("majorFont".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             minor_font: f_minor_font
                 .ok_or_else(|| ParseError::MissingAttribute("minorFont".to_string()))?,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -1886,10 +1962,15 @@ impl FromXml for CTStyleMatrix {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_name = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_fill_style_lst: Option<Box<CTFillStyleList>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_ln_style_lst: Option<Box<CTLineStyleList>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_effect_style_lst: Option<Box<CTEffectStyleList>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_bg_fill_style_lst: Option<Box<CTBackgroundFillStyleList>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1902,6 +1983,7 @@ impl FromXml for CTStyleMatrix {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -1922,6 +2004,7 @@ impl FromXml for CTStyleMatrix {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"fillStyleLst" => {
                                 f_fill_style_lst =
                                     Some(Box::new(CTFillStyleList::from_xml(reader, &e, false)?));
@@ -1930,6 +2013,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"lnStyleLst" => {
                                 f_ln_style_lst =
                                     Some(Box::new(CTLineStyleList::from_xml(reader, &e, false)?));
@@ -1938,6 +2022,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"effectStyleLst" => {
                                 f_effect_style_lst =
                                     Some(Box::new(CTEffectStyleList::from_xml(reader, &e, false)?));
@@ -1946,6 +2031,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"bgFillStyleLst" => {
                                 f_bg_fill_style_lst = Some(Box::new(
                                     CTBackgroundFillStyleList::from_xml(reader, &e, false)?,
@@ -1974,6 +2060,7 @@ impl FromXml for CTStyleMatrix {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"fillStyleLst" => {
                                 f_fill_style_lst =
                                     Some(Box::new(CTFillStyleList::from_xml(reader, &e, true)?));
@@ -1982,6 +2069,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"lnStyleLst" => {
                                 f_ln_style_lst =
                                     Some(Box::new(CTLineStyleList::from_xml(reader, &e, true)?));
@@ -1990,6 +2078,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"effectStyleLst" => {
                                 f_effect_style_lst =
                                     Some(Box::new(CTEffectStyleList::from_xml(reader, &e, true)?));
@@ -1998,6 +2087,7 @@ impl FromXml for CTStyleMatrix {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"bgFillStyleLst" => {
                                 f_bg_fill_style_lst = Some(Box::new(
                                     CTBackgroundFillStyleList::from_xml(reader, &e, true)?,
@@ -2030,13 +2120,18 @@ impl FromXml for CTStyleMatrix {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             name: f_name,
+            #[cfg(feature = "dml-themes")]
             fill_style_lst: f_fill_style_lst
                 .ok_or_else(|| ParseError::MissingAttribute("fillStyleLst".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             ln_style_lst: f_ln_style_lst
                 .ok_or_else(|| ParseError::MissingAttribute("lnStyleLst".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             effect_style_lst: f_effect_style_lst
                 .ok_or_else(|| ParseError::MissingAttribute("effectStyleLst".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             bg_fill_style_lst: f_bg_fill_style_lst
                 .ok_or_else(|| ParseError::MissingAttribute("bgFillStyleLst".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -2053,9 +2148,13 @@ impl FromXml for CTBaseStyles {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-colors")]
         let mut f_clr_scheme: Option<Box<ColorScheme>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_font_scheme: Option<Box<FontScheme>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_fmt_scheme: Option<Box<CTStyleMatrix>> = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -2069,6 +2168,7 @@ impl FromXml for CTBaseStyles {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"clrScheme" => {
                                 f_clr_scheme =
                                     Some(Box::new(ColorScheme::from_xml(reader, &e, false)?));
@@ -2077,6 +2177,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"fontScheme" => {
                                 f_font_scheme =
                                     Some(Box::new(FontScheme::from_xml(reader, &e, false)?));
@@ -2085,6 +2186,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"fmtScheme" => {
                                 f_fmt_scheme =
                                     Some(Box::new(CTStyleMatrix::from_xml(reader, &e, false)?));
@@ -2093,6 +2195,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -2121,6 +2224,7 @@ impl FromXml for CTBaseStyles {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"clrScheme" => {
                                 f_clr_scheme =
                                     Some(Box::new(ColorScheme::from_xml(reader, &e, true)?));
@@ -2129,6 +2233,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"fontScheme" => {
                                 f_font_scheme =
                                     Some(Box::new(FontScheme::from_xml(reader, &e, true)?));
@@ -2137,6 +2242,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"fmtScheme" => {
                                 f_fmt_scheme =
                                     Some(Box::new(CTStyleMatrix::from_xml(reader, &e, true)?));
@@ -2145,6 +2251,7 @@ impl FromXml for CTBaseStyles {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -2177,12 +2284,16 @@ impl FromXml for CTBaseStyles {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-colors")]
             clr_scheme: f_clr_scheme
                 .ok_or_else(|| ParseError::MissingAttribute("clrScheme".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             font_scheme: f_font_scheme
                 .ok_or_else(|| ParseError::MissingAttribute("fontScheme".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             fmt_scheme: f_fmt_scheme
                 .ok_or_else(|| ParseError::MissingAttribute("fmtScheme".to_string()))?,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -3076,6 +3187,7 @@ impl FromXml for SrgbColor {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-colors")]
         let mut f_value: Option<HexColorRgb> = None;
         let mut f_color_transform = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -3089,6 +3201,7 @@ impl FromXml for SrgbColor {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-colors")]
                 b"val" => {
                     f_value = decode_hex(&val);
                 }
@@ -3177,6 +3290,7 @@ impl FromXml for SrgbColor {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-colors")]
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             color_transform: f_color_transform,
             #[cfg(feature = "extra-attrs")]
@@ -3193,8 +3307,11 @@ impl FromXml for HslColor {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-colors")]
         let mut f_hue: Option<STPositiveFixedAngle> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_sat: Option<STPercentage> = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_lum: Option<STPercentage> = None;
         let mut f_color_transform = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -3208,12 +3325,15 @@ impl FromXml for HslColor {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-colors")]
                 b"hue" => {
                     f_hue = val.parse().ok();
                 }
+                #[cfg(feature = "dml-colors")]
                 b"sat" => {
                     f_sat = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-colors")]
                 b"lum" => {
                     f_lum = Some(val.into_owned());
                 }
@@ -3302,8 +3422,11 @@ impl FromXml for HslColor {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-colors")]
             hue: f_hue.ok_or_else(|| ParseError::MissingAttribute("hue".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             sat: f_sat.ok_or_else(|| ParseError::MissingAttribute("sat".to_string()))?,
+            #[cfg(feature = "dml-colors")]
             lum: f_lum.ok_or_else(|| ParseError::MissingAttribute("lum".to_string()))?,
             color_transform: f_color_transform,
             #[cfg(feature = "extra-attrs")]
@@ -3442,6 +3565,7 @@ impl FromXml for SchemeColor {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-colors")]
         let mut f_value: Option<STSchemeColorVal> = None;
         let mut f_color_transform = Vec::new();
         #[cfg(feature = "extra-attrs")]
@@ -3455,6 +3579,7 @@ impl FromXml for SchemeColor {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-colors")]
                 b"val" => {
                     f_value = val.parse().ok();
                 }
@@ -3543,6 +3668,7 @@ impl FromXml for SchemeColor {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-colors")]
             value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
             color_transform: f_color_transform,
             #[cfg(feature = "extra-attrs")]
@@ -4777,14 +4903,23 @@ impl FromXml for CTHyperlink {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_invalid_url = None;
+        #[cfg(feature = "dml-text")]
         let mut f_action = None;
+        #[cfg(feature = "dml-text")]
         let mut f_tgt_frame = None;
+        #[cfg(feature = "dml-text")]
         let mut f_tooltip = None;
+        #[cfg(feature = "dml-text")]
         let mut f_history = None;
+        #[cfg(feature = "dml-text")]
         let mut f_highlight_click = None;
+        #[cfg(feature = "dml-text")]
         let mut f_end_snd = None;
+        #[cfg(feature = "dml-text")]
         let mut f_snd = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4797,24 +4932,31 @@ impl FromXml for CTHyperlink {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
                 b"invalidUrl" => {
                     f_invalid_url = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"action" => {
                     f_action = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"tgtFrame" => {
                     f_tgt_frame = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"tooltip" => {
                     f_tooltip = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"history" => {
                     f_history = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"highlightClick" => {
                     f_highlight_click = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"endSnd" => {
                     f_end_snd = Some(val == "true" || val == "1");
                 }
@@ -4835,6 +4977,7 @@ impl FromXml for CTHyperlink {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"snd" => {
                                 f_snd = Some(Box::new(CTEmbeddedWAVAudioFile::from_xml(
                                     reader, &e, false,
@@ -4844,6 +4987,7 @@ impl FromXml for CTHyperlink {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -4872,6 +5016,7 @@ impl FromXml for CTHyperlink {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"snd" => {
                                 f_snd = Some(Box::new(CTEmbeddedWAVAudioFile::from_xml(
                                     reader, &e, true,
@@ -4881,6 +5026,7 @@ impl FromXml for CTHyperlink {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -4913,14 +5059,23 @@ impl FromXml for CTHyperlink {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             invalid_url: f_invalid_url,
+            #[cfg(feature = "dml-text")]
             action: f_action,
+            #[cfg(feature = "dml-text")]
             tgt_frame: f_tgt_frame,
+            #[cfg(feature = "dml-text")]
             tooltip: f_tooltip,
+            #[cfg(feature = "dml-text")]
             history: f_history,
+            #[cfg(feature = "dml-text")]
             highlight_click: f_highlight_click,
+            #[cfg(feature = "dml-text")]
             end_snd: f_end_snd,
+            #[cfg(feature = "dml-text")]
             snd: f_snd,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -5932,8 +6087,11 @@ impl FromXml for CTNonVisualDrawingProps {
         let mut f_descr = None;
         let mut f_hidden = None;
         let mut f_title = None;
+        #[cfg(feature = "dml-text")]
         let mut f_hlink_click = None;
+        #[cfg(feature = "dml-text")]
         let mut f_hlink_hover = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -5978,6 +6136,7 @@ impl FromXml for CTNonVisualDrawingProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"hlinkClick" => {
                                 f_hlink_click =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
@@ -5986,6 +6145,7 @@ impl FromXml for CTNonVisualDrawingProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkHover" => {
                                 f_hlink_hover =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
@@ -5994,6 +6154,7 @@ impl FromXml for CTNonVisualDrawingProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -6022,6 +6183,7 @@ impl FromXml for CTNonVisualDrawingProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"hlinkClick" => {
                                 f_hlink_click =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
@@ -6030,6 +6192,7 @@ impl FromXml for CTNonVisualDrawingProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkHover" => {
                                 f_hlink_hover =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
@@ -6038,6 +6201,7 @@ impl FromXml for CTNonVisualDrawingProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -6075,8 +6239,11 @@ impl FromXml for CTNonVisualDrawingProps {
             descr: f_descr,
             hidden: f_hidden,
             title: f_title,
+            #[cfg(feature = "dml-text")]
             hlink_click: f_hlink_click,
+            #[cfg(feature = "dml-text")]
             hlink_hover: f_hlink_hover,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -6219,9 +6386,13 @@ impl FromXml for CTNonVisualConnectorProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_cxn_sp_locks = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_st_cxn = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_end_cxn = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -6235,6 +6406,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"cxnSpLocks" => {
                                 f_cxn_sp_locks = Some(Box::new(CTConnectorLocking::from_xml(
                                     reader, &e, false,
@@ -6244,6 +6416,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"stCxn" => {
                                 f_st_cxn =
                                     Some(Box::new(CTConnection::from_xml(reader, &e, false)?));
@@ -6252,6 +6425,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"endCxn" => {
                                 f_end_cxn =
                                     Some(Box::new(CTConnection::from_xml(reader, &e, false)?));
@@ -6260,6 +6434,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -6288,6 +6463,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"cxnSpLocks" => {
                                 f_cxn_sp_locks =
                                     Some(Box::new(CTConnectorLocking::from_xml(reader, &e, true)?));
@@ -6296,6 +6472,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"stCxn" => {
                                 f_st_cxn =
                                     Some(Box::new(CTConnection::from_xml(reader, &e, true)?));
@@ -6304,6 +6481,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"endCxn" => {
                                 f_end_cxn =
                                     Some(Box::new(CTConnection::from_xml(reader, &e, true)?));
@@ -6312,6 +6490,7 @@ impl FromXml for CTNonVisualConnectorProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -6344,9 +6523,13 @@ impl FromXml for CTNonVisualConnectorProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             cxn_sp_locks: f_cxn_sp_locks,
+            #[cfg(feature = "dml-shapes")]
             st_cxn: f_st_cxn,
+            #[cfg(feature = "dml-shapes")]
             end_cxn: f_end_cxn,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -6360,8 +6543,11 @@ impl FromXml for CTNonVisualPictureProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_prefer_relative_resize = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_pic_locks = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -6374,6 +6560,7 @@ impl FromXml for CTNonVisualPictureProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-shapes")]
                 b"preferRelativeResize" => {
                     f_prefer_relative_resize = Some(val == "true" || val == "1");
                 }
@@ -6394,6 +6581,7 @@ impl FromXml for CTNonVisualPictureProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"picLocks" => {
                                 f_pic_locks =
                                     Some(Box::new(CTPictureLocking::from_xml(reader, &e, false)?));
@@ -6402,6 +6590,7 @@ impl FromXml for CTNonVisualPictureProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -6430,6 +6619,7 @@ impl FromXml for CTNonVisualPictureProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"picLocks" => {
                                 f_pic_locks =
                                     Some(Box::new(CTPictureLocking::from_xml(reader, &e, true)?));
@@ -6438,6 +6628,7 @@ impl FromXml for CTNonVisualPictureProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -6470,8 +6661,11 @@ impl FromXml for CTNonVisualPictureProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             prefer_relative_resize: f_prefer_relative_resize,
+            #[cfg(feature = "dml-shapes")]
             pic_locks: f_pic_locks,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -6487,7 +6681,9 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_grp_sp_locks = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -6501,6 +6697,7 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"grpSpLocks" => {
                                 f_grp_sp_locks =
                                     Some(Box::new(CTGroupLocking::from_xml(reader, &e, false)?));
@@ -6509,6 +6706,7 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -6537,6 +6735,7 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"grpSpLocks" => {
                                 f_grp_sp_locks =
                                     Some(Box::new(CTGroupLocking::from_xml(reader, &e, true)?));
@@ -6545,6 +6744,7 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -6577,7 +6777,9 @@ impl FromXml for CTNonVisualGroupDrawingShapeProps {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             grp_sp_locks: f_grp_sp_locks,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -6591,7 +6793,9 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_graphic_frame_locks = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -6605,6 +6809,7 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"graphicFrameLocks" => {
                                 f_graphic_frame_locks = Some(Box::new(
                                     CTGraphicalObjectFrameLocking::from_xml(reader, &e, false)?,
@@ -6614,6 +6819,7 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -6642,6 +6848,7 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"graphicFrameLocks" => {
                                 f_graphic_frame_locks = Some(Box::new(
                                     CTGraphicalObjectFrameLocking::from_xml(reader, &e, true)?,
@@ -6651,6 +6858,7 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -6683,7 +6891,9 @@ impl FromXml for CTNonVisualGraphicFrameProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             graphic_frame_locks: f_graphic_frame_locks,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9059,9 +9269,13 @@ impl FromXml for CTCamera {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-3d")]
         let mut f_preset: Option<STPresetCameraType> = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_fov = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_zoom = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_rot = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9074,12 +9288,15 @@ impl FromXml for CTCamera {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-3d")]
                 b"prst" => {
                     f_preset = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"fov" => {
                     f_fov = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"zoom" => {
                     f_zoom = Some(val.into_owned());
                 }
@@ -9100,6 +9317,7 @@ impl FromXml for CTCamera {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"rot" => {
                                 f_rot =
                                     Some(Box::new(CTSphereCoords::from_xml(reader, &e, false)?));
@@ -9127,6 +9345,7 @@ impl FromXml for CTCamera {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"rot" => {
                                 f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9157,9 +9376,13 @@ impl FromXml for CTCamera {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-3d")]
             preset: f_preset.ok_or_else(|| ParseError::MissingAttribute("prst".to_string()))?,
+            #[cfg(feature = "dml-3d")]
             fov: f_fov,
+            #[cfg(feature = "dml-3d")]
             zoom: f_zoom,
+            #[cfg(feature = "dml-3d")]
             rot: f_rot,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -9175,8 +9398,11 @@ impl FromXml for CTLightRig {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-3d")]
         let mut f_rig: Option<STLightRigType> = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_dir: Option<STLightRigDirection> = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_rot = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9189,9 +9415,11 @@ impl FromXml for CTLightRig {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-3d")]
                 b"rig" => {
                     f_rig = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"dir" => {
                     f_dir = val.parse().ok();
                 }
@@ -9212,6 +9440,7 @@ impl FromXml for CTLightRig {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"rot" => {
                                 f_rot =
                                     Some(Box::new(CTSphereCoords::from_xml(reader, &e, false)?));
@@ -9239,6 +9468,7 @@ impl FromXml for CTLightRig {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"rot" => {
                                 f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9269,8 +9499,11 @@ impl FromXml for CTLightRig {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-3d")]
             rig: f_rig.ok_or_else(|| ParseError::MissingAttribute("rig".to_string()))?,
+            #[cfg(feature = "dml-3d")]
             dir: f_dir.ok_or_else(|| ParseError::MissingAttribute("dir".to_string()))?,
+            #[cfg(feature = "dml-3d")]
             rot: f_rot,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -9286,9 +9519,13 @@ impl FromXml for CTScene3D {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-3d")]
         let mut f_camera: Option<Box<CTCamera>> = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_light_rig: Option<Box<CTLightRig>> = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_backdrop = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9302,6 +9539,7 @@ impl FromXml for CTScene3D {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"camera" => {
                                 f_camera = Some(Box::new(CTCamera::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9309,6 +9547,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"lightRig" => {
                                 f_light_rig =
                                     Some(Box::new(CTLightRig::from_xml(reader, &e, false)?));
@@ -9317,6 +9556,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"backdrop" => {
                                 f_backdrop =
                                     Some(Box::new(CTBackdrop::from_xml(reader, &e, false)?));
@@ -9325,6 +9565,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -9353,6 +9594,7 @@ impl FromXml for CTScene3D {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"camera" => {
                                 f_camera = Some(Box::new(CTCamera::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9360,6 +9602,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"lightRig" => {
                                 f_light_rig =
                                     Some(Box::new(CTLightRig::from_xml(reader, &e, true)?));
@@ -9368,6 +9611,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"backdrop" => {
                                 f_backdrop =
                                     Some(Box::new(CTBackdrop::from_xml(reader, &e, true)?));
@@ -9376,6 +9620,7 @@ impl FromXml for CTScene3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -9408,10 +9653,14 @@ impl FromXml for CTScene3D {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-3d")]
             camera: f_camera.ok_or_else(|| ParseError::MissingAttribute("camera".to_string()))?,
+            #[cfg(feature = "dml-3d")]
             light_rig: f_light_rig
                 .ok_or_else(|| ParseError::MissingAttribute("lightRig".to_string()))?,
+            #[cfg(feature = "dml-3d")]
             backdrop: f_backdrop,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -9559,8 +9808,11 @@ impl FromXml for CTBevel {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-3d")]
         let mut f_width = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_height = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_preset = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9569,12 +9821,15 @@ impl FromXml for CTBevel {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-3d")]
                 b"w" => {
                     f_width = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"h" => {
                     f_height = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"prst" => {
                     f_preset = val.parse().ok();
                 }
@@ -9601,8 +9856,11 @@ impl FromXml for CTBevel {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-3d")]
             width: f_width,
+            #[cfg(feature = "dml-3d")]
             height: f_height,
+            #[cfg(feature = "dml-3d")]
             preset: f_preset,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -9616,14 +9874,23 @@ impl FromXml for CTShape3D {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-3d")]
         let mut f_z = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_extrusion_h = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_contour_w = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_prst_material = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_bevel_t = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_bevel_b = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_extrusion_clr = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_contour_clr = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9636,15 +9903,19 @@ impl FromXml for CTShape3D {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-3d")]
                 b"z" => {
                     f_z = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-3d")]
                 b"extrusionH" => {
                     f_extrusion_h = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"contourW" => {
                     f_contour_w = val.parse().ok();
                 }
+                #[cfg(feature = "dml-3d")]
                 b"prstMaterial" => {
                     f_prst_material = val.parse().ok();
                 }
@@ -9665,6 +9936,7 @@ impl FromXml for CTShape3D {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"bevelT" => {
                                 f_bevel_t = Some(Box::new(CTBevel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9672,6 +9944,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"bevelB" => {
                                 f_bevel_b = Some(Box::new(CTBevel::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -9679,6 +9952,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"extrusionClr" => {
                                 f_extrusion_clr =
                                     Some(Box::new(CTColor::from_xml(reader, &e, false)?));
@@ -9687,6 +9961,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"contourClr" => {
                                 f_contour_clr =
                                     Some(Box::new(CTColor::from_xml(reader, &e, false)?));
@@ -9695,6 +9970,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -9723,6 +9999,7 @@ impl FromXml for CTShape3D {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-3d")]
                             b"bevelT" => {
                                 f_bevel_t = Some(Box::new(CTBevel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9730,6 +10007,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"bevelB" => {
                                 f_bevel_b = Some(Box::new(CTBevel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -9737,6 +10015,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"extrusionClr" => {
                                 f_extrusion_clr =
                                     Some(Box::new(CTColor::from_xml(reader, &e, true)?));
@@ -9745,6 +10024,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"contourClr" => {
                                 f_contour_clr =
                                     Some(Box::new(CTColor::from_xml(reader, &e, true)?));
@@ -9753,6 +10033,7 @@ impl FromXml for CTShape3D {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -9785,14 +10066,23 @@ impl FromXml for CTShape3D {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-3d")]
             z: f_z,
+            #[cfg(feature = "dml-3d")]
             extrusion_h: f_extrusion_h,
+            #[cfg(feature = "dml-3d")]
             contour_w: f_contour_w,
+            #[cfg(feature = "dml-3d")]
             prst_material: f_prst_material,
+            #[cfg(feature = "dml-3d")]
             bevel_t: f_bevel_t,
+            #[cfg(feature = "dml-3d")]
             bevel_b: f_bevel_b,
+            #[cfg(feature = "dml-3d")]
             extrusion_clr: f_extrusion_clr,
+            #[cfg(feature = "dml-3d")]
             contour_clr: f_contour_clr,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10255,7 +10545,9 @@ impl FromXml for CTBlurEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_rad = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_grow = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10264,9 +10556,11 @@ impl FromXml for CTBlurEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"rad" => {
                     f_rad = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"grow" => {
                     f_grow = Some(val == "true" || val == "1");
                 }
@@ -10293,7 +10587,9 @@ impl FromXml for CTBlurEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             rad: f_rad,
+            #[cfg(feature = "dml-effects")]
             grow: f_grow,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10599,6 +10895,7 @@ impl FromXml for CTGlowEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_rad = None;
         let mut f_color_choice: Option<Box<EGColorChoice>> = None;
         #[cfg(feature = "extra-attrs")]
@@ -10612,6 +10909,7 @@ impl FromXml for CTGlowEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"rad" => {
                     f_rad = val.parse().ok();
                 }
@@ -10692,6 +10990,7 @@ impl FromXml for CTGlowEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             rad: f_rad,
             color_choice: f_color_choice,
             #[cfg(feature = "extra-attrs")]
@@ -10793,8 +11092,11 @@ impl FromXml for CTInnerShadowEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_blur_rad = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dist = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dir = None;
         let mut f_color_choice: Option<Box<EGColorChoice>> = None;
         #[cfg(feature = "extra-attrs")]
@@ -10808,12 +11110,15 @@ impl FromXml for CTInnerShadowEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"blurRad" => {
                     f_blur_rad = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dist" => {
                     f_dist = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dir" => {
                     f_dir = val.parse().ok();
                 }
@@ -10894,8 +11199,11 @@ impl FromXml for CTInnerShadowEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             blur_rad: f_blur_rad,
+            #[cfg(feature = "dml-effects")]
             dist: f_dist,
+            #[cfg(feature = "dml-effects")]
             dir: f_dir,
             color_choice: f_color_choice,
             #[cfg(feature = "extra-attrs")]
@@ -10964,14 +11272,23 @@ impl FromXml for CTOuterShadowEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_blur_rad = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dist = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dir = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_sx = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_sy = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_kx = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_ky = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_algn = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_rot_with_shape = None;
         let mut f_color_choice: Option<Box<EGColorChoice>> = None;
         #[cfg(feature = "extra-attrs")]
@@ -10985,30 +11302,39 @@ impl FromXml for CTOuterShadowEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"blurRad" => {
                     f_blur_rad = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dist" => {
                     f_dist = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dir" => {
                     f_dir = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"sx" => {
                     f_sx = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"sy" => {
                     f_sy = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"kx" => {
                     f_kx = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"ky" => {
                     f_ky = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"algn" => {
                     f_algn = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"rotWithShape" => {
                     f_rot_with_shape = Some(val == "true" || val == "1");
                 }
@@ -11089,14 +11415,23 @@ impl FromXml for CTOuterShadowEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             blur_rad: f_blur_rad,
+            #[cfg(feature = "dml-effects")]
             dist: f_dist,
+            #[cfg(feature = "dml-effects")]
             dir: f_dir,
+            #[cfg(feature = "dml-effects")]
             sx: f_sx,
+            #[cfg(feature = "dml-effects")]
             sy: f_sy,
+            #[cfg(feature = "dml-effects")]
             kx: f_kx,
+            #[cfg(feature = "dml-effects")]
             ky: f_ky,
+            #[cfg(feature = "dml-effects")]
             algn: f_algn,
+            #[cfg(feature = "dml-effects")]
             rot_with_shape: f_rot_with_shape,
             color_choice: f_color_choice,
             #[cfg(feature = "extra-attrs")]
@@ -11232,19 +11567,33 @@ impl FromXml for CTReflectionEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_blur_rad = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_st_a = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_st_pos = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_end_a = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_end_pos = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dist = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_dir = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_fade_dir = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_sx = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_sy = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_kx = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_ky = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_algn = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_rot_with_shape = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -11253,45 +11602,59 @@ impl FromXml for CTReflectionEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"blurRad" => {
                     f_blur_rad = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"stA" => {
                     f_st_a = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"stPos" => {
                     f_st_pos = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"endA" => {
                     f_end_a = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"endPos" => {
                     f_end_pos = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dist" => {
                     f_dist = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"dir" => {
                     f_dir = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"fadeDir" => {
                     f_fade_dir = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"sx" => {
                     f_sx = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"sy" => {
                     f_sy = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-effects")]
                 b"kx" => {
                     f_kx = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"ky" => {
                     f_ky = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"algn" => {
                     f_algn = val.parse().ok();
                 }
+                #[cfg(feature = "dml-effects")]
                 b"rotWithShape" => {
                     f_rot_with_shape = Some(val == "true" || val == "1");
                 }
@@ -11318,19 +11681,33 @@ impl FromXml for CTReflectionEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             blur_rad: f_blur_rad,
+            #[cfg(feature = "dml-effects")]
             st_a: f_st_a,
+            #[cfg(feature = "dml-effects")]
             st_pos: f_st_pos,
+            #[cfg(feature = "dml-effects")]
             end_a: f_end_a,
+            #[cfg(feature = "dml-effects")]
             end_pos: f_end_pos,
+            #[cfg(feature = "dml-effects")]
             dist: f_dist,
+            #[cfg(feature = "dml-effects")]
             dir: f_dir,
+            #[cfg(feature = "dml-effects")]
             fade_dir: f_fade_dir,
+            #[cfg(feature = "dml-effects")]
             sx: f_sx,
+            #[cfg(feature = "dml-effects")]
             sy: f_sy,
+            #[cfg(feature = "dml-effects")]
             kx: f_kx,
+            #[cfg(feature = "dml-effects")]
             ky: f_ky,
+            #[cfg(feature = "dml-effects")]
             algn: f_algn,
+            #[cfg(feature = "dml-effects")]
             rot_with_shape: f_rot_with_shape,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -11396,6 +11773,7 @@ impl FromXml for CTSoftEdgesEffect {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_rad: Option<STPositiveCoordinate> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -11404,6 +11782,7 @@ impl FromXml for CTSoftEdgesEffect {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-effects")]
                 b"rad" => {
                     f_rad = val.parse().ok();
                 }
@@ -11430,6 +11809,7 @@ impl FromXml for CTSoftEdgesEffect {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             rad: f_rad.ok_or_else(|| ParseError::MissingAttribute("rad".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12054,10 +12434,14 @@ impl FromXml for GradientFill {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-fills")]
         let mut f_flip = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_rot_with_shape = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_gs_lst = None;
         let mut f_shade_properties = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_tile_rect = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12070,9 +12454,11 @@ impl FromXml for GradientFill {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-fills")]
                 b"flip" => {
                     f_flip = val.parse().ok();
                 }
+                #[cfg(feature = "dml-fills")]
                 b"rotWithShape" => {
                     f_rot_with_shape = Some(val == "true" || val == "1");
                 }
@@ -12093,6 +12479,7 @@ impl FromXml for GradientFill {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"gsLst" => {
                                 f_gs_lst = Some(Box::new(CTGradientStopList::from_xml(
                                     reader, &e, false,
@@ -12110,6 +12497,7 @@ impl FromXml for GradientFill {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"tileRect" => {
                                 f_tile_rect =
                                     Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
@@ -12137,6 +12525,7 @@ impl FromXml for GradientFill {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"gsLst" => {
                                 f_gs_lst =
                                     Some(Box::new(CTGradientStopList::from_xml(reader, &e, true)?));
@@ -12153,6 +12542,7 @@ impl FromXml for GradientFill {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"tileRect" => {
                                 f_tile_rect =
                                     Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
@@ -12184,10 +12574,14 @@ impl FromXml for GradientFill {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-fills")]
             flip: f_flip,
+            #[cfg(feature = "dml-fills")]
             rot_with_shape: f_rot_with_shape,
+            #[cfg(feature = "dml-fills")]
             gs_lst: f_gs_lst,
             shade_properties: f_shade_properties,
+            #[cfg(feature = "dml-fills")]
             tile_rect: f_tile_rect,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12382,24 +12776,43 @@ impl FromXml for Blip {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-fills")]
         let mut f_cstate = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_bi_level = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_ceiling = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_floor = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_inv = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_mod = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_mod_fix = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_alpha_repl = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_bi_level = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_blur = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_clr_change = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_clr_repl = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_duotone = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_fill_overlay = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_grayscl = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_hsl = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_lum = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_tint = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12412,6 +12825,7 @@ impl FromXml for Blip {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-fills")]
                 b"cstate" => {
                     f_cstate = val.parse().ok();
                 }
@@ -12432,6 +12846,7 @@ impl FromXml for Blip {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"alphaBiLevel" => {
                                 f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(
                                     reader, &e, false,
@@ -12441,6 +12856,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaCeiling" => {
                                 f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(
                                     reader, &e, false,
@@ -12450,6 +12866,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaFloor" => {
                                 f_alpha_floor = Some(Box::new(CTAlphaFloorEffect::from_xml(
                                     reader, &e, false,
@@ -12459,6 +12876,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaInv" => {
                                 f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(
                                     reader, &e, false,
@@ -12468,6 +12886,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaMod" => {
                                 f_alpha_mod =
                                     Some(Box::new(EffectContainer::from_xml(reader, &e, false)?));
@@ -12476,6 +12895,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaModFix" => {
                                 f_alpha_mod_fix = Some(Box::new(
                                     CTAlphaModulateFixedEffect::from_xml(reader, &e, false)?,
@@ -12485,6 +12905,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaRepl" => {
                                 f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(
                                     reader, &e, false,
@@ -12494,6 +12915,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"biLevel" => {
                                 f_bi_level =
                                     Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, false)?));
@@ -12502,6 +12924,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"blur" => {
                                 f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -12509,6 +12932,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"clrChange" => {
                                 f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(
                                     reader, &e, false,
@@ -12518,6 +12942,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"clrRepl" => {
                                 f_clr_repl = Some(Box::new(CTColorReplaceEffect::from_xml(
                                     reader, &e, false,
@@ -12527,6 +12952,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"duotone" => {
                                 f_duotone =
                                     Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, false)?));
@@ -12535,6 +12961,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"fillOverlay" => {
                                 f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
                                     reader, &e, false,
@@ -12544,6 +12971,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"grayscl" => {
                                 f_grayscl =
                                     Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, false)?));
@@ -12552,6 +12980,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"hsl" => {
                                 f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -12559,6 +12988,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"lum" => {
                                 f_lum =
                                     Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, false)?));
@@ -12567,6 +12997,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"tint" => {
                                 f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -12574,6 +13005,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -12602,6 +13034,7 @@ impl FromXml for Blip {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"alphaBiLevel" => {
                                 f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(
                                     reader, &e, true,
@@ -12611,6 +13044,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaCeiling" => {
                                 f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(
                                     reader, &e, true,
@@ -12620,6 +13054,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaFloor" => {
                                 f_alpha_floor =
                                     Some(Box::new(CTAlphaFloorEffect::from_xml(reader, &e, true)?));
@@ -12628,6 +13063,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaInv" => {
                                 f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(
                                     reader, &e, true,
@@ -12637,6 +13073,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaMod" => {
                                 f_alpha_mod =
                                     Some(Box::new(EffectContainer::from_xml(reader, &e, true)?));
@@ -12645,6 +13082,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaModFix" => {
                                 f_alpha_mod_fix = Some(Box::new(
                                     CTAlphaModulateFixedEffect::from_xml(reader, &e, true)?,
@@ -12654,6 +13092,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"alphaRepl" => {
                                 f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(
                                     reader, &e, true,
@@ -12663,6 +13102,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"biLevel" => {
                                 f_bi_level =
                                     Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, true)?));
@@ -12671,6 +13111,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"blur" => {
                                 f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -12678,6 +13119,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"clrChange" => {
                                 f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(
                                     reader, &e, true,
@@ -12687,6 +13129,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"clrRepl" => {
                                 f_clr_repl = Some(Box::new(CTColorReplaceEffect::from_xml(
                                     reader, &e, true,
@@ -12696,6 +13139,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"duotone" => {
                                 f_duotone =
                                     Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, true)?));
@@ -12704,6 +13148,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"fillOverlay" => {
                                 f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
                                     reader, &e, true,
@@ -12713,6 +13158,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"grayscl" => {
                                 f_grayscl =
                                     Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, true)?));
@@ -12721,6 +13167,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"hsl" => {
                                 f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -12728,6 +13175,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"lum" => {
                                 f_lum =
                                     Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, true)?));
@@ -12736,6 +13184,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"tint" => {
                                 f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -12743,6 +13192,7 @@ impl FromXml for Blip {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -12775,24 +13225,43 @@ impl FromXml for Blip {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-fills")]
             cstate: f_cstate,
+            #[cfg(feature = "dml-fills")]
             alpha_bi_level: f_alpha_bi_level,
+            #[cfg(feature = "dml-fills")]
             alpha_ceiling: f_alpha_ceiling,
+            #[cfg(feature = "dml-fills")]
             alpha_floor: f_alpha_floor,
+            #[cfg(feature = "dml-fills")]
             alpha_inv: f_alpha_inv,
+            #[cfg(feature = "dml-fills")]
             alpha_mod: f_alpha_mod,
+            #[cfg(feature = "dml-fills")]
             alpha_mod_fix: f_alpha_mod_fix,
+            #[cfg(feature = "dml-fills")]
             alpha_repl: f_alpha_repl,
+            #[cfg(feature = "dml-fills")]
             bi_level: f_bi_level,
+            #[cfg(feature = "dml-fills")]
             blur: f_blur,
+            #[cfg(feature = "dml-fills")]
             clr_change: f_clr_change,
+            #[cfg(feature = "dml-fills")]
             clr_repl: f_clr_repl,
+            #[cfg(feature = "dml-fills")]
             duotone: f_duotone,
+            #[cfg(feature = "dml-fills")]
             fill_overlay: f_fill_overlay,
+            #[cfg(feature = "dml-fills")]
             grayscl: f_grayscl,
+            #[cfg(feature = "dml-fills")]
             hsl: f_hsl,
+            #[cfg(feature = "dml-fills")]
             lum: f_lum,
+            #[cfg(feature = "dml-fills")]
             tint: f_tint,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12808,9 +13277,13 @@ impl FromXml for BlipFillProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-fills")]
         let mut f_dpi = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_rot_with_shape = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_blip = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_src_rect = None;
         let mut f_fill_mode_properties = None;
         #[cfg(feature = "extra-attrs")]
@@ -12824,9 +13297,11 @@ impl FromXml for BlipFillProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-fills")]
                 b"dpi" => {
                     f_dpi = val.parse().ok();
                 }
+                #[cfg(feature = "dml-fills")]
                 b"rotWithShape" => {
                     f_rot_with_shape = Some(val == "true" || val == "1");
                 }
@@ -12847,6 +13322,7 @@ impl FromXml for BlipFillProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"blip" => {
                                 f_blip = Some(Box::new(Blip::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -12854,6 +13330,7 @@ impl FromXml for BlipFillProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"srcRect" => {
                                 f_src_rect =
                                     Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
@@ -12890,6 +13367,7 @@ impl FromXml for BlipFillProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"blip" => {
                                 f_blip = Some(Box::new(Blip::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -12897,6 +13375,7 @@ impl FromXml for BlipFillProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"srcRect" => {
                                 f_src_rect =
                                     Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
@@ -12937,9 +13416,13 @@ impl FromXml for BlipFillProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-fills")]
             dpi: f_dpi,
+            #[cfg(feature = "dml-fills")]
             rot_with_shape: f_rot_with_shape,
+            #[cfg(feature = "dml-fills")]
             blip: f_blip,
+            #[cfg(feature = "dml-fills")]
             src_rect: f_src_rect,
             fill_mode_properties: f_fill_mode_properties,
             #[cfg(feature = "extra-attrs")]
@@ -12956,8 +13439,11 @@ impl FromXml for PatternFill {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-fills")]
         let mut f_preset = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_fg_clr = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_bg_clr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12970,6 +13456,7 @@ impl FromXml for PatternFill {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-fills")]
                 b"prst" => {
                     f_preset = val.parse().ok();
                 }
@@ -12990,6 +13477,7 @@ impl FromXml for PatternFill {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"fgClr" => {
                                 f_fg_clr = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -12997,6 +13485,7 @@ impl FromXml for PatternFill {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"bgClr" => {
                                 f_bg_clr = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -13023,6 +13512,7 @@ impl FromXml for PatternFill {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-fills")]
                             b"fgClr" => {
                                 f_fg_clr = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13030,6 +13520,7 @@ impl FromXml for PatternFill {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-fills")]
                             b"bgClr" => {
                                 f_bg_clr = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13060,8 +13551,11 @@ impl FromXml for PatternFill {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-fills")]
             preset: f_preset,
+            #[cfg(feature = "dml-fills")]
             fg_clr: f_fg_clr,
+            #[cfg(feature = "dml-fills")]
             bg_clr: f_bg_clr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -13836,13 +14330,21 @@ impl FromXml for EffectList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-effects")]
         let mut f_blur = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_fill_overlay = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_glow = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_inner_shdw = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_outer_shdw = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_prst_shdw = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_reflection = None;
+        #[cfg(feature = "dml-effects")]
         let mut f_soft_edge = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -13856,6 +14358,7 @@ impl FromXml for EffectList {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-effects")]
                             b"blur" => {
                                 f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -13863,6 +14366,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"fillOverlay" => {
                                 f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
                                     reader, &e, false,
@@ -13872,6 +14376,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"glow" => {
                                 f_glow = Some(Box::new(CTGlowEffect::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -13879,6 +14384,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"innerShdw" => {
                                 f_inner_shdw = Some(Box::new(CTInnerShadowEffect::from_xml(
                                     reader, &e, false,
@@ -13888,6 +14394,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"outerShdw" => {
                                 f_outer_shdw = Some(Box::new(CTOuterShadowEffect::from_xml(
                                     reader, &e, false,
@@ -13897,6 +14404,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"prstShdw" => {
                                 f_prst_shdw = Some(Box::new(CTPresetShadowEffect::from_xml(
                                     reader, &e, false,
@@ -13906,6 +14414,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"reflection" => {
                                 f_reflection = Some(Box::new(CTReflectionEffect::from_xml(
                                     reader, &e, false,
@@ -13915,6 +14424,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"softEdge" => {
                                 f_soft_edge =
                                     Some(Box::new(CTSoftEdgesEffect::from_xml(reader, &e, false)?));
@@ -13942,6 +14452,7 @@ impl FromXml for EffectList {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-effects")]
                             b"blur" => {
                                 f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13949,6 +14460,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"fillOverlay" => {
                                 f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
                                     reader, &e, true,
@@ -13958,6 +14470,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"glow" => {
                                 f_glow = Some(Box::new(CTGlowEffect::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13965,6 +14478,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"innerShdw" => {
                                 f_inner_shdw = Some(Box::new(CTInnerShadowEffect::from_xml(
                                     reader, &e, true,
@@ -13974,6 +14488,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"outerShdw" => {
                                 f_outer_shdw = Some(Box::new(CTOuterShadowEffect::from_xml(
                                     reader, &e, true,
@@ -13983,6 +14498,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"prstShdw" => {
                                 f_prst_shdw = Some(Box::new(CTPresetShadowEffect::from_xml(
                                     reader, &e, true,
@@ -13992,6 +14508,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"reflection" => {
                                 f_reflection =
                                     Some(Box::new(CTReflectionEffect::from_xml(reader, &e, true)?));
@@ -14000,6 +14517,7 @@ impl FromXml for EffectList {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-effects")]
                             b"softEdge" => {
                                 f_soft_edge =
                                     Some(Box::new(CTSoftEdgesEffect::from_xml(reader, &e, true)?));
@@ -14031,13 +14549,21 @@ impl FromXml for EffectList {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-effects")]
             blur: f_blur,
+            #[cfg(feature = "dml-effects")]
             fill_overlay: f_fill_overlay,
+            #[cfg(feature = "dml-effects")]
             glow: f_glow,
+            #[cfg(feature = "dml-effects")]
             inner_shdw: f_inner_shdw,
+            #[cfg(feature = "dml-effects")]
             outer_shdw: f_outer_shdw,
+            #[cfg(feature = "dml-effects")]
             prst_shdw: f_prst_shdw,
+            #[cfg(feature = "dml-effects")]
             reflection: f_reflection,
+            #[cfg(feature = "dml-effects")]
             soft_edge: f_soft_edge,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -16003,8 +16529,11 @@ impl FromXml for CTLineEndProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-lines")]
         let mut f_type = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_width = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_len = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16013,12 +16542,15 @@ impl FromXml for CTLineEndProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-lines")]
                 b"type" => {
                     f_type = val.parse().ok();
                 }
+                #[cfg(feature = "dml-lines")]
                 b"w" => {
                     f_width = val.parse().ok();
                 }
+                #[cfg(feature = "dml-lines")]
                 b"len" => {
                     f_len = val.parse().ok();
                 }
@@ -16045,8 +16577,11 @@ impl FromXml for CTLineEndProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-lines")]
             r#type: f_type,
+            #[cfg(feature = "dml-lines")]
             width: f_width,
+            #[cfg(feature = "dml-lines")]
             len: f_len,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16221,6 +16756,7 @@ impl FromXml for CTPresetLineDashProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-lines")]
         let mut f_value = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16229,6 +16765,7 @@ impl FromXml for CTPresetLineDashProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-lines")]
                 b"val" => {
                     f_value = val.parse().ok();
                 }
@@ -16255,6 +16792,7 @@ impl FromXml for CTPresetLineDashProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-lines")]
             value: f_value,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16268,7 +16806,9 @@ impl FromXml for CTDashStop {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-lines")]
         let mut f_d: Option<STPositivePercentage> = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_sp: Option<STPositivePercentage> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16277,9 +16817,11 @@ impl FromXml for CTDashStop {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-lines")]
                 b"d" => {
                     f_d = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-lines")]
                 b"sp" => {
                     f_sp = Some(val.into_owned());
                 }
@@ -16306,7 +16848,9 @@ impl FromXml for CTDashStop {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-lines")]
             d: f_d.ok_or_else(|| ParseError::MissingAttribute("d".to_string()))?,
+            #[cfg(feature = "dml-lines")]
             sp: f_sp.ok_or_else(|| ParseError::MissingAttribute("sp".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16425,15 +16969,22 @@ impl FromXml for LineProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-lines")]
         let mut f_width = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_cap = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_cmpd = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_algn = None;
         let mut f_line_fill_properties = None;
         let mut f_line_dash_properties = None;
         let mut f_line_join_properties = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_head_end = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_tail_end = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16446,15 +16997,19 @@ impl FromXml for LineProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-lines")]
                 b"w" => {
                     f_width = val.parse().ok();
                 }
+                #[cfg(feature = "dml-lines")]
                 b"cap" => {
                     f_cap = val.parse().ok();
                 }
+                #[cfg(feature = "dml-lines")]
                 b"cmpd" => {
                     f_cmpd = val.parse().ok();
                 }
+                #[cfg(feature = "dml-lines")]
                 b"algn" => {
                     f_algn = val.parse().ok();
                 }
@@ -16502,6 +17057,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"headEnd" => {
                                 f_head_end = Some(Box::new(CTLineEndProperties::from_xml(
                                     reader, &e, false,
@@ -16511,6 +17067,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"tailEnd" => {
                                 f_tail_end = Some(Box::new(CTLineEndProperties::from_xml(
                                     reader, &e, false,
@@ -16520,6 +17077,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -16575,6 +17133,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"headEnd" => {
                                 f_head_end = Some(Box::new(CTLineEndProperties::from_xml(
                                     reader, &e, true,
@@ -16584,6 +17143,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"tailEnd" => {
                                 f_tail_end = Some(Box::new(CTLineEndProperties::from_xml(
                                     reader, &e, true,
@@ -16593,6 +17153,7 @@ impl FromXml for LineProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -16625,15 +17186,22 @@ impl FromXml for LineProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-lines")]
             width: f_width,
+            #[cfg(feature = "dml-lines")]
             cap: f_cap,
+            #[cfg(feature = "dml-lines")]
             cmpd: f_cmpd,
+            #[cfg(feature = "dml-lines")]
             algn: f_algn,
             line_fill_properties: f_line_fill_properties,
             line_dash_properties: f_line_dash_properties,
             line_join_properties: f_line_join_properties,
+            #[cfg(feature = "dml-lines")]
             head_end: f_head_end,
+            #[cfg(feature = "dml-lines")]
             tail_end: f_tail_end,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16649,14 +17217,19 @@ impl FromXml for CTShapeProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_bw_mode = None;
         let mut f_transform = None;
         let mut f_geometry = None;
         let mut f_fill_properties = None;
+        #[cfg(feature = "dml-lines")]
         let mut f_line = None;
         let mut f_effect_properties = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_scene3d = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_sp3d = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16669,6 +17242,7 @@ impl FromXml for CTShapeProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-shapes")]
                 b"bwMode" => {
                     f_bw_mode = val.parse().ok();
                 }
@@ -16714,6 +17288,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"ln" => {
                                 f_line =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -16731,6 +17306,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -16738,6 +17314,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"sp3d" => {
                                 f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -16745,6 +17322,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -16798,6 +17376,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-lines")]
                             b"ln" => {
                                 f_line =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -16814,6 +17393,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -16821,6 +17401,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"sp3d" => {
                                 f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -16828,6 +17409,7 @@ impl FromXml for CTShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -16860,14 +17442,19 @@ impl FromXml for CTShapeProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             bw_mode: f_bw_mode,
             transform: f_transform,
             geometry: f_geometry,
             fill_properties: f_fill_properties,
+            #[cfg(feature = "dml-lines")]
             line: f_line,
             effect_properties: f_effect_properties,
+            #[cfg(feature = "dml-3d")]
             scene3d: f_scene3d,
+            #[cfg(feature = "dml-3d")]
             sp3d: f_sp3d,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -16883,11 +17470,14 @@ impl FromXml for CTGroupShapeProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_bw_mode = None;
         let mut f_transform = None;
         let mut f_fill_properties = None;
         let mut f_effect_properties = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_scene3d = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -16900,6 +17490,7 @@ impl FromXml for CTGroupShapeProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-shapes")]
                 b"bwMode" => {
                     f_bw_mode = val.parse().ok();
                 }
@@ -16947,6 +17538,7 @@ impl FromXml for CTGroupShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -16954,6 +17546,7 @@ impl FromXml for CTGroupShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -17007,6 +17600,7 @@ impl FromXml for CTGroupShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -17014,6 +17608,7 @@ impl FromXml for CTGroupShapeProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -17046,11 +17641,14 @@ impl FromXml for CTGroupShapeProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             bw_mode: f_bw_mode,
             transform: f_transform,
             fill_properties: f_fill_properties,
             effect_properties: f_effect_properties,
+            #[cfg(feature = "dml-3d")]
             scene3d: f_scene3d,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -17066,6 +17664,7 @@ impl FromXml for CTStyleMatrixReference {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_idx: Option<STStyleMatrixColumnIndex> = None;
         let mut f_color_choice = None;
         #[cfg(feature = "extra-attrs")]
@@ -17079,6 +17678,7 @@ impl FromXml for CTStyleMatrixReference {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"idx" => {
                     f_idx = val.parse().ok();
                 }
@@ -17159,6 +17759,7 @@ impl FromXml for CTStyleMatrixReference {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
             color_choice: f_color_choice,
             #[cfg(feature = "extra-attrs")]
@@ -17175,6 +17776,7 @@ impl FromXml for CTFontReference {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_idx: Option<STFontCollectionIndex> = None;
         let mut f_color_choice = None;
         #[cfg(feature = "extra-attrs")]
@@ -17188,6 +17790,7 @@ impl FromXml for CTFontReference {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"idx" => {
                     f_idx = val.parse().ok();
                 }
@@ -17268,6 +17871,7 @@ impl FromXml for CTFontReference {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
             color_choice: f_color_choice,
             #[cfg(feature = "extra-attrs")]
@@ -17284,9 +17888,13 @@ impl FromXml for ShapeStyle {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-shapes")]
         let mut f_ln_ref: Option<Box<CTStyleMatrixReference>> = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_fill_ref: Option<Box<CTStyleMatrixReference>> = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_effect_ref: Option<Box<CTStyleMatrixReference>> = None;
+        #[cfg(feature = "dml-shapes")]
         let mut f_font_ref: Option<Box<CTFontReference>> = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -17300,6 +17908,7 @@ impl FromXml for ShapeStyle {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"lnRef" => {
                                 f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, false,
@@ -17309,6 +17918,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"fillRef" => {
                                 f_fill_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, false,
@@ -17318,6 +17928,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"effectRef" => {
                                 f_effect_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, false,
@@ -17327,6 +17938,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"fontRef" => {
                                 f_font_ref =
                                     Some(Box::new(CTFontReference::from_xml(reader, &e, false)?));
@@ -17354,6 +17966,7 @@ impl FromXml for ShapeStyle {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-shapes")]
                             b"lnRef" => {
                                 f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, true,
@@ -17363,6 +17976,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"fillRef" => {
                                 f_fill_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, true,
@@ -17372,6 +17986,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"effectRef" => {
                                 f_effect_ref = Some(Box::new(CTStyleMatrixReference::from_xml(
                                     reader, &e, true,
@@ -17381,6 +17996,7 @@ impl FromXml for ShapeStyle {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-shapes")]
                             b"fontRef" => {
                                 f_font_ref =
                                     Some(Box::new(CTFontReference::from_xml(reader, &e, true)?));
@@ -17412,11 +18028,15 @@ impl FromXml for ShapeStyle {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-shapes")]
             ln_ref: f_ln_ref.ok_or_else(|| ParseError::MissingAttribute("lnRef".to_string()))?,
+            #[cfg(feature = "dml-shapes")]
             fill_ref: f_fill_ref
                 .ok_or_else(|| ParseError::MissingAttribute("fillRef".to_string()))?,
+            #[cfg(feature = "dml-shapes")]
             effect_ref: f_effect_ref
                 .ok_or_else(|| ParseError::MissingAttribute("effectRef".to_string()))?,
+            #[cfg(feature = "dml-shapes")]
             font_ref: f_font_ref
                 .ok_or_else(|| ParseError::MissingAttribute("fontRef".to_string()))?,
             #[cfg(feature = "extra-children")]
@@ -17935,7 +18555,9 @@ impl FromXml for CTColorMappingOverride {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-colors")]
         let mut f_master_clr_mapping = None;
+        #[cfg(feature = "dml-colors")]
         let mut f_override_clr_mapping = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -17949,6 +18571,7 @@ impl FromXml for CTColorMappingOverride {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"masterClrMapping" => {
                                 f_master_clr_mapping =
                                     Some(Box::new(CTEmptyElement::from_xml(reader, &e, false)?));
@@ -17957,6 +18580,7 @@ impl FromXml for CTColorMappingOverride {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"overrideClrMapping" => {
                                 f_override_clr_mapping =
                                     Some(Box::new(CTColorMapping::from_xml(reader, &e, false)?));
@@ -17984,6 +18608,7 @@ impl FromXml for CTColorMappingOverride {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-colors")]
                             b"masterClrMapping" => {
                                 f_master_clr_mapping =
                                     Some(Box::new(CTEmptyElement::from_xml(reader, &e, true)?));
@@ -17992,6 +18617,7 @@ impl FromXml for CTColorMappingOverride {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-colors")]
                             b"overrideClrMapping" => {
                                 f_override_clr_mapping =
                                     Some(Box::new(CTColorMapping::from_xml(reader, &e, true)?));
@@ -18023,7 +18649,9 @@ impl FromXml for CTColorMappingOverride {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-colors")]
             master_clr_mapping: f_master_clr_mapping,
+            #[cfg(feature = "dml-colors")]
             override_clr_mapping: f_override_clr_mapping,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -18224,11 +18852,17 @@ impl FromXml for CTOfficeStyleSheet {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-themes")]
         let mut f_name = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_theme_elements: Option<Box<CTBaseStyles>> = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_object_defaults = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_extra_clr_scheme_lst = None;
+        #[cfg(feature = "dml-themes")]
         let mut f_cust_clr_lst = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -18241,6 +18875,7 @@ impl FromXml for CTOfficeStyleSheet {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-themes")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -18261,6 +18896,7 @@ impl FromXml for CTOfficeStyleSheet {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"themeElements" => {
                                 f_theme_elements =
                                     Some(Box::new(CTBaseStyles::from_xml(reader, &e, false)?));
@@ -18269,6 +18905,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"objectDefaults" => {
                                 f_object_defaults = Some(Box::new(
                                     CTObjectStyleDefaults::from_xml(reader, &e, false)?,
@@ -18278,6 +18915,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"extraClrSchemeLst" => {
                                 f_extra_clr_scheme_lst =
                                     Some(Box::new(CTColorSchemeList::from_xml(reader, &e, false)?));
@@ -18286,6 +18924,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"custClrLst" => {
                                 f_cust_clr_lst =
                                     Some(Box::new(CTCustomColorList::from_xml(reader, &e, false)?));
@@ -18294,6 +18933,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -18322,6 +18962,7 @@ impl FromXml for CTOfficeStyleSheet {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-themes")]
                             b"themeElements" => {
                                 f_theme_elements =
                                     Some(Box::new(CTBaseStyles::from_xml(reader, &e, true)?));
@@ -18330,6 +18971,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"objectDefaults" => {
                                 f_object_defaults = Some(Box::new(
                                     CTObjectStyleDefaults::from_xml(reader, &e, true)?,
@@ -18339,6 +18981,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"extraClrSchemeLst" => {
                                 f_extra_clr_scheme_lst =
                                     Some(Box::new(CTColorSchemeList::from_xml(reader, &e, true)?));
@@ -18347,6 +18990,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-themes")]
                             b"custClrLst" => {
                                 f_cust_clr_lst =
                                     Some(Box::new(CTCustomColorList::from_xml(reader, &e, true)?));
@@ -18355,6 +18999,7 @@ impl FromXml for CTOfficeStyleSheet {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -18387,12 +19032,18 @@ impl FromXml for CTOfficeStyleSheet {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-themes")]
             name: f_name,
+            #[cfg(feature = "dml-themes")]
             theme_elements: f_theme_elements
                 .ok_or_else(|| ParseError::MissingAttribute("themeElements".to_string()))?,
+            #[cfg(feature = "dml-themes")]
             object_defaults: f_object_defaults,
+            #[cfg(feature = "dml-themes")]
             extra_clr_scheme_lst: f_extra_clr_scheme_lst,
+            #[cfg(feature = "dml-themes")]
             cust_clr_lst: f_cust_clr_lst,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -18631,23 +19282,39 @@ impl FromXml for CTTableCellProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_mar_l = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_mar_r = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_mar_t = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_mar_b = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_vert = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_anchor = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_anchor_ctr = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_horz_overflow = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_l = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_r = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_t = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_b = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_tl_to_br = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_ln_bl_to_tr = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_cell3_d = None;
         let mut f_fill_properties = None;
         let mut f_headers = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -18660,27 +19327,35 @@ impl FromXml for CTTableCellProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-tables")]
                 b"marL" => {
                     f_mar_l = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-tables")]
                 b"marR" => {
                     f_mar_r = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-tables")]
                 b"marT" => {
                     f_mar_t = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-tables")]
                 b"marB" => {
                     f_mar_b = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-tables")]
                 b"vert" => {
                     f_vert = val.parse().ok();
                 }
+                #[cfg(feature = "dml-tables")]
                 b"anchor" => {
                     f_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "dml-tables")]
                 b"anchorCtr" => {
                     f_anchor_ctr = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"horzOverflow" => {
                     f_horz_overflow = val.parse().ok();
                 }
@@ -18701,6 +19376,7 @@ impl FromXml for CTTableCellProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"lnL" => {
                                 f_ln_l =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18709,6 +19385,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnR" => {
                                 f_ln_r =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18717,6 +19394,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnT" => {
                                 f_ln_t =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18725,6 +19403,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnB" => {
                                 f_ln_b =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18733,6 +19412,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnTlToBr" => {
                                 f_ln_tl_to_br =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18741,6 +19421,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnBlToTr" => {
                                 f_ln_bl_to_tr =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -18749,6 +19430,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"cell3D" => {
                                 f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -18772,6 +19454,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -18800,6 +19483,7 @@ impl FromXml for CTTableCellProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"lnL" => {
                                 f_ln_l =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18808,6 +19492,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnR" => {
                                 f_ln_r =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18816,6 +19501,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnT" => {
                                 f_ln_t =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18824,6 +19510,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnB" => {
                                 f_ln_b =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18832,6 +19519,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnTlToBr" => {
                                 f_ln_tl_to_br =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18840,6 +19528,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"lnBlToTr" => {
                                 f_ln_bl_to_tr =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -18848,6 +19537,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"cell3D" => {
                                 f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -18871,6 +19561,7 @@ impl FromXml for CTTableCellProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -18903,23 +19594,39 @@ impl FromXml for CTTableCellProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             mar_l: f_mar_l,
+            #[cfg(feature = "dml-tables")]
             mar_r: f_mar_r,
+            #[cfg(feature = "dml-tables")]
             mar_t: f_mar_t,
+            #[cfg(feature = "dml-tables")]
             mar_b: f_mar_b,
+            #[cfg(feature = "dml-tables")]
             vert: f_vert,
+            #[cfg(feature = "dml-tables")]
             anchor: f_anchor,
+            #[cfg(feature = "dml-tables")]
             anchor_ctr: f_anchor_ctr,
+            #[cfg(feature = "dml-tables")]
             horz_overflow: f_horz_overflow,
+            #[cfg(feature = "dml-tables")]
             ln_l: f_ln_l,
+            #[cfg(feature = "dml-tables")]
             ln_r: f_ln_r,
+            #[cfg(feature = "dml-tables")]
             ln_t: f_ln_t,
+            #[cfg(feature = "dml-tables")]
             ln_b: f_ln_b,
+            #[cfg(feature = "dml-tables")]
             ln_tl_to_br: f_ln_tl_to_br,
+            #[cfg(feature = "dml-tables")]
             ln_bl_to_tr: f_ln_bl_to_tr,
+            #[cfg(feature = "dml-tables")]
             cell3_d: f_cell3_d,
             fill_properties: f_fill_properties,
             headers: f_headers,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19126,6 +19833,7 @@ impl FromXml for CTTableGrid {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_grid_col = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -19139,6 +19847,7 @@ impl FromXml for CTTableGrid {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"gridCol" => {
                                 f_grid_col.push(CTTableCol::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -19165,6 +19874,7 @@ impl FromXml for CTTableGrid {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"gridCol" => {
                                 f_grid_col.push(CTTableCol::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -19195,6 +19905,7 @@ impl FromXml for CTTableGrid {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             grid_col: f_grid_col,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -19208,13 +19919,20 @@ impl FromXml for CTTableCell {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_row_span = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_grid_span = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_h_merge = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_v_merge = None;
         let mut f_id = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_tx_body = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_tc_pr = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19227,15 +19945,19 @@ impl FromXml for CTTableCell {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-tables")]
                 b"rowSpan" => {
                     f_row_span = val.parse().ok();
                 }
+                #[cfg(feature = "dml-tables")]
                 b"gridSpan" => {
                     f_grid_span = val.parse().ok();
                 }
+                #[cfg(feature = "dml-tables")]
                 b"hMerge" => {
                     f_h_merge = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"vMerge" => {
                     f_v_merge = Some(val == "true" || val == "1");
                 }
@@ -19259,6 +19981,7 @@ impl FromXml for CTTableCell {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"txBody" => {
                                 f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -19266,6 +19989,7 @@ impl FromXml for CTTableCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tcPr" => {
                                 f_tc_pr = Some(Box::new(CTTableCellProperties::from_xml(
                                     reader, &e, false,
@@ -19275,6 +19999,7 @@ impl FromXml for CTTableCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -19303,6 +20028,7 @@ impl FromXml for CTTableCell {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"txBody" => {
                                 f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -19310,6 +20036,7 @@ impl FromXml for CTTableCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tcPr" => {
                                 f_tc_pr = Some(Box::new(CTTableCellProperties::from_xml(
                                     reader, &e, true,
@@ -19319,6 +20046,7 @@ impl FromXml for CTTableCell {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -19351,13 +20079,20 @@ impl FromXml for CTTableCell {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             row_span: f_row_span,
+            #[cfg(feature = "dml-tables")]
             grid_span: f_grid_span,
+            #[cfg(feature = "dml-tables")]
             h_merge: f_h_merge,
+            #[cfg(feature = "dml-tables")]
             v_merge: f_v_merge,
             id: f_id,
+            #[cfg(feature = "dml-tables")]
             tx_body: f_tx_body,
+            #[cfg(feature = "dml-tables")]
             tc_pr: f_tc_pr,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19373,8 +20108,11 @@ impl FromXml for CTTableRow {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_height: Option<STCoordinate> = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_tc = Vec::new();
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19387,6 +20125,7 @@ impl FromXml for CTTableRow {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-tables")]
                 b"h" => {
                     f_height = Some(val.into_owned());
                 }
@@ -19407,6 +20146,7 @@ impl FromXml for CTTableRow {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"tc" => {
                                 f_tc.push(CTTableCell::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -19414,6 +20154,7 @@ impl FromXml for CTTableRow {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -19442,6 +20183,7 @@ impl FromXml for CTTableRow {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"tc" => {
                                 f_tc.push(CTTableCell::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -19449,6 +20191,7 @@ impl FromXml for CTTableRow {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -19481,8 +20224,11 @@ impl FromXml for CTTableRow {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             height: f_height.ok_or_else(|| ParseError::MissingAttribute("h".to_string()))?,
+            #[cfg(feature = "dml-tables")]
             tc: f_tc,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19498,17 +20244,26 @@ impl FromXml for CTTableProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_rtl = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_first_row = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_first_col = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_last_row = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_last_col = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_band_row = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_band_col = None;
         let mut f_fill_properties = None;
         let mut f_effect_properties = None;
         let mut f_table_style = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_table_style_id = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -19521,24 +20276,31 @@ impl FromXml for CTTableProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-tables")]
                 b"rtl" => {
                     f_rtl = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"firstRow" => {
                     f_first_row = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"firstCol" => {
                     f_first_col = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"lastRow" => {
                     f_last_row = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"lastCol" => {
                     f_last_col = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"bandRow" => {
                     f_band_row = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-tables")]
                 b"bandCol" => {
                     f_band_col = Some(val == "true" || val == "1");
                 }
@@ -19585,6 +20347,7 @@ impl FromXml for CTTableProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tableStyleId" => {
                                 f_table_style_id = Some(read_text_content(reader)?);
                                 #[cfg(feature = "extra-children")]
@@ -19592,6 +20355,7 @@ impl FromXml for CTTableProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -19645,6 +20409,7 @@ impl FromXml for CTTableProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tableStyleId" => {
                                 f_table_style_id = Some(String::new());
                                 #[cfg(feature = "extra-children")]
@@ -19652,6 +20417,7 @@ impl FromXml for CTTableProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -19684,17 +20450,26 @@ impl FromXml for CTTableProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             rtl: f_rtl,
+            #[cfg(feature = "dml-tables")]
             first_row: f_first_row,
+            #[cfg(feature = "dml-tables")]
             first_col: f_first_col,
+            #[cfg(feature = "dml-tables")]
             last_row: f_last_row,
+            #[cfg(feature = "dml-tables")]
             last_col: f_last_col,
+            #[cfg(feature = "dml-tables")]
             band_row: f_band_row,
+            #[cfg(feature = "dml-tables")]
             band_col: f_band_col,
             fill_properties: f_fill_properties,
             effect_properties: f_effect_properties,
             table_style: f_table_style,
+            #[cfg(feature = "dml-tables")]
             table_style_id: f_table_style_id,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -19710,8 +20485,11 @@ impl FromXml for CTTable {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-tables")]
         let mut f_tbl_pr = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_tbl_grid: Option<Box<CTTableGrid>> = None;
+        #[cfg(feature = "dml-tables")]
         let mut f_tr = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -19725,6 +20503,7 @@ impl FromXml for CTTable {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"tblPr" => {
                                 f_tbl_pr =
                                     Some(Box::new(CTTableProperties::from_xml(reader, &e, false)?));
@@ -19733,6 +20512,7 @@ impl FromXml for CTTable {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tblGrid" => {
                                 f_tbl_grid =
                                     Some(Box::new(CTTableGrid::from_xml(reader, &e, false)?));
@@ -19741,6 +20521,7 @@ impl FromXml for CTTable {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tr" => {
                                 f_tr.push(CTTableRow::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -19767,6 +20548,7 @@ impl FromXml for CTTable {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-tables")]
                             b"tblPr" => {
                                 f_tbl_pr =
                                     Some(Box::new(CTTableProperties::from_xml(reader, &e, true)?));
@@ -19775,6 +20557,7 @@ impl FromXml for CTTable {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tblGrid" => {
                                 f_tbl_grid =
                                     Some(Box::new(CTTableGrid::from_xml(reader, &e, true)?));
@@ -19783,6 +20566,7 @@ impl FromXml for CTTable {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-tables")]
                             b"tr" => {
                                 f_tr.push(CTTableRow::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -19813,9 +20597,12 @@ impl FromXml for CTTable {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-tables")]
             tbl_pr: f_tbl_pr,
+            #[cfg(feature = "dml-tables")]
             tbl_grid: f_tbl_grid
                 .ok_or_else(|| ParseError::MissingAttribute("tblGrid".to_string()))?,
+            #[cfg(feature = "dml-tables")]
             tr: f_tr,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -21354,8 +22141,10 @@ impl FromXml for TextParagraph {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_p_pr = None;
         let mut f_text_run = Vec::new();
+        #[cfg(feature = "dml-text")]
         let mut f_end_para_r_pr = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -21369,6 +22158,7 @@ impl FromXml for TextParagraph {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(
                                     reader, &e, false,
@@ -21385,6 +22175,7 @@ impl FromXml for TextParagraph {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"endParaRPr" => {
                                 f_end_para_r_pr = Some(Box::new(
                                     TextCharacterProperties::from_xml(reader, &e, false)?,
@@ -21413,6 +22204,7 @@ impl FromXml for TextParagraph {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"pPr" => {
                                 f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(
                                     reader, &e, true,
@@ -21429,6 +22221,7 @@ impl FromXml for TextParagraph {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"endParaRPr" => {
                                 f_end_para_r_pr = Some(Box::new(
                                     TextCharacterProperties::from_xml(reader, &e, true)?,
@@ -21461,8 +22254,10 @@ impl FromXml for TextParagraph {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             p_pr: f_p_pr,
             text_run: f_text_run,
+            #[cfg(feature = "dml-text")]
             end_para_r_pr: f_end_para_r_pr,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -21897,29 +22692,51 @@ impl FromXml for CTTextBodyProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_rot = None;
+        #[cfg(feature = "dml-text")]
         let mut f_spc_first_last_para = None;
+        #[cfg(feature = "dml-text")]
         let mut f_vert_overflow = None;
+        #[cfg(feature = "dml-text")]
         let mut f_horz_overflow = None;
+        #[cfg(feature = "dml-text")]
         let mut f_vert = None;
+        #[cfg(feature = "dml-text")]
         let mut f_wrap = None;
+        #[cfg(feature = "dml-text")]
         let mut f_l_ins = None;
+        #[cfg(feature = "dml-text")]
         let mut f_t_ins = None;
+        #[cfg(feature = "dml-text")]
         let mut f_r_ins = None;
+        #[cfg(feature = "dml-text")]
         let mut f_b_ins = None;
+        #[cfg(feature = "dml-text")]
         let mut f_num_col = None;
+        #[cfg(feature = "dml-text")]
         let mut f_spc_col = None;
+        #[cfg(feature = "dml-text")]
         let mut f_rtl_col = None;
+        #[cfg(feature = "dml-text")]
         let mut f_from_word_art = None;
+        #[cfg(feature = "dml-text")]
         let mut f_anchor = None;
+        #[cfg(feature = "dml-text")]
         let mut f_anchor_ctr = None;
+        #[cfg(feature = "dml-text")]
         let mut f_force_a_a = None;
+        #[cfg(feature = "dml-text")]
         let mut f_upright = None;
+        #[cfg(feature = "dml-text")]
         let mut f_compat_ln_spc = None;
+        #[cfg(feature = "dml-text")]
         let mut f_prst_tx_warp = None;
         let mut f_text_autofit = None;
+        #[cfg(feature = "dml-3d")]
         let mut f_scene3d = None;
         let mut f_text3_d = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -21932,60 +22749,79 @@ impl FromXml for CTTextBodyProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
                 b"rot" => {
                     f_rot = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"spcFirstLastPara" => {
                     f_spc_first_last_para = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"vertOverflow" => {
                     f_vert_overflow = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"horzOverflow" => {
                     f_horz_overflow = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"vert" => {
                     f_vert = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"wrap" => {
                     f_wrap = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"lIns" => {
                     f_l_ins = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"tIns" => {
                     f_t_ins = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"rIns" => {
                     f_r_ins = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"bIns" => {
                     f_b_ins = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"numCol" => {
                     f_num_col = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"spcCol" => {
                     f_spc_col = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"rtlCol" => {
                     f_rtl_col = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"fromWordArt" => {
                     f_from_word_art = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"anchor" => {
                     f_anchor = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"anchorCtr" => {
                     f_anchor_ctr = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"forceAA" => {
                     f_force_a_a = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"upright" => {
                     f_upright = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"compatLnSpc" => {
                     f_compat_ln_spc = Some(val == "true" || val == "1");
                 }
@@ -22006,6 +22842,7 @@ impl FromXml for CTTextBodyProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"prstTxWarp" => {
                                 f_prst_tx_warp =
                                     Some(Box::new(CTPresetTextShape::from_xml(reader, &e, false)?));
@@ -22022,6 +22859,7 @@ impl FromXml for CTTextBodyProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -22036,6 +22874,7 @@ impl FromXml for CTTextBodyProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -22064,6 +22903,7 @@ impl FromXml for CTTextBodyProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"prstTxWarp" => {
                                 f_prst_tx_warp =
                                     Some(Box::new(CTPresetTextShape::from_xml(reader, &e, true)?));
@@ -22080,6 +22920,7 @@ impl FromXml for CTTextBodyProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-3d")]
                             b"scene3d" => {
                                 f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -22094,6 +22935,7 @@ impl FromXml for CTTextBodyProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -22126,29 +22968,51 @@ impl FromXml for CTTextBodyProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             rot: f_rot,
+            #[cfg(feature = "dml-text")]
             spc_first_last_para: f_spc_first_last_para,
+            #[cfg(feature = "dml-text")]
             vert_overflow: f_vert_overflow,
+            #[cfg(feature = "dml-text")]
             horz_overflow: f_horz_overflow,
+            #[cfg(feature = "dml-text")]
             vert: f_vert,
+            #[cfg(feature = "dml-text")]
             wrap: f_wrap,
+            #[cfg(feature = "dml-text")]
             l_ins: f_l_ins,
+            #[cfg(feature = "dml-text")]
             t_ins: f_t_ins,
+            #[cfg(feature = "dml-text")]
             r_ins: f_r_ins,
+            #[cfg(feature = "dml-text")]
             b_ins: f_b_ins,
+            #[cfg(feature = "dml-text")]
             num_col: f_num_col,
+            #[cfg(feature = "dml-text")]
             spc_col: f_spc_col,
+            #[cfg(feature = "dml-text")]
             rtl_col: f_rtl_col,
+            #[cfg(feature = "dml-text")]
             from_word_art: f_from_word_art,
+            #[cfg(feature = "dml-text")]
             anchor: f_anchor,
+            #[cfg(feature = "dml-text")]
             anchor_ctr: f_anchor_ctr,
+            #[cfg(feature = "dml-text")]
             force_a_a: f_force_a_a,
+            #[cfg(feature = "dml-text")]
             upright: f_upright,
+            #[cfg(feature = "dml-text")]
             compat_ln_spc: f_compat_ln_spc,
+            #[cfg(feature = "dml-text")]
             prst_tx_warp: f_prst_tx_warp,
             text_autofit: f_text_autofit,
+            #[cfg(feature = "dml-3d")]
             scene3d: f_scene3d,
             text3_d: f_text3_d,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -22164,8 +23028,11 @@ impl FromXml for TextBody {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_body_pr: Option<Box<CTTextBodyProperties>> = None;
+        #[cfg(feature = "dml-text")]
         let mut f_lst_style = None;
+        #[cfg(feature = "dml-text")]
         let mut f_p = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -22179,6 +23046,7 @@ impl FromXml for TextBody {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"bodyPr" => {
                                 f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(
                                     reader, &e, false,
@@ -22188,6 +23056,7 @@ impl FromXml for TextBody {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"lstStyle" => {
                                 f_lst_style =
                                     Some(Box::new(CTTextListStyle::from_xml(reader, &e, false)?));
@@ -22196,6 +23065,7 @@ impl FromXml for TextBody {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"p" => {
                                 f_p.push(TextParagraph::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -22222,6 +23092,7 @@ impl FromXml for TextBody {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"bodyPr" => {
                                 f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(
                                     reader, &e, true,
@@ -22231,6 +23102,7 @@ impl FromXml for TextBody {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"lstStyle" => {
                                 f_lst_style =
                                     Some(Box::new(CTTextListStyle::from_xml(reader, &e, true)?));
@@ -22239,6 +23111,7 @@ impl FromXml for TextBody {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"p" => {
                                 f_p.push(TextParagraph::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -22269,8 +23142,11 @@ impl FromXml for TextBody {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             body_pr: f_body_pr.ok_or_else(|| ParseError::MissingAttribute("bodyPr".to_string()))?,
+            #[cfg(feature = "dml-text")]
             lst_style: f_lst_style,
+            #[cfg(feature = "dml-text")]
             p: f_p,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -22693,9 +23569,13 @@ impl FromXml for TextFont {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_typeface: Option<STTextTypeface> = None;
+        #[cfg(feature = "dml-text")]
         let mut f_panose = None;
+        #[cfg(feature = "dml-text")]
         let mut f_pitch_family = None;
+        #[cfg(feature = "dml-text")]
         let mut f_charset = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -22704,15 +23584,19 @@ impl FromXml for TextFont {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
                 b"typeface" => {
                     f_typeface = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"panose" => {
                     f_panose = decode_hex(&val);
                 }
+                #[cfg(feature = "dml-text")]
                 b"pitchFamily" => {
                     f_pitch_family = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"charset" => {
                     f_charset = val.parse().ok();
                 }
@@ -22739,10 +23623,14 @@ impl FromXml for TextFont {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             typeface: f_typeface
                 .ok_or_else(|| ParseError::MissingAttribute("typeface".to_string()))?,
+            #[cfg(feature = "dml-text")]
             panose: f_panose,
+            #[cfg(feature = "dml-text")]
             pitch_family: f_pitch_family,
+            #[cfg(feature = "dml-text")]
             charset: f_charset,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -22944,38 +23832,67 @@ impl FromXml for TextCharacterProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_kumimoji = None;
+        #[cfg(feature = "dml-text")]
         let mut f_lang = None;
+        #[cfg(feature = "dml-text")]
         let mut f_alt_lang = None;
+        #[cfg(feature = "dml-text")]
         let mut f_sz = None;
+        #[cfg(feature = "dml-text")]
         let mut f_b = None;
+        #[cfg(feature = "dml-text")]
         let mut f_i = None;
+        #[cfg(feature = "dml-text")]
         let mut f_u = None;
+        #[cfg(feature = "dml-text")]
         let mut f_strike = None;
+        #[cfg(feature = "dml-text")]
         let mut f_kern = None;
+        #[cfg(feature = "dml-text")]
         let mut f_cap = None;
+        #[cfg(feature = "dml-text")]
         let mut f_spc = None;
+        #[cfg(feature = "dml-text")]
         let mut f_normalize_h = None;
+        #[cfg(feature = "dml-text")]
         let mut f_baseline = None;
+        #[cfg(feature = "dml-text")]
         let mut f_no_proof = None;
+        #[cfg(feature = "dml-text")]
         let mut f_dirty = None;
+        #[cfg(feature = "dml-text")]
         let mut f_err = None;
+        #[cfg(feature = "dml-text")]
         let mut f_smt_clean = None;
+        #[cfg(feature = "dml-text")]
         let mut f_smt_id = None;
+        #[cfg(feature = "dml-text")]
         let mut f_bmk = None;
+        #[cfg(feature = "dml-text")]
         let mut f_line = None;
         let mut f_fill_properties = None;
         let mut f_effect_properties = None;
+        #[cfg(feature = "dml-text")]
         let mut f_highlight = None;
         let mut f_text_underline_line = None;
         let mut f_text_underline_fill = None;
+        #[cfg(feature = "dml-text")]
         let mut f_latin = None;
+        #[cfg(feature = "dml-text")]
         let mut f_ea = None;
+        #[cfg(feature = "dml-text")]
         let mut f_cs = None;
+        #[cfg(feature = "dml-text")]
         let mut f_sym = None;
+        #[cfg(feature = "dml-text")]
         let mut f_hlink_click = None;
+        #[cfg(feature = "dml-text")]
         let mut f_hlink_mouse_over = None;
+        #[cfg(feature = "dml-text")]
         let mut f_rtl = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -22988,60 +23905,79 @@ impl FromXml for TextCharacterProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
                 b"kumimoji" => {
                     f_kumimoji = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"lang" => {
                     f_lang = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"altLang" => {
                     f_alt_lang = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"sz" => {
                     f_sz = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"b" => {
                     f_b = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"i" => {
                     f_i = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"u" => {
                     f_u = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"strike" => {
                     f_strike = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"kern" => {
                     f_kern = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"cap" => {
                     f_cap = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"spc" => {
                     f_spc = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"normalizeH" => {
                     f_normalize_h = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"baseline" => {
                     f_baseline = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"noProof" => {
                     f_no_proof = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"dirty" => {
                     f_dirty = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"err" => {
                     f_err = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"smtClean" => {
                     f_smt_clean = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"smtId" => {
                     f_smt_id = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"bmk" => {
                     f_bmk = Some(val.into_owned());
                 }
@@ -23062,6 +23998,7 @@ impl FromXml for TextCharacterProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"ln" => {
                                 f_line =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
@@ -23088,6 +24025,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"highlight" => {
                                 f_highlight = Some(Box::new(CTColor::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23113,6 +24051,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"latin" => {
                                 f_latin = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23120,6 +24059,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"ea" => {
                                 f_ea = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23127,6 +24067,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"cs" => {
                                 f_cs = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23134,6 +24075,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"sym" => {
                                 f_sym = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23141,6 +24083,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkClick" => {
                                 f_hlink_click =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
@@ -23149,6 +24092,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkMouseOver" => {
                                 f_hlink_mouse_over =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
@@ -23157,6 +24101,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"rtl" => {
                                 f_rtl = Some(Box::new(CTBoolean::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23164,6 +24109,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -23192,6 +24138,7 @@ impl FromXml for TextCharacterProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"ln" => {
                                 f_line =
                                     Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
@@ -23217,6 +24164,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"highlight" => {
                                 f_highlight = Some(Box::new(CTColor::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23242,6 +24190,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"latin" => {
                                 f_latin = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23249,6 +24198,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"ea" => {
                                 f_ea = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23256,6 +24206,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"cs" => {
                                 f_cs = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23263,6 +24214,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"sym" => {
                                 f_sym = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23270,6 +24222,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkClick" => {
                                 f_hlink_click =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
@@ -23278,6 +24231,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"hlinkMouseOver" => {
                                 f_hlink_mouse_over =
                                     Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
@@ -23286,6 +24240,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"rtl" => {
                                 f_rtl = Some(Box::new(CTBoolean::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23293,6 +24248,7 @@ impl FromXml for TextCharacterProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -23325,38 +24281,67 @@ impl FromXml for TextCharacterProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             kumimoji: f_kumimoji,
+            #[cfg(feature = "dml-text")]
             lang: f_lang,
+            #[cfg(feature = "dml-text")]
             alt_lang: f_alt_lang,
+            #[cfg(feature = "dml-text")]
             sz: f_sz,
+            #[cfg(feature = "dml-text")]
             b: f_b,
+            #[cfg(feature = "dml-text")]
             i: f_i,
+            #[cfg(feature = "dml-text")]
             u: f_u,
+            #[cfg(feature = "dml-text")]
             strike: f_strike,
+            #[cfg(feature = "dml-text")]
             kern: f_kern,
+            #[cfg(feature = "dml-text")]
             cap: f_cap,
+            #[cfg(feature = "dml-text")]
             spc: f_spc,
+            #[cfg(feature = "dml-text")]
             normalize_h: f_normalize_h,
+            #[cfg(feature = "dml-text")]
             baseline: f_baseline,
+            #[cfg(feature = "dml-text")]
             no_proof: f_no_proof,
+            #[cfg(feature = "dml-text")]
             dirty: f_dirty,
+            #[cfg(feature = "dml-text")]
             err: f_err,
+            #[cfg(feature = "dml-text")]
             smt_clean: f_smt_clean,
+            #[cfg(feature = "dml-text")]
             smt_id: f_smt_id,
+            #[cfg(feature = "dml-text")]
             bmk: f_bmk,
+            #[cfg(feature = "dml-text")]
             line: f_line,
             fill_properties: f_fill_properties,
             effect_properties: f_effect_properties,
+            #[cfg(feature = "dml-text")]
             highlight: f_highlight,
             text_underline_line: f_text_underline_line,
             text_underline_fill: f_text_underline_fill,
+            #[cfg(feature = "dml-text")]
             latin: f_latin,
+            #[cfg(feature = "dml-text")]
             ea: f_ea,
+            #[cfg(feature = "dml-text")]
             cs: f_cs,
+            #[cfg(feature = "dml-text")]
             sym: f_sym,
+            #[cfg(feature = "dml-text")]
             hlink_click: f_hlink_click,
+            #[cfg(feature = "dml-text")]
             hlink_mouse_over: f_hlink_mouse_over,
+            #[cfg(feature = "dml-text")]
             rtl: f_rtl,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -23838,26 +24823,43 @@ impl FromXml for TextParagraphProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_mar_l = None;
+        #[cfg(feature = "dml-text")]
         let mut f_mar_r = None;
+        #[cfg(feature = "dml-text")]
         let mut f_lvl = None;
+        #[cfg(feature = "dml-text")]
         let mut f_indent = None;
+        #[cfg(feature = "dml-text")]
         let mut f_algn = None;
+        #[cfg(feature = "dml-text")]
         let mut f_def_tab_sz = None;
+        #[cfg(feature = "dml-text")]
         let mut f_rtl = None;
+        #[cfg(feature = "dml-text")]
         let mut f_ea_ln_brk = None;
+        #[cfg(feature = "dml-text")]
         let mut f_font_algn = None;
+        #[cfg(feature = "dml-text")]
         let mut f_latin_ln_brk = None;
+        #[cfg(feature = "dml-text")]
         let mut f_hanging_punct = None;
+        #[cfg(feature = "dml-text")]
         let mut f_ln_spc = None;
+        #[cfg(feature = "dml-text")]
         let mut f_spc_bef = None;
+        #[cfg(feature = "dml-text")]
         let mut f_spc_aft = None;
         let mut f_text_bullet_color = None;
         let mut f_text_bullet_size = None;
         let mut f_text_bullet_typeface = None;
         let mut f_text_bullet = None;
+        #[cfg(feature = "dml-text")]
         let mut f_tab_lst = None;
+        #[cfg(feature = "dml-text")]
         let mut f_def_r_pr = None;
+        #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -23870,36 +24872,47 @@ impl FromXml for TextParagraphProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
                 b"marL" => {
                     f_mar_l = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"marR" => {
                     f_mar_r = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"lvl" => {
                     f_lvl = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"indent" => {
                     f_indent = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"algn" => {
                     f_algn = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"defTabSz" => {
                     f_def_tab_sz = Some(val.into_owned());
                 }
+                #[cfg(feature = "dml-text")]
                 b"rtl" => {
                     f_rtl = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"eaLnBrk" => {
                     f_ea_ln_brk = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"fontAlgn" => {
                     f_font_algn = val.parse().ok();
                 }
+                #[cfg(feature = "dml-text")]
                 b"latinLnBrk" => {
                     f_latin_ln_brk = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "dml-text")]
                 b"hangingPunct" => {
                     f_hanging_punct = Some(val == "true" || val == "1");
                 }
@@ -23920,6 +24933,7 @@ impl FromXml for TextParagraphProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"lnSpc" => {
                                 f_ln_spc =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
@@ -23928,6 +24942,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"spcBef" => {
                                 f_spc_bef =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
@@ -23936,6 +24951,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"spcAft" => {
                                 f_spc_aft =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
@@ -23977,6 +24993,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"tabLst" => {
                                 f_tab_lst =
                                     Some(Box::new(CTTextTabStopList::from_xml(reader, &e, false)?));
@@ -23985,6 +25002,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"defRPr" => {
                                 f_def_r_pr = Some(Box::new(TextCharacterProperties::from_xml(
                                     reader, &e, false,
@@ -23994,6 +25012,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, false,
@@ -24022,6 +25041,7 @@ impl FromXml for TextParagraphProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"lnSpc" => {
                                 f_ln_spc =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
@@ -24030,6 +25050,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"spcBef" => {
                                 f_spc_bef =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
@@ -24038,6 +25059,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"spcAft" => {
                                 f_spc_aft =
                                     Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
@@ -24079,6 +25101,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"tabLst" => {
                                 f_tab_lst =
                                     Some(Box::new(CTTextTabStopList::from_xml(reader, &e, true)?));
@@ -24087,6 +25110,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"defRPr" => {
                                 f_def_r_pr = Some(Box::new(TextCharacterProperties::from_xml(
                                     reader, &e, true,
@@ -24096,6 +25120,7 @@ impl FromXml for TextParagraphProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTOfficeArtExtensionList::from_xml(
                                     reader, &e, true,
@@ -24128,26 +25153,43 @@ impl FromXml for TextParagraphProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             mar_l: f_mar_l,
+            #[cfg(feature = "dml-text")]
             mar_r: f_mar_r,
+            #[cfg(feature = "dml-text")]
             lvl: f_lvl,
+            #[cfg(feature = "dml-text")]
             indent: f_indent,
+            #[cfg(feature = "dml-text")]
             algn: f_algn,
+            #[cfg(feature = "dml-text")]
             def_tab_sz: f_def_tab_sz,
+            #[cfg(feature = "dml-text")]
             rtl: f_rtl,
+            #[cfg(feature = "dml-text")]
             ea_ln_brk: f_ea_ln_brk,
+            #[cfg(feature = "dml-text")]
             font_algn: f_font_algn,
+            #[cfg(feature = "dml-text")]
             latin_ln_brk: f_latin_ln_brk,
+            #[cfg(feature = "dml-text")]
             hanging_punct: f_hanging_punct,
+            #[cfg(feature = "dml-text")]
             ln_spc: f_ln_spc,
+            #[cfg(feature = "dml-text")]
             spc_bef: f_spc_bef,
+            #[cfg(feature = "dml-text")]
             spc_aft: f_spc_aft,
             text_bullet_color: f_text_bullet_color,
             text_bullet_size: f_text_bullet_size,
             text_bullet_typeface: f_text_bullet_typeface,
             text_bullet: f_text_bullet,
+            #[cfg(feature = "dml-text")]
             tab_lst: f_tab_lst,
+            #[cfg(feature = "dml-text")]
             def_r_pr: f_def_r_pr,
+            #[cfg(feature = "dml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -24340,7 +25382,9 @@ impl FromXml for TextRun {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
         let mut f_r_pr = None;
+        #[cfg(feature = "dml-text")]
         let mut f_t: Option<String> = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -24354,6 +25398,7 @@ impl FromXml for TextRun {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(
                                     reader, &e, false,
@@ -24363,6 +25408,7 @@ impl FromXml for TextRun {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"t" => {
                                 f_t = Some(read_text_content(reader)?);
                                 #[cfg(feature = "extra-children")]
@@ -24389,6 +25435,7 @@ impl FromXml for TextRun {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "dml-text")]
                             b"rPr" => {
                                 f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(
                                     reader, &e, true,
@@ -24398,6 +25445,7 @@ impl FromXml for TextRun {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "dml-text")]
                             b"t" => {
                                 f_t = Some(String::new());
                                 #[cfg(feature = "extra-children")]
@@ -24428,7 +25476,9 @@ impl FromXml for TextRun {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
             r_pr: f_r_pr,
+            #[cfg(feature = "dml-text")]
             t: f_t.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
             #[cfg(feature = "extra-children")]
             extra_children,

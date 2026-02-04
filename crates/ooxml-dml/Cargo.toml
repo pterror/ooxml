@@ -9,9 +9,32 @@ description = "DrawingML support for the ooxml library (shared by Word, Excel, P
 [features]
 default = ["full"]
 full = [
+    "dml-colors",
+    "dml-fills",
+    "dml-lines",
+    "dml-effects",
+    "dml-shapes",
+    "dml-text",
+    "dml-tables",
+    "dml-themes",
+    "dml-3d",
+    "dml-media",
+    "dml-extensions",
     "extra-attrs",
     "extra-children",
 ]
+# Individual feature flags (see spec/ooxml-features.yaml)
+dml-colors = []        # Color schemes, color definitions
+dml-fills = []         # Fill properties (solid, gradient, pattern, blip)
+dml-lines = []         # Line properties, dashes, ends
+dml-effects = []       # Visual effects (shadows, blur, glow)
+dml-shapes = []        # Shape properties and geometry
+dml-text = []          # Text body, paragraphs, character properties
+dml-tables = []        # Table properties
+dml-themes = []        # Office themes and style matrices
+dml-3d = []            # 3D effects, scenes, lighting
+dml-media = []         # Audio/video content
+dml-extensions = []    # Extension lists
 extra-attrs = []
 extra-children = []
 
