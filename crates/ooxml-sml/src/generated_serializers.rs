@@ -143,7 +143,7 @@ impl ToXml for AutoFilter {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:filterColumn", writer)?;
+            item.write_element("filterColumn", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -160,7 +160,7 @@ impl ToXml for AutoFilter {
         }
         #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.sort_state {
-            val.write_element("sml:sortState", writer)?;
+            val.write_element("sortState", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -177,7 +177,7 @@ impl ToXml for AutoFilter {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -276,7 +276,7 @@ impl ToXml for Filters {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:filter", writer)?;
+            item.write_element("filter", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -292,7 +292,7 @@ impl ToXml for Filters {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dateGroupItem", writer)?;
+            item.write_element("dateGroupItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -366,7 +366,7 @@ impl ToXml for CustomFilters {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:customFilter", writer)?;
+            item.write_element("customFilter", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -582,7 +582,7 @@ impl ToXml for SortState {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sortCondition", writer)?;
+            item.write_element("sortCondition", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -598,7 +598,7 @@ impl ToXml for SortState {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -808,7 +808,7 @@ impl ToXml for EGExtensionList {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:ext", writer)?;
+            item.write_element("ext", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -849,7 +849,7 @@ impl ToXml for ExtensionList {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:ext", writer)?;
+            item.write_element("ext", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -890,7 +890,7 @@ impl ToXml for CalcChain {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:c", writer)?;
+            item.write_element("c", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -906,7 +906,7 @@ impl ToXml for CalcChain {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -988,7 +988,7 @@ impl ToXml for Comments {
         }
         {
             let val = &self.authors;
-            val.write_element("sml:authors", writer)?;
+            val.write_element("authors", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1005,7 +1005,7 @@ impl ToXml for Comments {
         }
         {
             let val = &self.comment_list;
-            val.write_element("sml:commentList", writer)?;
+            val.write_element("commentList", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1021,7 +1021,7 @@ impl ToXml for Comments {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1056,10 +1056,10 @@ impl ToXml for Authors {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("sml:author");
+                let start = BytesStart::new("author");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:author")))?;
+                writer.write_event(Event::End(BytesEnd::new("author")))?;
             }
             #[cfg(feature = "extra-children")]
             {
@@ -1101,7 +1101,7 @@ impl ToXml for CommentList {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:comment", writer)?;
+            item.write_element("comment", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -1177,7 +1177,7 @@ impl ToXml for Comment {
         #[cfg(feature = "sml-comments")]
         {
             let val = &self.text;
-            val.write_element("sml:text", writer)?;
+            val.write_element("text", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1193,7 +1193,7 @@ impl ToXml for Comment {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.comment_pr {
-            val.write_element("sml:commentPr", writer)?;
+            val.write_element("commentPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1288,7 +1288,7 @@ impl ToXml for CTCommentPr {
         }
         {
             let val = &self.anchor;
-            val.write_element("sml:anchor", writer)?;
+            val.write_element("anchor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1335,7 +1335,7 @@ impl ToXml for MapInfo {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:Schema", writer)?;
+            item.write_element("Schema", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -1351,7 +1351,7 @@ impl ToXml for MapInfo {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:Map", writer)?;
+            item.write_element("Map", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -1464,7 +1464,7 @@ impl ToXml for XmlMap {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.data_binding {
-            val.write_element("sml:DataBinding", writer)?;
+            val.write_element("DataBinding", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1542,7 +1542,7 @@ impl ToXml for Connections {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:connection", writer)?;
+            item.write_element("connection", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -1675,7 +1675,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.db_pr {
-            val.write_element("sml:dbPr", writer)?;
+            val.write_element("dbPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1691,7 +1691,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.olap_pr {
-            val.write_element("sml:olapPr", writer)?;
+            val.write_element("olapPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1707,7 +1707,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.web_pr {
-            val.write_element("sml:webPr", writer)?;
+            val.write_element("webPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1723,7 +1723,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.text_pr {
-            val.write_element("sml:textPr", writer)?;
+            val.write_element("textPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1739,7 +1739,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.parameters {
-            val.write_element("sml:parameters", writer)?;
+            val.write_element("parameters", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1755,7 +1755,7 @@ impl ToXml for Connection {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1938,7 +1938,7 @@ impl ToXml for WebQueryProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.tables {
-            val.write_element("sml:tables", writer)?;
+            val.write_element("tables", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -1994,7 +1994,7 @@ impl ToXml for Parameters {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:parameter", writer)?;
+            item.write_element("parameter", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -2188,7 +2188,7 @@ impl ToXml for TextImportProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.text_fields {
-            val.write_element("sml:textFields", writer)?;
+            val.write_element("textFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2244,7 +2244,7 @@ impl ToXml for TextFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:textField", writer)?;
+            item.write_element("textField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -2394,7 +2394,7 @@ impl ToXml for PivotCacheDefinition {
         }
         {
             let val = &self.cache_source;
-            val.write_element("sml:cacheSource", writer)?;
+            val.write_element("cacheSource", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2411,7 +2411,7 @@ impl ToXml for PivotCacheDefinition {
         }
         {
             let val = &self.cache_fields;
-            val.write_element("sml:cacheFields", writer)?;
+            val.write_element("cacheFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2427,7 +2427,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.cache_hierarchies {
-            val.write_element("sml:cacheHierarchies", writer)?;
+            val.write_element("cacheHierarchies", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2443,7 +2443,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.kpis {
-            val.write_element("sml:kpis", writer)?;
+            val.write_element("kpis", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2459,7 +2459,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.calculated_items {
-            val.write_element("sml:calculatedItems", writer)?;
+            val.write_element("calculatedItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2475,7 +2475,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.calculated_members {
-            val.write_element("sml:calculatedMembers", writer)?;
+            val.write_element("calculatedMembers", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2491,7 +2491,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.dimensions {
-            val.write_element("sml:dimensions", writer)?;
+            val.write_element("dimensions", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2507,7 +2507,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.measure_groups {
-            val.write_element("sml:measureGroups", writer)?;
+            val.write_element("measureGroups", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2523,7 +2523,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.maps {
-            val.write_element("sml:maps", writer)?;
+            val.write_element("maps", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2539,7 +2539,7 @@ impl ToXml for PivotCacheDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2588,7 +2588,7 @@ impl ToXml for CacheFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cacheField", writer)?;
+            item.write_element("cacheField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -2693,7 +2693,7 @@ impl ToXml for CacheField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.shared_items {
-            val.write_element("sml:sharedItems", writer)?;
+            val.write_element("sharedItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2709,7 +2709,7 @@ impl ToXml for CacheField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.field_group {
-            val.write_element("sml:fieldGroup", writer)?;
+            val.write_element("fieldGroup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2725,7 +2725,7 @@ impl ToXml for CacheField {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:mpMap", writer)?;
+            item.write_element("mpMap", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -2741,7 +2741,7 @@ impl ToXml for CacheField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2855,7 +2855,7 @@ impl ToXml for Consolidation {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.pages {
-            val.write_element("sml:pages", writer)?;
+            val.write_element("pages", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2872,7 +2872,7 @@ impl ToXml for Consolidation {
         }
         {
             let val = &self.range_sets;
-            val.write_element("sml:rangeSets", writer)?;
+            val.write_element("rangeSets", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -2924,7 +2924,7 @@ impl ToXml for CTPages {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:page", writer)?;
+            item.write_element("page", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -2980,7 +2980,7 @@ impl ToXml for CTPCDSCPage {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pageItem", writer)?;
+            item.write_element("pageItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3055,7 +3055,7 @@ impl ToXml for CTRangeSets {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:rangeSet", writer)?;
+            item.write_element("rangeSet", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3264,7 +3264,7 @@ impl ToXml for CTMissing {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tpls", writer)?;
+            item.write_element("tpls", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3280,7 +3280,7 @@ impl ToXml for CTMissing {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3385,7 +3385,7 @@ impl ToXml for CTNumber {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tpls", writer)?;
+            item.write_element("tpls", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3401,7 +3401,7 @@ impl ToXml for CTNumber {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3473,7 +3473,7 @@ impl ToXml for CTBoolean {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3572,7 +3572,7 @@ impl ToXml for CTError {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.tpls {
-            val.write_element("sml:tpls", writer)?;
+            val.write_element("tpls", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -3588,7 +3588,7 @@ impl ToXml for CTError {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3690,7 +3690,7 @@ impl ToXml for CTString {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tpls", writer)?;
+            item.write_element("tpls", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3706,7 +3706,7 @@ impl ToXml for CTString {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3778,7 +3778,7 @@ impl ToXml for CTDateTime {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -3840,7 +3840,7 @@ impl ToXml for FieldGroup {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.range_pr {
-            val.write_element("sml:rangePr", writer)?;
+            val.write_element("rangePr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -3856,7 +3856,7 @@ impl ToXml for FieldGroup {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.discrete_pr {
-            val.write_element("sml:discretePr", writer)?;
+            val.write_element("discretePr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -3872,7 +3872,7 @@ impl ToXml for FieldGroup {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.group_items {
-            val.write_element("sml:groupItems", writer)?;
+            val.write_element("groupItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -3985,7 +3985,7 @@ impl ToXml for CTDiscretePr {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4062,7 +4062,7 @@ impl ToXml for PivotCacheRecords {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:r", writer)?;
+            item.write_element("r", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4078,7 +4078,7 @@ impl ToXml for PivotCacheRecords {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4155,7 +4155,7 @@ impl ToXml for CTPCDKPIs {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:kpi", writer)?;
+            item.write_element("kpi", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4261,7 +4261,7 @@ impl ToXml for CTCacheHierarchies {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cacheHierarchy", writer)?;
+            item.write_element("cacheHierarchy", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4391,7 +4391,7 @@ impl ToXml for CTCacheHierarchy {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.fields_usage {
-            val.write_element("sml:fieldsUsage", writer)?;
+            val.write_element("fieldsUsage", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4407,7 +4407,7 @@ impl ToXml for CTCacheHierarchy {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.group_levels {
-            val.write_element("sml:groupLevels", writer)?;
+            val.write_element("groupLevels", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4423,7 +4423,7 @@ impl ToXml for CTCacheHierarchy {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4485,7 +4485,7 @@ impl ToXml for CTFieldsUsage {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:fieldUsage", writer)?;
+            item.write_element("fieldUsage", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4563,7 +4563,7 @@ impl ToXml for CTGroupLevels {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:groupLevel", writer)?;
+            item.write_element("groupLevel", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4627,7 +4627,7 @@ impl ToXml for CTGroupLevel {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.groups {
-            val.write_element("sml:groups", writer)?;
+            val.write_element("groups", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4643,7 +4643,7 @@ impl ToXml for CTGroupLevel {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4702,7 +4702,7 @@ impl ToXml for CTGroups {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:group", writer)?;
+            item.write_element("group", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4774,7 +4774,7 @@ impl ToXml for CTLevelGroup {
         }
         {
             let val = &self.group_members;
-            val.write_element("sml:groupMembers", writer)?;
+            val.write_element("groupMembers", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4823,7 +4823,7 @@ impl ToXml for CTGroupMembers {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:groupMember", writer)?;
+            item.write_element("groupMember", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -4886,7 +4886,7 @@ impl ToXml for CTTupleCache {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.entries {
-            val.write_element("sml:entries", writer)?;
+            val.write_element("entries", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4902,7 +4902,7 @@ impl ToXml for CTTupleCache {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sets {
-            val.write_element("sml:sets", writer)?;
+            val.write_element("sets", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4918,7 +4918,7 @@ impl ToXml for CTTupleCache {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.query_cache {
-            val.write_element("sml:queryCache", writer)?;
+            val.write_element("queryCache", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4934,7 +4934,7 @@ impl ToXml for CTTupleCache {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.server_formats {
-            val.write_element("sml:serverFormats", writer)?;
+            val.write_element("serverFormats", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -4950,7 +4950,7 @@ impl ToXml for CTTupleCache {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5039,7 +5039,7 @@ impl ToXml for CTServerFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:serverFormat", writer)?;
+            item.write_element("serverFormat", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5116,7 +5116,7 @@ impl ToXml for CTTuples {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tpl", writer)?;
+            item.write_element("tpl", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5206,7 +5206,7 @@ impl ToXml for CTSets {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:set", writer)?;
+            item.write_element("set", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5282,7 +5282,7 @@ impl ToXml for CTSet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tpls", writer)?;
+            item.write_element("tpls", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5298,7 +5298,7 @@ impl ToXml for CTSet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sort_by_tuple {
-            val.write_element("sml:sortByTuple", writer)?;
+            val.write_element("sortByTuple", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5357,7 +5357,7 @@ impl ToXml for CTQueryCache {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:query", writer)?;
+            item.write_element("query", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5411,7 +5411,7 @@ impl ToXml for CTQuery {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.tpls {
-            val.write_element("sml:tpls", writer)?;
+            val.write_element("tpls", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5467,7 +5467,7 @@ impl ToXml for CTCalculatedItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:calculatedItem", writer)?;
+            item.write_element("calculatedItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5527,7 +5527,7 @@ impl ToXml for CTCalculatedItem {
         }
         {
             let val = &self.pivot_area;
-            val.write_element("sml:pivotArea", writer)?;
+            val.write_element("pivotArea", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5543,7 +5543,7 @@ impl ToXml for CTCalculatedItem {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5592,7 +5592,7 @@ impl ToXml for CTCalculatedMembers {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:calculatedMember", writer)?;
+            item.write_element("calculatedMember", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -5668,7 +5668,7 @@ impl ToXml for CTCalculatedMember {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5953,7 +5953,7 @@ impl ToXml for CTPivotTableDefinition {
         }
         {
             let val = &self.location;
-            val.write_element("sml:location", writer)?;
+            val.write_element("location", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5969,7 +5969,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.pivot_fields {
-            val.write_element("sml:pivotFields", writer)?;
+            val.write_element("pivotFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -5985,7 +5985,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.row_fields {
-            val.write_element("sml:rowFields", writer)?;
+            val.write_element("rowFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6001,7 +6001,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.row_items {
-            val.write_element("sml:rowItems", writer)?;
+            val.write_element("rowItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6017,7 +6017,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.col_fields {
-            val.write_element("sml:colFields", writer)?;
+            val.write_element("colFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6033,7 +6033,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.col_items {
-            val.write_element("sml:colItems", writer)?;
+            val.write_element("colItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6049,7 +6049,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_fields {
-            val.write_element("sml:pageFields", writer)?;
+            val.write_element("pageFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6065,7 +6065,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.data_fields {
-            val.write_element("sml:dataFields", writer)?;
+            val.write_element("dataFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6081,7 +6081,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.formats {
-            val.write_element("sml:formats", writer)?;
+            val.write_element("formats", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6097,7 +6097,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.conditional_formats {
-            val.write_element("sml:conditionalFormats", writer)?;
+            val.write_element("conditionalFormats", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6113,7 +6113,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.chart_formats {
-            val.write_element("sml:chartFormats", writer)?;
+            val.write_element("chartFormats", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6129,7 +6129,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.pivot_hierarchies {
-            val.write_element("sml:pivotHierarchies", writer)?;
+            val.write_element("pivotHierarchies", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6145,7 +6145,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.pivot_table_style_info {
-            val.write_element("sml:pivotTableStyleInfo", writer)?;
+            val.write_element("pivotTableStyleInfo", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6161,7 +6161,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.filters {
-            val.write_element("sml:filters", writer)?;
+            val.write_element("filters", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6177,7 +6177,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.row_hierarchies_usage {
-            val.write_element("sml:rowHierarchiesUsage", writer)?;
+            val.write_element("rowHierarchiesUsage", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6193,7 +6193,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.col_hierarchies_usage {
-            val.write_element("sml:colHierarchiesUsage", writer)?;
+            val.write_element("colHierarchiesUsage", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6209,7 +6209,7 @@ impl ToXml for CTPivotTableDefinition {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6310,7 +6310,7 @@ impl ToXml for PivotFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pivotField", writer)?;
+            item.write_element("pivotField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -6519,7 +6519,7 @@ impl ToXml for PivotField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.items {
-            val.write_element("sml:items", writer)?;
+            val.write_element("items", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6535,7 +6535,7 @@ impl ToXml for PivotField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.auto_sort_scope {
-            val.write_element("sml:autoSortScope", writer)?;
+            val.write_element("autoSortScope", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6551,7 +6551,7 @@ impl ToXml for PivotField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6613,7 +6613,7 @@ impl ToXml for PivotItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:item", writer)?;
+            item.write_element("item", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -6723,7 +6723,7 @@ impl ToXml for PageFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pageField", writer)?;
+            item.write_element("pageField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -6798,7 +6798,7 @@ impl ToXml for PageField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -6854,7 +6854,7 @@ impl ToXml for DataFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dataField", writer)?;
+            item.write_element("dataField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -6944,7 +6944,7 @@ impl ToXml for DataField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7000,7 +7000,7 @@ impl ToXml for CTRowItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:i", writer)?;
+            item.write_element("i", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7056,7 +7056,7 @@ impl ToXml for CTColItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:i", writer)?;
+            item.write_element("i", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7124,7 +7124,7 @@ impl ToXml for CTI {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7201,7 +7201,7 @@ impl ToXml for RowFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:field", writer)?;
+            item.write_element("field", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7257,7 +7257,7 @@ impl ToXml for ColFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:field", writer)?;
+            item.write_element("field", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7335,7 +7335,7 @@ impl ToXml for CTFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:format", writer)?;
+            item.write_element("format", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7398,7 +7398,7 @@ impl ToXml for CTFormat {
         }
         {
             let val = &self.pivot_area;
-            val.write_element("sml:pivotArea", writer)?;
+            val.write_element("pivotArea", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7414,7 +7414,7 @@ impl ToXml for CTFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7463,7 +7463,7 @@ impl ToXml for CTConditionalFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:conditionalFormat", writer)?;
+            item.write_element("conditionalFormat", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7533,7 +7533,7 @@ impl ToXml for CTConditionalFormat {
         }
         {
             let val = &self.pivot_areas;
-            val.write_element("sml:pivotAreas", writer)?;
+            val.write_element("pivotAreas", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7549,7 +7549,7 @@ impl ToXml for CTConditionalFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7598,7 +7598,7 @@ impl ToXml for PivotAreas {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pivotArea", writer)?;
+            item.write_element("pivotArea", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7654,7 +7654,7 @@ impl ToXml for CTChartFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:chartFormat", writer)?;
+            item.write_element("chartFormat", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7722,7 +7722,7 @@ impl ToXml for CTChartFormat {
         }
         {
             let val = &self.pivot_area;
-            val.write_element("sml:pivotArea", writer)?;
+            val.write_element("pivotArea", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7771,7 +7771,7 @@ impl ToXml for CTPivotHierarchies {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pivotHierarchy", writer)?;
+            item.write_element("pivotHierarchy", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7854,7 +7854,7 @@ impl ToXml for CTPivotHierarchy {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.mps {
-            val.write_element("sml:mps", writer)?;
+            val.write_element("mps", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7870,7 +7870,7 @@ impl ToXml for CTPivotHierarchy {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:members", writer)?;
+            item.write_element("members", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -7886,7 +7886,7 @@ impl ToXml for CTPivotHierarchy {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -7948,7 +7948,7 @@ impl ToXml for CTRowHierarchiesUsage {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:rowHierarchyUsage", writer)?;
+            item.write_element("rowHierarchyUsage", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8004,7 +8004,7 @@ impl ToXml for CTColHierarchiesUsage {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:colHierarchyUsage", writer)?;
+            item.write_element("colHierarchyUsage", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8082,7 +8082,7 @@ impl ToXml for CTMemberProperties {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:mp", writer)?;
+            item.write_element("mp", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8202,7 +8202,7 @@ impl ToXml for CTMembers {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:member", writer)?;
+            item.write_element("member", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8277,7 +8277,7 @@ impl ToXml for CTDimensions {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dimension", writer)?;
+            item.write_element("dimension", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8363,7 +8363,7 @@ impl ToXml for CTMeasureGroups {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:measureGroup", writer)?;
+            item.write_element("measureGroup", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8419,7 +8419,7 @@ impl ToXml for CTMeasureDimensionMaps {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:map", writer)?;
+            item.write_element("map", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8558,7 +8558,7 @@ impl ToXml for PivotFilters {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:filter", writer)?;
+            item.write_element("filter", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8666,7 +8666,7 @@ impl ToXml for PivotFilter {
         }
         {
             let val = &self.auto_filter;
-            val.write_element("sml:autoFilter", writer)?;
+            val.write_element("autoFilter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -8682,7 +8682,7 @@ impl ToXml for PivotFilter {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -8773,7 +8773,7 @@ impl ToXml for PivotArea {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.references {
-            val.write_element("sml:references", writer)?;
+            val.write_element("references", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -8789,7 +8789,7 @@ impl ToXml for PivotArea {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -8848,7 +8848,7 @@ impl ToXml for CTPivotAreaReferences {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:reference", writer)?;
+            item.write_element("reference", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8955,7 +8955,7 @@ impl ToXml for CTPivotAreaReference {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:x", writer)?;
+            item.write_element("x", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -8971,7 +8971,7 @@ impl ToXml for CTPivotAreaReference {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9123,7 +9123,7 @@ impl ToXml for QueryTable {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.query_table_refresh {
-            val.write_element("sml:queryTableRefresh", writer)?;
+            val.write_element("queryTableRefresh", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9139,7 +9139,7 @@ impl ToXml for QueryTable {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9226,7 +9226,7 @@ impl ToXml for QueryTableRefresh {
         }
         {
             let val = &self.query_table_fields;
-            val.write_element("sml:queryTableFields", writer)?;
+            val.write_element("queryTableFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9242,7 +9242,7 @@ impl ToXml for QueryTableRefresh {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.query_table_deleted_fields {
-            val.write_element("sml:queryTableDeletedFields", writer)?;
+            val.write_element("queryTableDeletedFields", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9258,7 +9258,7 @@ impl ToXml for QueryTableRefresh {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sort_state {
-            val.write_element("sml:sortState", writer)?;
+            val.write_element("sortState", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9274,7 +9274,7 @@ impl ToXml for QueryTableRefresh {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9323,7 +9323,7 @@ impl ToXml for QueryTableDeletedFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:deletedField", writer)?;
+            item.write_element("deletedField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -9398,7 +9398,7 @@ impl ToXml for QueryTableFields {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:queryTableField", writer)?;
+            item.write_element("queryTableField", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -9476,7 +9476,7 @@ impl ToXml for QueryTableField {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9538,7 +9538,7 @@ impl ToXml for SharedStrings {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:si", writer)?;
+            item.write_element("si", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -9554,7 +9554,7 @@ impl ToXml for SharedStrings {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9623,10 +9623,10 @@ impl ToXml for PhoneticRun {
         {
             let val = &self.cell_type;
             {
-                let start = BytesStart::new("sml:t");
+                let start = BytesStart::new("t");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:t")))?;
+                writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -9661,7 +9661,7 @@ impl ToXml for RichTextElement {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.r_pr {
-            val.write_element("sml:rPr", writer)?;
+            val.write_element("rPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9679,10 +9679,10 @@ impl ToXml for RichTextElement {
         {
             let val = &self.cell_type;
             {
-                let start = BytesStart::new("sml:t");
+                let start = BytesStart::new("t");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:t")))?;
+                writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -9739,10 +9739,10 @@ impl ToXml for RichString {
         }
         if let Some(ref val) = self.cell_type {
             {
-                let start = BytesStart::new("sml:t");
+                let start = BytesStart::new("t");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:t")))?;
+                writer.write_event(Event::End(BytesEnd::new("t")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -9759,7 +9759,7 @@ impl ToXml for RichString {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:r", writer)?;
+            item.write_element("r", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -9775,7 +9775,7 @@ impl ToXml for RichString {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:rPh", writer)?;
+            item.write_element("rPh", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -9791,7 +9791,7 @@ impl ToXml for RichString {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.phonetic_pr {
-            val.write_element("sml:phoneticPr", writer)?;
+            val.write_element("phoneticPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -9930,7 +9930,7 @@ impl ToXml for RevisionHeaders {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:header", writer)?;
+            item.write_element("header", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -10058,7 +10058,7 @@ impl ToXml for RevisionHeader {
         }
         {
             let val = &self.sheet_id_map;
-            val.write_element("sml:sheetIdMap", writer)?;
+            val.write_element("sheetIdMap", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10074,7 +10074,7 @@ impl ToXml for RevisionHeader {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.reviewed_list {
-            val.write_element("sml:reviewedList", writer)?;
+            val.write_element("reviewedList", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10090,7 +10090,7 @@ impl ToXml for RevisionHeader {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10139,7 +10139,7 @@ impl ToXml for CTSheetIdMap {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheetId", writer)?;
+            item.write_element("sheetId", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -10217,7 +10217,7 @@ impl ToXml for ReviewedRevisions {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:reviewed", writer)?;
+            item.write_element("reviewed", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -10504,7 +10504,7 @@ impl ToXml for RevisionSheetRename {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10653,7 +10653,7 @@ impl ToXml for RevisionCellChange {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.oc {
-            val.write_element("sml:oc", writer)?;
+            val.write_element("oc", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10670,7 +10670,7 @@ impl ToXml for RevisionCellChange {
         }
         {
             let val = &self.nc;
-            val.write_element("sml:nc", writer)?;
+            val.write_element("nc", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10686,7 +10686,7 @@ impl ToXml for RevisionCellChange {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.ndxf {
-            val.write_element("sml:ndxf", writer)?;
+            val.write_element("ndxf", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10702,7 +10702,7 @@ impl ToXml for RevisionCellChange {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10777,7 +10777,7 @@ impl ToXml for RevisionFormatting {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.dxf {
-            val.write_element("sml:dxf", writer)?;
+            val.write_element("dxf", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -10793,7 +10793,7 @@ impl ToXml for RevisionFormatting {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11053,10 +11053,10 @@ impl ToXml for RevisionDefinedName {
         }
         if let Some(ref val) = self.formula {
             {
-                let start = BytesStart::new("sml:formula");
+                let start = BytesStart::new("formula");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:formula")))?;
+                writer.write_event(Event::End(BytesEnd::new("formula")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -11074,10 +11074,10 @@ impl ToXml for RevisionDefinedName {
         }
         if let Some(ref val) = self.old_formula {
             {
-                let start = BytesStart::new("sml:oldFormula");
+                let start = BytesStart::new("oldFormula");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:oldFormula")))?;
+                writer.write_event(Event::End(BytesEnd::new("oldFormula")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -11094,7 +11094,7 @@ impl ToXml for RevisionDefinedName {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11223,7 +11223,7 @@ impl ToXml for Users {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:userInfo", writer)?;
+            item.write_element("userInfo", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -11292,7 +11292,7 @@ impl ToXml for SharedUser {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11333,7 +11333,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_properties {
-            val.write_element("sml:sheetPr", writer)?;
+            val.write_element("sheetPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11349,7 +11349,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.dimension {
-            val.write_element("sml:dimension", writer)?;
+            val.write_element("dimension", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11365,7 +11365,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_views {
-            val.write_element("sml:sheetViews", writer)?;
+            val.write_element("sheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11381,7 +11381,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_format {
-            val.write_element("sml:sheetFormatPr", writer)?;
+            val.write_element("sheetFormatPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11397,7 +11397,7 @@ impl ToXml for CTMacrosheet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cols", writer)?;
+            item.write_element("cols", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -11414,7 +11414,7 @@ impl ToXml for CTMacrosheet {
         }
         {
             let val = &self.sheet_data;
-            val.write_element("sml:sheetData", writer)?;
+            val.write_element("sheetData", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11430,7 +11430,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_protection {
-            val.write_element("sml:sheetProtection", writer)?;
+            val.write_element("sheetProtection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11446,7 +11446,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.auto_filter {
-            val.write_element("sml:autoFilter", writer)?;
+            val.write_element("autoFilter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11462,7 +11462,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sort_state {
-            val.write_element("sml:sortState", writer)?;
+            val.write_element("sortState", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11478,7 +11478,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.data_consolidate {
-            val.write_element("sml:dataConsolidate", writer)?;
+            val.write_element("dataConsolidate", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11494,7 +11494,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.custom_sheet_views {
-            val.write_element("sml:customSheetViews", writer)?;
+            val.write_element("customSheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11510,7 +11510,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.phonetic_pr {
-            val.write_element("sml:phoneticPr", writer)?;
+            val.write_element("phoneticPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11526,7 +11526,7 @@ impl ToXml for CTMacrosheet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:conditionalFormatting", writer)?;
+            item.write_element("conditionalFormatting", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -11542,7 +11542,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.print_options {
-            val.write_element("sml:printOptions", writer)?;
+            val.write_element("printOptions", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11558,7 +11558,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11574,7 +11574,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11590,7 +11590,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11606,7 +11606,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.row_breaks {
-            val.write_element("sml:rowBreaks", writer)?;
+            val.write_element("rowBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11622,7 +11622,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.col_breaks {
-            val.write_element("sml:colBreaks", writer)?;
+            val.write_element("colBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11638,7 +11638,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.custom_properties {
-            val.write_element("sml:customProperties", writer)?;
+            val.write_element("customProperties", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11654,7 +11654,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.drawing {
-            val.write_element("sml:drawing", writer)?;
+            val.write_element("drawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11670,7 +11670,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing {
-            val.write_element("sml:legacyDrawing", writer)?;
+            val.write_element("legacyDrawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11686,7 +11686,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing_h_f {
-            val.write_element("sml:legacyDrawingHF", writer)?;
+            val.write_element("legacyDrawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11702,7 +11702,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.drawing_h_f {
-            val.write_element("sml:drawingHF", writer)?;
+            val.write_element("drawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11718,7 +11718,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.picture {
-            val.write_element("sml:picture", writer)?;
+            val.write_element("picture", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11734,7 +11734,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.ole_objects {
-            val.write_element("sml:oleObjects", writer)?;
+            val.write_element("oleObjects", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11750,7 +11750,7 @@ impl ToXml for CTMacrosheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11799,7 +11799,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_properties {
-            val.write_element("sml:sheetPr", writer)?;
+            val.write_element("sheetPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11815,7 +11815,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_views {
-            val.write_element("sml:sheetViews", writer)?;
+            val.write_element("sheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11831,7 +11831,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_format {
-            val.write_element("sml:sheetFormatPr", writer)?;
+            val.write_element("sheetFormatPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11847,7 +11847,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_protection {
-            val.write_element("sml:sheetProtection", writer)?;
+            val.write_element("sheetProtection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11863,7 +11863,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.custom_sheet_views {
-            val.write_element("sml:customSheetViews", writer)?;
+            val.write_element("customSheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11879,7 +11879,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.print_options {
-            val.write_element("sml:printOptions", writer)?;
+            val.write_element("printOptions", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11895,7 +11895,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11911,7 +11911,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11927,7 +11927,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11943,7 +11943,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.drawing {
-            val.write_element("sml:drawing", writer)?;
+            val.write_element("drawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11959,7 +11959,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing {
-            val.write_element("sml:legacyDrawing", writer)?;
+            val.write_element("legacyDrawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11975,7 +11975,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing_h_f {
-            val.write_element("sml:legacyDrawingHF", writer)?;
+            val.write_element("legacyDrawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -11991,7 +11991,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.drawing_h_f {
-            val.write_element("sml:drawingHF", writer)?;
+            val.write_element("drawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12007,7 +12007,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.ole_objects {
-            val.write_element("sml:oleObjects", writer)?;
+            val.write_element("oleObjects", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12023,7 +12023,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.controls {
-            val.write_element("sml:controls", writer)?;
+            val.write_element("controls", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12039,7 +12039,7 @@ impl ToXml for CTDialogsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12126,7 +12126,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.sheet_properties {
-            val.write_element("sml:sheetPr", writer)?;
+            val.write_element("sheetPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12142,7 +12142,7 @@ impl ToXml for Worksheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.dimension {
-            val.write_element("sml:dimension", writer)?;
+            val.write_element("dimension", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12158,7 +12158,7 @@ impl ToXml for Worksheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_views {
-            val.write_element("sml:sheetViews", writer)?;
+            val.write_element("sheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12175,7 +12175,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.sheet_format {
-            val.write_element("sml:sheetFormatPr", writer)?;
+            val.write_element("sheetFormatPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12192,7 +12192,7 @@ impl ToXml for Worksheet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cols", writer)?;
+            item.write_element("cols", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -12209,7 +12209,7 @@ impl ToXml for Worksheet {
         }
         {
             let val = &self.sheet_data;
-            val.write_element("sml:sheetData", writer)?;
+            val.write_element("sheetData", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12226,7 +12226,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.sheet_calc_pr {
-            val.write_element("sml:sheetCalcPr", writer)?;
+            val.write_element("sheetCalcPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12243,7 +12243,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.sheet_protection {
-            val.write_element("sml:sheetProtection", writer)?;
+            val.write_element("sheetProtection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12260,7 +12260,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.protected_ranges {
-            val.write_element("sml:protectedRanges", writer)?;
+            val.write_element("protectedRanges", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12277,7 +12277,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.scenarios {
-            val.write_element("sml:scenarios", writer)?;
+            val.write_element("scenarios", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12294,7 +12294,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.auto_filter {
-            val.write_element("sml:autoFilter", writer)?;
+            val.write_element("autoFilter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12311,7 +12311,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.sort_state {
-            val.write_element("sml:sortState", writer)?;
+            val.write_element("sortState", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12328,7 +12328,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.data_consolidate {
-            val.write_element("sml:dataConsolidate", writer)?;
+            val.write_element("dataConsolidate", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12345,7 +12345,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.custom_sheet_views {
-            val.write_element("sml:customSheetViews", writer)?;
+            val.write_element("customSheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12361,7 +12361,7 @@ impl ToXml for Worksheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.merged_cells {
-            val.write_element("sml:mergeCells", writer)?;
+            val.write_element("mergeCells", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12378,7 +12378,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-i18n")]
         if let Some(ref val) = self.phonetic_pr {
-            val.write_element("sml:phoneticPr", writer)?;
+            val.write_element("phoneticPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12395,7 +12395,7 @@ impl ToXml for Worksheet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:conditionalFormatting", writer)?;
+            item.write_element("conditionalFormatting", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -12412,7 +12412,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.data_validations {
-            val.write_element("sml:dataValidations", writer)?;
+            val.write_element("dataValidations", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12429,7 +12429,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-hyperlinks")]
         if let Some(ref val) = self.hyperlinks {
-            val.write_element("sml:hyperlinks", writer)?;
+            val.write_element("hyperlinks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12446,7 +12446,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.print_options {
-            val.write_element("sml:printOptions", writer)?;
+            val.write_element("printOptions", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12463,7 +12463,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12480,7 +12480,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12497,7 +12497,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12514,7 +12514,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.row_breaks {
-            val.write_element("sml:rowBreaks", writer)?;
+            val.write_element("rowBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12531,7 +12531,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.col_breaks {
-            val.write_element("sml:colBreaks", writer)?;
+            val.write_element("colBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12548,7 +12548,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-metadata")]
         if let Some(ref val) = self.custom_properties {
-            val.write_element("sml:customProperties", writer)?;
+            val.write_element("customProperties", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12565,7 +12565,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.cell_watches {
-            val.write_element("sml:cellWatches", writer)?;
+            val.write_element("cellWatches", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12582,7 +12582,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.ignored_errors {
-            val.write_element("sml:ignoredErrors", writer)?;
+            val.write_element("ignoredErrors", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12599,7 +12599,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-metadata")]
         if let Some(ref val) = self.smart_tags {
-            val.write_element("sml:smartTags", writer)?;
+            val.write_element("smartTags", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12616,7 +12616,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-drawings")]
         if let Some(ref val) = self.drawing {
-            val.write_element("sml:drawing", writer)?;
+            val.write_element("drawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12633,7 +12633,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-comments")]
         if let Some(ref val) = self.legacy_drawing {
-            val.write_element("sml:legacyDrawing", writer)?;
+            val.write_element("legacyDrawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12650,7 +12650,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.legacy_drawing_h_f {
-            val.write_element("sml:legacyDrawingHF", writer)?;
+            val.write_element("legacyDrawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12667,7 +12667,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-drawings")]
         if let Some(ref val) = self.drawing_h_f {
-            val.write_element("sml:drawingHF", writer)?;
+            val.write_element("drawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12684,7 +12684,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-drawings")]
         if let Some(ref val) = self.picture {
-            val.write_element("sml:picture", writer)?;
+            val.write_element("picture", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12701,7 +12701,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.ole_objects {
-            val.write_element("sml:oleObjects", writer)?;
+            val.write_element("oleObjects", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12718,7 +12718,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.controls {
-            val.write_element("sml:controls", writer)?;
+            val.write_element("controls", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12735,7 +12735,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.web_publish_items {
-            val.write_element("sml:webPublishItems", writer)?;
+            val.write_element("webPublishItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12752,7 +12752,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-tables")]
         if let Some(ref val) = self.table_parts {
-            val.write_element("sml:tableParts", writer)?;
+            val.write_element("tableParts", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12769,7 +12769,7 @@ impl ToXml for Worksheet {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -12821,7 +12821,7 @@ impl ToXml for SheetData {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:row", writer)?;
+            item.write_element("row", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -12938,7 +12938,7 @@ impl ToXml for Columns {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:col", writer)?;
+            item.write_element("col", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -13117,7 +13117,7 @@ impl ToXml for Row {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:c", writer)?;
+            item.write_element("c", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -13134,7 +13134,7 @@ impl ToXml for Row {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13221,7 +13221,7 @@ impl ToXml for Cell {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.formula {
-            val.write_element("sml:f", writer)?;
+            val.write_element("f", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13238,10 +13238,10 @@ impl ToXml for Cell {
         }
         if let Some(ref val) = self.value {
             {
-                let start = BytesStart::new("sml:v");
+                let start = BytesStart::new("v");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:v")))?;
+                writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -13258,7 +13258,7 @@ impl ToXml for Cell {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.is {
-            val.write_element("sml:is", writer)?;
+            val.write_element("is", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13275,7 +13275,7 @@ impl ToXml for Cell {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13365,7 +13365,7 @@ impl ToXml for SheetProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.tab_color {
-            val.write_element("sml:tabColor", writer)?;
+            val.write_element("tabColor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13381,7 +13381,7 @@ impl ToXml for SheetProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.outline_pr {
-            val.write_element("sml:outlinePr", writer)?;
+            val.write_element("outlinePr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13397,7 +13397,7 @@ impl ToXml for SheetProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_set_up_pr {
-            val.write_element("sml:pageSetUpPr", writer)?;
+            val.write_element("pageSetUpPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13463,7 +13463,7 @@ impl ToXml for SheetViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheetView", writer)?;
+            item.write_element("sheetView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -13479,7 +13479,7 @@ impl ToXml for SheetViews {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13625,7 +13625,7 @@ impl ToXml for SheetView {
         }
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.pane {
-            val.write_element("sml:pane", writer)?;
+            val.write_element("pane", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13641,7 +13641,7 @@ impl ToXml for SheetView {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:selection", writer)?;
+            item.write_element("selection", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -13658,7 +13658,7 @@ impl ToXml for SheetView {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pivotSelection", writer)?;
+            item.write_element("pivotSelection", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -13675,7 +13675,7 @@ impl ToXml for SheetView {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13869,7 +13869,7 @@ impl ToXml for CTPivotSelection {
         }
         {
             let val = &self.pivot_area;
-            val.write_element("sml:pivotArea", writer)?;
+            val.write_element("pivotArea", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -13957,7 +13957,7 @@ impl ToXml for PageBreaks {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:brk", writer)?;
+            item.write_element("brk", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14112,7 +14112,7 @@ impl ToXml for CTDataConsolidate {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.data_refs {
-            val.write_element("sml:dataRefs", writer)?;
+            val.write_element("dataRefs", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14168,7 +14168,7 @@ impl ToXml for CTDataRefs {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dataRef", writer)?;
+            item.write_element("dataRef", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14248,7 +14248,7 @@ impl ToXml for MergedCells {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:mergeCell", writer)?;
+            item.write_element("mergeCell", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14308,7 +14308,7 @@ impl ToXml for SmartTags {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cellSmartTags", writer)?;
+            item.write_element("cellSmartTags", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14362,7 +14362,7 @@ impl ToXml for CellSmartTags {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cellSmartTag", writer)?;
+            item.write_element("cellSmartTag", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14425,7 +14425,7 @@ impl ToXml for CellSmartTag {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cellSmartTagPr", writer)?;
+            item.write_element("cellSmartTagPr", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14648,7 +14648,7 @@ impl ToXml for CustomSheetViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:customSheetView", writer)?;
+            item.write_element("customSheetView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -14771,7 +14771,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.pane {
-            val.write_element("sml:pane", writer)?;
+            val.write_element("pane", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14787,7 +14787,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.selection {
-            val.write_element("sml:selection", writer)?;
+            val.write_element("selection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14803,7 +14803,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.row_breaks {
-            val.write_element("sml:rowBreaks", writer)?;
+            val.write_element("rowBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14819,7 +14819,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.col_breaks {
-            val.write_element("sml:colBreaks", writer)?;
+            val.write_element("colBreaks", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14835,7 +14835,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14851,7 +14851,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.print_options {
-            val.write_element("sml:printOptions", writer)?;
+            val.write_element("printOptions", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14867,7 +14867,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14883,7 +14883,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14899,7 +14899,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.auto_filter {
-            val.write_element("sml:autoFilter", writer)?;
+            val.write_element("autoFilter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -14915,7 +14915,7 @@ impl ToXml for CustomSheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15013,7 +15013,7 @@ impl ToXml for DataValidations {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dataValidation", writer)?;
+            item.write_element("dataValidation", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15130,10 +15130,10 @@ impl ToXml for DataValidation {
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.formula1 {
             {
-                let start = BytesStart::new("sml:formula1");
+                let start = BytesStart::new("formula1");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:formula1")))?;
+                writer.write_event(Event::End(BytesEnd::new("formula1")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -15152,10 +15152,10 @@ impl ToXml for DataValidation {
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.formula2 {
             {
-                let start = BytesStart::new("sml:formula2");
+                let start = BytesStart::new("formula2");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:formula2")))?;
+                writer.write_event(Event::End(BytesEnd::new("formula2")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -15220,7 +15220,7 @@ impl ToXml for ConditionalFormatting {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cfRule", writer)?;
+            item.write_element("cfRule", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15237,7 +15237,7 @@ impl ToXml for ConditionalFormatting {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15368,10 +15368,10 @@ impl ToXml for ConditionalRule {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("sml:formula");
+                let start = BytesStart::new("formula");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:formula")))?;
+                writer.write_event(Event::End(BytesEnd::new("formula")))?;
             }
             #[cfg(feature = "extra-children")]
             {
@@ -15389,7 +15389,7 @@ impl ToXml for ConditionalRule {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.color_scale {
-            val.write_element("sml:colorScale", writer)?;
+            val.write_element("colorScale", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15406,7 +15406,7 @@ impl ToXml for ConditionalRule {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.data_bar {
-            val.write_element("sml:dataBar", writer)?;
+            val.write_element("dataBar", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15423,7 +15423,7 @@ impl ToXml for ConditionalRule {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.icon_set {
-            val.write_element("sml:iconSet", writer)?;
+            val.write_element("iconSet", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15440,7 +15440,7 @@ impl ToXml for ConditionalRule {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15498,7 +15498,7 @@ impl ToXml for Hyperlinks {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:hyperlink", writer)?;
+            item.write_element("hyperlink", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15655,7 +15655,7 @@ impl ToXml for ColorScale {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cfvo", writer)?;
+            item.write_element("cfvo", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15671,7 +15671,7 @@ impl ToXml for ColorScale {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:color", writer)?;
+            item.write_element("color", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15739,7 +15739,7 @@ impl ToXml for DataBar {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cfvo", writer)?;
+            item.write_element("cfvo", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15756,7 +15756,7 @@ impl ToXml for DataBar {
         }
         {
             let val = &self.color;
-            val.write_element("sml:color", writer)?;
+            val.write_element("color", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -15817,7 +15817,7 @@ impl ToXml for IconSet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cfvo", writer)?;
+            item.write_element("cfvo", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -15880,7 +15880,7 @@ impl ToXml for ConditionalFormatValue {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16164,10 +16164,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.odd_header {
             {
-                let start = BytesStart::new("sml:oddHeader");
+                let start = BytesStart::new("oddHeader");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:oddHeader")))?;
+                writer.write_event(Event::End(BytesEnd::new("oddHeader")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16186,10 +16186,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.odd_footer {
             {
-                let start = BytesStart::new("sml:oddFooter");
+                let start = BytesStart::new("oddFooter");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:oddFooter")))?;
+                writer.write_event(Event::End(BytesEnd::new("oddFooter")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16208,10 +16208,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.even_header {
             {
-                let start = BytesStart::new("sml:evenHeader");
+                let start = BytesStart::new("evenHeader");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:evenHeader")))?;
+                writer.write_event(Event::End(BytesEnd::new("evenHeader")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16230,10 +16230,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.even_footer {
             {
-                let start = BytesStart::new("sml:evenFooter");
+                let start = BytesStart::new("evenFooter");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:evenFooter")))?;
+                writer.write_event(Event::End(BytesEnd::new("evenFooter")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16252,10 +16252,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.first_header {
             {
-                let start = BytesStart::new("sml:firstHeader");
+                let start = BytesStart::new("firstHeader");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:firstHeader")))?;
+                writer.write_event(Event::End(BytesEnd::new("firstHeader")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16274,10 +16274,10 @@ impl ToXml for HeaderFooter {
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.first_footer {
             {
-                let start = BytesStart::new("sml:firstFooter");
+                let start = BytesStart::new("firstFooter");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:firstFooter")))?;
+                writer.write_event(Event::End(BytesEnd::new("firstFooter")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -16364,7 +16364,7 @@ impl ToXml for Scenarios {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:scenario", writer)?;
+            item.write_element("scenario", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -16495,7 +16495,7 @@ impl ToXml for ProtectedRanges {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:protectedRange", writer)?;
+            item.write_element("protectedRange", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -16620,7 +16620,7 @@ impl ToXml for Scenario {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:inputCells", writer)?;
+            item.write_element("inputCells", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -16696,7 +16696,7 @@ impl ToXml for CellWatches {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cellWatch", writer)?;
+            item.write_element("cellWatch", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -16756,7 +16756,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_properties {
-            val.write_element("sml:sheetPr", writer)?;
+            val.write_element("sheetPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16773,7 +16773,7 @@ impl ToXml for Chartsheet {
         }
         {
             let val = &self.sheet_views;
-            val.write_element("sml:sheetViews", writer)?;
+            val.write_element("sheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16789,7 +16789,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_protection {
-            val.write_element("sml:sheetProtection", writer)?;
+            val.write_element("sheetProtection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16805,7 +16805,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.custom_sheet_views {
-            val.write_element("sml:customSheetViews", writer)?;
+            val.write_element("customSheetViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16821,7 +16821,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16837,7 +16837,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16853,7 +16853,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16870,7 +16870,7 @@ impl ToXml for Chartsheet {
         }
         {
             let val = &self.drawing;
-            val.write_element("sml:drawing", writer)?;
+            val.write_element("drawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16886,7 +16886,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing {
-            val.write_element("sml:legacyDrawing", writer)?;
+            val.write_element("legacyDrawing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16902,7 +16902,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.legacy_drawing_h_f {
-            val.write_element("sml:legacyDrawingHF", writer)?;
+            val.write_element("legacyDrawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16918,7 +16918,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.drawing_h_f {
-            val.write_element("sml:drawingHF", writer)?;
+            val.write_element("drawingHF", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16934,7 +16934,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.picture {
-            val.write_element("sml:picture", writer)?;
+            val.write_element("picture", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16950,7 +16950,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.web_publish_items {
-            val.write_element("sml:webPublishItems", writer)?;
+            val.write_element("webPublishItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -16966,7 +16966,7 @@ impl ToXml for Chartsheet {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17018,7 +17018,7 @@ impl ToXml for ChartsheetProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.tab_color {
-            val.write_element("sml:tabColor", writer)?;
+            val.write_element("tabColor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17059,7 +17059,7 @@ impl ToXml for ChartsheetViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheetView", writer)?;
+            item.write_element("sheetView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17075,7 +17075,7 @@ impl ToXml for ChartsheetViews {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17147,7 +17147,7 @@ impl ToXml for ChartsheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17305,7 +17305,7 @@ impl ToXml for CustomChartsheetViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:customSheetView", writer)?;
+            item.write_element("customSheetView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17374,7 +17374,7 @@ impl ToXml for CustomChartsheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_margins {
-            val.write_element("sml:pageMargins", writer)?;
+            val.write_element("pageMargins", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17390,7 +17390,7 @@ impl ToXml for CustomChartsheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.page_setup {
-            val.write_element("sml:pageSetup", writer)?;
+            val.write_element("pageSetup", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17406,7 +17406,7 @@ impl ToXml for CustomChartsheetView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.header_footer {
-            val.write_element("sml:headerFooter", writer)?;
+            val.write_element("headerFooter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17453,7 +17453,7 @@ impl ToXml for CTCustomProperties {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:customPr", writer)?;
+            item.write_element("customPr", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17513,7 +17513,7 @@ impl ToXml for OleObjects {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:oleObject", writer)?;
+            item.write_element("oleObject", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17591,7 +17591,7 @@ impl ToXml for OleObject {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.object_pr {
-            val.write_element("sml:objectPr", writer)?;
+            val.write_element("objectPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17675,7 +17675,7 @@ impl ToXml for ObjectProperties {
         }
         {
             let val = &self.anchor;
-            val.write_element("sml:anchor", writer)?;
+            val.write_element("anchor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17724,7 +17724,7 @@ impl ToXml for WebPublishItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:webPublishItem", writer)?;
+            item.write_element("webPublishItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17814,7 +17814,7 @@ impl ToXml for Controls {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:control", writer)?;
+            item.write_element("control", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -17874,7 +17874,7 @@ impl ToXml for Control {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.control_pr {
-            val.write_element("sml:controlPr", writer)?;
+            val.write_element("controlPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -17967,7 +17967,7 @@ impl ToXml for CTControlPr {
         }
         {
             let val = &self.anchor;
-            val.write_element("sml:anchor", writer)?;
+            val.write_element("anchor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18001,7 +18001,7 @@ impl ToXml for IgnoredErrors {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:ignoredError", writer)?;
+            item.write_element("ignoredError", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18017,7 +18017,7 @@ impl ToXml for IgnoredErrors {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18122,7 +18122,7 @@ impl ToXml for TableParts {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tablePart", writer)?;
+            item.write_element("tablePart", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18181,7 +18181,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.metadata_types {
-            val.write_element("sml:metadataTypes", writer)?;
+            val.write_element("metadataTypes", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18197,7 +18197,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.metadata_strings {
-            val.write_element("sml:metadataStrings", writer)?;
+            val.write_element("metadataStrings", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18213,7 +18213,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.mdx_metadata {
-            val.write_element("sml:mdxMetadata", writer)?;
+            val.write_element("mdxMetadata", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18229,7 +18229,7 @@ impl ToXml for Metadata {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:futureMetadata", writer)?;
+            item.write_element("futureMetadata", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18245,7 +18245,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.cell_metadata {
-            val.write_element("sml:cellMetadata", writer)?;
+            val.write_element("cellMetadata", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18261,7 +18261,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.value_metadata {
-            val.write_element("sml:valueMetadata", writer)?;
+            val.write_element("valueMetadata", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18277,7 +18277,7 @@ impl ToXml for Metadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18351,7 +18351,7 @@ impl ToXml for MetadataTypes {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:metadataType", writer)?;
+            item.write_element("metadataType", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18511,7 +18511,7 @@ impl ToXml for MetadataBlocks {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:bk", writer)?;
+            item.write_element("bk", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18552,7 +18552,7 @@ impl ToXml for MetadataBlock {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:rc", writer)?;
+            item.write_element("rc", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18641,7 +18641,7 @@ impl ToXml for CTFutureMetadata {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:bk", writer)?;
+            item.write_element("bk", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18657,7 +18657,7 @@ impl ToXml for CTFutureMetadata {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18701,7 +18701,7 @@ impl ToXml for CTFutureMetadataBlock {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -18757,7 +18757,7 @@ impl ToXml for CTMdxMetadata {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:mdx", writer)?;
+            item.write_element("mdx", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18881,7 +18881,7 @@ impl ToXml for CTMdxTuple {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:n", writer)?;
+            item.write_element("n", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -18950,7 +18950,7 @@ impl ToXml for CTMdxSet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:n", writer)?;
+            item.write_element("n", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -19096,7 +19096,7 @@ impl ToXml for MetadataStrings {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:s", writer)?;
+            item.write_element("s", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -19137,7 +19137,7 @@ impl ToXml for SingleXmlCells {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:singleXmlCell", writer)?;
+            item.write_element("singleXmlCell", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -19206,7 +19206,7 @@ impl ToXml for SingleXmlCell {
         }
         {
             let val = &self.xml_cell_pr;
-            val.write_element("sml:xmlCellPr", writer)?;
+            val.write_element("xmlCellPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19222,7 +19222,7 @@ impl ToXml for SingleXmlCell {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19276,7 +19276,7 @@ impl ToXml for XmlCellProperties {
         }
         {
             let val = &self.xml_pr;
-            val.write_element("sml:xmlPr", writer)?;
+            val.write_element("xmlPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19292,7 +19292,7 @@ impl ToXml for XmlCellProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19350,7 +19350,7 @@ impl ToXml for XmlProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19392,7 +19392,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.num_fmts {
-            val.write_element("sml:numFmts", writer)?;
+            val.write_element("numFmts", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19409,7 +19409,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.fonts {
-            val.write_element("sml:fonts", writer)?;
+            val.write_element("fonts", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19426,7 +19426,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.fills {
-            val.write_element("sml:fills", writer)?;
+            val.write_element("fills", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19443,7 +19443,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.borders {
-            val.write_element("sml:borders", writer)?;
+            val.write_element("borders", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19460,7 +19460,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.cell_style_xfs {
-            val.write_element("sml:cellStyleXfs", writer)?;
+            val.write_element("cellStyleXfs", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19477,7 +19477,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.cell_xfs {
-            val.write_element("sml:cellXfs", writer)?;
+            val.write_element("cellXfs", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19494,7 +19494,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.cell_styles {
-            val.write_element("sml:cellStyles", writer)?;
+            val.write_element("cellStyles", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19511,7 +19511,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.dxfs {
-            val.write_element("sml:dxfs", writer)?;
+            val.write_element("dxfs", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19528,7 +19528,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.table_styles {
-            val.write_element("sml:tableStyles", writer)?;
+            val.write_element("tableStyles", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19545,7 +19545,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.colors {
-            val.write_element("sml:colors", writer)?;
+            val.write_element("colors", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19562,7 +19562,7 @@ impl ToXml for Stylesheet {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19719,7 +19719,7 @@ impl ToXml for Borders {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:border", writer)?;
+            item.write_element("border", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -19781,7 +19781,7 @@ impl ToXml for Border {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.start {
-            val.write_element("sml:start", writer)?;
+            val.write_element("start", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19797,7 +19797,7 @@ impl ToXml for Border {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.end {
-            val.write_element("sml:end", writer)?;
+            val.write_element("end", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19814,7 +19814,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.left {
-            val.write_element("sml:left", writer)?;
+            val.write_element("left", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19831,7 +19831,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.right {
-            val.write_element("sml:right", writer)?;
+            val.write_element("right", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19848,7 +19848,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.top {
-            val.write_element("sml:top", writer)?;
+            val.write_element("top", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19865,7 +19865,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.bottom {
-            val.write_element("sml:bottom", writer)?;
+            val.write_element("bottom", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19882,7 +19882,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.diagonal {
-            val.write_element("sml:diagonal", writer)?;
+            val.write_element("diagonal", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19899,7 +19899,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.vertical {
-            val.write_element("sml:vertical", writer)?;
+            val.write_element("vertical", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -19916,7 +19916,7 @@ impl ToXml for Border {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.horizontal {
-            val.write_element("sml:horizontal", writer)?;
+            val.write_element("horizontal", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20003,7 +20003,7 @@ impl ToXml for BorderProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.color {
-            val.write_element("sml:color", writer)?;
+            val.write_element("color", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20080,7 +20080,7 @@ impl ToXml for Fonts {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:font", writer)?;
+            item.write_element("font", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20136,7 +20136,7 @@ impl ToXml for Fills {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:fill", writer)?;
+            item.write_element("fill", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20210,7 +20210,7 @@ impl ToXml for PatternFill {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.fg_color {
-            val.write_element("sml:fgColor", writer)?;
+            val.write_element("fgColor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20226,7 +20226,7 @@ impl ToXml for PatternFill {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.bg_color {
-            val.write_element("sml:bgColor", writer)?;
+            val.write_element("bgColor", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20357,7 +20357,7 @@ impl ToXml for GradientFill {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:stop", writer)?;
+            item.write_element("stop", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20415,7 +20415,7 @@ impl ToXml for GradientStop {
         }
         {
             let val = &self.color;
-            val.write_element("sml:color", writer)?;
+            val.write_element("color", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20464,7 +20464,7 @@ impl ToXml for NumberFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:numFmt", writer)?;
+            item.write_element("numFmt", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20546,7 +20546,7 @@ impl ToXml for CellStyleFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:xf", writer)?;
+            item.write_element("xf", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20602,7 +20602,7 @@ impl ToXml for CellFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:xf", writer)?;
+            item.write_element("xf", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20720,7 +20720,7 @@ impl ToXml for Format {
         }
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.alignment {
-            val.write_element("sml:alignment", writer)?;
+            val.write_element("alignment", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20737,7 +20737,7 @@ impl ToXml for Format {
         }
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.protection {
-            val.write_element("sml:protection", writer)?;
+            val.write_element("protection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20754,7 +20754,7 @@ impl ToXml for Format {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20819,7 +20819,7 @@ impl ToXml for CellStyles {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cellStyle", writer)?;
+            item.write_element("cellStyle", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20897,7 +20897,7 @@ impl ToXml for CellStyle {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -20953,7 +20953,7 @@ impl ToXml for DifferentialFormats {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:dxf", writer)?;
+            item.write_element("dxf", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -20994,7 +20994,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.font {
-            val.write_element("sml:font", writer)?;
+            val.write_element("font", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21010,7 +21010,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.num_fmt {
-            val.write_element("sml:numFmt", writer)?;
+            val.write_element("numFmt", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21026,7 +21026,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.fill {
-            val.write_element("sml:fill", writer)?;
+            val.write_element("fill", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21042,7 +21042,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.alignment {
-            val.write_element("sml:alignment", writer)?;
+            val.write_element("alignment", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21058,7 +21058,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.border {
-            val.write_element("sml:border", writer)?;
+            val.write_element("border", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21074,7 +21074,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.protection {
-            val.write_element("sml:protection", writer)?;
+            val.write_element("protection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21090,7 +21090,7 @@ impl ToXml for DifferentialFormat {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21149,7 +21149,7 @@ impl ToXml for Colors {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.indexed_colors {
-            val.write_element("sml:indexedColors", writer)?;
+            val.write_element("indexedColors", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21165,7 +21165,7 @@ impl ToXml for Colors {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.mru_colors {
-            val.write_element("sml:mruColors", writer)?;
+            val.write_element("mruColors", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21209,7 +21209,7 @@ impl ToXml for IndexedColors {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:rgbColor", writer)?;
+            item.write_element("rgbColor", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21250,7 +21250,7 @@ impl ToXml for MostRecentColors {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:color", writer)?;
+            item.write_element("color", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21333,7 +21333,7 @@ impl ToXml for TableStyles {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tableStyle", writer)?;
+            item.write_element("tableStyle", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21399,7 +21399,7 @@ impl ToXml for TableStyle {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tableStyleElement", writer)?;
+            item.write_element("tableStyleElement", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21699,7 +21699,7 @@ impl ToXml for ExternalLink {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21740,7 +21740,7 @@ impl ToXml for ExternalBook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_names {
-            val.write_element("sml:sheetNames", writer)?;
+            val.write_element("sheetNames", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21756,7 +21756,7 @@ impl ToXml for ExternalBook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.defined_names {
-            val.write_element("sml:definedNames", writer)?;
+            val.write_element("definedNames", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21772,7 +21772,7 @@ impl ToXml for ExternalBook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.sheet_data_set {
-            val.write_element("sml:sheetDataSet", writer)?;
+            val.write_element("sheetDataSet", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -21819,7 +21819,7 @@ impl ToXml for CTExternalSheetNames {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheetName", writer)?;
+            item.write_element("sheetName", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21878,7 +21878,7 @@ impl ToXml for CTExternalDefinedNames {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:definedName", writer)?;
+            item.write_element("definedName", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -21947,7 +21947,7 @@ impl ToXml for ExternalSheetDataSet {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheetData", writer)?;
+            item.write_element("sheetData", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22007,7 +22007,7 @@ impl ToXml for ExternalSheetData {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:row", writer)?;
+            item.write_element("row", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22064,7 +22064,7 @@ impl ToXml for ExternalRow {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:cell", writer)?;
+            item.write_element("cell", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22130,10 +22130,10 @@ impl ToXml for ExternalCell {
         }
         if let Some(ref val) = self.value {
             {
-                let start = BytesStart::new("sml:v");
+                let start = BytesStart::new("v");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:v")))?;
+                writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -22192,7 +22192,7 @@ impl ToXml for DdeLink {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.dde_items {
-            val.write_element("sml:ddeItems", writer)?;
+            val.write_element("ddeItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22233,7 +22233,7 @@ impl ToXml for DdeItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:ddeItem", writer)?;
+            item.write_element("ddeItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22295,7 +22295,7 @@ impl ToXml for DdeItem {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.values {
-            val.write_element("sml:values", writer)?;
+            val.write_element("values", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22357,7 +22357,7 @@ impl ToXml for CTDdeValues {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:value", writer)?;
+            item.write_element("value", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22415,10 +22415,10 @@ impl ToXml for CTDdeValue {
         {
             let val = &self.value;
             {
-                let start = BytesStart::new("sml:val");
+                let start = BytesStart::new("val");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:val")))?;
+                writer.write_event(Event::End(BytesEnd::new("val")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -22466,7 +22466,7 @@ impl ToXml for OleLink {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.ole_items {
-            val.write_element("sml:oleItems", writer)?;
+            val.write_element("oleItems", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22507,7 +22507,7 @@ impl ToXml for OleItems {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:oleItem", writer)?;
+            item.write_element("oleItem", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22710,7 +22710,7 @@ impl ToXml for Table {
         }
         #[cfg(feature = "sml-tables")]
         if let Some(ref val) = self.auto_filter {
-            val.write_element("sml:autoFilter", writer)?;
+            val.write_element("autoFilter", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22727,7 +22727,7 @@ impl ToXml for Table {
         }
         #[cfg(feature = "sml-tables")]
         if let Some(ref val) = self.sort_state {
-            val.write_element("sml:sortState", writer)?;
+            val.write_element("sortState", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22745,7 +22745,7 @@ impl ToXml for Table {
         #[cfg(feature = "sml-tables")]
         {
             let val = &self.table_columns;
-            val.write_element("sml:tableColumns", writer)?;
+            val.write_element("tableColumns", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22762,7 +22762,7 @@ impl ToXml for Table {
         }
         #[cfg(feature = "sml-tables")]
         if let Some(ref val) = self.table_style_info {
-            val.write_element("sml:tableStyleInfo", writer)?;
+            val.write_element("tableStyleInfo", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22779,7 +22779,7 @@ impl ToXml for Table {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -22880,7 +22880,7 @@ impl ToXml for TableColumns {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tableColumn", writer)?;
+            item.write_element("tableColumn", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -22986,7 +22986,7 @@ impl ToXml for TableColumn {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.calculated_column_formula {
-            val.write_element("sml:calculatedColumnFormula", writer)?;
+            val.write_element("calculatedColumnFormula", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23002,7 +23002,7 @@ impl ToXml for TableColumn {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.totals_row_formula {
-            val.write_element("sml:totalsRowFormula", writer)?;
+            val.write_element("totalsRowFormula", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23018,7 +23018,7 @@ impl ToXml for TableColumn {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.xml_column_pr {
-            val.write_element("sml:xmlColumnPr", writer)?;
+            val.write_element("xmlColumnPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23034,7 +23034,7 @@ impl ToXml for TableColumn {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23147,7 +23147,7 @@ impl ToXml for XmlColumnProperties {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23188,7 +23188,7 @@ impl ToXml for CTVolTypes {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:volType", writer)?;
+            item.write_element("volType", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23204,7 +23204,7 @@ impl ToXml for CTVolTypes {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23264,7 +23264,7 @@ impl ToXml for CTVolType {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:main", writer)?;
+            item.write_element("main", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23318,7 +23318,7 @@ impl ToXml for CTVolMain {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tp", writer)?;
+            item.write_element("tp", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23376,10 +23376,10 @@ impl ToXml for CTVolTopic {
         {
             let val = &self.value;
             {
-                let start = BytesStart::new("sml:v");
+                let start = BytesStart::new("v");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(val.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:v")))?;
+                writer.write_event(Event::End(BytesEnd::new("v")))?;
             }
         }
         #[cfg(feature = "extra-children")]
@@ -23397,10 +23397,10 @@ impl ToXml for CTVolTopic {
                     .map_err(SerializeError::from)?;
             }
             {
-                let start = BytesStart::new("sml:stp");
+                let start = BytesStart::new("stp");
                 writer.write_event(Event::Start(start))?;
                 writer.write_event(Event::Text(BytesText::new(item.as_str())))?;
-                writer.write_event(Event::End(BytesEnd::new("sml:stp")))?;
+                writer.write_event(Event::End(BytesEnd::new("stp")))?;
             }
             #[cfg(feature = "extra-children")]
             {
@@ -23417,7 +23417,7 @@ impl ToXml for CTVolTopic {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:tr", writer)?;
+            item.write_element("tr", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23492,7 +23492,7 @@ impl ToXml for Workbook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.file_version {
-            val.write_element("sml:fileVersion", writer)?;
+            val.write_element("fileVersion", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23509,7 +23509,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.file_sharing {
-            val.write_element("sml:fileSharing", writer)?;
+            val.write_element("fileSharing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23525,7 +23525,7 @@ impl ToXml for Workbook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.workbook_pr {
-            val.write_element("sml:workbookPr", writer)?;
+            val.write_element("workbookPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23542,7 +23542,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.workbook_protection {
-            val.write_element("sml:workbookProtection", writer)?;
+            val.write_element("workbookProtection", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23558,7 +23558,7 @@ impl ToXml for Workbook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.book_views {
-            val.write_element("sml:bookViews", writer)?;
+            val.write_element("bookViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23575,7 +23575,7 @@ impl ToXml for Workbook {
         }
         {
             let val = &self.sheets;
-            val.write_element("sml:sheets", writer)?;
+            val.write_element("sheets", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23592,7 +23592,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.function_groups {
-            val.write_element("sml:functionGroups", writer)?;
+            val.write_element("functionGroups", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23609,7 +23609,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.external_references {
-            val.write_element("sml:externalReferences", writer)?;
+            val.write_element("externalReferences", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23625,7 +23625,7 @@ impl ToXml for Workbook {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.defined_names {
-            val.write_element("sml:definedNames", writer)?;
+            val.write_element("definedNames", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23642,7 +23642,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_pr {
-            val.write_element("sml:calcPr", writer)?;
+            val.write_element("calcPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23659,7 +23659,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.ole_size {
-            val.write_element("sml:oleSize", writer)?;
+            val.write_element("oleSize", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23676,7 +23676,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.custom_workbook_views {
-            val.write_element("sml:customWorkbookViews", writer)?;
+            val.write_element("customWorkbookViews", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23693,7 +23693,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-pivot")]
         if let Some(ref val) = self.pivot_caches {
-            val.write_element("sml:pivotCaches", writer)?;
+            val.write_element("pivotCaches", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23710,7 +23710,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-metadata")]
         if let Some(ref val) = self.smart_tag_pr {
-            val.write_element("sml:smartTagPr", writer)?;
+            val.write_element("smartTagPr", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23727,7 +23727,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-metadata")]
         if let Some(ref val) = self.smart_tag_types {
-            val.write_element("sml:smartTagTypes", writer)?;
+            val.write_element("smartTagTypes", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23744,7 +23744,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.web_publishing {
-            val.write_element("sml:webPublishing", writer)?;
+            val.write_element("webPublishing", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23760,7 +23760,7 @@ impl ToXml for Workbook {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:fileRecoveryPr", writer)?;
+            item.write_element("fileRecoveryPr", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23777,7 +23777,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.web_publish_objects {
-            val.write_element("sml:webPublishObjects", writer)?;
+            val.write_element("webPublishObjects", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23794,7 +23794,7 @@ impl ToXml for Workbook {
         }
         #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -23875,7 +23875,7 @@ impl ToXml for BookViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:workbookView", writer)?;
+            item.write_element("workbookView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -23988,7 +23988,7 @@ impl ToXml for BookView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -24029,7 +24029,7 @@ impl ToXml for CustomWorkbookViews {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:customWorkbookView", writer)?;
+            item.write_element("customWorkbookView", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -24183,7 +24183,7 @@ impl ToXml for CustomWorkbookView {
                 .map_err(SerializeError::from)?;
         }
         if let Some(ref val) = self.extension_list {
-            val.write_element("sml:extLst", writer)?;
+            val.write_element("extLst", writer)?;
         }
         #[cfg(feature = "extra-children")]
         {
@@ -24224,7 +24224,7 @@ impl ToXml for Sheets {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:sheet", writer)?;
+            item.write_element("sheet", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -24400,7 +24400,7 @@ impl ToXml for CTSmartTagTypes {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:smartTagType", writer)?;
+            item.write_element("smartTagType", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -24564,7 +24564,7 @@ impl ToXml for DefinedNames {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:definedName", writer)?;
+            item.write_element("definedName", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -24701,7 +24701,7 @@ impl ToXml for ExternalReferences {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:externalReference", writer)?;
+            item.write_element("externalReference", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -24778,7 +24778,7 @@ impl ToXml for PivotCaches {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:pivotCache", writer)?;
+            item.write_element("pivotCache", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -25058,7 +25058,7 @@ impl ToXml for CTFunctionGroups {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:functionGroup", writer)?;
+            item.write_element("functionGroup", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;
@@ -25132,7 +25132,7 @@ impl ToXml for CTWebPublishObjects {
                     .write_to(writer)
                     .map_err(SerializeError::from)?;
             }
-            item.write_element("sml:webPublishObject", writer)?;
+            item.write_element("webPublishObject", writer)?;
             #[cfg(feature = "extra-children")]
             {
                 emit_idx += 1;

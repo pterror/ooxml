@@ -113,6 +113,8 @@ fn main() {
         module_name: "pml".to_string(),
         name_mappings,
         feature_mappings,
+        // PML uses p: namespace prefix in real PPTX files
+        xml_serialize_prefix: Some("p".to_string()),
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);

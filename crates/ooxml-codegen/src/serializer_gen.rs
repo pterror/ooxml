@@ -37,8 +37,6 @@ struct SerializerGenerator<'a> {
     config: &'a CodegenConfig,
     output: String,
     definitions: HashMap<&'a str, &'a Pattern>,
-    /// Default XML namespace prefix (e.g. "w" for WML).
-    default_prefix: Option<String>,
 }
 
 impl<'a> SerializerGenerator<'a> {
@@ -49,20 +47,18 @@ impl<'a> SerializerGenerator<'a> {
             .map(|d| (d.name.as_str(), &d.pattern))
             .collect();
 
-        // Find the default namespace prefix from the schema.
-        let default_prefix = schema
-            .namespaces
-            .iter()
-            .find(|ns| ns.is_default)
-            .map(|ns| ns.prefix.clone());
-
         Self {
             schema,
             config,
             output: String::new(),
             definitions,
-            default_prefix,
         }
+    }
+
+    /// Get the XML namespace prefix for serialization.
+    /// Returns None for unprefixed (SML), Some("w") for WML, etc.
+    fn xml_prefix(&self) -> Option<&str> {
+        self.config.xml_serialize_prefix.as_deref()
     }
 
     fn run(&mut self) -> String {
@@ -748,9 +744,9 @@ impl<'a> SerializerGenerator<'a> {
         .unwrap();
         writeln!(code, "        match self {{").unwrap();
 
-        for (prefix, xml_local, _inner_type, _needs_box) in &element_variants {
+        for (_prefix, xml_local, _inner_type, _needs_box) in &element_variants {
             let variant_name = self.to_rust_variant_name(xml_local);
-            let qualified_name = match prefix.as_deref().or(self.default_prefix.as_deref()) {
+            let qualified_name = match self.xml_prefix() {
                 Some(p) => format!("{}:{}", p, xml_local),
                 None => xml_local.clone(),
             };
@@ -1023,14 +1019,10 @@ impl<'a> SerializerGenerator<'a> {
         }
     }
 
-    /// Build the qualified element name (e.g. "w:body").
-    /// Uses the field's xml_prefix if set, otherwise the schema's default prefix.
+    /// Build the qualified element name (e.g. "w:body" for WML, "body" for SML).
+    /// Uses the config's xml_serialize_prefix (None = unprefixed, Some(p) = p:).
     fn qualified_element_name(&self, field: &Field) -> String {
-        let prefix = field
-            .xml_prefix
-            .as_deref()
-            .or(self.default_prefix.as_deref());
-        match prefix {
+        match self.xml_prefix() {
             Some(p) => format!("{}:{}", p, field.xml_name),
             None => field.xml_name.clone(),
         }

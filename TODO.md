@@ -112,7 +112,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ### SML (Spreadsheet)
 - [x] **Regenerate SML types with EG_\*/AG_\* inlining** - Types, parsers, and serializers regenerated with latest codegen.
 - [x] **Add SML serializer unit tests** - 25 roundtrip tests in test_generated_serializers.rs.
-- [~] **Migrate SML writer to generated serializers** - Blocked by namespace prefix issue (see below). Infrastructure added (ToXml imports, serialize_with_namespaces helper, Error::Serialize variant).
+- [ ] **Migrate SML writer to generated serializers** - Namespace prefix issue resolved (serializers now emit unprefixed elements). Infrastructure ready (ToXml imports, serialize_with_namespaces helper, Error::Serialize variant).
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
@@ -129,15 +129,14 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
   - Optional field serialization for EG_* types
   - Requires fixes in parser_gen.rs and serializer_gen.rs
 
-### Codegen: Namespace Prefix Issue
-- [ ] **Generated serializers use namespace prefixes** - ToXml generates `<sml:si>` instead of `<si>`. Both are valid XML when the namespace is declared, but:
-  - Real OOXML files (from Excel) use default namespace without prefixes
-  - Handwritten readers check `name == b"si"` which doesn't match `sml:si`
-  - Options to fix:
-    1. Update serializer_gen.rs to not emit prefixes (cleaner output, matches real files)
-    2. Update handwritten readers to use `local_name()` (handles both forms)
-    3. Migrate readers to generated FromXml parsers (already use local_name)
-  - This blocks SML writer migration until resolved
+### Codegen: Namespace Prefix Convention ✅
+- [x] **Configurable namespace prefixes in serializers** - Added `xml_serialize_prefix` to `CodegenConfig`:
+  - `None` = unprefixed elements (SML/XLSX uses default namespace convention)
+  - `Some("w")` = `w:` prefixed elements (WML/DOCX)
+  - `Some("p")` = `p:` prefixed elements (PML/PPTX)
+  - `Some("a")` = `a:` prefixed elements (DML when embedded)
+  - Verified against real Office files from corpus: XLSX uses unprefixed, DOCX uses `w:`, PPTX uses `p:`
+  - SML writer migration is now unblocked
 - [ ] **Port feature flags to DML** - Add ooxml-features.yaml mappings for DML elements.
 - [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.

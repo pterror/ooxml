@@ -113,6 +113,8 @@ fn main() {
         module_name: "dml".to_string(),
         name_mappings,
         feature_mappings,
+        // DML uses a: namespace prefix when embedded in other formats
+        xml_serialize_prefix: Some("a".to_string()),
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);
