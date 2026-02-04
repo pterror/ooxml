@@ -125,7 +125,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ### PML (PowerPoint)
 - [x] **Add PML parser/serializer generation** - Parser and serializer modules now compile and are enabled. Cross-crate DML type references resolved via `cross_crate_type_prefix` config with module-aware name mapping lookups.
 - [x] **Port feature flags to PML** - Added 10 feature flags and ~200 field mappings for 25 PML types. 630 feature annotations generated.
-- [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
+- [x] **Port extra-attrs/extra-children to PML** - Working. 285 extra-attrs, 226 extra-children annotations.
 - [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
 
@@ -145,7 +145,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
   - Verified against real Office files from corpus: XLSX uses unprefixed, DOCX uses `w:`, PPTX uses `p:`
   - SML writer migration is now unblocked
 - [x] **Port feature flags to DML** - Added 11 feature flags and ~350 field mappings for 45 DML types. 977 feature annotations generated.
-- [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
+- [x] **Port extra-attrs/extra-children to DML** - Working. 384 extra-attrs, 292 extra-children annotations.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten DML code** - Remove old implementations once tests pass.
 
