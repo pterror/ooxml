@@ -1503,8 +1503,8 @@ impl WorkbookBuilder {
 
         // Write styles if any
         if has_styles {
-            let styles_xml = self.serialize_styles();
-            pkg.add_part("xl/styles.xml", CT_STYLES, styles_xml.as_bytes())?;
+            let styles_xml = self.serialize_styles()?;
+            pkg.add_part("xl/styles.xml", CT_STYLES, &styles_xml)?;
         }
 
         // Write each sheet and its related parts (comments, etc.)
@@ -1793,198 +1793,221 @@ impl WorkbookBuilder {
         serialize_with_namespaces(&comments, "comments")
     }
 
-    /// Serialize styles to XML.
-    fn serialize_styles(&self) -> String {
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(r#"<styleSheet xmlns="{}">"#, NS_SPREADSHEET));
-        xml.push('\n');
-
-        // Number formats
-        if !self.number_formats.is_empty() {
-            xml.push_str(&format!(
-                "  <numFmts count=\"{}\">\n",
-                self.number_formats.len()
-            ));
-            for (i, fmt) in self.number_formats.iter().enumerate() {
-                let id = 164 + i as u32;
-                xml.push_str(&format!(
-                    r#"    <numFmt numFmtId="{}" formatCode="{}"/>"#,
-                    id,
-                    escape_xml(fmt)
-                ));
-                xml.push('\n');
-            }
-            xml.push_str("  </numFmts>\n");
-        }
-
-        // Fonts
-        xml.push_str(&format!("  <fonts count=\"{}\">\n", self.fonts.len()));
-        for font in &self.fonts {
-            xml.push_str("    <font>\n");
-            if font.bold {
-                xml.push_str("      <b/>\n");
-            }
-            if font.italic {
-                xml.push_str("      <i/>\n");
-            }
-            if font.strikethrough {
-                xml.push_str("      <strike/>\n");
-            }
-            if let Some(u) = &font.underline {
-                xml.push_str(&format!(r#"      <u val="{}"/>"#, u.to_xml_value()));
-                xml.push('\n');
-            }
-            if let Some(size) = font.size {
-                xml.push_str(&format!(r#"      <sz val="{}"/>"#, size));
-                xml.push('\n');
-            }
-            if let Some(color) = &font.color {
-                xml.push_str(&format!(r#"      <color rgb="FF{}"/>"#, color));
-                xml.push('\n');
-            }
-            if let Some(name) = &font.name {
-                xml.push_str(&format!(r#"      <name val="{}"/>"#, escape_xml(name)));
-                xml.push('\n');
-            }
-            xml.push_str("    </font>\n");
-        }
-        xml.push_str("  </fonts>\n");
-
-        // Fills
-        xml.push_str(&format!("  <fills count=\"{}\">\n", self.fills.len()));
-        for fill in &self.fills {
-            xml.push_str("    <fill>\n");
-            xml.push_str(&format!(
-                r#"      <patternFill patternType="{}">"#,
-                fill.pattern.to_xml_value()
-            ));
-            xml.push('\n');
-            if let Some(fg) = &fill.fg_color {
-                xml.push_str(&format!(r#"        <fgColor rgb="FF{}"/>"#, fg));
-                xml.push('\n');
-            }
-            if let Some(bg) = &fill.bg_color {
-                xml.push_str(&format!(r#"        <bgColor rgb="FF{}"/>"#, bg));
-                xml.push('\n');
-            }
-            xml.push_str("      </patternFill>\n");
-            xml.push_str("    </fill>\n");
-        }
-        xml.push_str("  </fills>\n");
-
-        // Borders
-        xml.push_str(&format!("  <borders count=\"{}\">\n", self.borders.len()));
-        for border in &self.borders {
-            let mut diagonal_attrs = String::new();
-            if border.diagonal_up {
-                diagonal_attrs.push_str(r#" diagonalUp="1""#);
-            }
-            if border.diagonal_down {
-                diagonal_attrs.push_str(r#" diagonalDown="1""#);
-            }
-            xml.push_str(&format!("    <border{}>\n", diagonal_attrs));
-
-            // Left
-            self.serialize_border_side(&mut xml, "left", &border.left);
-            // Right
-            self.serialize_border_side(&mut xml, "right", &border.right);
-            // Top
-            self.serialize_border_side(&mut xml, "top", &border.top);
-            // Bottom
-            self.serialize_border_side(&mut xml, "bottom", &border.bottom);
-            // Diagonal
-            self.serialize_border_side(&mut xml, "diagonal", &border.diagonal);
-
-            xml.push_str("    </border>\n");
-        }
-        xml.push_str("  </borders>\n");
-
-        // Cell style XFs (required, at least one default)
-        xml.push_str("  <cellStyleXfs count=\"1\">\n");
-        xml.push_str("    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/>\n");
-        xml.push_str("  </cellStyleXfs>\n");
-
-        // Cell XFs
-        let xf_count = self.cell_formats.len() + 1; // +1 for default
-        xml.push_str(&format!("  <cellXfs count=\"{}\">\n", xf_count));
-        // Default format
-        xml.push_str(
-            "    <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/>\n",
-        );
-
-        for xf in &self.cell_formats {
-            let mut attrs = format!(
-                r#"numFmtId="{}" fontId="{}" fillId="{}" borderId="{}" xfId="0""#,
-                xf.num_fmt_id, xf.font_id, xf.fill_id, xf.border_id
-            );
-
-            if xf.font_id > 0 {
-                attrs.push_str(r#" applyFont="1""#);
-            }
-            if xf.fill_id > 0 {
-                attrs.push_str(r#" applyFill="1""#);
-            }
-            if xf.border_id > 0 {
-                attrs.push_str(r#" applyBorder="1""#);
-            }
-            if xf.num_fmt_id > 0 {
-                attrs.push_str(r#" applyNumberFormat="1""#);
-            }
-
-            let has_alignment = xf.horizontal.is_some() || xf.vertical.is_some() || xf.wrap_text;
-            if has_alignment {
-                attrs.push_str(r#" applyAlignment="1""#);
-                xml.push_str(&format!("    <xf {}>\n", attrs));
-
-                let mut align_attrs = Vec::new();
-                if let Some(h) = xf.horizontal {
-                    align_attrs.push(format!(r#"horizontal="{}""#, h.to_xml_value()));
-                }
-                if let Some(v) = xf.vertical {
-                    align_attrs.push(format!(r#"vertical="{}""#, v.to_xml_value()));
-                }
-                if xf.wrap_text {
-                    align_attrs.push(r#"wrapText="1""#.to_string());
-                }
-                xml.push_str(&format!("      <alignment {}/>\n", align_attrs.join(" ")));
-                xml.push_str("    </xf>\n");
-            } else {
-                xml.push_str(&format!("    <xf {}/>\n", attrs));
-            }
-        }
-        xml.push_str("  </cellXfs>\n");
-
-        // Cell styles (required)
-        xml.push_str("  <cellStyles count=\"1\">\n");
-        xml.push_str("    <cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/>\n");
-        xml.push_str("  </cellStyles>\n");
-
-        xml.push_str("</styleSheet>");
-        xml
+    /// Serialize styles to XML using generated ToXml serializers.
+    fn serialize_styles(&self) -> Result<Vec<u8>> {
+        let stylesheet = self.build_stylesheet();
+        serialize_with_namespaces(&stylesheet, "styleSheet")
     }
 
-    /// Serialize a border side element.
-    fn serialize_border_side(&self, xml: &mut String, name: &str, side: &Option<BorderSideStyle>) {
-        if let Some(s) = side {
-            if s.style != BorderLineStyle::None {
-                xml.push_str(&format!(
-                    r#"      <{} style="{}">"#,
-                    name,
-                    s.style.to_xml_value()
-                ));
-                xml.push('\n');
-                if let Some(color) = &s.color {
-                    xml.push_str(&format!(r#"        <color rgb="FF{}"/>"#, color));
-                    xml.push('\n');
-                }
-                xml.push_str(&format!("      </{}>\n", name));
-            } else {
-                xml.push_str(&format!("      <{}/>\n", name));
-            }
+    /// Build a Stylesheet type from builder data.
+    fn build_stylesheet(&self) -> types::Stylesheet {
+        // Number formats (custom formats start at ID 164)
+        let num_fmts: Option<Box<types::NumberFormats>> = if self.number_formats.is_empty() {
+            None
         } else {
-            xml.push_str(&format!("      <{}/>\n", name));
+            Some(Box::new(types::NumberFormats {
+                count: Some(self.number_formats.len() as u32),
+                num_fmt: self
+                    .number_formats
+                    .iter()
+                    .enumerate()
+                    .map(|(i, fmt)| {
+                        Box::new(types::NumberFormat {
+                            number_format_id: (164 + i) as u32,
+                            format_code: fmt.clone(),
+                            #[cfg(feature = "extra-attrs")]
+                            extra_attrs: Default::default(),
+                        })
+                    })
+                    .collect(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }))
+        };
+
+        // Fonts
+        let fonts = Box::new(types::Fonts {
+            count: Some(self.fonts.len() as u32),
+            font: self.fonts.iter().map(|f| Box::new(build_font(f))).collect(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        // Fills
+        let fills = Box::new(types::Fills {
+            count: Some(self.fills.len() as u32),
+            fill: self.fills.iter().map(|f| Box::new(build_fill(f))).collect(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        // Borders
+        let borders = Box::new(types::Borders {
+            count: Some(self.borders.len() as u32),
+            border: self
+                .borders
+                .iter()
+                .map(|b| Box::new(build_border(b)))
+                .collect(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        // Cell style XFs (required, at least one default)
+        let cell_style_xfs = Box::new(types::CellStyleFormats {
+            count: Some(1),
+            xf: vec![Box::new(types::Format {
+                #[cfg(feature = "sml-styling")]
+                number_format_id: Some(0),
+                #[cfg(feature = "sml-styling")]
+                font_id: Some(0),
+                #[cfg(feature = "sml-styling")]
+                fill_id: Some(0),
+                #[cfg(feature = "sml-styling")]
+                border_id: Some(0),
+                #[cfg(feature = "sml-styling")]
+                format_id: None,
+                #[cfg(feature = "sml-styling")]
+                quote_prefix: None,
+                #[cfg(feature = "sml-pivot")]
+                pivot_button: None,
+                #[cfg(feature = "sml-styling")]
+                apply_number_format: None,
+                #[cfg(feature = "sml-styling")]
+                apply_font: None,
+                #[cfg(feature = "sml-styling")]
+                apply_fill: None,
+                #[cfg(feature = "sml-styling")]
+                apply_border: None,
+                #[cfg(feature = "sml-styling")]
+                apply_alignment: None,
+                #[cfg(feature = "sml-styling")]
+                apply_protection: None,
+                #[cfg(feature = "sml-styling")]
+                alignment: None,
+                #[cfg(feature = "sml-protection")]
+                protection: None,
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        // Cell XFs - includes default format plus custom formats
+        let mut xf_list: Vec<Box<types::Format>> = vec![Box::new(types::Format {
+            #[cfg(feature = "sml-styling")]
+            number_format_id: Some(0),
+            #[cfg(feature = "sml-styling")]
+            font_id: Some(0),
+            #[cfg(feature = "sml-styling")]
+            fill_id: Some(0),
+            #[cfg(feature = "sml-styling")]
+            border_id: Some(0),
+            #[cfg(feature = "sml-styling")]
+            format_id: Some(0),
+            #[cfg(feature = "sml-styling")]
+            quote_prefix: None,
+            #[cfg(feature = "sml-pivot")]
+            pivot_button: None,
+            #[cfg(feature = "sml-styling")]
+            apply_number_format: None,
+            #[cfg(feature = "sml-styling")]
+            apply_font: None,
+            #[cfg(feature = "sml-styling")]
+            apply_fill: None,
+            #[cfg(feature = "sml-styling")]
+            apply_border: None,
+            #[cfg(feature = "sml-styling")]
+            apply_alignment: None,
+            #[cfg(feature = "sml-styling")]
+            apply_protection: None,
+            #[cfg(feature = "sml-styling")]
+            alignment: None,
+            #[cfg(feature = "sml-protection")]
+            protection: None,
+            #[cfg(feature = "sml-extensions")]
+            extension_list: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        })];
+
+        for xf in &self.cell_formats {
+            xf_list.push(Box::new(build_cell_format(xf)));
+        }
+
+        let cell_xfs = Box::new(types::CellFormats {
+            count: Some(xf_list.len() as u32),
+            xf: xf_list,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        // Cell styles (required)
+        let cell_styles = Box::new(types::CellStyles {
+            count: Some(1),
+            cell_style: vec![Box::new(types::CellStyle {
+                name: Some("Normal".to_string()),
+                format_id: 0,
+                builtin_id: Some(0),
+                i_level: None,
+                hidden: None,
+                custom_builtin: None,
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        });
+
+        types::Stylesheet {
+            #[cfg(feature = "sml-styling")]
+            num_fmts,
+            #[cfg(feature = "sml-styling")]
+            fonts: Some(fonts),
+            #[cfg(feature = "sml-styling")]
+            fills: Some(fills),
+            #[cfg(feature = "sml-styling")]
+            borders: Some(borders),
+            #[cfg(feature = "sml-styling")]
+            cell_style_xfs: Some(cell_style_xfs),
+            #[cfg(feature = "sml-styling")]
+            cell_xfs: Some(cell_xfs),
+            #[cfg(feature = "sml-styling")]
+            cell_styles: Some(cell_styles),
+            #[cfg(feature = "sml-styling")]
+            dxfs: None,
+            #[cfg(feature = "sml-styling")]
+            table_styles: None,
+            #[cfg(feature = "sml-styling")]
+            colors: None,
+            #[cfg(feature = "sml-extensions")]
+            extension_list: None,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
         }
     }
 
@@ -2697,15 +2720,6 @@ fn column_to_letter(mut col: u32) -> String {
     result
 }
 
-/// Escape XML special characters.
-fn escape_xml(s: &str) -> String {
-    s.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&apos;")
-}
-
 // =============================================================================
 // ToXml serialization helpers
 // =============================================================================
@@ -2762,6 +2776,357 @@ fn serialize_with_ns_decls(
     buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
     buf.extend_from_slice(&inner);
     Ok(buf)
+}
+
+/// Build a types::Font from FontStyle.
+fn build_font(font: &FontStyle) -> types::Font {
+    types::Font {
+        #[cfg(feature = "sml-styling")]
+        name: font.name.as_ref().map(|n| {
+            Box::new(types::FontName {
+                value: n.clone(),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })
+        }),
+        #[cfg(feature = "sml-styling")]
+        charset: None,
+        #[cfg(feature = "sml-styling")]
+        family: None,
+        #[cfg(feature = "sml-styling")]
+        b: if font.bold {
+            Some(Box::new(types::BooleanProperty {
+                value: None, // Default means "true" when element is present
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }))
+        } else {
+            None
+        },
+        #[cfg(feature = "sml-styling")]
+        i: if font.italic {
+            Some(Box::new(types::BooleanProperty {
+                value: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }))
+        } else {
+            None
+        },
+        #[cfg(feature = "sml-styling")]
+        strike: if font.strikethrough {
+            Some(Box::new(types::BooleanProperty {
+                value: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            }))
+        } else {
+            None
+        },
+        #[cfg(feature = "sml-styling")]
+        outline: None,
+        #[cfg(feature = "sml-styling")]
+        shadow: None,
+        #[cfg(feature = "sml-styling")]
+        condense: None,
+        #[cfg(feature = "sml-styling")]
+        extend: None,
+        #[cfg(feature = "sml-styling")]
+        color: font.color.as_ref().map(|c| {
+            Box::new(types::Color {
+                auto: None,
+                indexed: None,
+                rgb: Some(hex_color_to_bytes(c)),
+                theme: None,
+                tint: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })
+        }),
+        #[cfg(feature = "sml-styling")]
+        sz: font.size.map(|s| {
+            Box::new(types::FontSize {
+                value: s,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })
+        }),
+        #[cfg(feature = "sml-styling")]
+        u: font.underline.map(|u| {
+            Box::new(types::UnderlineProperty {
+                value: Some(convert_underline_style(u)),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+            })
+        }),
+        #[cfg(feature = "sml-styling")]
+        vert_align: None,
+        #[cfg(feature = "sml-styling")]
+        scheme: None,
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build a types::Fill from FillStyle.
+fn build_fill(fill: &FillStyle) -> types::Fill {
+    types::Fill {
+        #[cfg(feature = "sml-styling")]
+        pattern_fill: Some(Box::new(types::PatternFill {
+            pattern_type: Some(convert_pattern_type(fill.pattern)),
+            fg_color: fill.fg_color.as_ref().map(|c| {
+                Box::new(types::Color {
+                    auto: None,
+                    indexed: None,
+                    rgb: Some(hex_color_to_bytes(c)),
+                    theme: None,
+                    tint: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })
+            }),
+            bg_color: fill.bg_color.as_ref().map(|c| {
+                Box::new(types::Color {
+                    auto: None,
+                    indexed: None,
+                    rgb: Some(hex_color_to_bytes(c)),
+                    theme: None,
+                    tint: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })
+            }),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        })),
+        #[cfg(feature = "sml-styling")]
+        gradient_fill: None,
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build a types::Border from BorderStyle.
+fn build_border(border: &BorderStyle) -> types::Border {
+    types::Border {
+        #[cfg(feature = "sml-styling")]
+        diagonal_up: if border.diagonal_up { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        diagonal_down: if border.diagonal_down {
+            Some(true)
+        } else {
+            None
+        },
+        #[cfg(feature = "sml-styling")]
+        outline: None,
+        start: None,
+        end: None,
+        #[cfg(feature = "sml-styling")]
+        left: build_border_properties(&border.left),
+        #[cfg(feature = "sml-styling")]
+        right: build_border_properties(&border.right),
+        #[cfg(feature = "sml-styling")]
+        top: build_border_properties(&border.top),
+        #[cfg(feature = "sml-styling")]
+        bottom: build_border_properties(&border.bottom),
+        #[cfg(feature = "sml-styling")]
+        diagonal: build_border_properties(&border.diagonal),
+        #[cfg(feature = "sml-styling")]
+        vertical: None,
+        #[cfg(feature = "sml-styling")]
+        horizontal: None,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Build a types::BorderProperties from BorderSideStyle.
+fn build_border_properties(side: &Option<BorderSideStyle>) -> Option<Box<types::BorderProperties>> {
+    // Always emit border properties for each side (empty if none)
+    let (style, color) = if let Some(s) = side {
+        if s.style != BorderLineStyle::None {
+            (
+                Some(convert_border_style(s.style)),
+                s.color.as_ref().map(|c| {
+                    Box::new(types::Color {
+                        auto: None,
+                        indexed: None,
+                        rgb: Some(hex_color_to_bytes(c)),
+                        theme: None,
+                        tint: None,
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                    })
+                }),
+            )
+        } else {
+            (None, None)
+        }
+    } else {
+        (None, None)
+    };
+
+    Some(Box::new(types::BorderProperties {
+        style,
+        color,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }))
+}
+
+/// Build a types::Format (xf) from CellFormatRecord.
+fn build_cell_format(xf: &CellFormatRecord) -> types::Format {
+    let has_alignment = xf.horizontal.is_some() || xf.vertical.is_some() || xf.wrap_text;
+
+    let alignment = if has_alignment {
+        Some(Box::new(types::CellAlignment {
+            horizontal: xf.horizontal.map(convert_horizontal_alignment),
+            vertical: xf.vertical.map(convert_vertical_alignment),
+            text_rotation: None,
+            wrap_text: if xf.wrap_text { Some(true) } else { None },
+            indent: None,
+            relative_indent: None,
+            justify_last_line: None,
+            shrink_to_fit: None,
+            reading_order: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+        }))
+    } else {
+        None
+    };
+
+    types::Format {
+        #[cfg(feature = "sml-styling")]
+        number_format_id: Some(xf.num_fmt_id),
+        #[cfg(feature = "sml-styling")]
+        font_id: Some(xf.font_id as u32),
+        #[cfg(feature = "sml-styling")]
+        fill_id: Some(xf.fill_id as u32),
+        #[cfg(feature = "sml-styling")]
+        border_id: Some(xf.border_id as u32),
+        #[cfg(feature = "sml-styling")]
+        format_id: Some(0),
+        #[cfg(feature = "sml-styling")]
+        quote_prefix: None,
+        #[cfg(feature = "sml-pivot")]
+        pivot_button: None,
+        #[cfg(feature = "sml-styling")]
+        apply_number_format: if xf.num_fmt_id > 0 { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        apply_font: if xf.font_id > 0 { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        apply_fill: if xf.fill_id > 0 { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        apply_border: if xf.border_id > 0 { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        apply_alignment: if has_alignment { Some(true) } else { None },
+        #[cfg(feature = "sml-styling")]
+        apply_protection: None,
+        #[cfg(feature = "sml-styling")]
+        alignment,
+        #[cfg(feature = "sml-protection")]
+        protection: None,
+        #[cfg(feature = "sml-extensions")]
+        extension_list: None,
+        #[cfg(feature = "extra-attrs")]
+        extra_attrs: Default::default(),
+        #[cfg(feature = "extra-children")]
+        extra_children: Vec::new(),
+    }
+}
+
+/// Convert writer's UnderlineStyle to generated types::UnderlineStyle.
+fn convert_underline_style(style: UnderlineStyle) -> types::UnderlineStyle {
+    match style {
+        UnderlineStyle::Single => types::UnderlineStyle::Single,
+        UnderlineStyle::Double => types::UnderlineStyle::Double,
+        UnderlineStyle::SingleAccounting => types::UnderlineStyle::SingleAccounting,
+        UnderlineStyle::DoubleAccounting => types::UnderlineStyle::DoubleAccounting,
+    }
+}
+
+/// Convert writer's FillPattern to generated types::PatternType.
+fn convert_pattern_type(pattern: FillPattern) -> types::PatternType {
+    match pattern {
+        FillPattern::None => types::PatternType::None,
+        FillPattern::Solid => types::PatternType::Solid,
+        FillPattern::MediumGray => types::PatternType::MediumGray,
+        FillPattern::DarkGray => types::PatternType::DarkGray,
+        FillPattern::LightGray => types::PatternType::LightGray,
+        FillPattern::DarkHorizontal => types::PatternType::DarkHorizontal,
+        FillPattern::DarkVertical => types::PatternType::DarkVertical,
+        FillPattern::DarkDown => types::PatternType::DarkDown,
+        FillPattern::DarkUp => types::PatternType::DarkUp,
+        FillPattern::DarkGrid => types::PatternType::DarkGrid,
+        FillPattern::DarkTrellis => types::PatternType::DarkTrellis,
+        FillPattern::LightHorizontal => types::PatternType::LightHorizontal,
+        FillPattern::LightVertical => types::PatternType::LightVertical,
+        FillPattern::LightDown => types::PatternType::LightDown,
+        FillPattern::LightUp => types::PatternType::LightUp,
+        FillPattern::LightGrid => types::PatternType::LightGrid,
+        FillPattern::LightTrellis => types::PatternType::LightTrellis,
+        FillPattern::Gray125 => types::PatternType::Gray125,
+        FillPattern::Gray0625 => types::PatternType::Gray0625,
+    }
+}
+
+/// Convert writer's BorderLineStyle to generated types::BorderStyle.
+fn convert_border_style(style: BorderLineStyle) -> types::BorderStyle {
+    match style {
+        BorderLineStyle::None => types::BorderStyle::None,
+        BorderLineStyle::Thin => types::BorderStyle::Thin,
+        BorderLineStyle::Medium => types::BorderStyle::Medium,
+        BorderLineStyle::Dashed => types::BorderStyle::Dashed,
+        BorderLineStyle::Dotted => types::BorderStyle::Dotted,
+        BorderLineStyle::Thick => types::BorderStyle::Thick,
+        BorderLineStyle::Double => types::BorderStyle::Double,
+        BorderLineStyle::Hair => types::BorderStyle::Hair,
+        BorderLineStyle::MediumDashed => types::BorderStyle::MediumDashed,
+        BorderLineStyle::DashDot => types::BorderStyle::DashDot,
+        BorderLineStyle::MediumDashDot => types::BorderStyle::MediumDashDot,
+        BorderLineStyle::DashDotDot => types::BorderStyle::DashDotDot,
+        BorderLineStyle::MediumDashDotDot => types::BorderStyle::MediumDashDotDot,
+        BorderLineStyle::SlantDashDot => types::BorderStyle::SlantDashDot,
+    }
+}
+
+/// Convert writer's HorizontalAlignment to generated types::HorizontalAlignment.
+fn convert_horizontal_alignment(align: HorizontalAlignment) -> types::HorizontalAlignment {
+    match align {
+        HorizontalAlignment::General => types::HorizontalAlignment::General,
+        HorizontalAlignment::Left => types::HorizontalAlignment::Left,
+        HorizontalAlignment::Center => types::HorizontalAlignment::Center,
+        HorizontalAlignment::Right => types::HorizontalAlignment::Right,
+        HorizontalAlignment::Fill => types::HorizontalAlignment::Fill,
+        HorizontalAlignment::Justify => types::HorizontalAlignment::Justify,
+        HorizontalAlignment::CenterContinuous => types::HorizontalAlignment::CenterContinuous,
+        HorizontalAlignment::Distributed => types::HorizontalAlignment::Distributed,
+    }
+}
+
+/// Convert writer's VerticalAlignment to generated types::VerticalAlignment.
+fn convert_vertical_alignment(align: VerticalAlignment) -> types::VerticalAlignment {
+    match align {
+        VerticalAlignment::Top => types::VerticalAlignment::Top,
+        VerticalAlignment::Center => types::VerticalAlignment::Center,
+        VerticalAlignment::Bottom => types::VerticalAlignment::Bottom,
+        VerticalAlignment::Justify => types::VerticalAlignment::Justify,
+        VerticalAlignment::Distributed => types::VerticalAlignment::Distributed,
+    }
+}
+
+/// Convert a 6-character RGB hex color string (e.g., "FF0000") to ARGB bytes with 0xFF alpha.
+fn hex_color_to_bytes(color: &str) -> Vec<u8> {
+    // Parse as 24-bit RGB integer, then extract bytes
+    let rgb = u32::from_str_radix(color, 16).unwrap_or(0);
+    vec![0xFF, (rgb >> 16) as u8, (rgb >> 8) as u8, rgb as u8]
 }
 
 #[cfg(test)]
