@@ -110,16 +110,22 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ## Other Codegen Migrations
 
 ### SML (Spreadsheet)
-- [ ] **Regenerate SML types with EG_\*/AG_\* inlining** - Codegen now supports it; requires regenerating generated_parsers.rs too.
+- [x] **Regenerate SML types with EG_\*/AG_\* inlining** - Types, parsers, and serializers regenerated with latest codegen.
+- [ ] **Add SML serializer unit tests** - Roundtrip tests similar to WML's test_generated_serializers.rs.
+- [ ] **Migrate SML writer to generated serializers** - Refactor writer.rs to use ToXml impls instead of manual serialization.
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
+- [ ] **Add PML parser generation** - Add generate_parsers to build.rs, create generated_parsers.rs.
+- [ ] **Add PML serializer generation** - Add generate_serializers to build.rs, create generated_serializers.rs.
 - [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
 - [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
 
 ### DML (Drawing)
+- [ ] **Add DML parser generation** - Add generate_parsers to build.rs, create generated_parsers.rs.
+- [ ] **Add DML serializer generation** - Add generate_serializers to build.rs, create generated_serializers.rs.
 - [ ] **Port feature flags to DML** - Add ooxml-features.yaml mappings for DML elements.
 - [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.
