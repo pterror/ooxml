@@ -250,6 +250,10 @@ impl<'a> Generator<'a> {
                 simple_types.push(def);
             } else if def.name.contains("_EG_") && self.is_element_choice(&def.pattern) {
                 element_groups.push(def);
+            } else if self.is_inline_attribute_ref(&def.name, &def.pattern) {
+                // Skip inline attribute references (like r_id = attribute r:id {...})
+                // These are inlined into parent types via collect_fields
+                continue;
             } else {
                 complex_types.push(def);
             }
@@ -351,6 +355,15 @@ impl<'a> Generator<'a> {
             }
             _ => false,
         }
+    }
+
+    /// Check if a definition is a pure attribute reference that should be inlined.
+    /// These are attribute patterns (like r_id, r_embed) that don't have CT_ in their name.
+    /// CT_* types with single attributes are element content types and need structs.
+    fn is_inline_attribute_ref(&self, name: &str, pattern: &Pattern) -> bool {
+        // Only skip non-CT types that are pure attribute patterns
+        // CT_* types with single attributes are element content types
+        !name.contains("_CT_") && matches!(pattern, Pattern::Attribute { .. })
     }
 
     /// Check if a pattern resolves to a string type (for text content detection).
@@ -803,7 +816,13 @@ impl<'a> Generator<'a> {
                     if field.is_text_content {
                         writeln!(code, "    #[serde(rename = \"$text\")]").unwrap();
                     } else if field.is_attribute {
-                        writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
+                        // Include namespace prefix for attributes (e.g., r:id → @r:id)
+                        if let Some(prefix) = &field.xml_prefix {
+                            writeln!(code, "    #[serde(rename = \"@{}:{}\")]", prefix, xml_name)
+                                .unwrap();
+                        } else {
+                            writeln!(code, "    #[serde(rename = \"@{}\")]", xml_name).unwrap();
+                        }
                     } else {
                         writeln!(code, "    #[serde(rename = \"{}\")]", xml_name).unwrap();
                     }
