@@ -30,6 +30,13 @@ pub mod text;
 pub mod generated;
 pub use generated as types;
 
+// TODO: DML parser/serializer generation has codegen issues with EG_* type handling
+// Uncomment once codegen is fixed:
+// pub mod generated_parsers;
+// pub use generated_parsers as parsers;
+// pub mod generated_serializers;
+// pub use generated_serializers as serializers;
+
 pub use error::{Error, Result};
 pub use text::{
     Paragraph, ParagraphProperties, Run, RunProperties, TextAlignment, parse_text_body,
