@@ -671,31 +671,57 @@ impl FromXml for SlideTransition {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-transitions")]
         let mut f_spd = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_adv_click = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_adv_tm = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_blinds = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_checker = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_circle = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_dissolve = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_comb = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_cover = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_cut = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_diamond = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_fade = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_newsflash = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_plus = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_pull = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_push = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_random = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_random_bar = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_split = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_strips = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_wedge = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_wheel = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_wipe = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_zoom = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_snd_ac = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -708,12 +734,15 @@ impl FromXml for SlideTransition {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-transitions")]
                 b"spd" => {
                     f_spd = val.parse().ok();
                 }
+                #[cfg(feature = "pml-transitions")]
                 b"advClick" => {
                     f_adv_click = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-transitions")]
                 b"advTm" => {
                     f_adv_tm = val.parse().ok();
                 }
@@ -734,6 +763,7 @@ impl FromXml for SlideTransition {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-transitions")]
                             b"blinds" => {
                                 f_blinds = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, false,
@@ -743,6 +773,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"checker" => {
                                 f_checker = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, false,
@@ -752,6 +783,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"circle" => {
                                 f_circle = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -759,6 +791,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"dissolve" => {
                                 f_dissolve = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -766,6 +799,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"comb" => {
                                 f_comb = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, false,
@@ -775,6 +809,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"cover" => {
                                 f_cover = Some(Box::new(CTEightDirectionTransition::from_xml(
                                     reader, &e, false,
@@ -784,6 +819,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"cut" => {
                                 f_cut = Some(Box::new(CTOptionalBlackTransition::from_xml(
                                     reader, &e, false,
@@ -793,6 +829,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"diamond" => {
                                 f_diamond = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -800,6 +837,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"fade" => {
                                 f_fade = Some(Box::new(CTOptionalBlackTransition::from_xml(
                                     reader, &e, false,
@@ -809,6 +847,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"newsflash" => {
                                 f_newsflash = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -816,6 +855,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"plus" => {
                                 f_plus = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -823,6 +863,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"pull" => {
                                 f_pull = Some(Box::new(CTEightDirectionTransition::from_xml(
                                     reader, &e, false,
@@ -832,6 +873,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"push" => {
                                 f_push = Some(Box::new(CTSideDirectionTransition::from_xml(
                                     reader, &e, false,
@@ -841,6 +883,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"random" => {
                                 f_random = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -848,6 +891,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"randomBar" => {
                                 f_random_bar = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, false,
@@ -857,6 +901,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"split" => {
                                 f_split =
                                     Some(Box::new(CTSplitTransition::from_xml(reader, &e, false)?));
@@ -865,6 +910,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"strips" => {
                                 f_strips = Some(Box::new(CTCornerDirectionTransition::from_xml(
                                     reader, &e, false,
@@ -874,6 +920,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wedge" => {
                                 f_wedge = Some(Box::new(CTEmpty::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -881,6 +928,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wheel" => {
                                 f_wheel =
                                     Some(Box::new(CTWheelTransition::from_xml(reader, &e, false)?));
@@ -889,6 +937,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wipe" => {
                                 f_wipe = Some(Box::new(CTSideDirectionTransition::from_xml(
                                     reader, &e, false,
@@ -898,6 +947,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"zoom" => {
                                 f_zoom =
                                     Some(Box::new(CTInOutTransition::from_xml(reader, &e, false)?));
@@ -906,6 +956,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"sndAc" => {
                                 f_snd_ac = Some(Box::new(CTTransitionSoundAction::from_xml(
                                     reader, &e, false,
@@ -915,6 +966,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -943,6 +995,7 @@ impl FromXml for SlideTransition {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-transitions")]
                             b"blinds" => {
                                 f_blinds = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, true,
@@ -952,6 +1005,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"checker" => {
                                 f_checker = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, true,
@@ -961,6 +1015,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"circle" => {
                                 f_circle = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -968,6 +1023,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"dissolve" => {
                                 f_dissolve = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -975,6 +1031,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"comb" => {
                                 f_comb = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, true,
@@ -984,6 +1041,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"cover" => {
                                 f_cover = Some(Box::new(CTEightDirectionTransition::from_xml(
                                     reader, &e, true,
@@ -993,6 +1051,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"cut" => {
                                 f_cut = Some(Box::new(CTOptionalBlackTransition::from_xml(
                                     reader, &e, true,
@@ -1002,6 +1061,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"diamond" => {
                                 f_diamond = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -1009,6 +1069,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"fade" => {
                                 f_fade = Some(Box::new(CTOptionalBlackTransition::from_xml(
                                     reader, &e, true,
@@ -1018,6 +1079,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"newsflash" => {
                                 f_newsflash = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -1025,6 +1087,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"plus" => {
                                 f_plus = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -1032,6 +1095,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"pull" => {
                                 f_pull = Some(Box::new(CTEightDirectionTransition::from_xml(
                                     reader, &e, true,
@@ -1041,6 +1105,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"push" => {
                                 f_push = Some(Box::new(CTSideDirectionTransition::from_xml(
                                     reader, &e, true,
@@ -1050,6 +1115,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"random" => {
                                 f_random = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -1057,6 +1123,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"randomBar" => {
                                 f_random_bar = Some(Box::new(CTOrientationTransition::from_xml(
                                     reader, &e, true,
@@ -1066,6 +1133,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"split" => {
                                 f_split =
                                     Some(Box::new(CTSplitTransition::from_xml(reader, &e, true)?));
@@ -1074,6 +1142,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"strips" => {
                                 f_strips = Some(Box::new(CTCornerDirectionTransition::from_xml(
                                     reader, &e, true,
@@ -1083,6 +1152,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wedge" => {
                                 f_wedge = Some(Box::new(CTEmpty::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -1090,6 +1160,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wheel" => {
                                 f_wheel =
                                     Some(Box::new(CTWheelTransition::from_xml(reader, &e, true)?));
@@ -1098,6 +1169,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"wipe" => {
                                 f_wipe = Some(Box::new(CTSideDirectionTransition::from_xml(
                                     reader, &e, true,
@@ -1107,6 +1179,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"zoom" => {
                                 f_zoom =
                                     Some(Box::new(CTInOutTransition::from_xml(reader, &e, true)?));
@@ -1115,6 +1188,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"sndAc" => {
                                 f_snd_ac = Some(Box::new(CTTransitionSoundAction::from_xml(
                                     reader, &e, true,
@@ -1124,6 +1198,7 @@ impl FromXml for SlideTransition {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -1156,31 +1231,57 @@ impl FromXml for SlideTransition {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-transitions")]
             spd: f_spd,
+            #[cfg(feature = "pml-transitions")]
             adv_click: f_adv_click,
+            #[cfg(feature = "pml-transitions")]
             adv_tm: f_adv_tm,
+            #[cfg(feature = "pml-transitions")]
             blinds: f_blinds,
+            #[cfg(feature = "pml-transitions")]
             checker: f_checker,
+            #[cfg(feature = "pml-transitions")]
             circle: f_circle,
+            #[cfg(feature = "pml-transitions")]
             dissolve: f_dissolve,
+            #[cfg(feature = "pml-transitions")]
             comb: f_comb,
+            #[cfg(feature = "pml-transitions")]
             cover: f_cover,
+            #[cfg(feature = "pml-transitions")]
             cut: f_cut,
+            #[cfg(feature = "pml-transitions")]
             diamond: f_diamond,
+            #[cfg(feature = "pml-transitions")]
             fade: f_fade,
+            #[cfg(feature = "pml-transitions")]
             newsflash: f_newsflash,
+            #[cfg(feature = "pml-transitions")]
             plus: f_plus,
+            #[cfg(feature = "pml-transitions")]
             pull: f_pull,
+            #[cfg(feature = "pml-transitions")]
             push: f_push,
+            #[cfg(feature = "pml-transitions")]
             random: f_random,
+            #[cfg(feature = "pml-transitions")]
             random_bar: f_random_bar,
+            #[cfg(feature = "pml-transitions")]
             split: f_split,
+            #[cfg(feature = "pml-transitions")]
             strips: f_strips,
+            #[cfg(feature = "pml-transitions")]
             wedge: f_wedge,
+            #[cfg(feature = "pml-transitions")]
             wheel: f_wheel,
+            #[cfg(feature = "pml-transitions")]
             wipe: f_wipe,
+            #[cfg(feature = "pml-transitions")]
             zoom: f_zoom,
+            #[cfg(feature = "pml-transitions")]
             snd_ac: f_snd_ac,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -6467,8 +6568,11 @@ impl FromXml for SlideTiming {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-animations")]
         let mut f_tn_lst = None;
+        #[cfg(feature = "pml-animations")]
         let mut f_bld_lst = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -6482,6 +6586,7 @@ impl FromXml for SlideTiming {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-animations")]
                             b"tnLst" => {
                                 f_tn_lst =
                                     Some(Box::new(CTTimeNodeList::from_xml(reader, &e, false)?));
@@ -6490,6 +6595,7 @@ impl FromXml for SlideTiming {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"bldLst" => {
                                 f_bld_lst =
                                     Some(Box::new(CTBuildList::from_xml(reader, &e, false)?));
@@ -6498,6 +6604,7 @@ impl FromXml for SlideTiming {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -6526,6 +6633,7 @@ impl FromXml for SlideTiming {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-animations")]
                             b"tnLst" => {
                                 f_tn_lst =
                                     Some(Box::new(CTTimeNodeList::from_xml(reader, &e, true)?));
@@ -6534,6 +6642,7 @@ impl FromXml for SlideTiming {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"bldLst" => {
                                 f_bld_lst =
                                     Some(Box::new(CTBuildList::from_xml(reader, &e, true)?));
@@ -6542,6 +6651,7 @@ impl FromXml for SlideTiming {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -6574,8 +6684,11 @@ impl FromXml for SlideTiming {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-animations")]
             tn_lst: f_tn_lst,
+            #[cfg(feature = "pml-animations")]
             bld_lst: f_bld_lst,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -7387,11 +7500,17 @@ impl FromXml for CTCommentAuthor {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-comments")]
         let mut f_id: Option<u32> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_name: Option<STName> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_initials: Option<STName> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_last_idx: Option<u32> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_clr_idx: Option<u32> = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -7404,18 +7523,23 @@ impl FromXml for CTCommentAuthor {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-comments")]
                 b"id" => {
                     f_id = val.parse().ok();
                 }
+                #[cfg(feature = "pml-comments")]
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "pml-comments")]
                 b"initials" => {
                     f_initials = Some(val.into_owned());
                 }
+                #[cfg(feature = "pml-comments")]
                 b"lastIdx" => {
                     f_last_idx = val.parse().ok();
                 }
+                #[cfg(feature = "pml-comments")]
                 b"clrIdx" => {
                     f_clr_idx = val.parse().ok();
                 }
@@ -7436,6 +7560,7 @@ impl FromXml for CTCommentAuthor {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
@@ -7463,6 +7588,7 @@ impl FromXml for CTCommentAuthor {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
@@ -7494,13 +7620,19 @@ impl FromXml for CTCommentAuthor {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-comments")]
             id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             initials: f_initials
                 .ok_or_else(|| ParseError::MissingAttribute("initials".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             last_idx: f_last_idx
                 .ok_or_else(|| ParseError::MissingAttribute("lastIdx".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             clr_idx: f_clr_idx.ok_or_else(|| ParseError::MissingAttribute("clrIdx".to_string()))?,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -7598,11 +7730,17 @@ impl FromXml for CTComment {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-comments")]
         let mut f_author_id: Option<u32> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_dt = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_idx: Option<STIndex> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_pos: Option<Box<ooxml_dml::types::Point2D>> = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_text: Option<String> = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -7615,12 +7753,15 @@ impl FromXml for CTComment {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-comments")]
                 b"authorId" => {
                     f_author_id = val.parse().ok();
                 }
+                #[cfg(feature = "pml-comments")]
                 b"dt" => {
                     f_dt = Some(val.into_owned());
                 }
+                #[cfg(feature = "pml-comments")]
                 b"idx" => {
                     f_idx = val.parse().ok();
                 }
@@ -7641,6 +7782,7 @@ impl FromXml for CTComment {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(ooxml_dml::types::Point2D::from_xml(
                                     reader, &e, false,
@@ -7650,6 +7792,7 @@ impl FromXml for CTComment {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-comments")]
                             b"text" => {
                                 f_text = Some(read_text_content(reader)?);
                                 #[cfg(feature = "extra-children")]
@@ -7657,6 +7800,7 @@ impl FromXml for CTComment {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -7685,6 +7829,7 @@ impl FromXml for CTComment {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-comments")]
                             b"pos" => {
                                 f_pos = Some(Box::new(ooxml_dml::types::Point2D::from_xml(
                                     reader, &e, true,
@@ -7694,6 +7839,7 @@ impl FromXml for CTComment {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-comments")]
                             b"text" => {
                                 f_text = Some(String::new());
                                 #[cfg(feature = "extra-children")]
@@ -7701,6 +7847,7 @@ impl FromXml for CTComment {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -7733,12 +7880,18 @@ impl FromXml for CTComment {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-comments")]
             author_id: f_author_id
                 .ok_or_else(|| ParseError::MissingAttribute("authorId".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             dt: f_dt,
+            #[cfg(feature = "pml-comments")]
             idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
+            #[cfg(feature = "pml-comments")]
             text: f_text.ok_or_else(|| ParseError::MissingAttribute("text".to_string()))?,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10143,32 +10296,49 @@ impl FromXml for Presentation {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-styling")]
         let mut f_server_zoom = None;
         let mut f_first_slide_num = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_show_special_pls_on_title_sld = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_rtl = None;
         let mut f_remove_personal_info_on_save = None;
         let mut f_compat_mode = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_strict_first_and_last_chars = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_embed_true_type_fonts = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_save_subset_fonts = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_auto_compress_pictures = None;
         let mut f_bookmark_id_seed = None;
         let mut f_conformance = None;
         let mut f_sld_master_id_lst = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_notes_master_id_lst = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_handout_master_id_lst = None;
         let mut f_sld_id_lst = None;
         let mut f_sld_sz = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_notes_sz: Option<Box<ooxml_dml::types::PositiveSize2D>> = None;
+        #[cfg(feature = "pml-external")]
         let mut f_smart_tags = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_embedded_font_lst = None;
         let mut f_cust_show_lst = None;
+        #[cfg(feature = "pml-media")]
         let mut f_photo_album = None;
+        #[cfg(feature = "pml-external")]
         let mut f_cust_data_lst = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_kinsoku = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_default_text_style = None;
         let mut f_modify_verifier = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10181,15 +10351,18 @@ impl FromXml for Presentation {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-styling")]
                 b"serverZoom" => {
                     f_server_zoom = val.parse().ok();
                 }
                 b"firstSlideNum" => {
                     f_first_slide_num = val.parse().ok();
                 }
+                #[cfg(feature = "pml-styling")]
                 b"showSpecialPlsOnTitleSld" => {
                     f_show_special_pls_on_title_sld = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-styling")]
                 b"rtl" => {
                     f_rtl = Some(val == "true" || val == "1");
                 }
@@ -10199,15 +10372,19 @@ impl FromXml for Presentation {
                 b"compatMode" => {
                     f_compat_mode = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-styling")]
                 b"strictFirstAndLastChars" => {
                     f_strict_first_and_last_chars = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-styling")]
                 b"embedTrueTypeFonts" => {
                     f_embed_true_type_fonts = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-styling")]
                 b"saveSubsetFonts" => {
                     f_save_subset_fonts = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-styling")]
                 b"autoCompressPictures" => {
                     f_auto_compress_pictures = Some(val == "true" || val == "1");
                 }
@@ -10243,6 +10420,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesMasterIdLst" => {
                                 f_notes_master_id_lst = Some(Box::new(
                                     CTNotesMasterIdList::from_xml(reader, &e, false)?,
@@ -10252,6 +10430,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"handoutMasterIdLst" => {
                                 f_handout_master_id_lst = Some(Box::new(
                                     CTHandoutMasterIdList::from_xml(reader, &e, false)?,
@@ -10277,6 +10456,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesSz" => {
                                 f_notes_sz = Some(Box::new(
                                     ooxml_dml::types::PositiveSize2D::from_xml(reader, &e, false)?,
@@ -10286,6 +10466,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"smartTags" => {
                                 f_smart_tags =
                                     Some(Box::new(CTSmartTags::from_xml(reader, &e, false)?));
@@ -10294,6 +10475,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"embeddedFontLst" => {
                                 f_embedded_font_lst = Some(Box::new(CTEmbeddedFontList::from_xml(
                                     reader, &e, false,
@@ -10311,6 +10493,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-media")]
                             b"photoAlbum" => {
                                 f_photo_album =
                                     Some(Box::new(CTPhotoAlbum::from_xml(reader, &e, false)?));
@@ -10319,6 +10502,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"custDataLst" => {
                                 f_cust_data_lst = Some(Box::new(CTCustomerDataList::from_xml(
                                     reader, &e, false,
@@ -10328,6 +10512,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTKinsoku::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -10335,6 +10520,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"defaultTextStyle" => {
                                 f_default_text_style = Some(Box::new(
                                     ooxml_dml::types::CTTextListStyle::from_xml(reader, &e, false)?,
@@ -10352,6 +10538,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
@@ -10388,6 +10575,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesMasterIdLst" => {
                                 f_notes_master_id_lst = Some(Box::new(
                                     CTNotesMasterIdList::from_xml(reader, &e, true)?,
@@ -10397,6 +10585,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"handoutMasterIdLst" => {
                                 f_handout_master_id_lst = Some(Box::new(
                                     CTHandoutMasterIdList::from_xml(reader, &e, true)?,
@@ -10421,6 +10610,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesSz" => {
                                 f_notes_sz = Some(Box::new(
                                     ooxml_dml::types::PositiveSize2D::from_xml(reader, &e, true)?,
@@ -10430,6 +10620,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"smartTags" => {
                                 f_smart_tags =
                                     Some(Box::new(CTSmartTags::from_xml(reader, &e, true)?));
@@ -10438,6 +10629,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"embeddedFontLst" => {
                                 f_embedded_font_lst =
                                     Some(Box::new(CTEmbeddedFontList::from_xml(reader, &e, true)?));
@@ -10454,6 +10646,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-media")]
                             b"photoAlbum" => {
                                 f_photo_album =
                                     Some(Box::new(CTPhotoAlbum::from_xml(reader, &e, true)?));
@@ -10462,6 +10655,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"custDataLst" => {
                                 f_cust_data_lst =
                                     Some(Box::new(CTCustomerDataList::from_xml(reader, &e, true)?));
@@ -10470,6 +10664,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"kinsoku" => {
                                 f_kinsoku = Some(Box::new(CTKinsoku::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -10477,6 +10672,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"defaultTextStyle" => {
                                 f_default_text_style = Some(Box::new(
                                     ooxml_dml::types::CTTextListStyle::from_xml(reader, &e, true)?,
@@ -10494,6 +10690,7 @@ impl FromXml for Presentation {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
@@ -10525,33 +10722,50 @@ impl FromXml for Presentation {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-styling")]
             server_zoom: f_server_zoom,
             first_slide_num: f_first_slide_num,
+            #[cfg(feature = "pml-styling")]
             show_special_pls_on_title_sld: f_show_special_pls_on_title_sld,
+            #[cfg(feature = "pml-styling")]
             rtl: f_rtl,
             remove_personal_info_on_save: f_remove_personal_info_on_save,
             compat_mode: f_compat_mode,
+            #[cfg(feature = "pml-styling")]
             strict_first_and_last_chars: f_strict_first_and_last_chars,
+            #[cfg(feature = "pml-styling")]
             embed_true_type_fonts: f_embed_true_type_fonts,
+            #[cfg(feature = "pml-styling")]
             save_subset_fonts: f_save_subset_fonts,
+            #[cfg(feature = "pml-styling")]
             auto_compress_pictures: f_auto_compress_pictures,
             bookmark_id_seed: f_bookmark_id_seed,
             conformance: f_conformance,
             sld_master_id_lst: f_sld_master_id_lst,
+            #[cfg(feature = "pml-notes")]
             notes_master_id_lst: f_notes_master_id_lst,
+            #[cfg(feature = "pml-masters")]
             handout_master_id_lst: f_handout_master_id_lst,
             sld_id_lst: f_sld_id_lst,
             sld_sz: f_sld_sz,
+            #[cfg(feature = "pml-notes")]
             notes_sz: f_notes_sz
                 .ok_or_else(|| ParseError::MissingAttribute("notesSz".to_string()))?,
+            #[cfg(feature = "pml-external")]
             smart_tags: f_smart_tags,
+            #[cfg(feature = "pml-styling")]
             embedded_font_lst: f_embedded_font_lst,
             cust_show_lst: f_cust_show_lst,
+            #[cfg(feature = "pml-media")]
             photo_album: f_photo_album,
+            #[cfg(feature = "pml-external")]
             cust_data_lst: f_cust_data_lst,
+            #[cfg(feature = "pml-styling")]
             kinsoku: f_kinsoku,
+            #[cfg(feature = "pml-styling")]
             default_text_style: f_default_text_style,
             modify_verifier: f_modify_verifier,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -11275,11 +11489,15 @@ impl FromXml for CTPresentationProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-external")]
         let mut f_html_pub_pr = None;
+        #[cfg(feature = "pml-external")]
         let mut f_web_pr = None;
         let mut f_prn_pr = None;
         let mut f_show_pr = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_clr_mru = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -11293,6 +11511,7 @@ impl FromXml for CTPresentationProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-external")]
                             b"htmlPubPr" => {
                                 f_html_pub_pr = Some(Box::new(CTHtmlPublishProperties::from_xml(
                                     reader, &e, false,
@@ -11302,6 +11521,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"webPr" => {
                                 f_web_pr =
                                     Some(Box::new(CTWebProperties::from_xml(reader, &e, false)?));
@@ -11326,6 +11546,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMru" => {
                                 f_clr_mru = Some(Box::new(ooxml_dml::types::CTColorMRU::from_xml(
                                     reader, &e, false,
@@ -11335,6 +11556,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
@@ -11362,6 +11584,7 @@ impl FromXml for CTPresentationProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-external")]
                             b"htmlPubPr" => {
                                 f_html_pub_pr = Some(Box::new(CTHtmlPublishProperties::from_xml(
                                     reader, &e, true,
@@ -11371,6 +11594,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"webPr" => {
                                 f_web_pr =
                                     Some(Box::new(CTWebProperties::from_xml(reader, &e, true)?));
@@ -11395,6 +11619,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMru" => {
                                 f_clr_mru = Some(Box::new(ooxml_dml::types::CTColorMRU::from_xml(
                                     reader, &e, true,
@@ -11404,6 +11629,7 @@ impl FromXml for CTPresentationProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
@@ -11435,11 +11661,15 @@ impl FromXml for CTPresentationProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-external")]
             html_pub_pr: f_html_pub_pr,
+            #[cfg(feature = "pml-external")]
             web_pr: f_web_pr,
             prn_pr: f_prn_pr,
             show_pr: f_show_pr,
+            #[cfg(feature = "pml-styling")]
             clr_mru: f_clr_mru,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -11453,9 +11683,13 @@ impl FromXml for CTHeaderFooter {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-masters")]
         let mut f_sld_num = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_hdr = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_ftr = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_dt = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -11469,15 +11703,19 @@ impl FromXml for CTHeaderFooter {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-masters")]
                 b"sldNum" => {
                     f_sld_num = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"hdr" => {
                     f_hdr = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"ftr" => {
                     f_ftr = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"dt" => {
                     f_dt = Some(val == "true" || val == "1");
                 }
@@ -11558,9 +11796,13 @@ impl FromXml for CTHeaderFooter {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-masters")]
             sld_num: f_sld_num,
+            #[cfg(feature = "pml-masters")]
             hdr: f_hdr,
+            #[cfg(feature = "pml-masters")]
             ftr: f_ftr,
+            #[cfg(feature = "pml-masters")]
             dt: f_dt,
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
@@ -11989,11 +12231,14 @@ impl FromXml for Shape {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-styling")]
         let mut f_use_bg_fill = None;
         let mut f_non_visual_properties: Option<Box<ShapeNonVisual>> = None;
         let mut f_shape_properties: Option<Box<ooxml_dml::types::CTShapeProperties>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_style = None;
         let mut f_text_body = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12006,6 +12251,7 @@ impl FromXml for Shape {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-styling")]
                 b"useBgFill" => {
                     f_use_bg_fill = Some(val == "true" || val == "1");
                 }
@@ -12044,6 +12290,7 @@ impl FromXml for Shape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, false,
@@ -12062,6 +12309,7 @@ impl FromXml for Shape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -12108,6 +12356,7 @@ impl FromXml for Shape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, true,
@@ -12126,6 +12375,7 @@ impl FromXml for Shape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -12158,13 +12408,16 @@ impl FromXml for Shape {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-styling")]
             use_bg_fill: f_use_bg_fill,
             non_visual_properties: f_non_visual_properties
                 .ok_or_else(|| ParseError::MissingAttribute("nvSpPr".to_string()))?,
             shape_properties: f_shape_properties
                 .ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             style: f_style,
             text_body: f_text_body,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -12319,7 +12572,9 @@ impl FromXml for Connector {
     ) -> Result<Self, ParseError> {
         let mut f_non_visual_connector_properties: Option<Box<CTConnectorNonVisual>> = None;
         let mut f_shape_properties: Option<Box<ooxml_dml::types::CTShapeProperties>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_style = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -12352,6 +12607,7 @@ impl FromXml for Connector {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, false,
@@ -12361,6 +12617,7 @@ impl FromXml for Connector {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -12408,6 +12665,7 @@ impl FromXml for Connector {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, true,
@@ -12417,6 +12675,7 @@ impl FromXml for Connector {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -12453,7 +12712,9 @@ impl FromXml for Connector {
                 .ok_or_else(|| ParseError::MissingAttribute("nvCxnSpPr".to_string()))?,
             shape_properties: f_shape_properties
                 .ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             style: f_style,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -12606,7 +12867,9 @@ impl FromXml for Picture {
         let mut f_non_visual_picture_properties: Option<Box<CTPictureNonVisual>> = None;
         let mut f_blip_fill: Option<Box<ooxml_dml::types::BlipFillProperties>> = None;
         let mut f_shape_properties: Option<Box<ooxml_dml::types::CTShapeProperties>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_style = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -12649,6 +12912,7 @@ impl FromXml for Picture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, false,
@@ -12658,6 +12922,7 @@ impl FromXml for Picture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -12714,6 +12979,7 @@ impl FromXml for Picture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"style" => {
                                 f_style = Some(Box::new(ooxml_dml::types::ShapeStyle::from_xml(
                                     reader, &e, true,
@@ -12723,6 +12989,7 @@ impl FromXml for Picture {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -12761,7 +13028,9 @@ impl FromXml for Picture {
                 .ok_or_else(|| ParseError::MissingAttribute("blipFill".to_string()))?,
             shape_properties: f_shape_properties
                 .ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             style: f_style,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -12913,9 +13182,11 @@ impl FromXml for GraphicalObjectFrame {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-styling")]
         let mut f_bw_mode = None;
         let mut f_nv_graphic_frame_pr: Option<Box<CTGraphicalObjectFrameNonVisual>> = None;
         let mut f_xfrm: Option<Box<ooxml_dml::types::Transform2D>> = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -12928,6 +13199,7 @@ impl FromXml for GraphicalObjectFrame {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-styling")]
                 b"bwMode" => {
                     f_bw_mode = val.parse().ok();
                 }
@@ -12966,6 +13238,7 @@ impl FromXml for GraphicalObjectFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -13012,6 +13285,7 @@ impl FromXml for GraphicalObjectFrame {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -13044,10 +13318,12 @@ impl FromXml for GraphicalObjectFrame {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-styling")]
             bw_mode: f_bw_mode,
             nv_graphic_frame_pr: f_nv_graphic_frame_pr
                 .ok_or_else(|| ParseError::MissingAttribute("nvGraphicFramePr".to_string()))?,
             xfrm: f_xfrm.ok_or_else(|| ParseError::MissingAttribute("xfrm".to_string()))?,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -13207,7 +13483,9 @@ impl FromXml for GroupShape {
         let mut f_graphic_frame = None;
         let mut f_connector = None;
         let mut f_picture = None;
+        #[cfg(feature = "pml-external")]
         let mut f_content_part = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -13280,6 +13558,7 @@ impl FromXml for GroupShape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"contentPart" => {
                                 f_content_part =
                                     Some(Box::new(CTRel::from_xml(reader, &e, false)?));
@@ -13288,6 +13567,7 @@ impl FromXml for GroupShape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -13375,6 +13655,7 @@ impl FromXml for GroupShape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"contentPart" => {
                                 f_content_part = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13382,6 +13663,7 @@ impl FromXml for GroupShape {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -13423,7 +13705,9 @@ impl FromXml for GroupShape {
             graphic_frame: f_graphic_frame,
             connector: f_connector,
             picture: f_picture,
+            #[cfg(feature = "pml-external")]
             content_part: f_content_part,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -13759,6 +14043,7 @@ impl FromXml for CTBackground {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-styling")]
         let mut f_bw_mode = None;
         let mut f_background: Option<Box<EGBackground>> = None;
         #[cfg(feature = "extra-attrs")]
@@ -13772,6 +14057,7 @@ impl FromXml for CTBackground {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-styling")]
                 b"bwMode" => {
                     f_bw_mode = val.parse().ok();
                 }
@@ -13850,6 +14136,7 @@ impl FromXml for CTBackground {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-styling")]
             bw_mode: f_bw_mode,
             background: f_background,
             #[cfg(feature = "extra-attrs")]
@@ -13867,10 +14154,14 @@ impl FromXml for CommonSlideData {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_name = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_bg = None;
         let mut f_shape_tree: Option<Box<GroupShape>> = None;
+        #[cfg(feature = "pml-external")]
         let mut f_cust_data_lst = None;
+        #[cfg(feature = "pml-external")]
         let mut f_controls = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -13903,6 +14194,7 @@ impl FromXml for CommonSlideData {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-styling")]
                             b"bg" => {
                                 f_bg = Some(Box::new(CTBackground::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -13918,6 +14210,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"custDataLst" => {
                                 f_cust_data_lst = Some(Box::new(CTCustomerDataList::from_xml(
                                     reader, &e, false,
@@ -13927,6 +14220,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"controls" => {
                                 f_controls =
                                     Some(Box::new(CTControlList::from_xml(reader, &e, false)?));
@@ -13935,6 +14229,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
@@ -13962,6 +14257,7 @@ impl FromXml for CommonSlideData {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "pml-styling")]
                             b"bg" => {
                                 f_bg = Some(Box::new(CTBackground::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -13977,6 +14273,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"custDataLst" => {
                                 f_cust_data_lst =
                                     Some(Box::new(CTCustomerDataList::from_xml(reader, &e, true)?));
@@ -13985,6 +14282,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-external")]
                             b"controls" => {
                                 f_controls =
                                     Some(Box::new(CTControlList::from_xml(reader, &e, true)?));
@@ -13993,6 +14291,7 @@ impl FromXml for CommonSlideData {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
@@ -14025,11 +14324,15 @@ impl FromXml for CommonSlideData {
 
         Ok(Self {
             name: f_name,
+            #[cfg(feature = "pml-styling")]
             bg: f_bg,
             shape_tree: f_shape_tree
                 .ok_or_else(|| ParseError::MissingAttribute("spTree".to_string()))?,
+            #[cfg(feature = "pml-external")]
             cust_data_lst: f_cust_data_lst,
+            #[cfg(feature = "pml-external")]
             controls: f_controls,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -14045,15 +14348,19 @@ impl FromXml for Slide {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-masters")]
         let mut f_show_master_sp = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_show_master_ph_anim = None;
         let mut f_show = None;
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_clr_map_ovr = None;
         #[cfg(feature = "pml-transitions")]
         let mut f_transition = None;
         #[cfg(feature = "pml-animations")]
         let mut f_timing = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -14066,9 +14373,11 @@ impl FromXml for Slide {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-masters")]
                 b"showMasterSp" => {
                     f_show_master_sp = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"showMasterPhAnim" => {
                     f_show_master_ph_anim = Some(val == "true" || val == "1");
                 }
@@ -14100,6 +14409,7 @@ impl FromXml for Slide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -14129,6 +14439,7 @@ impl FromXml for Slide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -14165,6 +14476,7 @@ impl FromXml for Slide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -14193,6 +14505,7 @@ impl FromXml for Slide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -14225,16 +14538,20 @@ impl FromXml for Slide {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-masters")]
             show_master_sp: f_show_master_sp,
+            #[cfg(feature = "pml-masters")]
             show_master_ph_anim: f_show_master_ph_anim,
             show: f_show,
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             clr_map_ovr: f_clr_map_ovr,
             #[cfg(feature = "pml-transitions")]
             transition: f_transition,
             #[cfg(feature = "pml-animations")]
             timing: f_timing,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -14250,17 +14567,28 @@ impl FromXml for SlideLayout {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-masters")]
         let mut f_show_master_sp = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_show_master_ph_anim = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_matching_name = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_type = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_preserve = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_user_drawn = None;
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_clr_map_ovr = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_transition = None;
+        #[cfg(feature = "pml-animations")]
         let mut f_timing = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_hf = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -14273,21 +14601,27 @@ impl FromXml for SlideLayout {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-masters")]
                 b"showMasterSp" => {
                     f_show_master_sp = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"showMasterPhAnim" => {
                     f_show_master_ph_anim = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"matchingName" => {
                     f_matching_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "pml-masters")]
                 b"type" => {
                     f_type = val.parse().ok();
                 }
+                #[cfg(feature = "pml-masters")]
                 b"preserve" => {
                     f_preserve = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-masters")]
                 b"userDrawn" => {
                     f_user_drawn = Some(val == "true" || val == "1");
                 }
@@ -14316,6 +14650,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -14327,6 +14662,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"transition" => {
                                 f_transition =
                                     Some(Box::new(SlideTransition::from_xml(reader, &e, false)?));
@@ -14335,6 +14671,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"timing" => {
                                 f_timing =
                                     Some(Box::new(SlideTiming::from_xml(reader, &e, false)?));
@@ -14343,6 +14680,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -14350,6 +14688,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -14386,6 +14725,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -14397,6 +14737,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"transition" => {
                                 f_transition =
                                     Some(Box::new(SlideTransition::from_xml(reader, &e, true)?));
@@ -14405,6 +14746,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"timing" => {
                                 f_timing = Some(Box::new(SlideTiming::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -14412,6 +14754,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -14419,6 +14762,7 @@ impl FromXml for SlideLayout {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -14451,18 +14795,29 @@ impl FromXml for SlideLayout {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-masters")]
             show_master_sp: f_show_master_sp,
+            #[cfg(feature = "pml-masters")]
             show_master_ph_anim: f_show_master_ph_anim,
+            #[cfg(feature = "pml-masters")]
             matching_name: f_matching_name,
+            #[cfg(feature = "pml-masters")]
             r#type: f_type,
+            #[cfg(feature = "pml-masters")]
             preserve: f_preserve,
+            #[cfg(feature = "pml-masters")]
             user_drawn: f_user_drawn,
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             clr_map_ovr: f_clr_map_ovr,
+            #[cfg(feature = "pml-transitions")]
             transition: f_transition,
+            #[cfg(feature = "pml-animations")]
             timing: f_timing,
+            #[cfg(feature = "pml-masters")]
             hf: f_hf,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -14813,14 +15168,21 @@ impl FromXml for SlideMaster {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-masters")]
         let mut f_preserve = None;
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
         let mut f_clr_map: Option<Box<ooxml_dml::types::CTColorMapping>> = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_sld_layout_id_lst = None;
+        #[cfg(feature = "pml-transitions")]
         let mut f_transition = None;
+        #[cfg(feature = "pml-animations")]
         let mut f_timing = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_hf = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_tx_styles = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -14833,6 +15195,7 @@ impl FromXml for SlideMaster {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-masters")]
                 b"preserve" => {
                     f_preserve = Some(val == "true" || val == "1");
                 }
@@ -14870,6 +15233,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"sldLayoutIdLst" => {
                                 f_sld_layout_id_lst = Some(Box::new(
                                     CTSlideLayoutIdList::from_xml(reader, &e, false)?,
@@ -14879,6 +15243,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"transition" => {
                                 f_transition =
                                     Some(Box::new(SlideTransition::from_xml(reader, &e, false)?));
@@ -14887,6 +15252,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"timing" => {
                                 f_timing =
                                     Some(Box::new(SlideTiming::from_xml(reader, &e, false)?));
@@ -14895,6 +15261,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -14902,6 +15269,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"txStyles" => {
                                 f_tx_styles = Some(Box::new(CTSlideMasterTextStyles::from_xml(
                                     reader, &e, false,
@@ -14911,6 +15279,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -14956,6 +15325,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"sldLayoutIdLst" => {
                                 f_sld_layout_id_lst = Some(Box::new(
                                     CTSlideLayoutIdList::from_xml(reader, &e, true)?,
@@ -14965,6 +15335,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-transitions")]
                             b"transition" => {
                                 f_transition =
                                     Some(Box::new(SlideTransition::from_xml(reader, &e, true)?));
@@ -14973,6 +15344,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-animations")]
                             b"timing" => {
                                 f_timing = Some(Box::new(SlideTiming::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -14980,6 +15352,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -14987,6 +15360,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"txStyles" => {
                                 f_tx_styles = Some(Box::new(CTSlideMasterTextStyles::from_xml(
                                     reader, &e, true,
@@ -14996,6 +15370,7 @@ impl FromXml for SlideMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -15028,15 +15403,22 @@ impl FromXml for SlideMaster {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-masters")]
             preserve: f_preserve,
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
             clr_map: f_clr_map.ok_or_else(|| ParseError::MissingAttribute("clrMap".to_string()))?,
+            #[cfg(feature = "pml-masters")]
             sld_layout_id_lst: f_sld_layout_id_lst,
+            #[cfg(feature = "pml-transitions")]
             transition: f_transition,
+            #[cfg(feature = "pml-animations")]
             timing: f_timing,
+            #[cfg(feature = "pml-masters")]
             hf: f_hf,
+            #[cfg(feature = "pml-styling")]
             tx_styles: f_tx_styles,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -15054,7 +15436,9 @@ impl FromXml for HandoutMaster {
     ) -> Result<Self, ParseError> {
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
         let mut f_clr_map: Option<Box<ooxml_dml::types::CTColorMapping>> = None;
+        #[cfg(feature = "pml-masters")]
         let mut f_hf = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -15085,6 +15469,7 @@ impl FromXml for HandoutMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -15092,6 +15477,7 @@ impl FromXml for HandoutMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -15137,6 +15523,7 @@ impl FromXml for HandoutMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-masters")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -15144,6 +15531,7 @@ impl FromXml for HandoutMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -15179,7 +15567,9 @@ impl FromXml for HandoutMaster {
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
             clr_map: f_clr_map.ok_or_else(|| ParseError::MissingAttribute("clrMap".to_string()))?,
+            #[cfg(feature = "pml-masters")]
             hf: f_hf,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -15195,8 +15585,11 @@ impl FromXml for NotesMaster {
     ) -> Result<Self, ParseError> {
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
         let mut f_clr_map: Option<Box<ooxml_dml::types::CTColorMapping>> = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_hf = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_notes_style = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -15227,6 +15620,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -15234,6 +15628,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"notesStyle" => {
                                 f_notes_style = Some(Box::new(
                                     ooxml_dml::types::CTTextListStyle::from_xml(reader, &e, false)?,
@@ -15243,6 +15638,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -15288,6 +15684,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"hf" => {
                                 f_hf = Some(Box::new(CTHeaderFooter::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -15295,6 +15692,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"notesStyle" => {
                                 f_notes_style = Some(Box::new(
                                     ooxml_dml::types::CTTextListStyle::from_xml(reader, &e, true)?,
@@ -15304,6 +15702,7 @@ impl FromXml for NotesMaster {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -15339,8 +15738,11 @@ impl FromXml for NotesMaster {
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
             clr_map: f_clr_map.ok_or_else(|| ParseError::MissingAttribute("clrMap".to_string()))?,
+            #[cfg(feature = "pml-notes")]
             hf: f_hf,
+            #[cfg(feature = "pml-styling")]
             notes_style: f_notes_style,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -15354,10 +15756,14 @@ impl FromXml for NotesSlide {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "pml-notes")]
         let mut f_show_master_sp = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_show_master_ph_anim = None;
         let mut f_common_slide_data: Option<Box<CommonSlideData>> = None;
+        #[cfg(feature = "pml-styling")]
         let mut f_clr_map_ovr = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -15370,9 +15776,11 @@ impl FromXml for NotesSlide {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "pml-notes")]
                 b"showMasterSp" => {
                     f_show_master_sp = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "pml-notes")]
                 b"showMasterPhAnim" => {
                     f_show_master_ph_anim = Some(val == "true" || val == "1");
                 }
@@ -15401,6 +15809,7 @@ impl FromXml for NotesSlide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -15412,6 +15821,7 @@ impl FromXml for NotesSlide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, false,
@@ -15448,6 +15858,7 @@ impl FromXml for NotesSlide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-styling")]
                             b"clrMapOvr" => {
                                 f_clr_map_ovr = Some(Box::new(
                                     ooxml_dml::types::CTColorMappingOverride::from_xml(
@@ -15459,6 +15870,7 @@ impl FromXml for NotesSlide {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst = Some(Box::new(CTExtensionListModify::from_xml(
                                     reader, &e, true,
@@ -15491,11 +15903,15 @@ impl FromXml for NotesSlide {
         }
 
         Ok(Self {
+            #[cfg(feature = "pml-notes")]
             show_master_sp: f_show_master_sp,
+            #[cfg(feature = "pml-notes")]
             show_master_ph_anim: f_show_master_ph_anim,
             common_slide_data: f_common_slide_data
                 .ok_or_else(|| ParseError::MissingAttribute("cSld".to_string()))?,
+            #[cfg(feature = "pml-styling")]
             clr_map_ovr: f_clr_map_ovr,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -17085,14 +17501,18 @@ impl FromXml for CTViewProperties {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_last_view = None;
+        #[cfg(feature = "pml-comments")]
         let mut f_show_comments = None;
         let mut f_normal_view_pr = None;
         let mut f_slide_view_pr = None;
         let mut f_outline_view_pr = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_notes_text_view_pr = None;
         let mut f_sorter_view_pr = None;
+        #[cfg(feature = "pml-notes")]
         let mut f_notes_view_pr = None;
         let mut f_grid_spacing = None;
+        #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -17108,6 +17528,7 @@ impl FromXml for CTViewProperties {
                 b"lastView" => {
                     f_last_view = val.parse().ok();
                 }
+                #[cfg(feature = "pml-comments")]
                 b"showComments" => {
                     f_show_comments = Some(val == "true" || val == "1");
                 }
@@ -17155,6 +17576,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesTextViewPr" => {
                                 f_notes_text_view_pr = Some(Box::new(
                                     CTNotesTextViewProperties::from_xml(reader, &e, false)?,
@@ -17173,6 +17595,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesViewPr" => {
                                 f_notes_view_pr = Some(Box::new(CTNotesViewProperties::from_xml(
                                     reader, &e, false,
@@ -17191,6 +17614,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, false)?));
@@ -17245,6 +17669,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesTextViewPr" => {
                                 f_notes_text_view_pr = Some(Box::new(
                                     CTNotesTextViewProperties::from_xml(reader, &e, true)?,
@@ -17263,6 +17688,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-notes")]
                             b"notesViewPr" => {
                                 f_notes_view_pr = Some(Box::new(CTNotesViewProperties::from_xml(
                                     reader, &e, true,
@@ -17281,6 +17707,7 @@ impl FromXml for CTViewProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "pml-extensions")]
                             b"extLst" => {
                                 f_ext_lst =
                                     Some(Box::new(CTExtensionList::from_xml(reader, &e, true)?));
@@ -17313,14 +17740,18 @@ impl FromXml for CTViewProperties {
 
         Ok(Self {
             last_view: f_last_view,
+            #[cfg(feature = "pml-comments")]
             show_comments: f_show_comments,
             normal_view_pr: f_normal_view_pr,
             slide_view_pr: f_slide_view_pr,
             outline_view_pr: f_outline_view_pr,
+            #[cfg(feature = "pml-notes")]
             notes_text_view_pr: f_notes_text_view_pr,
             sorter_view_pr: f_sorter_view_pr,
+            #[cfg(feature = "pml-notes")]
             notes_view_pr: f_notes_view_pr,
             grid_spacing: f_grid_spacing,
+            #[cfg(feature = "pml-extensions")]
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,

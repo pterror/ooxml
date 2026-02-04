@@ -2667,9 +2667,11 @@ pub struct CTTransitionSoundAction {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SlideTransition {
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "@spd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spd: Option<STTransitionSpeed>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "@advClick")]
     #[serde(
         default,
@@ -2677,75 +2679,99 @@ pub struct SlideTransition {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub adv_click: Option<bool>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "@advTm")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub adv_tm: Option<u32>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "blinds")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub blinds: Option<Box<CTOrientationTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "checker")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub checker: Option<Box<CTOrientationTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "circle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub circle: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "dissolve")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dissolve: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "comb")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comb: Option<Box<CTOrientationTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "cover")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cover: Option<Box<CTEightDirectionTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "cut")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cut: Option<Box<CTOptionalBlackTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "diamond")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub diamond: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "fade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fade: Option<Box<CTOptionalBlackTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "newsflash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub newsflash: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "plus")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub plus: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "pull")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pull: Option<Box<CTEightDirectionTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "push")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub push: Option<Box<CTSideDirectionTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "random")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub random: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "randomBar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub random_bar: Option<Box<CTOrientationTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "split")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub split: Option<Box<CTSplitTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "strips")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub strips: Option<Box<CTCornerDirectionTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "wedge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wedge: Option<Box<CTEmpty>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "wheel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wheel: Option<Box<CTWheelTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "wipe")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wipe: Option<Box<CTSideDirectionTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "zoom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub zoom: Option<Box<CTInOutTransition>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "sndAc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub snd_ac: Option<Box<CTTransitionSoundAction>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -3994,12 +4020,15 @@ pub struct CTBuildList {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SlideTiming {
+    #[cfg(feature = "pml-animations")]
     #[serde(rename = "tnLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tn_lst: Option<Box<CTTimeNodeList>>,
+    #[cfg(feature = "pml-animations")]
     #[serde(rename = "bldLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bld_lst: Option<Box<CTBuildList>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -4162,16 +4191,22 @@ pub struct CTExtensionListModify {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCommentAuthor {
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@id")]
     pub id: u32,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@name")]
     pub name: STName,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@initials")]
     pub initials: STName,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@lastIdx")]
     pub last_idx: u32,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@clrIdx")]
     pub clr_idx: u32,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -4205,17 +4240,23 @@ pub type PCmAuthorLst = Box<CTCommentAuthorList>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTComment {
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@authorId")]
     pub author_id: u32,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@dt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dt: Option<String>,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@idx")]
     pub idx: STIndex,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "pos")]
     pub pos: Box<ooxml_dml::types::Point2D>,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "text")]
     pub text: String,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -4765,12 +4806,14 @@ pub struct CTModifyVerifier {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Presentation {
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@serverZoom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub server_zoom: Option<ooxml_dml::types::STPercentage>,
     #[serde(rename = "@firstSlideNum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_slide_num: Option<i32>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@showSpecialPlsOnTitleSld")]
     #[serde(
         default,
@@ -4778,6 +4821,7 @@ pub struct Presentation {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_special_pls_on_title_sld: Option<bool>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@rtl")]
     #[serde(
         default,
@@ -4799,6 +4843,7 @@ pub struct Presentation {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub compat_mode: Option<bool>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@strictFirstAndLastChars")]
     #[serde(
         default,
@@ -4806,6 +4851,7 @@ pub struct Presentation {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub strict_first_and_last_chars: Option<bool>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@embedTrueTypeFonts")]
     #[serde(
         default,
@@ -4813,6 +4859,7 @@ pub struct Presentation {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub embed_true_type_fonts: Option<bool>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@saveSubsetFonts")]
     #[serde(
         default,
@@ -4820,6 +4867,7 @@ pub struct Presentation {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub save_subset_fonts: Option<bool>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@autoCompressPictures")]
     #[serde(
         default,
@@ -4836,9 +4884,11 @@ pub struct Presentation {
     #[serde(rename = "sldMasterIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_master_id_lst: Option<Box<CTSlideMasterIdList>>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "notesMasterIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes_master_id_lst: Option<Box<CTNotesMasterIdList>>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "handoutMasterIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub handout_master_id_lst: Option<Box<CTHandoutMasterIdList>>,
@@ -4848,32 +4898,40 @@ pub struct Presentation {
     #[serde(rename = "sldSz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_sz: Option<Box<CTSlideSize>>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "notesSz")]
     pub notes_sz: Box<ooxml_dml::types::PositiveSize2D>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "smartTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tags: Option<Box<CTSmartTags>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "embeddedFontLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub embedded_font_lst: Option<Box<CTEmbeddedFontList>>,
     #[serde(rename = "custShowLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cust_show_lst: Option<Box<CTCustomShowList>>,
+    #[cfg(feature = "pml-media")]
     #[serde(rename = "photoAlbum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub photo_album: Option<Box<CTPhotoAlbum>>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "custDataLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cust_data_lst: Option<Box<CTCustomerDataList>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "kinsoku")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub kinsoku: Option<Box<CTKinsoku>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "defaultTextStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_text_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "modifyVerifier")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modify_verifier: Option<Box<CTModifyVerifier>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5134,9 +5192,11 @@ pub struct CTShowProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPresentationProperties {
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "htmlPubPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub html_pub_pr: Option<Box<CTHtmlPublishProperties>>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "webPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub web_pr: Option<Box<CTWebProperties>>,
@@ -5146,9 +5206,11 @@ pub struct CTPresentationProperties {
     #[serde(rename = "showPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub show_pr: Option<Box<CTShowProperties>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "clrMru")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_mru: Option<Box<ooxml_dml::types::CTColorMRU>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5163,6 +5225,7 @@ pub type PPresentationPr = Box<CTPresentationProperties>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHeaderFooter {
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@sldNum")]
     #[serde(
         default,
@@ -5170,6 +5233,7 @@ pub struct CTHeaderFooter {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub sld_num: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@hdr")]
     #[serde(
         default,
@@ -5177,6 +5241,7 @@ pub struct CTHeaderFooter {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub hdr: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@ftr")]
     #[serde(
         default,
@@ -5184,6 +5249,7 @@ pub struct CTHeaderFooter {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub ftr: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@dt")]
     #[serde(
         default,
@@ -5302,6 +5368,7 @@ pub struct ShapeNonVisual {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Shape {
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@useBgFill")]
     #[serde(
         default,
@@ -5313,12 +5380,14 @@ pub struct Shape {
     pub non_visual_properties: Box<ShapeNonVisual>,
     #[serde(rename = "spPr")]
     pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
     #[serde(rename = "txBody")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_body: Option<Box<ooxml_dml::types::TextBody>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5357,9 +5426,11 @@ pub struct Connector {
     pub non_visual_connector_properties: Box<CTConnectorNonVisual>,
     #[serde(rename = "spPr")]
     pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5393,9 +5464,11 @@ pub struct Picture {
     pub blip_fill: Box<ooxml_dml::types::BlipFillProperties>,
     #[serde(rename = "spPr")]
     pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5423,6 +5496,7 @@ pub struct CTGraphicalObjectFrameNonVisual {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GraphicalObjectFrame {
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<ooxml_dml::types::STBlackWhiteMode>,
@@ -5430,6 +5504,7 @@ pub struct GraphicalObjectFrame {
     pub nv_graphic_frame_pr: Box<CTGraphicalObjectFrameNonVisual>,
     #[serde(rename = "xfrm")]
     pub xfrm: Box<ooxml_dml::types::Transform2D>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5483,9 +5558,11 @@ pub struct GroupShape {
     #[serde(rename = "pic")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<Picture>>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "contentPart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_part: Option<Box<CTRel>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5572,6 +5649,7 @@ pub struct CTBackgroundProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBackground {
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bw_mode: Option<ooxml_dml::types::STBlackWhiteMode>,
@@ -5597,17 +5675,21 @@ pub struct CommonSlideData {
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "bg")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg: Option<Box<CTBackground>>,
     #[serde(rename = "spTree")]
     pub shape_tree: Box<GroupShape>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "custDataLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cust_data_lst: Option<Box<CTCustomerDataList>>,
+    #[cfg(feature = "pml-external")]
     #[serde(rename = "controls")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub controls: Option<Box<CTControlList>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5627,6 +5709,7 @@ pub struct CommonSlideData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Slide {
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@showMasterSp")]
     #[serde(
         default,
@@ -5634,6 +5717,7 @@ pub struct Slide {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_master_sp: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@showMasterPhAnim")]
     #[serde(
         default,
@@ -5650,6 +5734,7 @@ pub struct Slide {
     pub show: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
@@ -5661,6 +5746,7 @@ pub struct Slide {
     #[serde(rename = "timing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub timing: Option<Box<SlideTiming>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5682,6 +5768,7 @@ pub type PSld = Box<Slide>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlideLayout {
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@showMasterSp")]
     #[serde(
         default,
@@ -5689,6 +5776,7 @@ pub struct SlideLayout {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_master_sp: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@showMasterPhAnim")]
     #[serde(
         default,
@@ -5696,12 +5784,15 @@ pub struct SlideLayout {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_master_ph_anim: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@matchingName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub matching_name: Option<String>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STSlideLayoutType>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@preserve")]
     #[serde(
         default,
@@ -5709,6 +5800,7 @@ pub struct SlideLayout {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub preserve: Option<bool>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@userDrawn")]
     #[serde(
         default,
@@ -5718,18 +5810,23 @@ pub struct SlideLayout {
     pub user_drawn: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition: Option<Box<SlideTransition>>,
+    #[cfg(feature = "pml-animations")]
     #[serde(rename = "timing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub timing: Option<Box<SlideTiming>>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5806,6 +5903,7 @@ pub struct CTSlideLayoutIdList {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlideMaster {
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "@preserve")]
     #[serde(
         default,
@@ -5817,21 +5915,27 @@ pub struct SlideMaster {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
     pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "sldLayoutIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_layout_id_lst: Option<Box<CTSlideLayoutIdList>>,
+    #[cfg(feature = "pml-transitions")]
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition: Option<Box<SlideTransition>>,
+    #[cfg(feature = "pml-animations")]
     #[serde(rename = "timing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub timing: Option<Box<SlideTiming>>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "txStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tx_styles: Option<Box<CTSlideMasterTextStyles>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5857,9 +5961,11 @@ pub struct HandoutMaster {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
     pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
+    #[cfg(feature = "pml-masters")]
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5878,12 +5984,15 @@ pub struct NotesMaster {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
     pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "notesStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5898,6 +6007,7 @@ pub type PNotesMaster = Box<NotesMaster>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NotesSlide {
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "@showMasterSp")]
     #[serde(
         default,
@@ -5905,6 +6015,7 @@ pub struct NotesSlide {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_master_sp: Option<bool>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "@showMasterPhAnim")]
     #[serde(
         default,
@@ -5914,9 +6025,11 @@ pub struct NotesSlide {
     pub show_master_ph_anim: Option<bool>,
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
+    #[cfg(feature = "pml-styling")]
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -6282,6 +6395,7 @@ pub struct CTViewProperties {
     #[serde(rename = "@lastView")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_view: Option<STViewType>,
+    #[cfg(feature = "pml-comments")]
     #[serde(rename = "@showComments")]
     #[serde(
         default,
@@ -6298,18 +6412,21 @@ pub struct CTViewProperties {
     #[serde(rename = "outlineViewPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_view_pr: Option<Box<CTOutlineViewProperties>>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "notesTextViewPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes_text_view_pr: Option<Box<CTNotesTextViewProperties>>,
     #[serde(rename = "sorterViewPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sorter_view_pr: Option<Box<CTSlideSorterViewProperties>>,
+    #[cfg(feature = "pml-notes")]
     #[serde(rename = "notesViewPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub notes_view_pr: Option<Box<CTNotesViewProperties>>,
     #[serde(rename = "gridSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grid_spacing: Option<Box<ooxml_dml::types::PositiveSize2D>>,
+    #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,

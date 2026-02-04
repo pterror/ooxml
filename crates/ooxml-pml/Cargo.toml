@@ -11,11 +11,28 @@ default = ["full"]
 full = [
     "pml-transitions",
     "pml-animations",
+    "pml-notes",
+    "pml-comments",
+    "pml-styling",
+    "pml-masters",
+    "pml-hyperlinks",
+    "pml-media",
+    "pml-external",
+    "pml-extensions",
     "extra-attrs",
     "extra-children",
 ]
-pml-transitions = []
-pml-animations = []
+# Individual feature flags (see spec/ooxml-features.yaml)
+pml-transitions = []     # Slide transitions
+pml-animations = []      # Slide timing/animations
+pml-notes = []           # Speaker notes
+pml-comments = []        # Slide comments
+pml-styling = []         # Backgrounds, colors, styles
+pml-masters = []         # Slide masters and layouts
+pml-hyperlinks = []      # Hyperlinks
+pml-media = []           # Audio/video content
+pml-external = []        # OLE objects, external refs
+pml-extensions = []      # Extension lists
 extra-attrs = []
 extra-children = []
 

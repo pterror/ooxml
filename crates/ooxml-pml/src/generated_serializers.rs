@@ -300,15 +300,18 @@ impl ToXml for CTTransitionSoundAction {
 impl ToXml for SlideTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.spd {
             {
                 let s = val.to_string();
                 start.push_attribute(("spd", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.adv_click {
             start.push_attribute(("advClick", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.adv_tm {
             {
                 let s = val.to_string();
@@ -336,6 +339,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.blinds {
             val.write_element("p:blinds", writer)?;
         }
@@ -352,6 +356,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.checker {
             val.write_element("p:checker", writer)?;
         }
@@ -368,6 +373,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.circle {
             val.write_element("p:circle", writer)?;
         }
@@ -384,6 +390,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.dissolve {
             val.write_element("p:dissolve", writer)?;
         }
@@ -400,6 +407,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.comb {
             val.write_element("p:comb", writer)?;
         }
@@ -416,6 +424,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.cover {
             val.write_element("p:cover", writer)?;
         }
@@ -432,6 +441,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.cut {
             val.write_element("p:cut", writer)?;
         }
@@ -448,6 +458,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.diamond {
             val.write_element("p:diamond", writer)?;
         }
@@ -464,6 +475,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.fade {
             val.write_element("p:fade", writer)?;
         }
@@ -480,6 +492,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.newsflash {
             val.write_element("p:newsflash", writer)?;
         }
@@ -496,6 +509,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.plus {
             val.write_element("p:plus", writer)?;
         }
@@ -512,6 +526,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.pull {
             val.write_element("p:pull", writer)?;
         }
@@ -528,6 +543,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.push {
             val.write_element("p:push", writer)?;
         }
@@ -544,6 +560,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.random {
             val.write_element("p:random", writer)?;
         }
@@ -560,6 +577,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.random_bar {
             val.write_element("p:randomBar", writer)?;
         }
@@ -576,6 +594,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.split {
             val.write_element("p:split", writer)?;
         }
@@ -592,6 +611,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.strips {
             val.write_element("p:strips", writer)?;
         }
@@ -608,6 +628,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.wedge {
             val.write_element("p:wedge", writer)?;
         }
@@ -624,6 +645,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.wheel {
             val.write_element("p:wheel", writer)?;
         }
@@ -640,6 +662,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.wipe {
             val.write_element("p:wipe", writer)?;
         }
@@ -656,6 +679,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.zoom {
             val.write_element("p:zoom", writer)?;
         }
@@ -672,6 +696,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.snd_ac {
             val.write_element("p:sndAc", writer)?;
         }
@@ -688,6 +713,7 @@ impl ToXml for SlideTransition {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -703,72 +729,95 @@ impl ToXml for SlideTransition {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "pml-transitions")]
         if self.blinds.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.checker.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.circle.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.dissolve.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.comb.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.cover.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.cut.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.diamond.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.fade.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.newsflash.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.plus.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.pull.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.push.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.random.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.random_bar.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.split.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.strips.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.wedge.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.wheel.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.wipe.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.zoom.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-transitions")]
         if self.snd_ac.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -3990,6 +4039,7 @@ impl ToXml for SlideTiming {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-animations")]
         if let Some(ref val) = self.tn_lst {
             val.write_element("p:tnLst", writer)?;
         }
@@ -4006,6 +4056,7 @@ impl ToXml for SlideTiming {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-animations")]
         if let Some(ref val) = self.bld_lst {
             val.write_element("p:bldLst", writer)?;
         }
@@ -4022,6 +4073,7 @@ impl ToXml for SlideTiming {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -4037,12 +4089,15 @@ impl ToXml for SlideTiming {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "pml-animations")]
         if self.tn_lst.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-animations")]
         if self.bld_lst.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -4438,6 +4493,7 @@ impl ToXml for CTExtensionListModify {
 impl ToXml for CTCommentAuthor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.id;
             {
@@ -4445,14 +4501,17 @@ impl ToXml for CTCommentAuthor {
                 start.push_attribute(("id", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.name;
             start.push_attribute(("name", val.as_str()));
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.initials;
             start.push_attribute(("initials", val.as_str()));
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.last_idx;
             {
@@ -4460,6 +4519,7 @@ impl ToXml for CTCommentAuthor {
                 start.push_attribute(("lastIdx", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.clr_idx;
             {
@@ -4488,6 +4548,7 @@ impl ToXml for CTCommentAuthor {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -4503,6 +4564,7 @@ impl ToXml for CTCommentAuthor {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "pml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -4558,6 +4620,7 @@ impl ToXml for CTCommentAuthorList {
 impl ToXml for CTComment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.author_id;
             {
@@ -4565,9 +4628,11 @@ impl ToXml for CTComment {
                 start.push_attribute(("authorId", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-comments")]
         if let Some(ref val) = self.dt {
             start.push_attribute(("dt", val.as_str()));
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.idx;
             {
@@ -4596,6 +4661,7 @@ impl ToXml for CTComment {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.pos;
             val.write_element("p:pos", writer)?;
@@ -4613,6 +4679,7 @@ impl ToXml for CTComment {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-comments")]
         {
             let val = &self.text;
             {
@@ -4635,6 +4702,7 @@ impl ToXml for CTComment {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -4650,7 +4718,19 @@ impl ToXml for CTComment {
     }
 
     fn is_empty_element(&self) -> bool {
-        false
+        #[cfg(feature = "pml-comments")]
+        return false;
+        #[cfg(feature = "pml-comments")]
+        return false;
+        #[cfg(feature = "pml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -5964,6 +6044,7 @@ impl ToXml for CTModifyVerifier {
 impl ToXml for Presentation {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.server_zoom {
             {
                 let s = val.to_string();
@@ -5976,9 +6057,11 @@ impl ToXml for Presentation {
                 start.push_attribute(("firstSlideNum", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.show_special_pls_on_title_sld {
             start.push_attribute(("showSpecialPlsOnTitleSld", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.rtl {
             start.push_attribute(("rtl", if *val { "1" } else { "0" }));
         }
@@ -5988,15 +6071,19 @@ impl ToXml for Presentation {
         if let Some(ref val) = self.compat_mode {
             start.push_attribute(("compatMode", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.strict_first_and_last_chars {
             start.push_attribute(("strictFirstAndLastChars", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.embed_true_type_fonts {
             start.push_attribute(("embedTrueTypeFonts", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.save_subset_fonts {
             start.push_attribute(("saveSubsetFonts", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.auto_compress_pictures {
             start.push_attribute(("autoCompressPictures", if *val { "1" } else { "0" }));
         }
@@ -6049,6 +6136,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.notes_master_id_lst {
             val.write_element("p:notesMasterIdLst", writer)?;
         }
@@ -6065,6 +6153,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.handout_master_id_lst {
             val.write_element("p:handoutMasterIdLst", writer)?;
         }
@@ -6113,6 +6202,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-notes")]
         {
             let val = &self.notes_sz;
             val.write_element("p:notesSz", writer)?;
@@ -6130,6 +6220,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.smart_tags {
             val.write_element("p:smartTags", writer)?;
         }
@@ -6146,6 +6237,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.embedded_font_lst {
             val.write_element("p:embeddedFontLst", writer)?;
         }
@@ -6178,6 +6270,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-media")]
         if let Some(ref val) = self.photo_album {
             val.write_element("p:photoAlbum", writer)?;
         }
@@ -6194,6 +6287,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.cust_data_lst {
             val.write_element("p:custDataLst", writer)?;
         }
@@ -6210,6 +6304,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.kinsoku {
             val.write_element("p:kinsoku", writer)?;
         }
@@ -6226,6 +6321,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.default_text_style {
             val.write_element("p:defaultTextStyle", writer)?;
         }
@@ -6258,6 +6354,7 @@ impl ToXml for Presentation {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -6276,9 +6373,11 @@ impl ToXml for Presentation {
         if self.sld_master_id_lst.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-notes")]
         if self.notes_master_id_lst.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-masters")]
         if self.handout_master_id_lst.is_some() {
             return false;
         }
@@ -6288,7 +6387,47 @@ impl ToXml for Presentation {
         if self.sld_sz.is_some() {
             return false;
         }
-        false
+        #[cfg(feature = "pml-notes")]
+        return false;
+        #[cfg(feature = "pml-external")]
+        if self.smart_tags.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-styling")]
+        if self.embedded_font_lst.is_some() {
+            return false;
+        }
+        if self.cust_show_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-media")]
+        if self.photo_album.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-external")]
+        if self.cust_data_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-styling")]
+        if self.kinsoku.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-styling")]
+        if self.default_text_style.is_some() {
+            return false;
+        }
+        if self.modify_verifier.is_some() {
+            return false;
+        }
+        #[cfg(feature = "pml-extensions")]
+        if self.ext_lst.is_some() {
+            return false;
+        }
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
@@ -6702,6 +6841,7 @@ impl ToXml for CTPresentationProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.html_pub_pr {
             val.write_element("p:htmlPubPr", writer)?;
         }
@@ -6718,6 +6858,7 @@ impl ToXml for CTPresentationProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.web_pr {
             val.write_element("p:webPr", writer)?;
         }
@@ -6766,6 +6907,7 @@ impl ToXml for CTPresentationProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.clr_mru {
             val.write_element("p:clrMru", writer)?;
         }
@@ -6782,6 +6924,7 @@ impl ToXml for CTPresentationProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -6797,9 +6940,11 @@ impl ToXml for CTPresentationProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "pml-external")]
         if self.html_pub_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-external")]
         if self.web_pr.is_some() {
             return false;
         }
@@ -6809,9 +6954,11 @@ impl ToXml for CTPresentationProperties {
         if self.show_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-styling")]
         if self.clr_mru.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }
@@ -6826,15 +6973,19 @@ impl ToXml for CTPresentationProperties {
 impl ToXml for CTHeaderFooter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.sld_num {
             start.push_attribute(("sldNum", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.hdr {
             start.push_attribute(("hdr", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.ftr {
             start.push_attribute(("ftr", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.dt {
             start.push_attribute(("dt", if *val { "1" } else { "0" }));
         }
@@ -7128,6 +7279,7 @@ impl ToXml for ShapeNonVisual {
 impl ToXml for Shape {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.use_bg_fill {
             start.push_attribute(("useBgFill", if *val { "1" } else { "0" }));
         }
@@ -7186,6 +7338,7 @@ impl ToXml for Shape {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.style {
             val.write_element("p:style", writer)?;
         }
@@ -7218,6 +7371,7 @@ impl ToXml for Shape {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -7355,6 +7509,7 @@ impl ToXml for Connector {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.style {
             val.write_element("p:style", writer)?;
         }
@@ -7371,6 +7526,7 @@ impl ToXml for Connector {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -7525,6 +7681,7 @@ impl ToXml for Picture {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.style {
             val.write_element("p:style", writer)?;
         }
@@ -7541,6 +7698,7 @@ impl ToXml for Picture {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -7632,6 +7790,7 @@ impl ToXml for CTGraphicalObjectFrameNonVisual {
 impl ToXml for GraphicalObjectFrame {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.bw_mode {
             {
                 let s = val.to_string();
@@ -7693,6 +7852,7 @@ impl ToXml for GraphicalObjectFrame {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -7910,6 +8070,7 @@ impl ToXml for GroupShape {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.content_part {
             val.write_element("p:contentPart", writer)?;
         }
@@ -7926,6 +8087,7 @@ impl ToXml for GroupShape {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -8095,6 +8257,7 @@ impl ToXml for EGBackground {
 impl ToXml for CTBackground {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.bw_mode {
             {
                 let s = val.to_string();
@@ -8168,6 +8331,7 @@ impl ToXml for CommonSlideData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.bg {
             val.write_element("p:bg", writer)?;
         }
@@ -8201,6 +8365,7 @@ impl ToXml for CommonSlideData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.cust_data_lst {
             val.write_element("p:custDataLst", writer)?;
         }
@@ -8217,6 +8382,7 @@ impl ToXml for CommonSlideData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-external")]
         if let Some(ref val) = self.controls {
             val.write_element("p:controls", writer)?;
         }
@@ -8233,6 +8399,7 @@ impl ToXml for CommonSlideData {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -8248,6 +8415,7 @@ impl ToXml for CommonSlideData {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "pml-styling")]
         if self.bg.is_some() {
             return false;
         }
@@ -8258,9 +8426,11 @@ impl ToXml for CommonSlideData {
 impl ToXml for Slide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_sp {
             start.push_attribute(("showMasterSp", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_ph_anim {
             start.push_attribute(("showMasterPhAnim", if *val { "1" } else { "0" }));
         }
@@ -8305,6 +8475,7 @@ impl ToXml for Slide {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.clr_map_ovr {
             val.write_element("p:clrMapOvr", writer)?;
         }
@@ -8355,6 +8526,7 @@ impl ToXml for Slide {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -8377,24 +8549,30 @@ impl ToXml for Slide {
 impl ToXml for SlideLayout {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_sp {
             start.push_attribute(("showMasterSp", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_ph_anim {
             start.push_attribute(("showMasterPhAnim", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.matching_name {
             start.push_attribute(("matchingName", val.as_str()));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.r#type {
             {
                 let s = val.to_string();
                 start.push_attribute(("type", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.preserve {
             start.push_attribute(("preserve", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.user_drawn {
             start.push_attribute(("userDrawn", if *val { "1" } else { "0" }));
         }
@@ -8436,6 +8614,7 @@ impl ToXml for SlideLayout {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.clr_map_ovr {
             val.write_element("p:clrMapOvr", writer)?;
         }
@@ -8452,6 +8631,7 @@ impl ToXml for SlideLayout {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.transition {
             val.write_element("p:transition", writer)?;
         }
@@ -8468,6 +8648,7 @@ impl ToXml for SlideLayout {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-animations")]
         if let Some(ref val) = self.timing {
             val.write_element("p:timing", writer)?;
         }
@@ -8484,6 +8665,7 @@ impl ToXml for SlideLayout {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.hf {
             val.write_element("p:hf", writer)?;
         }
@@ -8500,6 +8682,7 @@ impl ToXml for SlideLayout {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -8717,6 +8900,7 @@ impl ToXml for CTSlideLayoutIdList {
 impl ToXml for SlideMaster {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.preserve {
             start.push_attribute(("preserve", if *val { "1" } else { "0" }));
         }
@@ -8775,6 +8959,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.sld_layout_id_lst {
             val.write_element("p:sldLayoutIdLst", writer)?;
         }
@@ -8791,6 +8976,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.transition {
             val.write_element("p:transition", writer)?;
         }
@@ -8807,6 +8993,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-animations")]
         if let Some(ref val) = self.timing {
             val.write_element("p:timing", writer)?;
         }
@@ -8823,6 +9010,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.hf {
             val.write_element("p:hf", writer)?;
         }
@@ -8839,6 +9027,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.tx_styles {
             val.write_element("p:txStyles", writer)?;
         }
@@ -8855,6 +9044,7 @@ impl ToXml for SlideMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -8923,6 +9113,7 @@ impl ToXml for HandoutMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.hf {
             val.write_element("p:hf", writer)?;
         }
@@ -8939,6 +9130,7 @@ impl ToXml for HandoutMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -9007,6 +9199,7 @@ impl ToXml for NotesMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.hf {
             val.write_element("p:hf", writer)?;
         }
@@ -9023,6 +9216,7 @@ impl ToXml for NotesMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.notes_style {
             val.write_element("p:notesStyle", writer)?;
         }
@@ -9039,6 +9233,7 @@ impl ToXml for NotesMaster {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -9061,9 +9256,11 @@ impl ToXml for NotesMaster {
 impl ToXml for NotesSlide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.show_master_sp {
             start.push_attribute(("showMasterSp", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.show_master_ph_anim {
             start.push_attribute(("showMasterPhAnim", if *val { "1" } else { "0" }));
         }
@@ -9105,6 +9302,7 @@ impl ToXml for NotesSlide {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.clr_map_ovr {
             val.write_element("p:clrMapOvr", writer)?;
         }
@@ -9121,6 +9319,7 @@ impl ToXml for NotesSlide {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -9941,6 +10140,7 @@ impl ToXml for CTViewProperties {
                 start.push_attribute(("lastView", s.as_str()));
             }
         }
+        #[cfg(feature = "pml-comments")]
         if let Some(ref val) = self.show_comments {
             start.push_attribute(("showComments", if *val { "1" } else { "0" }));
         }
@@ -10013,6 +10213,7 @@ impl ToXml for CTViewProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.notes_text_view_pr {
             val.write_element("p:notesTextViewPr", writer)?;
         }
@@ -10045,6 +10246,7 @@ impl ToXml for CTViewProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.notes_view_pr {
             val.write_element("p:notesViewPr", writer)?;
         }
@@ -10077,6 +10279,7 @@ impl ToXml for CTViewProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "pml-extensions")]
         if let Some(ref val) = self.ext_lst {
             val.write_element("p:extLst", writer)?;
         }
@@ -10101,18 +10304,21 @@ impl ToXml for CTViewProperties {
         if self.outline_view_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-notes")]
         if self.notes_text_view_pr.is_some() {
             return false;
         }
         if self.sorter_view_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-notes")]
         if self.notes_view_pr.is_some() {
             return false;
         }
         if self.grid_spacing.is_some() {
             return false;
         }
+        #[cfg(feature = "pml-extensions")]
         if self.ext_lst.is_some() {
             return false;
         }

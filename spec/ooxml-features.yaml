@@ -934,16 +934,288 @@ wml:
 # PresentationML (PowerPoint) - TODO: expand
 # =============================================================================
 pml:
+  # ---------------------------------------------------------------------------
+  # Presentation (root document)
+  # ---------------------------------------------------------------------------
   Presentation:
+    # Attributes
+    serverZoom: [styling]
+    firstSlideNum: [core]
+    showSpecialPlsOnTitleSld: [styling]
+    rtl: [styling]
+    removePersonalInfoOnSave: [core]
+    compatMode: [core]
+    strictFirstAndLastChars: [styling]
+    embedTrueTypeFonts: [styling]
+    saveSubsetFonts: [styling]
+    autoCompressPictures: [styling]
+    bookmarkIdSeed: [core]
+    conformance: [core]
+    # Children
     sldMasterIdLst: [core]
+    notesMasterIdLst: [notes]
+    handoutMasterIdLst: [masters]
     sldIdLst: [core]
     sldSz: [core]
-    notesSz: [core]
+    notesSz: [notes]
+    smartTags: [external]
+    embeddedFontLst: [styling]
+    custShowLst: [core]
+    photoAlbum: [media]
+    custDataLst: [external]
+    kinsoku: [styling]
+    defaultTextStyle: [styling]
+    modifyVerifier: [core]
+    extLst: [extensions]
 
+  # ---------------------------------------------------------------------------
+  # Slide
+  # ---------------------------------------------------------------------------
   Slide:
+    # Attributes
+    showMasterSp: [masters]
+    showMasterPhAnim: [masters, animations]
+    show: [core]
+    # Children
     cSld: [core]
+    clrMapOvr: [styling]
     transition: [transitions]
     timing: [animations]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Common slide data (shared by slide, layout, master)
+  # ---------------------------------------------------------------------------
+  CommonSlideData:
+    name: [core]
+    # Children
+    bg: [styling]
+    spTree: [core]
+    custDataLst: [external]
+    controls: [external]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Shapes
+  # ---------------------------------------------------------------------------
+  Shape:
+    useBgFill: [styling]
+    # Children
+    nvSpPr: [core]
+    spPr: [core]
+    style: [styling]
+    txBody: [core]
+    extLst: [extensions]
+
+  Picture:
+    # Children
+    nvPicPr: [core]
+    blipFill: [core]
+    spPr: [core]
+    style: [styling]
+    extLst: [extensions]
+
+  Connector:
+    # Children
+    nvCxnSpPr: [core]
+    spPr: [core]
+    style: [styling]
+    extLst: [extensions]
+
+  GraphicalObjectFrame:
+    bwMode: [styling]
+    # Children
+    nvGraphicFramePr: [core]
+    xfrm: [core]
+    extLst: [extensions]
+
+  GroupShape:
+    # Children
+    nvGrpSpPr: [core]
+    grpSpPr: [core]
+    sp: [core]
+    grpSp: [core]
+    graphicFrame: [core]
+    cxnSp: [core]
+    pic: [core]
+    contentPart: [external]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Slide transitions
+  # ---------------------------------------------------------------------------
+  SlideTransition:
+    spd: [transitions]
+    advClick: [transitions]
+    advTm: [transitions]
+    # All transition type children
+    blinds: [transitions]
+    checker: [transitions]
+    circle: [transitions]
+    dissolve: [transitions]
+    comb: [transitions]
+    cover: [transitions]
+    cut: [transitions]
+    diamond: [transitions]
+    fade: [transitions]
+    newsflash: [transitions]
+    plus: [transitions]
+    pull: [transitions]
+    push: [transitions]
+    random: [transitions]
+    randomBar: [transitions]
+    split: [transitions]
+    strips: [transitions]
+    wedge: [transitions]
+    wheel: [transitions]
+    wipe: [transitions]
+    zoom: [transitions]
+    sndAc: [transitions, media]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Slide timing/animations
+  # ---------------------------------------------------------------------------
+  SlideTiming:
+    tnLst: [animations]
+    bldLst: [animations]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Slide layouts and masters
+  # ---------------------------------------------------------------------------
+  SlideLayout:
+    # Attributes
+    showMasterSp: [masters]
+    showMasterPhAnim: [masters, animations]
+    matchingName: [masters]
+    type: [masters]
+    preserve: [masters]
+    userDrawn: [masters]
+    # Children
+    cSld: [core]
+    clrMapOvr: [styling]
+    transition: [transitions]
+    timing: [animations]
+    hf: [masters]
+    extLst: [extensions]
+
+  SlideMaster:
+    preserve: [masters]
+    # Children
+    cSld: [core]
+    clrMap: [core]
+    sldLayoutIdLst: [masters]
+    transition: [transitions]
+    timing: [animations]
+    hf: [masters]
+    txStyles: [styling]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Notes
+  # ---------------------------------------------------------------------------
+  NotesSlide:
+    showMasterSp: [notes, masters]
+    showMasterPhAnim: [notes, masters, animations]
+    # Children
+    cSld: [core]
+    clrMapOvr: [styling]
+    extLst: [extensions]
+
+  NotesMaster:
+    # Children
+    cSld: [core]
+    clrMap: [core]
+    hf: [notes]
+    notesStyle: [styling]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Handout master
+  # ---------------------------------------------------------------------------
+  HandoutMaster:
+    # Children
+    cSld: [core]
+    clrMap: [core]
+    hf: [masters]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Comments
+  # ---------------------------------------------------------------------------
+  CTComment:
+    authorId: [comments]
+    dt: [comments]
+    idx: [comments]
+    # Children
+    pos: [comments]
+    text: [comments]
+    extLst: [extensions]
+
+  CTCommentAuthor:
+    id: [comments]
+    name: [comments]
+    initials: [comments]
+    lastIdx: [comments]
+    clrIdx: [comments]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Backgrounds
+  # ---------------------------------------------------------------------------
+  CTBackground:
+    bwMode: [styling]
+    # Children
+    bgPr: [styling]
+    bgRef: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Header/footer
+  # ---------------------------------------------------------------------------
+  CTHeaderFooter:
+    sldNum: [masters]
+    hdr: [masters]
+    ftr: [masters]
+    dt: [masters]
+
+  # ---------------------------------------------------------------------------
+  # Placeholder
+  # ---------------------------------------------------------------------------
+  CTPlaceholder:
+    type: [core]
+    orient: [core]
+    sz: [core]
+    idx: [core]
+    hasCustomPrompt: [core]
+
+  # ---------------------------------------------------------------------------
+  # View properties
+  # ---------------------------------------------------------------------------
+  CTViewProperties:
+    lastView: [core]
+    showComments: [comments]
+    # Children
+    normalViewPr: [core]
+    slideViewPr: [core]
+    outlineViewPr: [core]
+    notesTextViewPr: [notes]
+    sorterViewPr: [core]
+    notesViewPr: [notes]
+    gridSpacing: [core]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Presentation properties
+  # ---------------------------------------------------------------------------
+  CTPresentationProperties:
+    # Children
+    htmlPubPr: [external]
+    webPr: [external]
+    prnPr: [core]
+    showPr: [core]
+    clrMru: [styling]
+    extLst: [extensions]
 
 # =============================================================================
 # DrawingML (shared) - TODO: expand
