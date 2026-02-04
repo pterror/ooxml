@@ -5895,7 +5895,7 @@ pub struct CTEmpty;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOnOff {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5909,7 +5909,7 @@ pub struct CTOnOff {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLongHexNumber {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STLongHexNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5922,10 +5922,10 @@ pub struct CTLongHexNumber {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCharset {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STUcharHexNumber>,
-    #[serde(rename = "@characterSet")]
+    #[serde(rename = "@w:characterSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub character_set: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -5939,7 +5939,7 @@ pub struct CTCharset {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDecimalNumber {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5952,7 +5952,7 @@ pub struct CTDecimalNumber {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTUnsignedDecimalNumber {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STUnsignedDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5965,7 +5965,7 @@ pub struct CTUnsignedDecimalNumber {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDecimalNumberOrPrecent {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDecimalNumberOrPercent,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5978,7 +5978,7 @@ pub struct CTDecimalNumberOrPrecent {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTwipsMeasure {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -5991,7 +5991,7 @@ pub struct CTTwipsMeasure {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSignedTwipsMeasure {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STSignedTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6004,7 +6004,7 @@ pub struct CTSignedTwipsMeasure {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPixelsMeasure {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STPixelsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6017,7 +6017,7 @@ pub struct CTPixelsMeasure {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHpsMeasure {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STHpsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6030,7 +6030,7 @@ pub struct CTHpsMeasure {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSignedHpsMeasure {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STSignedHpsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6043,7 +6043,7 @@ pub struct CTSignedHpsMeasure {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMacroName {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMacroName,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6056,7 +6056,7 @@ pub struct CTMacroName {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTString {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6069,7 +6069,7 @@ pub struct CTString {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextScale {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STTextScale>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6083,7 +6083,7 @@ pub struct CTTextScale {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTHighlight {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STHighlightColor,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6096,15 +6096,15 @@ pub struct CTHighlight {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTColor {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STHexColor,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6118,7 +6118,7 @@ pub struct CTColor {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLang {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: Language,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6131,7 +6131,7 @@ pub struct CTLang {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTGuid {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<Guid>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6145,19 +6145,19 @@ pub struct CTGuid {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTUnderline {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STUnderline>,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6171,7 +6171,7 @@ pub struct CTUnderline {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextEffect {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTextEffect,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6184,30 +6184,30 @@ pub struct CTTextEffect {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBorder {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STBorder,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
-    #[serde(rename = "@sz")]
+    #[serde(rename = "@w:sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<STEighthPointMeasure>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STPointMeasure>,
-    #[serde(rename = "@shadow")]
+    #[serde(rename = "@w:shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shadow: Option<OnOff>,
-    #[serde(rename = "@frame")]
+    #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6221,30 +6221,30 @@ pub struct CTBorder {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTShd {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STShd,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
-    #[serde(rename = "@fill")]
+    #[serde(rename = "@w:fill")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fill: Option<STHexColor>,
-    #[serde(rename = "@themeFill")]
+    #[serde(rename = "@w:themeFill")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill: Option<STThemeColor>,
-    #[serde(rename = "@themeFillTint")]
+    #[serde(rename = "@w:themeFillTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeFillShade")]
+    #[serde(rename = "@w:themeFillShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_fill_shade: Option<STUcharHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6258,7 +6258,7 @@ pub struct CTShd {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTVerticalAlignRun {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STVerticalAlignRun,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6271,9 +6271,9 @@ pub struct CTVerticalAlignRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFitText {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTwipsMeasure,
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6287,7 +6287,7 @@ pub struct CTFitText {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEm {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STEm,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6300,13 +6300,13 @@ pub struct CTEm {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLanguage {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<Language>,
-    #[serde(rename = "@eastAsia")]
+    #[serde(rename = "@w:eastAsia")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia: Option<Language>,
-    #[serde(rename = "@bidi")]
+    #[serde(rename = "@w:bidi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bidi: Option<Language>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6320,19 +6320,19 @@ pub struct CTLanguage {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTEastAsianLayout {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STDecimalNumber>,
-    #[serde(rename = "@combine")]
+    #[serde(rename = "@w:combine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub combine: Option<OnOff>,
-    #[serde(rename = "@combineBrackets")]
+    #[serde(rename = "@w:combineBrackets")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub combine_brackets: Option<STCombineBrackets>,
-    #[serde(rename = "@vert")]
+    #[serde(rename = "@w:vert")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert: Option<OnOff>,
-    #[serde(rename = "@vertCompress")]
+    #[serde(rename = "@w:vertCompress")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_compress: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6346,49 +6346,49 @@ pub struct CTEastAsianLayout {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFramePr {
-    #[serde(rename = "@dropCap")]
+    #[serde(rename = "@w:dropCap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drop_cap: Option<STDropCap>,
-    #[serde(rename = "@lines")]
+    #[serde(rename = "@w:lines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lines: Option<STDecimalNumber>,
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
-    #[serde(rename = "@h")]
+    #[serde(rename = "@w:h")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<STTwipsMeasure>,
-    #[serde(rename = "@vSpace")]
+    #[serde(rename = "@w:vSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_space: Option<STTwipsMeasure>,
-    #[serde(rename = "@hSpace")]
+    #[serde(rename = "@w:hSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_space: Option<STTwipsMeasure>,
-    #[serde(rename = "@wrap")]
+    #[serde(rename = "@w:wrap")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub wrap: Option<STWrap>,
-    #[serde(rename = "@hAnchor")]
+    #[serde(rename = "@w:hAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_anchor: Option<STHAnchor>,
-    #[serde(rename = "@vAnchor")]
+    #[serde(rename = "@w:vAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_anchor: Option<STVAnchor>,
-    #[serde(rename = "@x")]
+    #[serde(rename = "@w:x")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@xAlign")]
+    #[serde(rename = "@w:xAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_align: Option<STXAlign>,
-    #[serde(rename = "@y")]
+    #[serde(rename = "@w:y")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@yAlign")]
+    #[serde(rename = "@w:yAlign")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_align: Option<STYAlign>,
-    #[serde(rename = "@hRule")]
+    #[serde(rename = "@w:hRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_rule: Option<STHeightRule>,
-    #[serde(rename = "@anchorLock")]
+    #[serde(rename = "@w:anchorLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor_lock: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6402,12 +6402,12 @@ pub struct CTFramePr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTabStop {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTabJc,
-    #[serde(rename = "@leader")]
+    #[serde(rename = "@w:leader")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub leader: Option<STTabTlc>,
-    #[serde(rename = "@pos")]
+    #[serde(rename = "@w:pos")]
     pub pos: STSignedTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6420,28 +6420,28 @@ pub struct CTTabStop {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSpacing {
-    #[serde(rename = "@before")]
+    #[serde(rename = "@w:before")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before: Option<STTwipsMeasure>,
-    #[serde(rename = "@beforeLines")]
+    #[serde(rename = "@w:beforeLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before_lines: Option<STDecimalNumber>,
-    #[serde(rename = "@beforeAutospacing")]
+    #[serde(rename = "@w:beforeAutospacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub before_autospacing: Option<OnOff>,
-    #[serde(rename = "@after")]
+    #[serde(rename = "@w:after")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after: Option<STTwipsMeasure>,
-    #[serde(rename = "@afterLines")]
+    #[serde(rename = "@w:afterLines")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after_lines: Option<STDecimalNumber>,
-    #[serde(rename = "@afterAutospacing")]
+    #[serde(rename = "@w:afterAutospacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub after_autospacing: Option<OnOff>,
-    #[serde(rename = "@line")]
+    #[serde(rename = "@w:line")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@lineRule")]
+    #[serde(rename = "@w:lineRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_rule: Option<STLineSpacingRule>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6455,40 +6455,40 @@ pub struct CTSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTInd {
-    #[serde(rename = "@start")]
+    #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@startChars")]
+    #[serde(rename = "@w:startChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start_chars: Option<STDecimalNumber>,
-    #[serde(rename = "@end")]
+    #[serde(rename = "@w:end")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@endChars")]
+    #[serde(rename = "@w:endChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_chars: Option<STDecimalNumber>,
-    #[serde(rename = "@left")]
+    #[serde(rename = "@w:left")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@leftChars")]
+    #[serde(rename = "@w:leftChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left_chars: Option<STDecimalNumber>,
-    #[serde(rename = "@right")]
+    #[serde(rename = "@w:right")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@rightChars")]
+    #[serde(rename = "@w:rightChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right_chars: Option<STDecimalNumber>,
-    #[serde(rename = "@hanging")]
+    #[serde(rename = "@w:hanging")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hanging: Option<STTwipsMeasure>,
-    #[serde(rename = "@hangingChars")]
+    #[serde(rename = "@w:hangingChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hanging_chars: Option<STDecimalNumber>,
-    #[serde(rename = "@firstLine")]
+    #[serde(rename = "@w:firstLine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_line: Option<STTwipsMeasure>,
-    #[serde(rename = "@firstLineChars")]
+    #[serde(rename = "@w:firstLineChars")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_line_chars: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6502,7 +6502,7 @@ pub struct CTInd {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTJc {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STJc,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6515,7 +6515,7 @@ pub struct CTJc {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTJcTable {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STJcTable,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6528,7 +6528,7 @@ pub struct CTJcTable {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTView {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STView,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6541,10 +6541,10 @@ pub struct CTView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTZoom {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STZoom>,
-    #[serde(rename = "@percent")]
+    #[serde(rename = "@w:percent")]
     pub percent: STDecimalNumberOrPercent,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6557,18 +6557,18 @@ pub struct CTZoom {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTWritingStyle {
-    #[serde(rename = "@lang")]
+    #[serde(rename = "@w:lang")]
     pub lang: Language,
-    #[serde(rename = "@vendorID")]
+    #[serde(rename = "@w:vendorID")]
     pub vendor_i_d: STString,
-    #[serde(rename = "@dllVersion")]
+    #[serde(rename = "@w:dllVersion")]
     pub dll_version: STString,
-    #[serde(rename = "@nlCheck")]
+    #[serde(rename = "@w:nlCheck")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub nl_check: Option<OnOff>,
-    #[serde(rename = "@checkStyle")]
+    #[serde(rename = "@w:checkStyle")]
     pub check_style: OnOff,
-    #[serde(rename = "@appName")]
+    #[serde(rename = "@w:appName")]
     pub app_name: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6581,10 +6581,10 @@ pub struct CTWritingStyle {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTProof {
-    #[serde(rename = "@spelling")]
+    #[serde(rename = "@w:spelling")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spelling: Option<STProof>,
-    #[serde(rename = "@grammar")]
+    #[serde(rename = "@w:grammar")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub grammar: Option<STProof>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6598,7 +6598,7 @@ pub struct CTProof {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDocType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6611,16 +6611,16 @@ pub struct CTDocType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WAGPassword {
-    #[serde(rename = "@algorithmName")]
+    #[serde(rename = "@w:algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<STString>,
-    #[serde(rename = "@hashValue")]
+    #[serde(rename = "@w:hashValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
-    #[serde(rename = "@saltValue")]
+    #[serde(rename = "@w:saltValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
-    #[serde(rename = "@spinCount")]
+    #[serde(rename = "@w:spinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6634,40 +6634,40 @@ pub struct WAGPassword {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WAGTransitionalPassword {
-    #[serde(rename = "@cryptProviderType")]
+    #[serde(rename = "@w:cryptProviderType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type: Option<STCryptProv>,
-    #[serde(rename = "@cryptAlgorithmClass")]
+    #[serde(rename = "@w:cryptAlgorithmClass")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_class: Option<STAlgClass>,
-    #[serde(rename = "@cryptAlgorithmType")]
+    #[serde(rename = "@w:cryptAlgorithmType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_type: Option<STAlgType>,
-    #[serde(rename = "@cryptAlgorithmSid")]
+    #[serde(rename = "@w:cryptAlgorithmSid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_sid: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptSpinCount")]
+    #[serde(rename = "@w:cryptSpinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_spin_count: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptProvider")]
+    #[serde(rename = "@w:cryptProvider")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider: Option<STString>,
-    #[serde(rename = "@algIdExt")]
+    #[serde(rename = "@w:algIdExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@algIdExtSource")]
+    #[serde(rename = "@w:algIdExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext_source: Option<STString>,
-    #[serde(rename = "@cryptProviderTypeExt")]
+    #[serde(rename = "@w:cryptProviderTypeExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@cryptProviderTypeExtSource")]
+    #[serde(rename = "@w:cryptProviderTypeExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext_source: Option<STString>,
-    #[serde(rename = "@hash")]
+    #[serde(rename = "@w:hash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash: Option<Vec<u8>>,
-    #[serde(rename = "@salt")]
+    #[serde(rename = "@w:salt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt: Option<Vec<u8>>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6681,61 +6681,61 @@ pub struct WAGTransitionalPassword {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocProtect {
-    #[serde(rename = "@edit")]
+    #[serde(rename = "@w:edit")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edit: Option<STDocProtect>,
-    #[serde(rename = "@formatting")]
+    #[serde(rename = "@w:formatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formatting: Option<OnOff>,
-    #[serde(rename = "@enforcement")]
+    #[serde(rename = "@w:enforcement")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enforcement: Option<OnOff>,
-    #[serde(rename = "@algorithmName")]
+    #[serde(rename = "@w:algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<STString>,
-    #[serde(rename = "@hashValue")]
+    #[serde(rename = "@w:hashValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
-    #[serde(rename = "@saltValue")]
+    #[serde(rename = "@w:saltValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
-    #[serde(rename = "@spinCount")]
+    #[serde(rename = "@w:spinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptProviderType")]
+    #[serde(rename = "@w:cryptProviderType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type: Option<STCryptProv>,
-    #[serde(rename = "@cryptAlgorithmClass")]
+    #[serde(rename = "@w:cryptAlgorithmClass")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_class: Option<STAlgClass>,
-    #[serde(rename = "@cryptAlgorithmType")]
+    #[serde(rename = "@w:cryptAlgorithmType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_type: Option<STAlgType>,
-    #[serde(rename = "@cryptAlgorithmSid")]
+    #[serde(rename = "@w:cryptAlgorithmSid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_sid: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptSpinCount")]
+    #[serde(rename = "@w:cryptSpinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_spin_count: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptProvider")]
+    #[serde(rename = "@w:cryptProvider")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider: Option<STString>,
-    #[serde(rename = "@algIdExt")]
+    #[serde(rename = "@w:algIdExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@algIdExtSource")]
+    #[serde(rename = "@w:algIdExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext_source: Option<STString>,
-    #[serde(rename = "@cryptProviderTypeExt")]
+    #[serde(rename = "@w:cryptProviderTypeExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@cryptProviderTypeExtSource")]
+    #[serde(rename = "@w:cryptProviderTypeExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext_source: Option<STString>,
-    #[serde(rename = "@hash")]
+    #[serde(rename = "@w:hash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash: Option<Vec<u8>>,
-    #[serde(rename = "@salt")]
+    #[serde(rename = "@w:salt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt: Option<Vec<u8>>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6749,7 +6749,7 @@ pub struct CTDocProtect {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMergeDocType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMailMergeDocType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6762,7 +6762,7 @@ pub struct CTMailMergeDocType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMergeDataType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMailMergeDataType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6775,7 +6775,7 @@ pub struct CTMailMergeDataType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMergeDest {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMailMergeDest,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6788,7 +6788,7 @@ pub struct CTMailMergeDest {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMergeOdsoFMDFieldType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMailMergeOdsoFMDFieldType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6801,19 +6801,19 @@ pub struct CTMailMergeOdsoFMDFieldType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTrackChangesView {
-    #[serde(rename = "@markup")]
+    #[serde(rename = "@w:markup")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub markup: Option<OnOff>,
-    #[serde(rename = "@comments")]
+    #[serde(rename = "@w:comments")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub comments: Option<OnOff>,
-    #[serde(rename = "@insDel")]
+    #[serde(rename = "@w:insDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ins_del: Option<OnOff>,
-    #[serde(rename = "@formatting")]
+    #[serde(rename = "@w:formatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub formatting: Option<OnOff>,
-    #[serde(rename = "@inkAnnotations")]
+    #[serde(rename = "@w:inkAnnotations")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ink_annotations: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6827,9 +6827,9 @@ pub struct CTTrackChangesView {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTKinsoku {
-    #[serde(rename = "@lang")]
+    #[serde(rename = "@w:lang")]
     pub lang: Language,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6842,7 +6842,7 @@ pub struct CTKinsoku {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextDirection {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTextDirection,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6855,7 +6855,7 @@ pub struct CTTextDirection {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextAlignment {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTextAlignment,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6868,7 +6868,7 @@ pub struct CTTextAlignment {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMarkup {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -6881,11 +6881,11 @@ pub struct CTMarkup {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTrackChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6899,17 +6899,17 @@ pub struct CTTrackChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCellMergeTrackChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
-    #[serde(rename = "@vMerge")]
+    #[serde(rename = "@w:vMerge")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical_merge: Option<STAnnotationVMerge>,
-    #[serde(rename = "@vMergeOrig")]
+    #[serde(rename = "@w:vMergeOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub v_merge_orig: Option<STAnnotationVMerge>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6923,14 +6923,14 @@ pub struct CTCellMergeTrackChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTrackChangeRange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6944,9 +6944,9 @@ pub struct CTTrackChangeRange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMarkupRange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6960,15 +6960,15 @@ pub struct CTMarkupRange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBookmarkRange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
-    #[serde(rename = "@colFirst")]
+    #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
-    #[serde(rename = "@colLast")]
+    #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -6982,18 +6982,18 @@ pub struct CTBookmarkRange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Bookmark {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
-    #[serde(rename = "@colFirst")]
+    #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
-    #[serde(rename = "@colLast")]
+    #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -7006,22 +7006,22 @@ pub struct Bookmark {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMoveBookmark {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
-    #[serde(rename = "@colFirst")]
+    #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
-    #[serde(rename = "@colLast")]
+    #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     pub date: STDateTime,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -7034,17 +7034,17 @@ pub struct CTMoveBookmark {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Comment {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(skip)]
     #[serde(default)]
     pub block_content: Vec<Box<BlockContent>>,
-    #[serde(rename = "@initials")]
+    #[serde(rename = "@w:initials")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub initials: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7063,14 +7063,14 @@ pub struct Comment {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTrackChangeNumbering {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
-    #[serde(rename = "@original")]
+    #[serde(rename = "@w:original")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub original: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7084,11 +7084,11 @@ pub struct CTTrackChangeNumbering {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTblPrExChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "tblPrEx")]
@@ -7109,11 +7109,11 @@ pub struct CTTblPrExChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTcPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "tcPr")]
@@ -7134,11 +7134,11 @@ pub struct CTTcPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTrPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "trPr")]
@@ -7159,7 +7159,7 @@ pub struct CTTrPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTblGridChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     #[serde(rename = "tblGrid")]
     pub tbl_grid: Box<CTTblGridBase>,
@@ -7179,11 +7179,11 @@ pub struct CTTblGridChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTblPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "tblPr")]
@@ -7204,11 +7204,11 @@ pub struct CTTblPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSectPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "sectPr")]
@@ -7230,11 +7230,11 @@ pub struct CTSectPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "pPr")]
@@ -7255,11 +7255,11 @@ pub struct CTPPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "rPr")]
@@ -7280,11 +7280,11 @@ pub struct CTRPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTParaRPrChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "rPr")]
@@ -7305,13 +7305,16 @@ pub struct CTParaRPrChange {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRunTrackChange {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub run_content: Option<Box<RunContentChoice>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7319,10 +7322,21 @@ pub struct CTRunTrackChange {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct MathContent {
+    #[serde(skip)]
+    #[serde(default)]
+    pub p_content_base: Vec<Box<ParagraphContentBase>>,
+    #[serde(skip)]
+    #[serde(default)]
+    pub content_run_content_base: Vec<Box<RunContentBase>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7392,7 +7406,7 @@ pub struct CTTabs {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTextboxTightWrap {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTextboxTightWrap,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -7776,10 +7790,10 @@ pub struct CTPPrGeneral {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTControl {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<STString>,
-    #[serde(rename = "@shapeid")]
+    #[serde(rename = "@w:shapeid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shapeid: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7793,16 +7807,16 @@ pub struct CTControl {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBackground {
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
     #[serde(rename = "drawing")]
@@ -7833,15 +7847,27 @@ pub struct CTRel {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTObject {
-    #[serde(rename = "@dxaOrig")]
+    #[serde(rename = "@w:dxaOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dxa_orig: Option<STTwipsMeasure>,
-    #[serde(rename = "@dyaOrig")]
+    #[serde(rename = "@w:dyaOrig")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dya_orig: Option<STTwipsMeasure>,
     #[serde(rename = "drawing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub drawing: Option<Box<CTDrawing>>,
+    #[serde(rename = "control")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub control: Option<Box<CTControl>>,
+    #[serde(rename = "objectLink")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub object_link: Option<Box<CTObjectLink>>,
+    #[serde(rename = "objectEmbed")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub object_embed: Option<Box<CTObjectEmbed>>,
+    #[serde(rename = "movie")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub movie: Option<Box<CTRel>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7873,16 +7899,16 @@ pub struct CTPicture {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTObjectEmbed {
-    #[serde(rename = "@drawAspect")]
+    #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
-    #[serde(rename = "@progId")]
+    #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
-    #[serde(rename = "@shapeId")]
+    #[serde(rename = "@w:shapeId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_id: Option<STString>,
-    #[serde(rename = "@fieldCodes")]
+    #[serde(rename = "@w:fieldCodes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_codes: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7896,21 +7922,21 @@ pub struct CTObjectEmbed {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTObjectLink {
-    #[serde(rename = "@drawAspect")]
+    #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
-    #[serde(rename = "@progId")]
+    #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
-    #[serde(rename = "@shapeId")]
+    #[serde(rename = "@w:shapeId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape_id: Option<STString>,
-    #[serde(rename = "@fieldCodes")]
+    #[serde(rename = "@w:fieldCodes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub field_codes: Option<STString>,
-    #[serde(rename = "@updateMode")]
+    #[serde(rename = "@w:updateMode")]
     pub update_mode: STObjectUpdateMode,
-    #[serde(rename = "@lockedField")]
+    #[serde(rename = "@w:lockedField")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked_field: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7933,12 +7959,12 @@ pub struct CTDrawing {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSimpleField {
-    #[serde(rename = "@instr")]
+    #[serde(rename = "@w:instr")]
     pub instr: STString,
-    #[serde(rename = "@fldLock")]
+    #[serde(rename = "@w:fldLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_lock: Option<OnOff>,
-    #[serde(rename = "@dirty")]
+    #[serde(rename = "@w:dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dirty: Option<OnOff>,
     #[serde(rename = "fldData")]
@@ -7963,7 +7989,7 @@ pub struct CTSimpleField {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFFTextType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STFFTextType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -7976,7 +8002,7 @@ pub struct CTFFTextType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFName {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STFFName>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -7990,14 +8016,23 @@ pub struct CTFFName {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFldChar {
-    #[serde(rename = "@fldCharType")]
+    #[serde(rename = "@w:fldCharType")]
     pub fld_char_type: STFldCharType,
-    #[serde(rename = "@fldLock")]
+    #[serde(rename = "@w:fldLock")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fld_lock: Option<OnOff>,
-    #[serde(rename = "@dirty")]
+    #[serde(rename = "@w:dirty")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dirty: Option<OnOff>,
+    #[serde(rename = "fldData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fld_data: Option<Box<Text>>,
+    #[serde(rename = "ffData")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ff_data: Option<Box<CTFFData>>,
+    #[serde(rename = "numberingChange")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub numbering_change: Option<Box<CTTrackChangeNumbering>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8005,23 +8040,28 @@ pub struct CTFldChar {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Hyperlink {
-    #[serde(rename = "@tgtFrame")]
+    #[serde(rename = "@w:tgtFrame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tgt_frame: Option<STString>,
-    #[serde(rename = "@tooltip")]
+    #[serde(rename = "@w:tooltip")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tooltip: Option<STString>,
-    #[serde(rename = "@docLocation")]
+    #[serde(rename = "@w:docLocation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub doc_location: Option<STString>,
-    #[serde(rename = "@history")]
+    #[serde(rename = "@w:history")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub history: Option<OnOff>,
-    #[serde(rename = "@anchor")]
+    #[serde(rename = "@w:anchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STString>,
     #[serde(skip)]
@@ -8043,6 +8083,42 @@ pub struct Hyperlink {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFData {
+    #[serde(rename = "name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<Box<CTFFName>>,
+    #[serde(rename = "label")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub label: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "tabIndex")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    #[serde(rename = "enabled")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<Box<CTOnOff>>,
+    #[serde(rename = "calcOnExit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub calc_on_exit: Option<Box<CTOnOff>>,
+    #[serde(rename = "entryMacro")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub entry_macro: Option<Box<CTMacroName>>,
+    #[serde(rename = "exitMacro")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exit_macro: Option<Box<CTMacroName>>,
+    #[serde(rename = "helpText")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub help_text: Option<Box<CTFFHelpText>>,
+    #[serde(rename = "statusText")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub status_text: Option<Box<CTFFStatusText>>,
+    #[serde(rename = "checkBox")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub check_box: Option<Box<CTFFCheckBox>>,
+    #[serde(rename = "ddList")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dd_list: Option<Box<CTFFDDList>>,
+    #[serde(rename = "textInput")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text_input: Option<Box<CTFFTextInput>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8052,10 +8128,10 @@ pub struct CTFFData {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFHelpText {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STInfoTextType>,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STFFHelpTextVal>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8069,10 +8145,10 @@ pub struct CTFFHelpText {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFStatusText {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STInfoTextType>,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STFFStatusTextVal>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8086,6 +8162,12 @@ pub struct CTFFStatusText {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFCheckBox {
+    #[serde(rename = "size")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<Box<CTHpsMeasure>>,
+    #[serde(rename = "sizeAuto")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size_auto: Option<Box<CTOnOff>>,
     #[serde(rename = "default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default: Option<Box<CTOnOff>>,
@@ -8140,7 +8222,7 @@ pub struct CTFFTextInput {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSectType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STSectionMark>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8154,10 +8236,10 @@ pub struct CTSectType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPaperSource {
-    #[serde(rename = "@first")]
+    #[serde(rename = "@w:first")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first: Option<STDecimalNumber>,
-    #[serde(rename = "@other")]
+    #[serde(rename = "@w:other")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub other: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8171,16 +8253,16 @@ pub struct CTPaperSource {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct PageSize {
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
-    #[serde(rename = "@h")]
+    #[serde(rename = "@w:h")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<STTwipsMeasure>,
-    #[serde(rename = "@orient")]
+    #[serde(rename = "@w:orient")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub orient: Option<STPageOrientation>,
-    #[serde(rename = "@code")]
+    #[serde(rename = "@w:code")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8194,19 +8276,19 @@ pub struct PageSize {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PageMargins {
-    #[serde(rename = "@top")]
+    #[serde(rename = "@w:top")]
     pub top: STSignedTwipsMeasure,
-    #[serde(rename = "@right")]
+    #[serde(rename = "@w:right")]
     pub right: STTwipsMeasure,
-    #[serde(rename = "@bottom")]
+    #[serde(rename = "@w:bottom")]
     pub bottom: STSignedTwipsMeasure,
-    #[serde(rename = "@left")]
+    #[serde(rename = "@w:left")]
     pub left: STTwipsMeasure,
-    #[serde(rename = "@header")]
+    #[serde(rename = "@w:header")]
     pub header: STTwipsMeasure,
-    #[serde(rename = "@footer")]
+    #[serde(rename = "@w:footer")]
     pub footer: STTwipsMeasure,
-    #[serde(rename = "@gutter")]
+    #[serde(rename = "@w:gutter")]
     pub gutter: STTwipsMeasure,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8219,13 +8301,13 @@ pub struct PageMargins {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPageBorders {
-    #[serde(rename = "@zOrder")]
+    #[serde(rename = "@w:zOrder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub z_order: Option<STPageBorderZOrder>,
-    #[serde(rename = "@display")]
+    #[serde(rename = "@w:display")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display: Option<STPageBorderDisplay>,
-    #[serde(rename = "@offsetFrom")]
+    #[serde(rename = "@w:offsetFrom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub offset_from: Option<STPageBorderOffset>,
     #[serde(rename = "top")]
@@ -8256,30 +8338,30 @@ pub struct CTPageBorders {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPageBorder {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STBorder,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
-    #[serde(rename = "@sz")]
+    #[serde(rename = "@w:sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<STEighthPointMeasure>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STPointMeasure>,
-    #[serde(rename = "@shadow")]
+    #[serde(rename = "@w:shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shadow: Option<OnOff>,
-    #[serde(rename = "@frame")]
+    #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8293,30 +8375,30 @@ pub struct CTPageBorder {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBottomPageBorder {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STBorder,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
-    #[serde(rename = "@sz")]
+    #[serde(rename = "@w:sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<STEighthPointMeasure>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STPointMeasure>,
-    #[serde(rename = "@shadow")]
+    #[serde(rename = "@w:shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shadow: Option<OnOff>,
-    #[serde(rename = "@frame")]
+    #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8330,30 +8412,30 @@ pub struct CTBottomPageBorder {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTopPageBorder {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STBorder,
-    #[serde(rename = "@color")]
+    #[serde(rename = "@w:color")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<STHexColor>,
-    #[serde(rename = "@themeColor")]
+    #[serde(rename = "@w:themeColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_color: Option<STThemeColor>,
-    #[serde(rename = "@themeTint")]
+    #[serde(rename = "@w:themeTint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_tint: Option<STUcharHexNumber>,
-    #[serde(rename = "@themeShade")]
+    #[serde(rename = "@w:themeShade")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme_shade: Option<STUcharHexNumber>,
-    #[serde(rename = "@sz")]
+    #[serde(rename = "@w:sz")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub size: Option<STEighthPointMeasure>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STPointMeasure>,
-    #[serde(rename = "@shadow")]
+    #[serde(rename = "@w:shadow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shadow: Option<OnOff>,
-    #[serde(rename = "@frame")]
+    #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8367,16 +8449,16 @@ pub struct CTTopPageBorder {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLineNumber {
-    #[serde(rename = "@countBy")]
+    #[serde(rename = "@w:countBy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count_by: Option<STDecimalNumber>,
-    #[serde(rename = "@start")]
+    #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STDecimalNumber>,
-    #[serde(rename = "@distance")]
+    #[serde(rename = "@w:distance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub distance: Option<STTwipsMeasure>,
-    #[serde(rename = "@restart")]
+    #[serde(rename = "@w:restart")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub restart: Option<STLineNumberRestart>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8390,16 +8472,16 @@ pub struct CTLineNumber {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTPageNumber {
-    #[serde(rename = "@fmt")]
+    #[serde(rename = "@w:fmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fmt: Option<STNumberFormat>,
-    #[serde(rename = "@start")]
+    #[serde(rename = "@w:start")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub start: Option<STDecimalNumber>,
-    #[serde(rename = "@chapStyle")]
+    #[serde(rename = "@w:chapStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_style: Option<STDecimalNumber>,
-    #[serde(rename = "@chapSep")]
+    #[serde(rename = "@w:chapSep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_sep: Option<STChapterSep>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8413,10 +8495,10 @@ pub struct CTPageNumber {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColumn {
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STTwipsMeasure>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8430,16 +8512,16 @@ pub struct CTColumn {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Columns {
-    #[serde(rename = "@equalWidth")]
+    #[serde(rename = "@w:equalWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub equal_width: Option<OnOff>,
-    #[serde(rename = "@space")]
+    #[serde(rename = "@w:space")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub space: Option<STTwipsMeasure>,
-    #[serde(rename = "@num")]
+    #[serde(rename = "@w:num")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num: Option<STDecimalNumber>,
-    #[serde(rename = "@sep")]
+    #[serde(rename = "@w:sep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sep: Option<OnOff>,
     #[serde(rename = "col")]
@@ -8461,7 +8543,7 @@ pub struct Columns {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTVerticalJc {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STVerticalJc,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8474,13 +8556,13 @@ pub struct CTVerticalJc {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct DocumentGrid {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STDocGrid>,
-    #[serde(rename = "@linePitch")]
+    #[serde(rename = "@w:linePitch")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub line_pitch: Option<STDecimalNumber>,
-    #[serde(rename = "@charSpace")]
+    #[serde(rename = "@w:charSpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub char_space: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8494,7 +8576,7 @@ pub struct DocumentGrid {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HeaderFooterReference {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     pub r#type: STHdrFtr,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8585,16 +8667,16 @@ pub struct EGSectPrContents {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct WAGSectPrAttributes {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidSect")]
+    #[serde(rename = "@w:rsidSect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_sect: Option<STLongHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8608,16 +8690,16 @@ pub struct WAGSectPrAttributes {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSectPrBase {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidSect")]
+    #[serde(rename = "@w:rsidSect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_sect: Option<STLongHexNumber>,
     #[serde(rename = "footnotePr")]
@@ -8693,16 +8775,16 @@ pub struct CTSectPrBase {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SectionProperties {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidSect")]
+    #[serde(rename = "@w:rsidSect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_sect: Option<STLongHexNumber>,
     #[serde(skip)]
@@ -8804,10 +8886,10 @@ pub struct SectionProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBr {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STBrType>,
-    #[serde(rename = "@clear")]
+    #[serde(rename = "@w:clear")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear: Option<STBrClear>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8821,11 +8903,11 @@ pub struct CTBr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPTab {
-    #[serde(rename = "@alignment")]
+    #[serde(rename = "@w:alignment")]
     pub alignment: STPTabAlignment,
-    #[serde(rename = "@relativeTo")]
+    #[serde(rename = "@w:relativeTo")]
     pub relative_to: STPTabRelativeTo,
-    #[serde(rename = "@leader")]
+    #[serde(rename = "@w:leader")]
     pub leader: STPTabLeader,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8838,10 +8920,10 @@ pub struct CTPTab {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSym {
-    #[serde(rename = "@font")]
+    #[serde(rename = "@w:font")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font: Option<STString>,
-    #[serde(rename = "@char")]
+    #[serde(rename = "@w:char")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub char: Option<STShortHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8855,7 +8937,7 @@ pub struct CTSym {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTProofErr {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     pub r#type: STProofErr,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -8868,9 +8950,9 @@ pub struct CTProofErr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPerm {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STString,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8884,21 +8966,21 @@ pub struct CTPerm {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPermStart {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STString,
-    #[serde(rename = "@displacedByCustomXml")]
+    #[serde(rename = "@w:displacedByCustomXml")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub displaced_by_custom_xml: Option<STDisplacedByCustomXml>,
-    #[serde(rename = "@edGrp")]
+    #[serde(rename = "@w:edGrp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ed_grp: Option<STEdGrp>,
-    #[serde(rename = "@ed")]
+    #[serde(rename = "@w:ed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ed: Option<STString>,
-    #[serde(rename = "@colFirst")]
+    #[serde(rename = "@w:colFirst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_first: Option<STDecimalNumber>,
-    #[serde(rename = "@colLast")]
+    #[serde(rename = "@w:colLast")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub col_last: Option<STDecimalNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -8924,13 +9006,13 @@ pub struct Text {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Run {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
     #[cfg(feature = "wml-styling")]
@@ -8956,31 +9038,31 @@ pub struct Run {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Fonts {
-    #[serde(rename = "@hint")]
+    #[serde(rename = "@w:hint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hint: Option<STHint>,
-    #[serde(rename = "@ascii")]
+    #[serde(rename = "@w:ascii")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ascii: Option<STString>,
-    #[serde(rename = "@hAnsi")]
+    #[serde(rename = "@w:hAnsi")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_ansi: Option<STString>,
-    #[serde(rename = "@eastAsia")]
+    #[serde(rename = "@w:eastAsia")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia: Option<STString>,
-    #[serde(rename = "@cs")]
+    #[serde(rename = "@w:cs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cs: Option<STString>,
-    #[serde(rename = "@asciiTheme")]
+    #[serde(rename = "@w:asciiTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ascii_theme: Option<STTheme>,
-    #[serde(rename = "@hAnsiTheme")]
+    #[serde(rename = "@w:hAnsiTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_ansi_theme: Option<STTheme>,
-    #[serde(rename = "@eastAsiaTheme")]
+    #[serde(rename = "@w:eastAsiaTheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub east_asia_theme: Option<STTheme>,
-    #[serde(rename = "@cstheme")]
+    #[serde(rename = "@w:cstheme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cstheme: Option<STTheme>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -9429,13 +9511,19 @@ pub struct EGRPr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMathCtrlIns {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
+    #[serde(rename = "del")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub del: Option<Box<CTRPrChange>>,
+    #[serde(rename = "rPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_pr: Option<Box<RunProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9443,15 +9531,20 @@ pub struct CTMathCtrlIns {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMathCtrlDel {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
-    #[serde(rename = "@author")]
+    #[serde(rename = "@w:author")]
     pub author: STString,
-    #[serde(rename = "@date")]
+    #[serde(rename = "@w:date")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub date: Option<STDateTime>,
     #[serde(rename = "rPr")]
@@ -9923,7 +10016,7 @@ pub struct CTAltChunkPr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRubyAlign {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STRubyAlign,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -9985,7 +10078,7 @@ pub struct CTRuby {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLock {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STLock>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -9999,10 +10092,10 @@ pub struct CTLock {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtListItem {
-    #[serde(rename = "@displayText")]
+    #[serde(rename = "@w:displayText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_text: Option<STString>,
-    #[serde(rename = "@value")]
+    #[serde(rename = "@w:value")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10016,7 +10109,7 @@ pub struct CTSdtListItem {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDateMappingType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STSdtDateMappingType>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10030,7 +10123,7 @@ pub struct CTSdtDateMappingType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCalendarType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<CalendarType>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10044,7 +10137,7 @@ pub struct CTCalendarType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDate {
-    #[serde(rename = "@fullDate")]
+    #[serde(rename = "@w:fullDate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub full_date: Option<STDateTime>,
     #[serde(rename = "dateFormat")]
@@ -10075,7 +10168,7 @@ pub struct CTSdtDate {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtComboBox {
-    #[serde(rename = "@lastValue")]
+    #[serde(rename = "@w:lastValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_value: Option<STString>,
     #[serde(rename = "listItem")]
@@ -10115,7 +10208,7 @@ pub struct CTSdtDocPart {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtDropDownList {
-    #[serde(rename = "@lastValue")]
+    #[serde(rename = "@w:lastValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_value: Option<STString>,
     #[serde(rename = "listItem")]
@@ -10139,7 +10232,7 @@ pub type CTPlaceholder = Box<CTString>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtText {
-    #[serde(rename = "@multiLine")]
+    #[serde(rename = "@w:multiLine")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub multi_line: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10153,12 +10246,12 @@ pub struct CTSdtText {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDataBinding {
-    #[serde(rename = "@prefixMappings")]
+    #[serde(rename = "@w:prefixMappings")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prefix_mappings: Option<STString>,
-    #[serde(rename = "@xpath")]
+    #[serde(rename = "@w:xpath")]
     pub xpath: STString,
-    #[serde(rename = "@storeItemID")]
+    #[serde(rename = "@w:storeItemID")]
     pub store_item_i_d: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -10204,6 +10297,42 @@ pub struct CTSdtPr {
     #[serde(rename = "tabIndex")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
+    #[serde(rename = "equation")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub equation: Option<Box<CTEmpty>>,
+    #[serde(rename = "comboBox")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub combo_box: Option<Box<CTSdtComboBox>>,
+    #[serde(rename = "date")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub date: Option<Box<CTSdtDate>>,
+    #[serde(rename = "docPartObj")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub doc_part_obj: Option<Box<CTSdtDocPart>>,
+    #[serde(rename = "docPartList")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub doc_part_list: Option<Box<CTSdtDocPart>>,
+    #[serde(rename = "dropDownList")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_down_list: Option<Box<CTSdtDropDownList>>,
+    #[serde(rename = "picture")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub picture: Option<Box<CTEmpty>>,
+    #[serde(rename = "richText")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rich_text: Option<Box<CTEmpty>>,
+    #[serde(rename = "text")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<Box<CTSdtText>>,
+    #[serde(rename = "citation")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub citation: Option<Box<CTEmpty>>,
+    #[serde(rename = "group")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group: Option<Box<CTEmpty>>,
+    #[serde(rename = "bibliography")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bibliography: Option<Box<CTEmpty>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10213,6 +10342,9 @@ pub struct CTSdtPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSdtEndPr {
+    #[serde(rename = "rPr")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_pr: Option<Box<RunProperties>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10222,7 +10354,7 @@ pub struct CTSdtEndPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDirContentRun {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STDirection>,
     #[serde(skip)]
@@ -10244,7 +10376,7 @@ pub struct CTDirContentRun {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBdoContentRun {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STDirection>,
     #[serde(skip)]
@@ -10386,12 +10518,12 @@ pub struct CTSdtRow {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAttr {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -10404,10 +10536,10 @@ pub struct CTAttr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlRun {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@element")]
+    #[serde(rename = "@w:element")]
     pub element: STXmlName,
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10431,10 +10563,10 @@ pub struct CTCustomXmlRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTSmartTagRun {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@element")]
+    #[serde(rename = "@w:element")]
     pub element: STXmlName,
     #[serde(rename = "smartTagPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10458,10 +10590,10 @@ pub struct CTSmartTagRun {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlBlock {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@element")]
+    #[serde(rename = "@w:element")]
     pub element: STXmlName,
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10500,10 +10632,10 @@ pub struct CTCustomXmlPr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlRow {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@element")]
+    #[serde(rename = "@w:element")]
     pub element: STXmlName,
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10527,10 +10659,10 @@ pub struct CTCustomXmlRow {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCustomXmlCell {
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@element")]
+    #[serde(rename = "@w:element")]
     pub element: STXmlName,
     #[serde(rename = "customXmlPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -10566,19 +10698,19 @@ pub struct CTSmartTagPr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Paragraph {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidP")]
+    #[serde(rename = "@w:rsidP")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_p: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidRDefault")]
+    #[serde(rename = "@w:rsidRDefault")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_default: Option<STLongHexNumber>,
     #[cfg(feature = "wml-styling")]
@@ -10604,10 +10736,10 @@ pub struct Paragraph {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHeight {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STTwipsMeasure>,
-    #[serde(rename = "@hRule")]
+    #[serde(rename = "@w:hRule")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub h_rule: Option<STHeightRule>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10621,10 +10753,10 @@ pub struct CTHeight {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblWidth {
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STMeasurementOrPercent>,
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STTblWidth>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10638,7 +10770,7 @@ pub struct CTTblWidth {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableGridColumn {
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub width: Option<STTwipsMeasure>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10745,7 +10877,7 @@ pub struct CTTcMar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTVMerge {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STMerge>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10759,7 +10891,7 @@ pub struct CTVMerge {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHMerge {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STMerge>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -10949,7 +11081,7 @@ pub struct CTTcPrInner {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableCell {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub id: Option<STString>,
     #[cfg(feature = "wml-tables")]
@@ -10975,43 +11107,43 @@ pub struct TableCell {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCnf {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STCnf>,
-    #[serde(rename = "@firstRow")]
+    #[serde(rename = "@w:firstRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<OnOff>,
-    #[serde(rename = "@lastRow")]
+    #[serde(rename = "@w:lastRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row: Option<OnOff>,
-    #[serde(rename = "@firstColumn")]
+    #[serde(rename = "@w:firstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_column: Option<OnOff>,
-    #[serde(rename = "@lastColumn")]
+    #[serde(rename = "@w:lastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_column: Option<OnOff>,
-    #[serde(rename = "@oddVBand")]
+    #[serde(rename = "@w:oddVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_v_band: Option<OnOff>,
-    #[serde(rename = "@evenVBand")]
+    #[serde(rename = "@w:evenVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_v_band: Option<OnOff>,
-    #[serde(rename = "@oddHBand")]
+    #[serde(rename = "@w:oddHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub odd_h_band: Option<OnOff>,
-    #[serde(rename = "@evenHBand")]
+    #[serde(rename = "@w:evenHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub even_h_band: Option<OnOff>,
-    #[serde(rename = "@firstRowFirstColumn")]
+    #[serde(rename = "@w:firstRowFirstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row_first_column: Option<OnOff>,
-    #[serde(rename = "@firstRowLastColumn")]
+    #[serde(rename = "@w:firstRowLastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row_last_column: Option<OnOff>,
-    #[serde(rename = "@lastRowFirstColumn")]
+    #[serde(rename = "@w:lastRowFirstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row_first_column: Option<OnOff>,
-    #[serde(rename = "@lastRowLastColumn")]
+    #[serde(rename = "@w:lastRowLastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row_last_column: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -11037,6 +11169,42 @@ pub struct CTHeaders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTrPrBase {
+    #[serde(rename = "cnfStyle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnf_style: Option<Box<CTCnf>>,
+    #[serde(rename = "divId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub div_id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "gridBefore")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grid_before: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "gridAfter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grid_after: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "wBefore")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_before: Option<Box<CTTblWidth>>,
+    #[serde(rename = "wAfter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_after: Option<Box<CTTblWidth>>,
+    #[serde(rename = "cantSplit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cant_split: Option<Box<CTOnOff>>,
+    #[serde(rename = "trHeight")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tr_height: Option<Box<CTHeight>>,
+    #[serde(rename = "tblHeader")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tbl_header: Option<Box<CTOnOff>>,
+    #[serde(rename = "tblCellSpacing")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[serde(rename = "jc")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub justification: Option<Box<CTJcTable>>,
+    #[serde(rename = "hidden")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hidden: Option<Box<CTOnOff>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -11046,6 +11214,42 @@ pub struct CTTrPrBase {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct TableRowProperties {
+    #[serde(rename = "cnfStyle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cnf_style: Option<Box<CTCnf>>,
+    #[serde(rename = "divId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub div_id: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "gridBefore")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grid_before: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "gridAfter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grid_after: Option<Box<CTDecimalNumber>>,
+    #[serde(rename = "wBefore")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_before: Option<Box<CTTblWidth>>,
+    #[serde(rename = "wAfter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub w_after: Option<Box<CTTblWidth>>,
+    #[serde(rename = "cantSplit")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cant_split: Option<Box<CTOnOff>>,
+    #[serde(rename = "trHeight")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tr_height: Option<Box<CTHeight>>,
+    #[serde(rename = "tblHeader")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tbl_header: Option<Box<CTOnOff>>,
+    #[serde(rename = "tblCellSpacing")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tbl_cell_spacing: Option<Box<CTTblWidth>>,
+    #[serde(rename = "jc")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub justification: Option<Box<CTJcTable>>,
+    #[serde(rename = "hidden")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hidden: Option<Box<CTOnOff>>,
     #[cfg(feature = "wml-track-changes")]
     #[serde(rename = "ins")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11067,16 +11271,16 @@ pub struct TableRowProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRow {
-    #[serde(rename = "@rsidRPr")]
+    #[serde(rename = "@w:rsidRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r_pr: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidR")]
+    #[serde(rename = "@w:rsidR")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_r: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidDel")]
+    #[serde(rename = "@w:rsidDel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_del: Option<STLongHexNumber>,
-    #[serde(rename = "@rsidTr")]
+    #[serde(rename = "@w:rsidTr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rsid_tr: Option<STLongHexNumber>,
     #[cfg(feature = "wml-tables")]
@@ -11106,7 +11310,7 @@ pub struct CTRow {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblLayoutType {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STTblLayoutType>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -11120,7 +11324,7 @@ pub struct CTTblLayoutType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTblOverlap {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTblOverlap,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11133,34 +11337,34 @@ pub struct CTTblOverlap {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblPPr {
-    #[serde(rename = "@leftFromText")]
+    #[serde(rename = "@w:leftFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub left_from_text: Option<STTwipsMeasure>,
-    #[serde(rename = "@rightFromText")]
+    #[serde(rename = "@w:rightFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub right_from_text: Option<STTwipsMeasure>,
-    #[serde(rename = "@topFromText")]
+    #[serde(rename = "@w:topFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_from_text: Option<STTwipsMeasure>,
-    #[serde(rename = "@bottomFromText")]
+    #[serde(rename = "@w:bottomFromText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bottom_from_text: Option<STTwipsMeasure>,
-    #[serde(rename = "@vertAnchor")]
+    #[serde(rename = "@w:vertAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vert_anchor: Option<STVAnchor>,
-    #[serde(rename = "@horzAnchor")]
+    #[serde(rename = "@w:horzAnchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horz_anchor: Option<STHAnchor>,
-    #[serde(rename = "@tblpXSpec")]
+    #[serde(rename = "@w:tblpXSpec")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_x_spec: Option<STXAlign>,
-    #[serde(rename = "@tblpX")]
+    #[serde(rename = "@w:tblpX")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_x: Option<STSignedTwipsMeasure>,
-    #[serde(rename = "@tblpYSpec")]
+    #[serde(rename = "@w:tblpYSpec")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_y_spec: Option<STYAlign>,
-    #[serde(rename = "@tblpY")]
+    #[serde(rename = "@w:tblpY")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tblp_y: Option<STSignedTwipsMeasure>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -11469,25 +11673,25 @@ pub struct Table {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTblLook {
-    #[serde(rename = "@firstRow")]
+    #[serde(rename = "@w:firstRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_row: Option<OnOff>,
-    #[serde(rename = "@lastRow")]
+    #[serde(rename = "@w:lastRow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_row: Option<OnOff>,
-    #[serde(rename = "@firstColumn")]
+    #[serde(rename = "@w:firstColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_column: Option<OnOff>,
-    #[serde(rename = "@lastColumn")]
+    #[serde(rename = "@w:lastColumn")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub last_column: Option<OnOff>,
-    #[serde(rename = "@noHBand")]
+    #[serde(rename = "@w:noHBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_h_band: Option<OnOff>,
-    #[serde(rename = "@noVBand")]
+    #[serde(rename = "@w:noVBand")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_v_band: Option<OnOff>,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STShortHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -11501,7 +11705,7 @@ pub struct CTTblLook {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFtnPos {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STFtnPos,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11514,7 +11718,7 @@ pub struct CTFtnPos {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEdnPos {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STEdnPos,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11527,9 +11731,9 @@ pub struct CTEdnPos {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNumFmt {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STNumberFormat,
-    #[serde(rename = "@format")]
+    #[serde(rename = "@w:format")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub format: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -11543,7 +11747,7 @@ pub struct CTNumFmt {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNumRestart {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STRestartNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11556,10 +11760,10 @@ pub struct CTNumRestart {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FootnoteEndnoteRef {
-    #[serde(rename = "@customMarkFollows")]
+    #[serde(rename = "@w:customMarkFollows")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_mark_follows: Option<OnOff>,
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11572,7 +11776,7 @@ pub struct FootnoteEndnoteRef {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFtnEdnSepRef {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11585,10 +11789,10 @@ pub struct CTFtnEdnSepRef {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FootnoteEndnote {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STFtnEdn>,
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     #[serde(skip)]
     #[serde(default)]
@@ -11730,7 +11934,7 @@ pub struct CTRecipientData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTBase64Binary {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: Vec<u8>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11784,7 +11988,7 @@ pub struct CTOdsoFieldMapData {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMailMergeSourceType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMailMergeSourceType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -11885,7 +12089,7 @@ pub struct CTMailMerge {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTargetScreenSz {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STTargetScreenSz,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12105,13 +12309,13 @@ pub struct Compatibility {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTCompatSetting {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<STString>,
-    #[serde(rename = "@uri")]
+    #[serde(rename = "@w:uri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub uri: Option<STString>,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12125,9 +12329,9 @@ pub struct CTCompatSetting {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocVar {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12167,7 +12371,7 @@ pub struct CTDocRsids {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCharacterSpacing {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STCharacterSpacing,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12180,7 +12384,7 @@ pub struct CTCharacterSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSaveThroughXslt {
-    #[serde(rename = "@solutionID")]
+    #[serde(rename = "@w:solutionID")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solution_i_d: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12233,40 +12437,40 @@ pub struct CTDocDefaults {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColorSchemeMapping {
-    #[serde(rename = "@bg1")]
+    #[serde(rename = "@w:bg1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg1: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@t1")]
+    #[serde(rename = "@w:t1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t1: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@bg2")]
+    #[serde(rename = "@w:bg2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg2: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@t2")]
+    #[serde(rename = "@w:t2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub t2: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent1")]
+    #[serde(rename = "@w:accent1")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent1: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent2")]
+    #[serde(rename = "@w:accent2")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent2: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent3")]
+    #[serde(rename = "@w:accent3")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent3: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent4")]
+    #[serde(rename = "@w:accent4")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent4: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent5")]
+    #[serde(rename = "@w:accent5")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent5: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@accent6")]
+    #[serde(rename = "@w:accent6")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub accent6: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@hyperlink")]
+    #[serde(rename = "@w:hyperlink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hyperlink: Option<STWmlColorSchemeIndex>,
-    #[serde(rename = "@followedHyperlink")]
+    #[serde(rename = "@w:followedHyperlink")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub followed_hyperlink: Option<STWmlColorSchemeIndex>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12280,13 +12484,13 @@ pub struct CTColorSchemeMapping {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTReadingModeInkLockDown {
-    #[serde(rename = "@actualPg")]
+    #[serde(rename = "@w:actualPg")]
     pub actual_pg: OnOff,
-    #[serde(rename = "@w")]
+    #[serde(rename = "@w:w")]
     pub width: STPixelsMeasure,
-    #[serde(rename = "@h")]
+    #[serde(rename = "@w:h")]
     pub height: STPixelsMeasure,
-    #[serde(rename = "@fontSz")]
+    #[serde(rename = "@w:fontSz")]
     pub font_sz: STDecimalNumberOrPercent,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12299,55 +12503,55 @@ pub struct CTReadingModeInkLockDown {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTWriteProtection {
-    #[serde(rename = "@recommended")]
+    #[serde(rename = "@w:recommended")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub recommended: Option<OnOff>,
-    #[serde(rename = "@algorithmName")]
+    #[serde(rename = "@w:algorithmName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub algorithm_name: Option<STString>,
-    #[serde(rename = "@hashValue")]
+    #[serde(rename = "@w:hashValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash_value: Option<Vec<u8>>,
-    #[serde(rename = "@saltValue")]
+    #[serde(rename = "@w:saltValue")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt_value: Option<Vec<u8>>,
-    #[serde(rename = "@spinCount")]
+    #[serde(rename = "@w:spinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub spin_count: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptProviderType")]
+    #[serde(rename = "@w:cryptProviderType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type: Option<STCryptProv>,
-    #[serde(rename = "@cryptAlgorithmClass")]
+    #[serde(rename = "@w:cryptAlgorithmClass")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_class: Option<STAlgClass>,
-    #[serde(rename = "@cryptAlgorithmType")]
+    #[serde(rename = "@w:cryptAlgorithmType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_type: Option<STAlgType>,
-    #[serde(rename = "@cryptAlgorithmSid")]
+    #[serde(rename = "@w:cryptAlgorithmSid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_algorithm_sid: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptSpinCount")]
+    #[serde(rename = "@w:cryptSpinCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_spin_count: Option<STDecimalNumber>,
-    #[serde(rename = "@cryptProvider")]
+    #[serde(rename = "@w:cryptProvider")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider: Option<STString>,
-    #[serde(rename = "@algIdExt")]
+    #[serde(rename = "@w:algIdExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@algIdExtSource")]
+    #[serde(rename = "@w:algIdExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alg_id_ext_source: Option<STString>,
-    #[serde(rename = "@cryptProviderTypeExt")]
+    #[serde(rename = "@w:cryptProviderTypeExt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext: Option<STLongHexNumber>,
-    #[serde(rename = "@cryptProviderTypeExtSource")]
+    #[serde(rename = "@w:cryptProviderTypeExtSource")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub crypt_provider_type_ext_source: Option<STString>,
-    #[serde(rename = "@hash")]
+    #[serde(rename = "@w:hash")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hash: Option<Vec<u8>>,
-    #[serde(rename = "@salt")]
+    #[serde(rename = "@w:salt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub salt: Option<Vec<u8>>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12671,7 +12875,7 @@ pub struct Settings {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTStyleSort {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STStyleSort,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12684,52 +12888,52 @@ pub struct CTStyleSort {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTStylePaneFilter {
-    #[serde(rename = "@allStyles")]
+    #[serde(rename = "@w:allStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all_styles: Option<OnOff>,
-    #[serde(rename = "@customStyles")]
+    #[serde(rename = "@w:customStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_styles: Option<OnOff>,
-    #[serde(rename = "@latentStyles")]
+    #[serde(rename = "@w:latentStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub latent_styles: Option<OnOff>,
-    #[serde(rename = "@stylesInUse")]
+    #[serde(rename = "@w:stylesInUse")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub styles_in_use: Option<OnOff>,
-    #[serde(rename = "@headingStyles")]
+    #[serde(rename = "@w:headingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heading_styles: Option<OnOff>,
-    #[serde(rename = "@numberingStyles")]
+    #[serde(rename = "@w:numberingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub numbering_styles: Option<OnOff>,
-    #[serde(rename = "@tableStyles")]
+    #[serde(rename = "@w:tableStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub table_styles: Option<OnOff>,
-    #[serde(rename = "@directFormattingOnRuns")]
+    #[serde(rename = "@w:directFormattingOnRuns")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_runs: Option<OnOff>,
-    #[serde(rename = "@directFormattingOnParagraphs")]
+    #[serde(rename = "@w:directFormattingOnParagraphs")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_paragraphs: Option<OnOff>,
-    #[serde(rename = "@directFormattingOnNumbering")]
+    #[serde(rename = "@w:directFormattingOnNumbering")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_numbering: Option<OnOff>,
-    #[serde(rename = "@directFormattingOnTables")]
+    #[serde(rename = "@w:directFormattingOnTables")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub direct_formatting_on_tables: Option<OnOff>,
-    #[serde(rename = "@clearFormatting")]
+    #[serde(rename = "@w:clearFormatting")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub clear_formatting: Option<OnOff>,
-    #[serde(rename = "@top3HeadingStyles")]
+    #[serde(rename = "@w:top3HeadingStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top3_heading_styles: Option<OnOff>,
-    #[serde(rename = "@visibleStyles")]
+    #[serde(rename = "@w:visibleStyles")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visible_styles: Option<OnOff>,
-    #[serde(rename = "@alternateStyleNames")]
+    #[serde(rename = "@w:alternateStyleNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alternate_style_names: Option<OnOff>,
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STShortHexNumber>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12791,7 +12995,7 @@ pub struct CTWebSettings {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFrameScrollbar {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STFrameScrollbar,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12804,10 +13008,10 @@ pub struct CTFrameScrollbar {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTOptimizeForBrowser {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<OnOff>,
-    #[serde(rename = "@target")]
+    #[serde(rename = "@w:target")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12860,7 +13064,7 @@ pub struct CTFrame {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFrameLayout {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STFrameLayout,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12906,6 +13110,12 @@ pub struct CTFrameset {
     #[serde(rename = "title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<Box<CTString>>,
+    #[serde(rename = "frameset")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub frameset: Vec<Box<CTFrameset>>,
+    #[serde(rename = "frame")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub frame: Vec<Box<CTFrame>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12915,8 +13125,14 @@ pub struct CTFrameset {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNumPicBullet {
-    #[serde(rename = "@numPicBulletId")]
+    #[serde(rename = "@w:numPicBulletId")]
     pub num_pic_bullet_id: STDecimalNumber,
+    #[serde(rename = "pict")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pict: Option<Box<CTPicture>>,
+    #[serde(rename = "drawing")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drawing: Option<Box<CTDrawing>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12924,11 +13140,16 @@ pub struct CTNumPicBullet {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLevelSuffix {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STLevelSuffix,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -12941,10 +13162,10 @@ pub struct CTLevelSuffix {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLevelText {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<STString>,
-    #[serde(rename = "@null")]
+    #[serde(rename = "@w:null")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub null: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12958,13 +13179,13 @@ pub struct CTLevelText {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLvlLegacy {
-    #[serde(rename = "@legacy")]
+    #[serde(rename = "@w:legacy")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy: Option<OnOff>,
-    #[serde(rename = "@legacySpace")]
+    #[serde(rename = "@w:legacySpace")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_space: Option<STTwipsMeasure>,
-    #[serde(rename = "@legacyIndent")]
+    #[serde(rename = "@w:legacyIndent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub legacy_indent: Option<STSignedTwipsMeasure>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12978,12 +13199,12 @@ pub struct CTLvlLegacy {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Level {
-    #[serde(rename = "@ilvl")]
+    #[serde(rename = "@w:ilvl")]
     pub ilvl: STDecimalNumber,
-    #[serde(rename = "@tplc")]
+    #[serde(rename = "@w:tplc")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tplc: Option<STLongHexNumber>,
-    #[serde(rename = "@tentative")]
+    #[serde(rename = "@w:tentative")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tentative: Option<OnOff>,
     #[serde(rename = "start")]
@@ -13038,7 +13259,7 @@ pub struct Level {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTMultiLevelType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STMultiLevelType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13051,7 +13272,7 @@ pub struct CTMultiLevelType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AbstractNumbering {
-    #[serde(rename = "@abstractNumId")]
+    #[serde(rename = "@w:abstractNumId")]
     pub abstract_num_id: STDecimalNumber,
     #[serde(rename = "nsid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13090,7 +13311,7 @@ pub struct AbstractNumbering {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNumLvl {
-    #[serde(rename = "@ilvl")]
+    #[serde(rename = "@w:ilvl")]
     pub ilvl: STDecimalNumber,
     #[serde(rename = "startOverride")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13114,7 +13335,7 @@ pub struct CTNumLvl {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct NumberingInstance {
-    #[serde(rename = "@numId")]
+    #[serde(rename = "@w:numId")]
     pub num_id: STDecimalNumber,
     #[serde(rename = "abstractNumId")]
     pub abstract_num_id: Box<CTDecimalNumber>,
@@ -13160,7 +13381,7 @@ pub struct Numbering {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTblStylePr {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     pub r#type: STTblStyleOverrideType,
     #[serde(rename = "pPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13193,16 +13414,16 @@ pub struct CTTblStylePr {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Style {
-    #[serde(rename = "@type")]
+    #[serde(rename = "@w:type")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub r#type: Option<STStyleType>,
-    #[serde(rename = "@styleId")]
+    #[serde(rename = "@w:styleId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub style_id: Option<STString>,
-    #[serde(rename = "@default")]
+    #[serde(rename = "@w:default")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default: Option<OnOff>,
-    #[serde(rename = "@customStyle")]
+    #[serde(rename = "@w:customStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub custom_style: Option<OnOff>,
     #[serde(rename = "name")]
@@ -13301,21 +13522,21 @@ pub struct Style {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTLsdException {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@locked")]
+    #[serde(rename = "@w:locked")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub locked: Option<OnOff>,
-    #[serde(rename = "@uiPriority")]
+    #[serde(rename = "@w:uiPriority")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui_priority: Option<STDecimalNumber>,
-    #[serde(rename = "@semiHidden")]
+    #[serde(rename = "@w:semiHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub semi_hidden: Option<OnOff>,
-    #[serde(rename = "@unhideWhenUsed")]
+    #[serde(rename = "@w:unhideWhenUsed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub unhide_when_used: Option<OnOff>,
-    #[serde(rename = "@qFormat")]
+    #[serde(rename = "@w:qFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub q_format: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13329,22 +13550,22 @@ pub struct CTLsdException {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTLatentStyles {
-    #[serde(rename = "@defLockedState")]
+    #[serde(rename = "@w:defLockedState")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_locked_state: Option<OnOff>,
-    #[serde(rename = "@defUIPriority")]
+    #[serde(rename = "@w:defUIPriority")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_u_i_priority: Option<STDecimalNumber>,
-    #[serde(rename = "@defSemiHidden")]
+    #[serde(rename = "@w:defSemiHidden")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_semi_hidden: Option<OnOff>,
-    #[serde(rename = "@defUnhideWhenUsed")]
+    #[serde(rename = "@w:defUnhideWhenUsed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_unhide_when_used: Option<OnOff>,
-    #[serde(rename = "@defQFormat")]
+    #[serde(rename = "@w:defQFormat")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub def_q_format: Option<OnOff>,
-    #[serde(rename = "@count")]
+    #[serde(rename = "@w:count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<STDecimalNumber>,
     #[serde(rename = "lsdException")]
@@ -13384,7 +13605,7 @@ pub struct Styles {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPanose {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: Panose,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13397,7 +13618,7 @@ pub struct CTPanose {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontFamily {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STFontFamily,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13410,7 +13631,7 @@ pub struct CTFontFamily {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPitch {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STPitch,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13423,17 +13644,17 @@ pub struct CTPitch {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontSig {
-    #[serde(rename = "@usb0")]
+    #[serde(rename = "@w:usb0")]
     pub usb0: STLongHexNumber,
-    #[serde(rename = "@usb1")]
+    #[serde(rename = "@w:usb1")]
     pub usb1: STLongHexNumber,
-    #[serde(rename = "@usb2")]
+    #[serde(rename = "@w:usb2")]
     pub usb2: STLongHexNumber,
-    #[serde(rename = "@usb3")]
+    #[serde(rename = "@w:usb3")]
     pub usb3: STLongHexNumber,
-    #[serde(rename = "@csb0")]
+    #[serde(rename = "@w:csb0")]
     pub csb0: STLongHexNumber,
-    #[serde(rename = "@csb1")]
+    #[serde(rename = "@w:csb1")]
     pub csb1: STLongHexNumber,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13446,10 +13667,10 @@ pub struct CTFontSig {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFontRel {
-    #[serde(rename = "@fontKey")]
+    #[serde(rename = "@w:fontKey")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_key: Option<Guid>,
-    #[serde(rename = "@subsetted")]
+    #[serde(rename = "@w:subsetted")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub subsetted: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13463,7 +13684,7 @@ pub struct CTFontRel {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Font {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
     #[serde(rename = "altName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13547,7 +13768,7 @@ pub struct CTDivBdr {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDiv {
-    #[serde(rename = "@id")]
+    #[serde(rename = "@w:id")]
     pub id: STDecimalNumber,
     #[serde(rename = "blockQuote")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13703,13 +13924,13 @@ pub type WFtr = Box<HeaderFooter>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSmartTagType {
-    #[serde(rename = "@namespaceuri")]
+    #[serde(rename = "@w:namespaceuri")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub namespaceuri: Option<STString>,
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<STString>,
-    #[serde(rename = "@url")]
+    #[serde(rename = "@w:url")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<STString>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13723,7 +13944,7 @@ pub struct CTSmartTagType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocPartBehavior {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDocPartBehavior,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13748,7 +13969,7 @@ pub struct CTDocPartBehaviors {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocPartType {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDocPartType,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13761,7 +13982,7 @@ pub struct CTDocPartType {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTDocPartTypes {
-    #[serde(rename = "@all")]
+    #[serde(rename = "@w:all")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub all: Option<OnOff>,
     #[serde(rename = "type")]
@@ -13783,7 +14004,7 @@ pub struct CTDocPartTypes {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocPartGallery {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STDocPartGallery,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13809,9 +14030,9 @@ pub struct CTDocPartCategory {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTDocPartName {
-    #[serde(rename = "@val")]
+    #[serde(rename = "@w:val")]
     pub value: STString,
-    #[serde(rename = "@decorated")]
+    #[serde(rename = "@w:decorated")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub decorated: Option<OnOff>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13891,24 +14112,24 @@ pub type WStyles = Box<Styles>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTCaption {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@pos")]
+    #[serde(rename = "@w:pos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pos: Option<STCaptionPos>,
-    #[serde(rename = "@chapNum")]
+    #[serde(rename = "@w:chapNum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub chap_num: Option<OnOff>,
-    #[serde(rename = "@heading")]
+    #[serde(rename = "@w:heading")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub heading: Option<STDecimalNumber>,
-    #[serde(rename = "@noLabel")]
+    #[serde(rename = "@w:noLabel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub no_label: Option<OnOff>,
-    #[serde(rename = "@numFmt")]
+    #[serde(rename = "@w:numFmt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub num_fmt: Option<STNumberFormat>,
-    #[serde(rename = "@sep")]
+    #[serde(rename = "@w:sep")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sep: Option<STChapterSep>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13922,9 +14143,9 @@ pub struct CTCaption {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAutoCaption {
-    #[serde(rename = "@name")]
+    #[serde(rename = "@w:name")]
     pub name: STString,
-    #[serde(rename = "@caption")]
+    #[serde(rename = "@w:caption")]
     pub caption: STString,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
@@ -13983,7 +14204,7 @@ pub struct Document {
     #[serde(rename = "body")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body: Option<Box<Body>>,
-    #[serde(rename = "@conformance")]
+    #[serde(rename = "@w:conformance")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub conformance: Option<STConformanceClass>,
     /// Unknown attributes captured for roundtrip fidelity.

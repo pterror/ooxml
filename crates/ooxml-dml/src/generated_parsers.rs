@@ -1,0 +1,19809 @@
+// Event-based parsers for generated types.
+// ~3x faster than serde-based deserialization.
+
+#![allow(unused_variables)]
+#![allow(clippy::single_match)]
+#![allow(clippy::match_single_binding)]
+#![allow(clippy::manual_is_multiple_of)]
+
+use super::generated::*;
+use quick_xml::Reader;
+use quick_xml::events::{Event, BytesStart};
+use std::io::BufRead;
+#[cfg(feature = "extra-children")]
+use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
+
+/// Error type for XML parsing.
+#[derive(Debug)]
+pub enum ParseError {
+    Xml(quick_xml::Error),
+    #[cfg(feature = "extra-children")]
+    RawXml(ooxml_xml::Error),
+    UnexpectedElement(String),
+    MissingAttribute(String),
+    InvalidValue(String),
+}
+
+impl From<quick_xml::Error> for ParseError {
+    fn from(e: quick_xml::Error) -> Self {
+        ParseError::Xml(e)
+    }
+}
+
+#[cfg(feature = "extra-children")]
+impl From<ooxml_xml::Error> for ParseError {
+    fn from(e: ooxml_xml::Error) -> Self {
+        ParseError::RawXml(e)
+    }
+}
+
+/// Trait for types that can be parsed from XML events.
+pub trait FromXml: Sized {
+    /// Parse from a reader, given the opening tag.
+    /// If `is_empty` is true, the element was self-closing (no children to read).
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start: &BytesStart, is_empty: bool) -> Result<Self, ParseError>;
+}
+
+#[allow(dead_code)]
+/// Skip an element and all its children.
+fn skip_element<R: BufRead>(reader: &mut Reader<R>) -> Result<(), ParseError> {
+    let mut depth = 1u32;
+    let mut buf = Vec::new();
+    loop {
+        match reader.read_event_into(&mut buf)? {
+            Event::Start(_) => depth += 1,
+            Event::End(_) => {
+                depth -= 1;
+                if depth == 0 { break; }
+            }
+            Event::Eof => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+    Ok(())
+}
+
+#[allow(dead_code)]
+/// Read the text content of an element until its end tag.
+fn read_text_content<R: BufRead>(reader: &mut Reader<R>) -> Result<String, ParseError> {
+    let mut text = String::new();
+    let mut buf = Vec::new();
+    loop {
+        match reader.read_event_into(&mut buf)? {
+            Event::Text(e) => text.push_str(&e.decode().unwrap_or_default()),
+            Event::CData(e) => text.push_str(&e.decode().unwrap_or_default()),
+            Event::End(_) => break,
+            Event::Eof => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+    Ok(text)
+}
+
+#[allow(dead_code)]
+/// Decode a hex string to bytes.
+fn decode_hex(s: &str) -> Option<Vec<u8>> {
+    let s = s.trim();
+    if s.len() % 2 != 0 { return None; }
+    (0..s.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&s[i..i + 2], 16).ok())
+        .collect()
+}
+
+impl FromXml for CTAudioFile {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_content_type = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"contentType" => {
+                    f_content_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            content_type: f_content_type,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTVideoFile {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_content_type = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"contentType" => {
+                    f_content_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            content_type: f_content_type,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTQuickTimeFile {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTAudioCDTime {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_track: Option<u8> = None;
+        let mut f_time = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"track" => {
+                    f_track = val.parse().ok();
+                }
+                b"time" => {
+                    f_time = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            track: f_track.ok_or_else(|| ParseError::MissingAttribute("track".to_string()))?,
+            time: f_time,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAudioCD {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_st: Option<Box<CTAudioCDTime>> = None;
+        let mut f_end: Option<Box<CTAudioCDTime>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"st" => {
+                                f_st = Some(Box::new(CTAudioCDTime::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"end" => {
+                                f_end = Some(Box::new(CTAudioCDTime::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"st" => {
+                                f_st = Some(Box::new(CTAudioCDTime::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"end" => {
+                                f_end = Some(Box::new(CTAudioCDTime::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            st: f_st.ok_or_else(|| ParseError::MissingAttribute("st".to_string()))?,
+            end: f_end.ok_or_else(|| ParseError::MissingAttribute("end".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGMedia {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"audioCd" => {
+                let inner = CTAudioCD::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AudioCd(Box::new(inner)))
+            }
+            b"wavAudioFile" => {
+                let inner = CTEmbeddedWAVAudioFile::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::WavAudioFile(Box::new(inner)))
+            }
+            b"audioFile" => {
+                let inner = CTAudioFile::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AudioFile(Box::new(inner)))
+            }
+            b"videoFile" => {
+                let inner = CTVideoFile::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::VideoFile(Box::new(inner)))
+            }
+            b"quickTimeFile" => {
+                let inner = CTQuickTimeFile::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::QuickTimeFile(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for ColorScheme {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name: Option<String> = None;
+        let mut f_dk1: Option<Box<CTColor>> = None;
+        let mut f_lt1: Option<Box<CTColor>> = None;
+        let mut f_dk2: Option<Box<CTColor>> = None;
+        let mut f_lt2: Option<Box<CTColor>> = None;
+        let mut f_accent1: Option<Box<CTColor>> = None;
+        let mut f_accent2: Option<Box<CTColor>> = None;
+        let mut f_accent3: Option<Box<CTColor>> = None;
+        let mut f_accent4: Option<Box<CTColor>> = None;
+        let mut f_accent5: Option<Box<CTColor>> = None;
+        let mut f_accent6: Option<Box<CTColor>> = None;
+        let mut f_hlink: Option<Box<CTColor>> = None;
+        let mut f_fol_hlink: Option<Box<CTColor>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"dk1" => {
+                                f_dk1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lt1" => {
+                                f_lt1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"dk2" => {
+                                f_dk2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lt2" => {
+                                f_lt2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent1" => {
+                                f_accent1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent2" => {
+                                f_accent2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent3" => {
+                                f_accent3 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent4" => {
+                                f_accent4 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent5" => {
+                                f_accent5 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent6" => {
+                                f_accent6 = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlink" => {
+                                f_hlink = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"folHlink" => {
+                                f_fol_hlink = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"dk1" => {
+                                f_dk1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lt1" => {
+                                f_lt1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"dk2" => {
+                                f_dk2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lt2" => {
+                                f_lt2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent1" => {
+                                f_accent1 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent2" => {
+                                f_accent2 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent3" => {
+                                f_accent3 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent4" => {
+                                f_accent4 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent5" => {
+                                f_accent5 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"accent6" => {
+                                f_accent6 = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlink" => {
+                                f_hlink = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"folHlink" => {
+                                f_fol_hlink = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            dk1: f_dk1.ok_or_else(|| ParseError::MissingAttribute("dk1".to_string()))?,
+            lt1: f_lt1.ok_or_else(|| ParseError::MissingAttribute("lt1".to_string()))?,
+            dk2: f_dk2.ok_or_else(|| ParseError::MissingAttribute("dk2".to_string()))?,
+            lt2: f_lt2.ok_or_else(|| ParseError::MissingAttribute("lt2".to_string()))?,
+            accent1: f_accent1.ok_or_else(|| ParseError::MissingAttribute("accent1".to_string()))?,
+            accent2: f_accent2.ok_or_else(|| ParseError::MissingAttribute("accent2".to_string()))?,
+            accent3: f_accent3.ok_or_else(|| ParseError::MissingAttribute("accent3".to_string()))?,
+            accent4: f_accent4.ok_or_else(|| ParseError::MissingAttribute("accent4".to_string()))?,
+            accent5: f_accent5.ok_or_else(|| ParseError::MissingAttribute("accent5".to_string()))?,
+            accent6: f_accent6.ok_or_else(|| ParseError::MissingAttribute("accent6".to_string()))?,
+            hlink: f_hlink.ok_or_else(|| ParseError::MissingAttribute("hlink".to_string()))?,
+            fol_hlink: f_fol_hlink.ok_or_else(|| ParseError::MissingAttribute("folHlink".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTCustomColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTSupplementalFont {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_script: Option<String> = None;
+        let mut f_typeface: Option<STTextTypeface> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"script" => {
+                    f_script = Some(val.into_owned());
+                }
+                b"typeface" => {
+                    f_typeface = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            script: f_script.ok_or_else(|| ParseError::MissingAttribute("script".to_string()))?,
+            typeface: f_typeface.ok_or_else(|| ParseError::MissingAttribute("typeface".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTCustomColorList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_cust_clr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"custClr" => {
+                                f_cust_clr.push(Box::new(CTCustomColor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"custClr" => {
+                                f_cust_clr.push(Box::new(CTCustomColor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            cust_clr: f_cust_clr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFontCollection {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_latin: Option<Box<TextFont>> = None;
+        let mut f_ea: Option<Box<TextFont>> = None;
+        let mut f_cs: Option<Box<TextFont>> = None;
+        let mut f_font = Vec::new();
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"latin" => {
+                                f_latin = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ea" => {
+                                f_ea = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cs" => {
+                                f_cs = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"font" => {
+                                f_font.push(Box::new(CTSupplementalFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"latin" => {
+                                f_latin = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ea" => {
+                                f_ea = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cs" => {
+                                f_cs = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"font" => {
+                                f_font.push(Box::new(CTSupplementalFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            latin: f_latin.ok_or_else(|| ParseError::MissingAttribute("latin".to_string()))?,
+            ea: f_ea.ok_or_else(|| ParseError::MissingAttribute("ea".to_string()))?,
+            cs: f_cs.ok_or_else(|| ParseError::MissingAttribute("cs".to_string()))?,
+            font: f_font,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTEffectStyleItem {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_effect_properties: Option<Box<EGEffectProperties>> = None;
+        let mut f_scene3d = None;
+        let mut f_sp3d = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            effect_properties: f_effect_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_EffectProperties".to_string()))?,
+            scene3d: f_scene3d,
+            sp3d: f_sp3d,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for FontScheme {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name: Option<String> = None;
+        let mut f_major_font: Option<Box<CTFontCollection>> = None;
+        let mut f_minor_font: Option<Box<CTFontCollection>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"majorFont" => {
+                                f_major_font = Some(Box::new(CTFontCollection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"minorFont" => {
+                                f_minor_font = Some(Box::new(CTFontCollection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"majorFont" => {
+                                f_major_font = Some(Box::new(CTFontCollection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"minorFont" => {
+                                f_minor_font = Some(Box::new(CTFontCollection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            major_font: f_major_font.ok_or_else(|| ParseError::MissingAttribute("majorFont".to_string()))?,
+            minor_font: f_minor_font.ok_or_else(|| ParseError::MissingAttribute("minorFont".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFillStyleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties.push(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties.push(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTLineStyleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_line = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line.push(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line.push(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            line: f_line,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTEffectStyleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_effect_style = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectStyle" => {
+                                f_effect_style.push(Box::new(CTEffectStyleItem::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectStyle" => {
+                                f_effect_style.push(Box::new(CTEffectStyleItem::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            effect_style: f_effect_style,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBackgroundFillStyleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties.push(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties.push(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTStyleMatrix {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name = None;
+        let mut f_fill_style_lst: Option<Box<CTFillStyleList>> = None;
+        let mut f_ln_style_lst: Option<Box<CTLineStyleList>> = None;
+        let mut f_effect_style_lst: Option<Box<CTEffectStyleList>> = None;
+        let mut f_bg_fill_style_lst: Option<Box<CTBackgroundFillStyleList>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillStyleLst" => {
+                                f_fill_style_lst = Some(Box::new(CTFillStyleList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnStyleLst" => {
+                                f_ln_style_lst = Some(Box::new(CTLineStyleList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectStyleLst" => {
+                                f_effect_style_lst = Some(Box::new(CTEffectStyleList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bgFillStyleLst" => {
+                                f_bg_fill_style_lst = Some(Box::new(CTBackgroundFillStyleList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillStyleLst" => {
+                                f_fill_style_lst = Some(Box::new(CTFillStyleList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnStyleLst" => {
+                                f_ln_style_lst = Some(Box::new(CTLineStyleList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectStyleLst" => {
+                                f_effect_style_lst = Some(Box::new(CTEffectStyleList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bgFillStyleLst" => {
+                                f_bg_fill_style_lst = Some(Box::new(CTBackgroundFillStyleList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name,
+            fill_style_lst: f_fill_style_lst.ok_or_else(|| ParseError::MissingAttribute("fillStyleLst".to_string()))?,
+            ln_style_lst: f_ln_style_lst.ok_or_else(|| ParseError::MissingAttribute("lnStyleLst".to_string()))?,
+            effect_style_lst: f_effect_style_lst.ok_or_else(|| ParseError::MissingAttribute("effectStyleLst".to_string()))?,
+            bg_fill_style_lst: f_bg_fill_style_lst.ok_or_else(|| ParseError::MissingAttribute("bgFillStyleLst".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBaseStyles {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_clr_scheme: Option<Box<ColorScheme>> = None;
+        let mut f_font_scheme: Option<Box<FontScheme>> = None;
+        let mut f_fmt_scheme: Option<Box<CTStyleMatrix>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontScheme" => {
+                                f_font_scheme = Some(Box::new(FontScheme::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fmtScheme" => {
+                                f_fmt_scheme = Some(Box::new(CTStyleMatrix::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontScheme" => {
+                                f_font_scheme = Some(Box::new(FontScheme::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fmtScheme" => {
+                                f_fmt_scheme = Some(Box::new(CTStyleMatrix::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            clr_scheme: f_clr_scheme.ok_or_else(|| ParseError::MissingAttribute("clrScheme".to_string()))?,
+            font_scheme: f_font_scheme.ok_or_else(|| ParseError::MissingAttribute("fontScheme".to_string()))?,
+            fmt_scheme: f_fmt_scheme.ok_or_else(|| ParseError::MissingAttribute("fmtScheme".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTOfficeArtExtension {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_uri: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"uri" => {
+                    f_uri = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            uri: f_uri.ok_or_else(|| ParseError::MissingAttribute("uri".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAngle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STAngle> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPositiveFixedAngle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STPositiveFixedAngle> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPercentage {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPositivePercentage {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STPositivePercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTFixedPercentage {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STFixedPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPositiveFixedPercentage {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STPositiveFixedPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTRatio {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_n: Option<i64> = None;
+        let mut f_d: Option<i64> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"n" => {
+                    f_n = val.parse().ok();
+                }
+                b"d" => {
+                    f_d = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            n: f_n.ok_or_else(|| ParseError::MissingAttribute("n".to_string()))?,
+            d: f_d.ok_or_else(|| ParseError::MissingAttribute("d".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for Point2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_x: Option<STCoordinate> = None;
+        let mut f_y: Option<STCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"x" => {
+                    f_x = Some(val.into_owned());
+                }
+                b"y" => {
+                    f_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            y: f_y.ok_or_else(|| ParseError::MissingAttribute("y".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for PositiveSize2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_cx: Option<STPositiveCoordinate> = None;
+        let mut f_cy: Option<STPositiveCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"cx" => {
+                    f_cx = val.parse().ok();
+                }
+                b"cy" => {
+                    f_cy = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            cx: f_cx.ok_or_else(|| ParseError::MissingAttribute("cx".to_string()))?,
+            cy: f_cy.ok_or_else(|| ParseError::MissingAttribute("cy".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTComplementTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTInverseTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTGrayscaleTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTGammaTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTInverseGammaTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGColorTransform {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"tint" => {
+                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Tint(Box::new(inner)))
+            }
+            b"shade" => {
+                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Shade(Box::new(inner)))
+            }
+            b"comp" => {
+                let inner = CTComplementTransform::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Comp(Box::new(inner)))
+            }
+            b"inv" => {
+                let inner = CTInverseTransform::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Inv(Box::new(inner)))
+            }
+            b"gray" => {
+                let inner = CTGrayscaleTransform::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Gray(Box::new(inner)))
+            }
+            b"alpha" => {
+                let inner = CTPositiveFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Alpha(Box::new(inner)))
+            }
+            b"alphaOff" => {
+                let inner = CTFixedPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaOff(Box::new(inner)))
+            }
+            b"alphaMod" => {
+                let inner = CTPositivePercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaMod(Box::new(inner)))
+            }
+            b"hue" => {
+                let inner = CTPositiveFixedAngle::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Hue(Box::new(inner)))
+            }
+            b"hueOff" => {
+                let inner = CTAngle::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::HueOff(Box::new(inner)))
+            }
+            b"hueMod" => {
+                let inner = CTPositivePercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::HueMod(Box::new(inner)))
+            }
+            b"sat" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Sat(Box::new(inner)))
+            }
+            b"satOff" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SatOff(Box::new(inner)))
+            }
+            b"satMod" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SatMod(Box::new(inner)))
+            }
+            b"lum" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Lum(Box::new(inner)))
+            }
+            b"lumOff" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::LumOff(Box::new(inner)))
+            }
+            b"lumMod" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::LumMod(Box::new(inner)))
+            }
+            b"red" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Red(Box::new(inner)))
+            }
+            b"redOff" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::RedOff(Box::new(inner)))
+            }
+            b"redMod" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::RedMod(Box::new(inner)))
+            }
+            b"green" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Green(Box::new(inner)))
+            }
+            b"greenOff" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::GreenOff(Box::new(inner)))
+            }
+            b"greenMod" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::GreenMod(Box::new(inner)))
+            }
+            b"blue" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Blue(Box::new(inner)))
+            }
+            b"blueOff" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BlueOff(Box::new(inner)))
+            }
+            b"blueMod" => {
+                let inner = CTPercentage::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BlueMod(Box::new(inner)))
+            }
+            b"gamma" => {
+                let inner = CTGammaTransform::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Gamma(Box::new(inner)))
+            }
+            b"invGamma" => {
+                let inner = CTInverseGammaTransform::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::InvGamma(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTScRgbColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_relationship_id: Option<STPercentage> = None;
+        let mut f_g: Option<STPercentage> = None;
+        let mut f_b: Option<STPercentage> = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"r" => {
+                    f_relationship_id = Some(val.into_owned());
+                }
+                b"g" => {
+                    f_g = Some(val.into_owned());
+                }
+                b"b" => {
+                    f_b = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            relationship_id: f_relationship_id.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
+            g: f_g.ok_or_else(|| ParseError::MissingAttribute("g".to_string()))?,
+            b: f_b.ok_or_else(|| ParseError::MissingAttribute("b".to_string()))?,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for SrgbColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<HexColorRgb> = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = decode_hex(&val);
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for HslColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_hue: Option<STPositiveFixedAngle> = None;
+        let mut f_sat: Option<STPercentage> = None;
+        let mut f_lum: Option<STPercentage> = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"hue" => {
+                    f_hue = val.parse().ok();
+                }
+                b"sat" => {
+                    f_sat = Some(val.into_owned());
+                }
+                b"lum" => {
+                    f_lum = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            hue: f_hue.ok_or_else(|| ParseError::MissingAttribute("hue".to_string()))?,
+            sat: f_sat.ok_or_else(|| ParseError::MissingAttribute("sat".to_string()))?,
+            lum: f_lum.ok_or_else(|| ParseError::MissingAttribute("lum".to_string()))?,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for SystemColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STSystemColorVal> = None;
+        let mut f_last_clr = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                b"lastClr" => {
+                    f_last_clr = decode_hex(&val);
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            last_clr: f_last_clr,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for SchemeColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STSchemeColorVal> = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for PresetColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STPresetColorVal> = None;
+        let mut f_color_transform = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tint" | b"shade" | b"comp" | b"inv" | b"gray" | b"alpha" | b"alphaOff" | b"alphaMod" | b"hue" | b"hueOff" | b"hueMod" | b"sat" | b"satOff" | b"satMod" | b"lum" | b"lumOff" | b"lumMod" | b"red" | b"redOff" | b"redMod" | b"green" | b"greenOff" | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma" | b"invGamma" => {
+                                f_color_transform.push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            color_transform: f_color_transform,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGOfficeArtExtensionList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_extents = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            extents: f_extents,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTOfficeArtExtensionList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_extents = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ext" => {
+                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            extents: f_extents,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTScale2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_sx: Option<Box<CTRatio>> = None;
+        let mut f_sy: Option<Box<CTRatio>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"sx" => {
+                                f_sx = Some(Box::new(CTRatio::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sy" => {
+                                f_sy = Some(Box::new(CTRatio::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"sx" => {
+                                f_sx = Some(Box::new(CTRatio::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sy" => {
+                                f_sy = Some(Box::new(CTRatio::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            sx: f_sx.ok_or_else(|| ParseError::MissingAttribute("sx".to_string()))?,
+            sy: f_sy.ok_or_else(|| ParseError::MissingAttribute("sy".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for Transform2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rot = None;
+        let mut f_flip_h = None;
+        let mut f_flip_v = None;
+        let mut f_offset = None;
+        let mut f_extents = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rot" => {
+                    f_rot = val.parse().ok();
+                }
+                b"flipH" => {
+                    f_flip_h = Some(val == "true" || val == "1");
+                }
+                b"flipV" => {
+                    f_flip_v = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"off" => {
+                                f_offset = Some(Box::new(Point2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ext" => {
+                                f_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"off" => {
+                                f_offset = Some(Box::new(Point2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ext" => {
+                                f_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rot: f_rot,
+            flip_h: f_flip_h,
+            flip_v: f_flip_v,
+            offset: f_offset,
+            extents: f_extents,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGroupTransform2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rot = None;
+        let mut f_flip_h = None;
+        let mut f_flip_v = None;
+        let mut f_offset = None;
+        let mut f_extents = None;
+        let mut f_child_offset = None;
+        let mut f_child_extents = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rot" => {
+                    f_rot = val.parse().ok();
+                }
+                b"flipH" => {
+                    f_flip_h = Some(val == "true" || val == "1");
+                }
+                b"flipV" => {
+                    f_flip_v = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"off" => {
+                                f_offset = Some(Box::new(Point2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ext" => {
+                                f_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chOff" => {
+                                f_child_offset = Some(Box::new(Point2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chExt" => {
+                                f_child_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"off" => {
+                                f_offset = Some(Box::new(Point2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ext" => {
+                                f_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chOff" => {
+                                f_child_offset = Some(Box::new(Point2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chExt" => {
+                                f_child_extents = Some(Box::new(PositiveSize2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rot: f_rot,
+            flip_h: f_flip_h,
+            flip_v: f_flip_v,
+            offset: f_offset,
+            extents: f_extents,
+            child_offset: f_child_offset,
+            child_extents: f_child_extents,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPoint3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_x: Option<STCoordinate> = None;
+        let mut f_y: Option<STCoordinate> = None;
+        let mut f_z: Option<STCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"x" => {
+                    f_x = Some(val.into_owned());
+                }
+                b"y" => {
+                    f_y = Some(val.into_owned());
+                }
+                b"z" => {
+                    f_z = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            y: f_y.ok_or_else(|| ParseError::MissingAttribute("y".to_string()))?,
+            z: f_z.ok_or_else(|| ParseError::MissingAttribute("z".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTVector3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_dx: Option<STCoordinate> = None;
+        let mut f_dy: Option<STCoordinate> = None;
+        let mut f_dz: Option<STCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"dx" => {
+                    f_dx = Some(val.into_owned());
+                }
+                b"dy" => {
+                    f_dy = Some(val.into_owned());
+                }
+                b"dz" => {
+                    f_dz = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            dx: f_dx.ok_or_else(|| ParseError::MissingAttribute("dx".to_string()))?,
+            dy: f_dy.ok_or_else(|| ParseError::MissingAttribute("dy".to_string()))?,
+            dz: f_dz.ok_or_else(|| ParseError::MissingAttribute("dz".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTSphereCoords {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_lat: Option<STPositiveFixedAngle> = None;
+        let mut f_lon: Option<STPositiveFixedAngle> = None;
+        let mut f_rev: Option<STPositiveFixedAngle> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"lat" => {
+                    f_lat = val.parse().ok();
+                }
+                b"lon" => {
+                    f_lon = val.parse().ok();
+                }
+                b"rev" => {
+                    f_rev = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            lat: f_lat.ok_or_else(|| ParseError::MissingAttribute("lat".to_string()))?,
+            lon: f_lon.ok_or_else(|| ParseError::MissingAttribute("lon".to_string()))?,
+            rev: f_rev.ok_or_else(|| ParseError::MissingAttribute("rev".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTRelativeRect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_l = None;
+        let mut f_t = None;
+        let mut f_relationship_id = None;
+        let mut f_b = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"l" => {
+                    f_l = Some(val.into_owned());
+                }
+                b"t" => {
+                    f_t = Some(val.into_owned());
+                }
+                b"r" => {
+                    f_relationship_id = Some(val.into_owned());
+                }
+                b"b" => {
+                    f_b = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            l: f_l,
+            t: f_t,
+            relationship_id: f_relationship_id,
+            b: f_b,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGColorChoice {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"scrgbClr" => {
+                let inner = CTScRgbColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::ScrgbClr(Box::new(inner)))
+            }
+            b"srgbClr" => {
+                let inner = SrgbColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SrgbClr(Box::new(inner)))
+            }
+            b"hslClr" => {
+                let inner = HslColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::HslClr(Box::new(inner)))
+            }
+            b"sysClr" => {
+                let inner = SystemColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SysClr(Box::new(inner)))
+            }
+            b"schemeClr" => {
+                let inner = SchemeColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SchemeClr(Box::new(inner)))
+            }
+            b"prstClr" => {
+                let inner = PresetColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PrstClr(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTColorMRU {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice.push(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice.push(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for AAGBlob {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    #[cfg(feature = "extra-children")]
+                    Event::Start(e) => {
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => { skip_element(reader)?; }
+                    #[cfg(feature = "extra-children")]
+                    Event::Empty(e) => {
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
+                    }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTEmbeddedWAVAudioFile {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTHyperlink {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_invalid_url = None;
+        let mut f_action = None;
+        let mut f_tgt_frame = None;
+        let mut f_tooltip = None;
+        let mut f_history = None;
+        let mut f_highlight_click = None;
+        let mut f_end_snd = None;
+        let mut f_snd = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"invalidUrl" => {
+                    f_invalid_url = Some(val.into_owned());
+                }
+                b"action" => {
+                    f_action = Some(val.into_owned());
+                }
+                b"tgtFrame" => {
+                    f_tgt_frame = Some(val.into_owned());
+                }
+                b"tooltip" => {
+                    f_tooltip = Some(val.into_owned());
+                }
+                b"history" => {
+                    f_history = Some(val == "true" || val == "1");
+                }
+                b"highlightClick" => {
+                    f_highlight_click = Some(val == "true" || val == "1");
+                }
+                b"endSnd" => {
+                    f_end_snd = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"snd" => {
+                                f_snd = Some(Box::new(CTEmbeddedWAVAudioFile::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"snd" => {
+                                f_snd = Some(Box::new(CTEmbeddedWAVAudioFile::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            invalid_url: f_invalid_url,
+            action: f_action,
+            tgt_frame: f_tgt_frame,
+            tooltip: f_tooltip,
+            history: f_history,
+            highlight_click: f_highlight_click,
+            end_snd: f_end_snd,
+            snd: f_snd,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for AAGLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_no_edit_points = None;
+        let mut f_no_adjust_handles = None;
+        let mut f_no_change_arrowheads = None;
+        let mut f_no_change_shape_type = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                b"noEditPoints" => {
+                    f_no_edit_points = Some(val == "true" || val == "1");
+                }
+                b"noAdjustHandles" => {
+                    f_no_adjust_handles = Some(val == "true" || val == "1");
+                }
+                b"noChangeArrowheads" => {
+                    f_no_change_arrowheads = Some(val == "true" || val == "1");
+                }
+                b"noChangeShapeType" => {
+                    f_no_change_shape_type = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            no_edit_points: f_no_edit_points,
+            no_adjust_handles: f_no_adjust_handles,
+            no_change_arrowheads: f_no_change_arrowheads,
+            no_change_shape_type: f_no_change_shape_type,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTConnectorLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_no_edit_points = None;
+        let mut f_no_adjust_handles = None;
+        let mut f_no_change_arrowheads = None;
+        let mut f_no_change_shape_type = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                b"noEditPoints" => {
+                    f_no_edit_points = Some(val == "true" || val == "1");
+                }
+                b"noAdjustHandles" => {
+                    f_no_adjust_handles = Some(val == "true" || val == "1");
+                }
+                b"noChangeArrowheads" => {
+                    f_no_change_arrowheads = Some(val == "true" || val == "1");
+                }
+                b"noChangeShapeType" => {
+                    f_no_change_shape_type = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            no_edit_points: f_no_edit_points,
+            no_adjust_handles: f_no_adjust_handles,
+            no_change_arrowheads: f_no_change_arrowheads,
+            no_change_shape_type: f_no_change_shape_type,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTShapeLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_no_edit_points = None;
+        let mut f_no_adjust_handles = None;
+        let mut f_no_change_arrowheads = None;
+        let mut f_no_change_shape_type = None;
+        let mut f_no_text_edit = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                b"noEditPoints" => {
+                    f_no_edit_points = Some(val == "true" || val == "1");
+                }
+                b"noAdjustHandles" => {
+                    f_no_adjust_handles = Some(val == "true" || val == "1");
+                }
+                b"noChangeArrowheads" => {
+                    f_no_change_arrowheads = Some(val == "true" || val == "1");
+                }
+                b"noChangeShapeType" => {
+                    f_no_change_shape_type = Some(val == "true" || val == "1");
+                }
+                b"noTextEdit" => {
+                    f_no_text_edit = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            no_edit_points: f_no_edit_points,
+            no_adjust_handles: f_no_adjust_handles,
+            no_change_arrowheads: f_no_change_arrowheads,
+            no_change_shape_type: f_no_change_shape_type,
+            no_text_edit: f_no_text_edit,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPictureLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_no_edit_points = None;
+        let mut f_no_adjust_handles = None;
+        let mut f_no_change_arrowheads = None;
+        let mut f_no_change_shape_type = None;
+        let mut f_no_crop = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                b"noEditPoints" => {
+                    f_no_edit_points = Some(val == "true" || val == "1");
+                }
+                b"noAdjustHandles" => {
+                    f_no_adjust_handles = Some(val == "true" || val == "1");
+                }
+                b"noChangeArrowheads" => {
+                    f_no_change_arrowheads = Some(val == "true" || val == "1");
+                }
+                b"noChangeShapeType" => {
+                    f_no_change_shape_type = Some(val == "true" || val == "1");
+                }
+                b"noCrop" => {
+                    f_no_crop = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            no_edit_points: f_no_edit_points,
+            no_adjust_handles: f_no_adjust_handles,
+            no_change_arrowheads: f_no_change_arrowheads,
+            no_change_shape_type: f_no_change_shape_type,
+            no_crop: f_no_crop,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGroupLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_ungrp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noUngrp" => {
+                    f_no_ungrp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_ungrp: f_no_ungrp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGraphicalObjectFrameLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_drilldown = None;
+        let mut f_no_select = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noDrilldown" => {
+                    f_no_drilldown = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_drilldown: f_no_drilldown,
+            no_select: f_no_select,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTContentPartLocking {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_no_grp = None;
+        let mut f_no_select = None;
+        let mut f_no_rot = None;
+        let mut f_no_change_aspect = None;
+        let mut f_no_move = None;
+        let mut f_no_resize = None;
+        let mut f_no_edit_points = None;
+        let mut f_no_adjust_handles = None;
+        let mut f_no_change_arrowheads = None;
+        let mut f_no_change_shape_type = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"noGrp" => {
+                    f_no_grp = Some(val == "true" || val == "1");
+                }
+                b"noSelect" => {
+                    f_no_select = Some(val == "true" || val == "1");
+                }
+                b"noRot" => {
+                    f_no_rot = Some(val == "true" || val == "1");
+                }
+                b"noChangeAspect" => {
+                    f_no_change_aspect = Some(val == "true" || val == "1");
+                }
+                b"noMove" => {
+                    f_no_move = Some(val == "true" || val == "1");
+                }
+                b"noResize" => {
+                    f_no_resize = Some(val == "true" || val == "1");
+                }
+                b"noEditPoints" => {
+                    f_no_edit_points = Some(val == "true" || val == "1");
+                }
+                b"noAdjustHandles" => {
+                    f_no_adjust_handles = Some(val == "true" || val == "1");
+                }
+                b"noChangeArrowheads" => {
+                    f_no_change_arrowheads = Some(val == "true" || val == "1");
+                }
+                b"noChangeShapeType" => {
+                    f_no_change_shape_type = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            no_grp: f_no_grp,
+            no_select: f_no_select,
+            no_rot: f_no_rot,
+            no_change_aspect: f_no_change_aspect,
+            no_move: f_no_move,
+            no_resize: f_no_resize,
+            no_edit_points: f_no_edit_points,
+            no_adjust_handles: f_no_adjust_handles,
+            no_change_arrowheads: f_no_change_arrowheads,
+            no_change_shape_type: f_no_change_shape_type,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualDrawingProps {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDrawingElementId> = None;
+        let mut f_name: Option<String> = None;
+        let mut f_descr = None;
+        let mut f_hidden = None;
+        let mut f_title = None;
+        let mut f_hlink_click = None;
+        let mut f_hlink_hover = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                b"descr" => {
+                    f_descr = Some(val.into_owned());
+                }
+                b"hidden" => {
+                    f_hidden = Some(val == "true" || val == "1");
+                }
+                b"title" => {
+                    f_title = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"hlinkClick" => {
+                                f_hlink_click = Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkHover" => {
+                                f_hlink_hover = Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"hlinkClick" => {
+                                f_hlink_click = Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkHover" => {
+                                f_hlink_hover = Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            descr: f_descr,
+            hidden: f_hidden,
+            title: f_title,
+            hlink_click: f_hlink_click,
+            hlink_hover: f_hlink_hover,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualDrawingShapeProps {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tx_box = None;
+        let mut f_sp_locks = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"txBox" => {
+                    f_tx_box = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"spLocks" => {
+                                f_sp_locks = Some(Box::new(CTShapeLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"spLocks" => {
+                                f_sp_locks = Some(Box::new(CTShapeLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tx_box: f_tx_box,
+            sp_locks: f_sp_locks,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualConnectorProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_cxn_sp_locks = None;
+        let mut f_st_cxn = None;
+        let mut f_end_cxn = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cxnSpLocks" => {
+                                f_cxn_sp_locks = Some(Box::new(CTConnectorLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"stCxn" => {
+                                f_st_cxn = Some(Box::new(CTConnection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"endCxn" => {
+                                f_end_cxn = Some(Box::new(CTConnection::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cxnSpLocks" => {
+                                f_cxn_sp_locks = Some(Box::new(CTConnectorLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"stCxn" => {
+                                f_st_cxn = Some(Box::new(CTConnection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"endCxn" => {
+                                f_end_cxn = Some(Box::new(CTConnection::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            cxn_sp_locks: f_cxn_sp_locks,
+            st_cxn: f_st_cxn,
+            end_cxn: f_end_cxn,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualPictureProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_prefer_relative_resize = None;
+        let mut f_pic_locks = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"preferRelativeResize" => {
+                    f_prefer_relative_resize = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"picLocks" => {
+                                f_pic_locks = Some(Box::new(CTPictureLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"picLocks" => {
+                                f_pic_locks = Some(Box::new(CTPictureLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            prefer_relative_resize: f_prefer_relative_resize,
+            pic_locks: f_pic_locks,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualGroupDrawingShapeProps {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_grp_sp_locks = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"grpSpLocks" => {
+                                f_grp_sp_locks = Some(Box::new(CTGroupLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"grpSpLocks" => {
+                                f_grp_sp_locks = Some(Box::new(CTGroupLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            grp_sp_locks: f_grp_sp_locks,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualGraphicFrameProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_graphic_frame_locks = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"graphicFrameLocks" => {
+                                f_graphic_frame_locks = Some(Box::new(CTGraphicalObjectFrameLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"graphicFrameLocks" => {
+                                f_graphic_frame_locks = Some(Box::new(CTGraphicalObjectFrameLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            graphic_frame_locks: f_graphic_frame_locks,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTNonVisualContentPartProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_is_comment = None;
+        let mut f_cp_locks = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"isComment" => {
+                    f_is_comment = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cpLocks" => {
+                                f_cp_locks = Some(Box::new(CTContentPartLocking::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cpLocks" => {
+                                f_cp_locks = Some(Box::new(CTContentPartLocking::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            is_comment: f_is_comment,
+            cp_locks: f_cp_locks,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGraphicalObjectData {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_uri: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"uri" => {
+                    f_uri = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            uri: f_uri.ok_or_else(|| ParseError::MissingAttribute("uri".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAnimationDgmElement {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_id = None;
+        let mut f_bld_step = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                b"bldStep" => {
+                    f_bld_step = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            id: f_id,
+            bld_step: f_bld_step,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAnimationChartElement {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_series_idx = None;
+        let mut f_category_idx = None;
+        let mut f_bld_step: Option<STChartBuildStep> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"seriesIdx" => {
+                    f_series_idx = val.parse().ok();
+                }
+                b"categoryIdx" => {
+                    f_category_idx = val.parse().ok();
+                }
+                b"bldStep" => {
+                    f_bld_step = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            series_idx: f_series_idx,
+            category_idx: f_category_idx,
+            bld_step: f_bld_step.ok_or_else(|| ParseError::MissingAttribute("bldStep".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAnimationElementChoice {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_dgm = None;
+        let mut f_chart = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"dgm" => {
+                                f_dgm = Some(Box::new(CTAnimationDgmElement::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chart" => {
+                                f_chart = Some(Box::new(CTAnimationChartElement::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"dgm" => {
+                                f_dgm = Some(Box::new(CTAnimationDgmElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"chart" => {
+                                f_chart = Some(Box::new(CTAnimationChartElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            dgm: f_dgm,
+            chart: f_chart,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTAnimationDgmBuildProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bld = None;
+        let mut f_rev = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bld" => {
+                    f_bld = Some(val.into_owned());
+                }
+                b"rev" => {
+                    f_rev = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bld: f_bld,
+            rev: f_rev,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAnimationChartBuildProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bld = None;
+        let mut f_anim_bg = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bld" => {
+                    f_bld = Some(val.into_owned());
+                }
+                b"animBg" => {
+                    f_anim_bg = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bld: f_bld,
+            anim_bg: f_anim_bg,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAnimationGraphicalObjectBuildProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bld_dgm = None;
+        let mut f_bld_chart = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"bldDgm" => {
+                                f_bld_dgm = Some(Box::new(CTAnimationDgmBuildProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bldChart" => {
+                                f_bld_chart = Some(Box::new(CTAnimationChartBuildProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"bldDgm" => {
+                                f_bld_dgm = Some(Box::new(CTAnimationDgmBuildProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bldChart" => {
+                                f_bld_chart = Some(Box::new(CTAnimationChartBuildProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bld_dgm: f_bld_dgm,
+            bld_chart: f_bld_chart,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBackgroundFormatting {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties = None;
+        let mut f_effect_properties = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties,
+            effect_properties: f_effect_properties,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTWholeE2oFormatting {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_line = None;
+        let mut f_effect_properties = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            line: f_line,
+            effect_properties: f_effect_properties,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlUseShapeRectangle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTGvmlTextShape {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tx_body: Option<Box<TextBody>> = None;
+        let mut f_use_sp_rect = None;
+        let mut f_transform = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"txBody" => {
+                                f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"useSpRect" => {
+                                f_use_sp_rect = Some(Box::new(CTGvmlUseShapeRectangle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"txBody" => {
+                                f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"useSpRect" => {
+                                f_use_sp_rect = Some(Box::new(CTGvmlUseShapeRectangle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tx_body: f_tx_body.ok_or_else(|| ParseError::MissingAttribute("txBody".to_string()))?,
+            use_sp_rect: f_use_sp_rect,
+            transform: f_transform,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlShapeNonVisual {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_common_non_visual_properties: Option<Box<CTNonVisualDrawingProps>> = None;
+        let mut f_common_non_visual_shape_properties: Option<Box<CTNonVisualDrawingShapeProps>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvSpPr" => {
+                                f_common_non_visual_shape_properties = Some(Box::new(CTNonVisualDrawingShapeProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvSpPr" => {
+                                f_common_non_visual_shape_properties = Some(Box::new(CTNonVisualDrawingShapeProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            common_non_visual_properties: f_common_non_visual_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPr".to_string()))?,
+            common_non_visual_shape_properties: f_common_non_visual_shape_properties.ok_or_else(|| ParseError::MissingAttribute("cNvSpPr".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlShape {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_nv_sp_pr: Option<Box<CTGvmlShapeNonVisual>> = None;
+        let mut f_sp_pr: Option<Box<CTShapeProperties>> = None;
+        let mut f_tx_sp = None;
+        let mut f_style = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvSpPr" => {
+                                f_nv_sp_pr = Some(Box::new(CTGvmlShapeNonVisual::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txSp" => {
+                                f_tx_sp = Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvSpPr" => {
+                                f_nv_sp_pr = Some(Box::new(CTGvmlShapeNonVisual::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txSp" => {
+                                f_tx_sp = Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            nv_sp_pr: f_nv_sp_pr.ok_or_else(|| ParseError::MissingAttribute("nvSpPr".to_string()))?,
+            sp_pr: f_sp_pr.ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            tx_sp: f_tx_sp,
+            style: f_style,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlConnectorNonVisual {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_common_non_visual_properties: Option<Box<CTNonVisualDrawingProps>> = None;
+        let mut f_c_nv_cxn_sp_pr: Option<Box<CTNonVisualConnectorProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvCxnSpPr" => {
+                                f_c_nv_cxn_sp_pr = Some(Box::new(CTNonVisualConnectorProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvCxnSpPr" => {
+                                f_c_nv_cxn_sp_pr = Some(Box::new(CTNonVisualConnectorProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            common_non_visual_properties: f_common_non_visual_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPr".to_string()))?,
+            c_nv_cxn_sp_pr: f_c_nv_cxn_sp_pr.ok_or_else(|| ParseError::MissingAttribute("cNvCxnSpPr".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlConnector {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_nv_cxn_sp_pr: Option<Box<CTGvmlConnectorNonVisual>> = None;
+        let mut f_sp_pr: Option<Box<CTShapeProperties>> = None;
+        let mut f_style = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvCxnSpPr" => {
+                                f_nv_cxn_sp_pr = Some(Box::new(CTGvmlConnectorNonVisual::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvCxnSpPr" => {
+                                f_nv_cxn_sp_pr = Some(Box::new(CTGvmlConnectorNonVisual::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            nv_cxn_sp_pr: f_nv_cxn_sp_pr.ok_or_else(|| ParseError::MissingAttribute("nvCxnSpPr".to_string()))?,
+            sp_pr: f_sp_pr.ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            style: f_style,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlPictureNonVisual {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_common_non_visual_properties: Option<Box<CTNonVisualDrawingProps>> = None;
+        let mut f_common_non_visual_picture_properties: Option<Box<CTNonVisualPictureProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvPicPr" => {
+                                f_common_non_visual_picture_properties = Some(Box::new(CTNonVisualPictureProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvPicPr" => {
+                                f_common_non_visual_picture_properties = Some(Box::new(CTNonVisualPictureProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            common_non_visual_properties: f_common_non_visual_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPr".to_string()))?,
+            common_non_visual_picture_properties: f_common_non_visual_picture_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPicPr".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlPicture {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_nv_pic_pr: Option<Box<CTGvmlPictureNonVisual>> = None;
+        let mut f_blip_fill: Option<Box<BlipFillProperties>> = None;
+        let mut f_sp_pr: Option<Box<CTShapeProperties>> = None;
+        let mut f_style = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvPicPr" => {
+                                f_nv_pic_pr = Some(Box::new(CTGvmlPictureNonVisual::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"blipFill" => {
+                                f_blip_fill = Some(Box::new(BlipFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvPicPr" => {
+                                f_nv_pic_pr = Some(Box::new(CTGvmlPictureNonVisual::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"blipFill" => {
+                                f_blip_fill = Some(Box::new(BlipFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            nv_pic_pr: f_nv_pic_pr.ok_or_else(|| ParseError::MissingAttribute("nvPicPr".to_string()))?,
+            blip_fill: f_blip_fill.ok_or_else(|| ParseError::MissingAttribute("blipFill".to_string()))?,
+            sp_pr: f_sp_pr.ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            style: f_style,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlGraphicFrameNonVisual {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_common_non_visual_properties: Option<Box<CTNonVisualDrawingProps>> = None;
+        let mut f_c_nv_graphic_frame_pr: Option<Box<CTNonVisualGraphicFrameProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvGraphicFramePr" => {
+                                f_c_nv_graphic_frame_pr = Some(Box::new(CTNonVisualGraphicFrameProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvGraphicFramePr" => {
+                                f_c_nv_graphic_frame_pr = Some(Box::new(CTNonVisualGraphicFrameProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            common_non_visual_properties: f_common_non_visual_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPr".to_string()))?,
+            c_nv_graphic_frame_pr: f_c_nv_graphic_frame_pr.ok_or_else(|| ParseError::MissingAttribute("cNvGraphicFramePr".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlGraphicalObjectFrame {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_nv_graphic_frame_pr: Option<Box<CTGvmlGraphicFrameNonVisual>> = None;
+        let mut f_graphic: Option<Box<CTGraphicalObject>> = None;
+        let mut f_transform: Option<Box<Transform2D>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvGraphicFramePr" => {
+                                f_nv_graphic_frame_pr = Some(Box::new(CTGvmlGraphicFrameNonVisual::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"graphic" => {
+                                f_graphic = Some(Box::new(Box::new(CTGraphicalObjectData::from_xml(reader, &e, false)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvGraphicFramePr" => {
+                                f_nv_graphic_frame_pr = Some(Box::new(CTGvmlGraphicFrameNonVisual::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"graphic" => {
+                                f_graphic = Some(Box::new(Box::new(CTGraphicalObjectData::from_xml(reader, &e, true)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            nv_graphic_frame_pr: f_nv_graphic_frame_pr.ok_or_else(|| ParseError::MissingAttribute("nvGraphicFramePr".to_string()))?,
+            graphic: f_graphic.ok_or_else(|| ParseError::MissingAttribute("graphic".to_string()))?,
+            transform: f_transform.ok_or_else(|| ParseError::MissingAttribute("xfrm".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlGroupShapeNonVisual {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_common_non_visual_properties: Option<Box<CTNonVisualDrawingProps>> = None;
+        let mut f_c_nv_grp_sp_pr: Option<Box<CTNonVisualGroupDrawingShapeProps>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvGrpSpPr" => {
+                                f_c_nv_grp_sp_pr = Some(Box::new(CTNonVisualGroupDrawingShapeProps::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cNvPr" => {
+                                f_common_non_visual_properties = Some(Box::new(CTNonVisualDrawingProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cNvGrpSpPr" => {
+                                f_c_nv_grp_sp_pr = Some(Box::new(CTNonVisualGroupDrawingShapeProps::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            common_non_visual_properties: f_common_non_visual_properties.ok_or_else(|| ParseError::MissingAttribute("cNvPr".to_string()))?,
+            c_nv_grp_sp_pr: f_c_nv_grp_sp_pr.ok_or_else(|| ParseError::MissingAttribute("cNvGrpSpPr".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGvmlGroupShape {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_nv_grp_sp_pr: Option<Box<CTGvmlGroupShapeNonVisual>> = None;
+        let mut f_grp_sp_pr: Option<Box<CTGroupShapeProperties>> = None;
+        let mut f_tx_sp = None;
+        let mut f_sp = None;
+        let mut f_cxn_sp = None;
+        let mut f_pic = None;
+        let mut f_graphic_frame = None;
+        let mut f_grp_sp = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvGrpSpPr" => {
+                                f_nv_grp_sp_pr = Some(Box::new(CTGvmlGroupShapeNonVisual::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grpSpPr" => {
+                                f_grp_sp_pr = Some(Box::new(CTGroupShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txSp" => {
+                                f_tx_sp = Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp" => {
+                                f_sp = Some(Box::new(CTGvmlShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cxnSp" => {
+                                f_cxn_sp = Some(Box::new(CTGvmlConnector::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pic" => {
+                                f_pic = Some(Box::new(CTGvmlPicture::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"graphicFrame" => {
+                                f_graphic_frame = Some(Box::new(CTGvmlGraphicalObjectFrame::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grpSp" => {
+                                f_grp_sp = Some(Box::new(CTGvmlGroupShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"nvGrpSpPr" => {
+                                f_nv_grp_sp_pr = Some(Box::new(CTGvmlGroupShapeNonVisual::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grpSpPr" => {
+                                f_grp_sp_pr = Some(Box::new(CTGroupShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txSp" => {
+                                f_tx_sp = Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp" => {
+                                f_sp = Some(Box::new(CTGvmlShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cxnSp" => {
+                                f_cxn_sp = Some(Box::new(CTGvmlConnector::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pic" => {
+                                f_pic = Some(Box::new(CTGvmlPicture::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"graphicFrame" => {
+                                f_graphic_frame = Some(Box::new(CTGvmlGraphicalObjectFrame::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grpSp" => {
+                                f_grp_sp = Some(Box::new(CTGvmlGroupShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            nv_grp_sp_pr: f_nv_grp_sp_pr.ok_or_else(|| ParseError::MissingAttribute("nvGrpSpPr".to_string()))?,
+            grp_sp_pr: f_grp_sp_pr.ok_or_else(|| ParseError::MissingAttribute("grpSpPr".to_string()))?,
+            tx_sp: f_tx_sp,
+            sp: f_sp,
+            cxn_sp: f_cxn_sp,
+            pic: f_pic,
+            graphic_frame: f_graphic_frame,
+            grp_sp: f_grp_sp,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTCamera {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_preset: Option<STPresetCameraType> = None;
+        let mut f_fov = None;
+        let mut f_zoom = None;
+        let mut f_rot = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                b"fov" => {
+                    f_fov = val.parse().ok();
+                }
+                b"zoom" => {
+                    f_zoom = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"rot" => {
+                                f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"rot" => {
+                                f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            preset: f_preset.ok_or_else(|| ParseError::MissingAttribute("prst".to_string()))?,
+            fov: f_fov,
+            zoom: f_zoom,
+            rot: f_rot,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTLightRig {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rig: Option<STLightRigType> = None;
+        let mut f_dir: Option<STLightRigDirection> = None;
+        let mut f_rot = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rig" => {
+                    f_rig = val.parse().ok();
+                }
+                b"dir" => {
+                    f_dir = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"rot" => {
+                                f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"rot" => {
+                                f_rot = Some(Box::new(CTSphereCoords::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rig: f_rig.ok_or_else(|| ParseError::MissingAttribute("rig".to_string()))?,
+            dir: f_dir.ok_or_else(|| ParseError::MissingAttribute("dir".to_string()))?,
+            rot: f_rot,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTScene3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_camera: Option<Box<CTCamera>> = None;
+        let mut f_light_rig: Option<Box<CTLightRig>> = None;
+        let mut f_backdrop = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"camera" => {
+                                f_camera = Some(Box::new(CTCamera::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lightRig" => {
+                                f_light_rig = Some(Box::new(CTLightRig::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"backdrop" => {
+                                f_backdrop = Some(Box::new(CTBackdrop::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"camera" => {
+                                f_camera = Some(Box::new(CTCamera::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lightRig" => {
+                                f_light_rig = Some(Box::new(CTLightRig::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"backdrop" => {
+                                f_backdrop = Some(Box::new(CTBackdrop::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            camera: f_camera.ok_or_else(|| ParseError::MissingAttribute("camera".to_string()))?,
+            light_rig: f_light_rig.ok_or_else(|| ParseError::MissingAttribute("lightRig".to_string()))?,
+            backdrop: f_backdrop,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBackdrop {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_anchor: Option<Box<CTPoint3D>> = None;
+        let mut f_norm: Option<Box<CTVector3D>> = None;
+        let mut f_up: Option<Box<CTVector3D>> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"anchor" => {
+                                f_anchor = Some(Box::new(CTPoint3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"norm" => {
+                                f_norm = Some(Box::new(CTVector3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"up" => {
+                                f_up = Some(Box::new(CTVector3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"anchor" => {
+                                f_anchor = Some(Box::new(CTPoint3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"norm" => {
+                                f_norm = Some(Box::new(CTVector3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"up" => {
+                                f_up = Some(Box::new(CTVector3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("anchor".to_string()))?,
+            norm: f_norm.ok_or_else(|| ParseError::MissingAttribute("norm".to_string()))?,
+            up: f_up.ok_or_else(|| ParseError::MissingAttribute("up".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBevel {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_width = None;
+        let mut f_height = None;
+        let mut f_preset = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"w" => {
+                    f_width = val.parse().ok();
+                }
+                b"h" => {
+                    f_height = val.parse().ok();
+                }
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            width: f_width,
+            height: f_height,
+            preset: f_preset,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTShape3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_z = None;
+        let mut f_extrusion_h = None;
+        let mut f_contour_w = None;
+        let mut f_prst_material = None;
+        let mut f_bevel_t = None;
+        let mut f_bevel_b = None;
+        let mut f_extrusion_clr = None;
+        let mut f_contour_clr = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"z" => {
+                    f_z = Some(val.into_owned());
+                }
+                b"extrusionH" => {
+                    f_extrusion_h = val.parse().ok();
+                }
+                b"contourW" => {
+                    f_contour_w = val.parse().ok();
+                }
+                b"prstMaterial" => {
+                    f_prst_material = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"bevelT" => {
+                                f_bevel_t = Some(Box::new(CTBevel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bevelB" => {
+                                f_bevel_b = Some(Box::new(CTBevel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extrusionClr" => {
+                                f_extrusion_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"contourClr" => {
+                                f_contour_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"bevelT" => {
+                                f_bevel_t = Some(Box::new(CTBevel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bevelB" => {
+                                f_bevel_b = Some(Box::new(CTBevel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extrusionClr" => {
+                                f_extrusion_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"contourClr" => {
+                                f_contour_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            z: f_z,
+            extrusion_h: f_extrusion_h,
+            contour_w: f_contour_w,
+            prst_material: f_prst_material,
+            bevel_t: f_bevel_t,
+            bevel_b: f_bevel_b,
+            extrusion_clr: f_extrusion_clr,
+            contour_clr: f_contour_clr,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFlatText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_z = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"z" => {
+                    f_z = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            z: f_z,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGText3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"sp3d" => {
+                let inner = CTShape3D::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Sp3d(Box::new(inner)))
+            }
+            b"flatTx" => {
+                let inner = CTFlatText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::FlatTx(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTAlphaBiLevelEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_thresh: Option<STPositiveFixedPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"thresh" => {
+                    f_thresh = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            thresh: f_thresh.ok_or_else(|| ParseError::MissingAttribute("thresh".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAlphaCeilingEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTAlphaFloorEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTAlphaInverseEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTAlphaModulateFixedEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_amt = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"amt" => {
+                    f_amt = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            amt: f_amt,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAlphaOutsetEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rad = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rad" => {
+                    f_rad = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rad: f_rad,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTAlphaReplaceEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_anchor: Option<STPositiveFixedPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"a" => {
+                    f_anchor = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            anchor: f_anchor.ok_or_else(|| ParseError::MissingAttribute("a".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTBiLevelEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_thresh: Option<STPositiveFixedPercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"thresh" => {
+                    f_thresh = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            thresh: f_thresh.ok_or_else(|| ParseError::MissingAttribute("thresh".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTBlurEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rad = None;
+        let mut f_grow = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rad" => {
+                    f_rad = val.parse().ok();
+                }
+                b"grow" => {
+                    f_grow = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rad: f_rad,
+            grow: f_grow,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTColorChangeEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_use_a = None;
+        let mut f_clr_from: Option<Box<CTColor>> = None;
+        let mut f_clr_to: Option<Box<CTColor>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"useA" => {
+                    f_use_a = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrFrom" => {
+                                f_clr_from = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrTo" => {
+                                f_clr_to = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrFrom" => {
+                                f_clr_from = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrTo" => {
+                                f_clr_to = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            use_a: f_use_a,
+            clr_from: f_clr_from.ok_or_else(|| ParseError::MissingAttribute("clrFrom".to_string()))?,
+            clr_to: f_clr_to.ok_or_else(|| ParseError::MissingAttribute("clrTo".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTColorReplaceEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTDuotoneEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice.push(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice.push(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGlowEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rad = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rad" => {
+                    f_rad = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rad: f_rad,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGrayscaleEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTHSLEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_hue = None;
+        let mut f_sat = None;
+        let mut f_lum = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"hue" => {
+                    f_hue = val.parse().ok();
+                }
+                b"sat" => {
+                    f_sat = Some(val.into_owned());
+                }
+                b"lum" => {
+                    f_lum = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            hue: f_hue,
+            sat: f_sat,
+            lum: f_lum,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTInnerShadowEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blur_rad = None;
+        let mut f_dist = None;
+        let mut f_dir = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"blurRad" => {
+                    f_blur_rad = val.parse().ok();
+                }
+                b"dist" => {
+                    f_dist = val.parse().ok();
+                }
+                b"dir" => {
+                    f_dir = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blur_rad: f_blur_rad,
+            dist: f_dist,
+            dir: f_dir,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTLuminanceEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bright = None;
+        let mut f_contrast = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bright" => {
+                    f_bright = Some(val.into_owned());
+                }
+                b"contrast" => {
+                    f_contrast = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bright: f_bright,
+            contrast: f_contrast,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTOuterShadowEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blur_rad = None;
+        let mut f_dist = None;
+        let mut f_dir = None;
+        let mut f_sx = None;
+        let mut f_sy = None;
+        let mut f_kx = None;
+        let mut f_ky = None;
+        let mut f_algn = None;
+        let mut f_rot_with_shape = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"blurRad" => {
+                    f_blur_rad = val.parse().ok();
+                }
+                b"dist" => {
+                    f_dist = val.parse().ok();
+                }
+                b"dir" => {
+                    f_dir = val.parse().ok();
+                }
+                b"sx" => {
+                    f_sx = Some(val.into_owned());
+                }
+                b"sy" => {
+                    f_sy = Some(val.into_owned());
+                }
+                b"kx" => {
+                    f_kx = val.parse().ok();
+                }
+                b"ky" => {
+                    f_ky = val.parse().ok();
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                b"rotWithShape" => {
+                    f_rot_with_shape = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blur_rad: f_blur_rad,
+            dist: f_dist,
+            dir: f_dir,
+            sx: f_sx,
+            sy: f_sy,
+            kx: f_kx,
+            ky: f_ky,
+            algn: f_algn,
+            rot_with_shape: f_rot_with_shape,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPresetShadowEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_preset: Option<STPresetShadowVal> = None;
+        let mut f_dist = None;
+        let mut f_dir = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                b"dist" => {
+                    f_dist = val.parse().ok();
+                }
+                b"dir" => {
+                    f_dir = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            preset: f_preset.ok_or_else(|| ParseError::MissingAttribute("prst".to_string()))?,
+            dist: f_dist,
+            dir: f_dir,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTReflectionEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blur_rad = None;
+        let mut f_st_a = None;
+        let mut f_st_pos = None;
+        let mut f_end_a = None;
+        let mut f_end_pos = None;
+        let mut f_dist = None;
+        let mut f_dir = None;
+        let mut f_fade_dir = None;
+        let mut f_sx = None;
+        let mut f_sy = None;
+        let mut f_kx = None;
+        let mut f_ky = None;
+        let mut f_algn = None;
+        let mut f_rot_with_shape = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"blurRad" => {
+                    f_blur_rad = val.parse().ok();
+                }
+                b"stA" => {
+                    f_st_a = Some(val.into_owned());
+                }
+                b"stPos" => {
+                    f_st_pos = Some(val.into_owned());
+                }
+                b"endA" => {
+                    f_end_a = Some(val.into_owned());
+                }
+                b"endPos" => {
+                    f_end_pos = Some(val.into_owned());
+                }
+                b"dist" => {
+                    f_dist = val.parse().ok();
+                }
+                b"dir" => {
+                    f_dir = val.parse().ok();
+                }
+                b"fadeDir" => {
+                    f_fade_dir = val.parse().ok();
+                }
+                b"sx" => {
+                    f_sx = Some(val.into_owned());
+                }
+                b"sy" => {
+                    f_sy = Some(val.into_owned());
+                }
+                b"kx" => {
+                    f_kx = val.parse().ok();
+                }
+                b"ky" => {
+                    f_ky = val.parse().ok();
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                b"rotWithShape" => {
+                    f_rot_with_shape = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blur_rad: f_blur_rad,
+            st_a: f_st_a,
+            st_pos: f_st_pos,
+            end_a: f_end_a,
+            end_pos: f_end_pos,
+            dist: f_dist,
+            dir: f_dir,
+            fade_dir: f_fade_dir,
+            sx: f_sx,
+            sy: f_sy,
+            kx: f_kx,
+            ky: f_ky,
+            algn: f_algn,
+            rot_with_shape: f_rot_with_shape,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTRelativeOffsetEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tx = None;
+        let mut f_ty = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"tx" => {
+                    f_tx = Some(val.into_owned());
+                }
+                b"ty" => {
+                    f_ty = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tx: f_tx,
+            ty: f_ty,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTSoftEdgesEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rad: Option<STPositiveCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rad" => {
+                    f_rad = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rad: f_rad.ok_or_else(|| ParseError::MissingAttribute("rad".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTintEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_hue = None;
+        let mut f_amt = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"hue" => {
+                    f_hue = val.parse().ok();
+                }
+                b"amt" => {
+                    f_amt = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            hue: f_hue,
+            amt: f_amt,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTransformEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_sx = None;
+        let mut f_sy = None;
+        let mut f_kx = None;
+        let mut f_ky = None;
+        let mut f_tx = None;
+        let mut f_ty = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"sx" => {
+                    f_sx = Some(val.into_owned());
+                }
+                b"sy" => {
+                    f_sy = Some(val.into_owned());
+                }
+                b"kx" => {
+                    f_kx = val.parse().ok();
+                }
+                b"ky" => {
+                    f_ky = val.parse().ok();
+                }
+                b"tx" => {
+                    f_tx = Some(val.into_owned());
+                }
+                b"ty" => {
+                    f_ty = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            sx: f_sx,
+            sy: f_sy,
+            kx: f_kx,
+            ky: f_ky,
+            tx: f_tx,
+            ty: f_ty,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for NoFill {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for SolidColorFill {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_color_choice = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTLinearShadeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ang = None;
+        let mut f_scaled = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"ang" => {
+                    f_ang = val.parse().ok();
+                }
+                b"scaled" => {
+                    f_scaled = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ang: f_ang,
+            scaled: f_scaled,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPathShadeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_path = None;
+        let mut f_fill_to_rect = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"path" => {
+                    f_path = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillToRect" => {
+                                f_fill_to_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillToRect" => {
+                                f_fill_to_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            path: f_path,
+            fill_to_rect: f_fill_to_rect,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGShadeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"lin" => {
+                let inner = CTLinearShadeProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Lin(Box::new(inner)))
+            }
+            b"path" => {
+                let inner = CTPathShadeProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Path(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTGradientStop {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_pos: Option<STPositiveFixedPercentage> = None;
+        let mut f_color_choice: Option<Box<EGColorChoice>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"pos" => {
+                    f_pos = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
+            color_choice: f_color_choice.ok_or_else(|| ParseError::MissingAttribute("a_EG_ColorChoice".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGradientStopList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_gs = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"gs" => {
+                                f_gs.push(Box::new(CTGradientStop::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"gs" => {
+                                f_gs.push(Box::new(CTGradientStop::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            gs: f_gs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for GradientFill {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_flip = None;
+        let mut f_rot_with_shape = None;
+        let mut f_gs_lst = None;
+        let mut f_shade_properties = None;
+        let mut f_tile_rect = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"flip" => {
+                    f_flip = val.parse().ok();
+                }
+                b"rotWithShape" => {
+                    f_rot_with_shape = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"gsLst" => {
+                                f_gs_lst = Some(Box::new(CTGradientStopList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lin" | b"path" => {
+                                f_shade_properties = Some(Box::new(EGShadeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tileRect" => {
+                                f_tile_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"gsLst" => {
+                                f_gs_lst = Some(Box::new(CTGradientStopList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lin" | b"path" => {
+                                f_shade_properties = Some(Box::new(EGShadeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tileRect" => {
+                                f_tile_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            flip: f_flip,
+            rot_with_shape: f_rot_with_shape,
+            gs_lst: f_gs_lst,
+            shade_properties: f_shade_properties,
+            tile_rect: f_tile_rect,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTileInfoProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tx = None;
+        let mut f_ty = None;
+        let mut f_sx = None;
+        let mut f_sy = None;
+        let mut f_flip = None;
+        let mut f_algn = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"tx" => {
+                    f_tx = Some(val.into_owned());
+                }
+                b"ty" => {
+                    f_ty = Some(val.into_owned());
+                }
+                b"sx" => {
+                    f_sx = Some(val.into_owned());
+                }
+                b"sy" => {
+                    f_sy = Some(val.into_owned());
+                }
+                b"flip" => {
+                    f_flip = val.parse().ok();
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tx: f_tx,
+            ty: f_ty,
+            sx: f_sx,
+            sy: f_sy,
+            flip: f_flip,
+            algn: f_algn,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTStretchInfoProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_rect = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillRect" => {
+                                f_fill_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"fillRect" => {
+                                f_fill_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_rect: f_fill_rect,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGFillModeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"tile" => {
+                let inner = CTTileInfoProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Tile(Box::new(inner)))
+            }
+            b"stretch" => {
+                let inner = CTStretchInfoProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Stretch(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for Blip {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_cstate = None;
+        let mut f_alpha_bi_level = None;
+        let mut f_alpha_ceiling = None;
+        let mut f_alpha_floor = None;
+        let mut f_alpha_inv = None;
+        let mut f_alpha_mod = None;
+        let mut f_alpha_mod_fix = None;
+        let mut f_alpha_repl = None;
+        let mut f_bi_level = None;
+        let mut f_blur = None;
+        let mut f_clr_change = None;
+        let mut f_clr_repl = None;
+        let mut f_duotone = None;
+        let mut f_fill_overlay = None;
+        let mut f_grayscl = None;
+        let mut f_hsl = None;
+        let mut f_lum = None;
+        let mut f_tint = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"cstate" => {
+                    f_cstate = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"alphaBiLevel" => {
+                                f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaCeiling" => {
+                                f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaFloor" => {
+                                f_alpha_floor = Some(Box::new(CTAlphaFloorEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaInv" => {
+                                f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaMod" => {
+                                f_alpha_mod = Some(Box::new(Box::new(EffectContainer::from_xml(reader, &e, false)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaModFix" => {
+                                f_alpha_mod_fix = Some(Box::new(CTAlphaModulateFixedEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaRepl" => {
+                                f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"biLevel" => {
+                                f_bi_level = Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"blur" => {
+                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrChange" => {
+                                f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrRepl" => {
+                                f_clr_repl = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"duotone" => {
+                                f_duotone = Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillOverlay" => {
+                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grayscl" => {
+                                f_grayscl = Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hsl" => {
+                                f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lum" => {
+                                f_lum = Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tint" => {
+                                f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"alphaBiLevel" => {
+                                f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaCeiling" => {
+                                f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaFloor" => {
+                                f_alpha_floor = Some(Box::new(CTAlphaFloorEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaInv" => {
+                                f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaMod" => {
+                                f_alpha_mod = Some(Box::new(Box::new(EffectContainer::from_xml(reader, &e, true)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaModFix" => {
+                                f_alpha_mod_fix = Some(Box::new(CTAlphaModulateFixedEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"alphaRepl" => {
+                                f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"biLevel" => {
+                                f_bi_level = Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"blur" => {
+                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrChange" => {
+                                f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrRepl" => {
+                                f_clr_repl = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"duotone" => {
+                                f_duotone = Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillOverlay" => {
+                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"grayscl" => {
+                                f_grayscl = Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hsl" => {
+                                f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lum" => {
+                                f_lum = Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tint" => {
+                                f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            cstate: f_cstate,
+            alpha_bi_level: f_alpha_bi_level,
+            alpha_ceiling: f_alpha_ceiling,
+            alpha_floor: f_alpha_floor,
+            alpha_inv: f_alpha_inv,
+            alpha_mod: f_alpha_mod,
+            alpha_mod_fix: f_alpha_mod_fix,
+            alpha_repl: f_alpha_repl,
+            bi_level: f_bi_level,
+            blur: f_blur,
+            clr_change: f_clr_change,
+            clr_repl: f_clr_repl,
+            duotone: f_duotone,
+            fill_overlay: f_fill_overlay,
+            grayscl: f_grayscl,
+            hsl: f_hsl,
+            lum: f_lum,
+            tint: f_tint,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for BlipFillProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_dpi = None;
+        let mut f_rot_with_shape = None;
+        let mut f_blip = None;
+        let mut f_src_rect = None;
+        let mut f_fill_mode_properties = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"dpi" => {
+                    f_dpi = val.parse().ok();
+                }
+                b"rotWithShape" => {
+                    f_rot_with_shape = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"blip" => {
+                                f_blip = Some(Box::new(Blip::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"srcRect" => {
+                                f_src_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tile" | b"stretch" => {
+                                f_fill_mode_properties = Some(Box::new(EGFillModeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"blip" => {
+                                f_blip = Some(Box::new(Blip::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"srcRect" => {
+                                f_src_rect = Some(Box::new(CTRelativeRect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tile" | b"stretch" => {
+                                f_fill_mode_properties = Some(Box::new(EGFillModeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            dpi: f_dpi,
+            rot_with_shape: f_rot_with_shape,
+            blip: f_blip,
+            src_rect: f_src_rect,
+            fill_mode_properties: f_fill_mode_properties,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for PatternFill {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_preset = None;
+        let mut f_fg_clr = None;
+        let mut f_bg_clr = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"fgClr" => {
+                                f_fg_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bgClr" => {
+                                f_bg_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"fgClr" => {
+                                f_fg_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bgClr" => {
+                                f_bg_clr = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            preset: f_preset,
+            fg_clr: f_fg_clr,
+            bg_clr: f_bg_clr,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGroupFillProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGFillProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"noFill" => {
+                let inner = NoFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::NoFill(Box::new(inner)))
+            }
+            b"solidFill" => {
+                let inner = SolidColorFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SolidFill(Box::new(inner)))
+            }
+            b"gradFill" => {
+                let inner = GradientFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::GradFill(Box::new(inner)))
+            }
+            b"blipFill" => {
+                let inner = BlipFillProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BlipFill(Box::new(inner)))
+            }
+            b"pattFill" => {
+                let inner = PatternFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PattFill(Box::new(inner)))
+            }
+            b"grpFill" => {
+                let inner = CTGroupFillProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::GrpFill(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTFillProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties: Option<Box<EGFillProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_FillProperties".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFillEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties: Option<Box<EGFillProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_FillProperties".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFillOverlayEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blend: Option<STBlendMode> = None;
+        let mut f_fill_properties: Option<Box<EGFillProperties>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"blend" => {
+                    f_blend = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blend: f_blend.ok_or_else(|| ParseError::MissingAttribute("blend".to_string()))?,
+            fill_properties: f_fill_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_FillProperties".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTEffectReference {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ref: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"ref" => {
+                    f_ref = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r#ref: f_ref.ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"cont" => {
+                let inner = EffectContainer::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Cont(Box::new(inner)))
+            }
+            b"effect" => {
+                let inner = CTEffectReference::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Effect(Box::new(inner)))
+            }
+            b"alphaBiLevel" => {
+                let inner = CTAlphaBiLevelEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaBiLevel(Box::new(inner)))
+            }
+            b"alphaCeiling" => {
+                let inner = CTAlphaCeilingEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaCeiling(Box::new(inner)))
+            }
+            b"alphaFloor" => {
+                let inner = CTAlphaFloorEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaFloor(Box::new(inner)))
+            }
+            b"alphaInv" => {
+                let inner = CTAlphaInverseEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaInv(Box::new(inner)))
+            }
+            b"alphaMod" => {
+                let inner = CTAlphaModulateEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaMod(Box::new(inner)))
+            }
+            b"alphaModFix" => {
+                let inner = CTAlphaModulateFixedEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaModFix(Box::new(inner)))
+            }
+            b"alphaOutset" => {
+                let inner = CTAlphaOutsetEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaOutset(Box::new(inner)))
+            }
+            b"alphaRepl" => {
+                let inner = CTAlphaReplaceEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::AlphaRepl(Box::new(inner)))
+            }
+            b"biLevel" => {
+                let inner = CTBiLevelEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BiLevel(Box::new(inner)))
+            }
+            b"blend" => {
+                let inner = CTBlendEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Blend(Box::new(inner)))
+            }
+            b"blur" => {
+                let inner = CTBlurEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Blur(Box::new(inner)))
+            }
+            b"clrChange" => {
+                let inner = CTColorChangeEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::ClrChange(Box::new(inner)))
+            }
+            b"clrRepl" => {
+                let inner = CTColorReplaceEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::ClrRepl(Box::new(inner)))
+            }
+            b"duotone" => {
+                let inner = CTDuotoneEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Duotone(Box::new(inner)))
+            }
+            b"fill" => {
+                let inner = CTFillEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Fill(Box::new(inner)))
+            }
+            b"fillOverlay" => {
+                let inner = CTFillOverlayEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::FillOverlay(Box::new(inner)))
+            }
+            b"glow" => {
+                let inner = CTGlowEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Glow(Box::new(inner)))
+            }
+            b"grayscl" => {
+                let inner = CTGrayscaleEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Grayscl(Box::new(inner)))
+            }
+            b"hsl" => {
+                let inner = CTHSLEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Hsl(Box::new(inner)))
+            }
+            b"innerShdw" => {
+                let inner = CTInnerShadowEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::InnerShdw(Box::new(inner)))
+            }
+            b"lum" => {
+                let inner = CTLuminanceEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Lum(Box::new(inner)))
+            }
+            b"outerShdw" => {
+                let inner = CTOuterShadowEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::OuterShdw(Box::new(inner)))
+            }
+            b"prstShdw" => {
+                let inner = CTPresetShadowEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PrstShdw(Box::new(inner)))
+            }
+            b"reflection" => {
+                let inner = CTReflectionEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Reflection(Box::new(inner)))
+            }
+            b"relOff" => {
+                let inner = CTRelativeOffsetEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::RelOff(Box::new(inner)))
+            }
+            b"softEdge" => {
+                let inner = CTSoftEdgesEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SoftEdge(Box::new(inner)))
+            }
+            b"tint" => {
+                let inner = CTTintEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Tint(Box::new(inner)))
+            }
+            b"xfrm" => {
+                let inner = CTTransformEffect::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Xfrm(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for EffectContainer {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_type = None;
+        let mut f_name = None;
+        let mut f_effect = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cont" | b"effect" | b"alphaBiLevel" | b"alphaCeiling" | b"alphaFloor" | b"alphaInv" | b"alphaMod" | b"alphaModFix" | b"alphaOutset" | b"alphaRepl" | b"biLevel" | b"blend" | b"blur" | b"clrChange" | b"clrRepl" | b"duotone" | b"fill" | b"fillOverlay" | b"glow" | b"grayscl" | b"hsl" | b"innerShdw" | b"lum" | b"outerShdw" | b"prstShdw" | b"reflection" | b"relOff" | b"softEdge" | b"tint" | b"xfrm" => {
+                                f_effect.push(Box::new(EGEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cont" | b"effect" | b"alphaBiLevel" | b"alphaCeiling" | b"alphaFloor" | b"alphaInv" | b"alphaMod" | b"alphaModFix" | b"alphaOutset" | b"alphaRepl" | b"biLevel" | b"blend" | b"blur" | b"clrChange" | b"clrRepl" | b"duotone" | b"fill" | b"fillOverlay" | b"glow" | b"grayscl" | b"hsl" | b"innerShdw" | b"lum" | b"outerShdw" | b"prstShdw" | b"reflection" | b"relOff" | b"softEdge" | b"tint" | b"xfrm" => {
+                                f_effect.push(Box::new(EGEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r#type: f_type,
+            name: f_name,
+            effect: f_effect,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBlendEffect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blend: Option<STBlendMode> = None;
+        let mut f_cont: Option<Box<EffectContainer>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"blend" => {
+                    f_blend = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cont" => {
+                                f_cont = Some(Box::new(EffectContainer::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cont" => {
+                                f_cont = Some(Box::new(EffectContainer::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blend: f_blend.ok_or_else(|| ParseError::MissingAttribute("blend".to_string()))?,
+            cont: f_cont.ok_or_else(|| ParseError::MissingAttribute("cont".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EffectList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_blur = None;
+        let mut f_fill_overlay = None;
+        let mut f_glow = None;
+        let mut f_inner_shdw = None;
+        let mut f_outer_shdw = None;
+        let mut f_prst_shdw = None;
+        let mut f_reflection = None;
+        let mut f_soft_edge = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"blur" => {
+                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillOverlay" => {
+                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"glow" => {
+                                f_glow = Some(Box::new(CTGlowEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"innerShdw" => {
+                                f_inner_shdw = Some(Box::new(CTInnerShadowEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"outerShdw" => {
+                                f_outer_shdw = Some(Box::new(CTOuterShadowEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"prstShdw" => {
+                                f_prst_shdw = Some(Box::new(CTPresetShadowEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"reflection" => {
+                                f_reflection = Some(Box::new(CTReflectionEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"softEdge" => {
+                                f_soft_edge = Some(Box::new(CTSoftEdgesEffect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"blur" => {
+                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillOverlay" => {
+                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"glow" => {
+                                f_glow = Some(Box::new(CTGlowEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"innerShdw" => {
+                                f_inner_shdw = Some(Box::new(CTInnerShadowEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"outerShdw" => {
+                                f_outer_shdw = Some(Box::new(CTOuterShadowEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"prstShdw" => {
+                                f_prst_shdw = Some(Box::new(CTPresetShadowEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"reflection" => {
+                                f_reflection = Some(Box::new(CTReflectionEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"softEdge" => {
+                                f_soft_edge = Some(Box::new(CTSoftEdgesEffect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            blur: f_blur,
+            fill_overlay: f_fill_overlay,
+            glow: f_glow,
+            inner_shdw: f_inner_shdw,
+            outer_shdw: f_outer_shdw,
+            prst_shdw: f_prst_shdw,
+            reflection: f_reflection,
+            soft_edge: f_soft_edge,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGEffectProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"effectLst" => {
+                let inner = EffectList::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::EffectLst(Box::new(inner)))
+            }
+            b"effectDag" => {
+                let inner = EffectContainer::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::EffectDag(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTEffectProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_effect_properties: Option<Box<EGEffectProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            effect_properties: f_effect_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_EffectProperties".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGeomGuide {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name: Option<STGeomGuideName> = None;
+        let mut f_fmla: Option<STGeomGuideFormula> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                b"fmla" => {
+                    f_fmla = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name.ok_or_else(|| ParseError::MissingAttribute("name".to_string()))?,
+            fmla: f_fmla.ok_or_else(|| ParseError::MissingAttribute("fmla".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTGeomGuideList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_gd = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"gd" => {
+                                f_gd.push(Box::new(CTGeomGuide::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"gd" => {
+                                f_gd.push(Box::new(CTGeomGuide::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            gd: f_gd,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTAdjPoint2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_x: Option<STAdjCoordinate> = None;
+        let mut f_y: Option<STAdjCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"x" => {
+                    f_x = Some(val.into_owned());
+                }
+                b"y" => {
+                    f_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            x: f_x.ok_or_else(|| ParseError::MissingAttribute("x".to_string()))?,
+            y: f_y.ok_or_else(|| ParseError::MissingAttribute("y".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTGeomRect {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_l: Option<STAdjCoordinate> = None;
+        let mut f_t: Option<STAdjCoordinate> = None;
+        let mut f_relationship_id: Option<STAdjCoordinate> = None;
+        let mut f_b: Option<STAdjCoordinate> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"l" => {
+                    f_l = Some(val.into_owned());
+                }
+                b"t" => {
+                    f_t = Some(val.into_owned());
+                }
+                b"r" => {
+                    f_relationship_id = Some(val.into_owned());
+                }
+                b"b" => {
+                    f_b = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            l: f_l.ok_or_else(|| ParseError::MissingAttribute("l".to_string()))?,
+            t: f_t.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
+            relationship_id: f_relationship_id.ok_or_else(|| ParseError::MissingAttribute("r".to_string()))?,
+            b: f_b.ok_or_else(|| ParseError::MissingAttribute("b".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTXYAdjustHandle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_gd_ref_x = None;
+        let mut f_min_x = None;
+        let mut f_max_x = None;
+        let mut f_gd_ref_y = None;
+        let mut f_min_y = None;
+        let mut f_max_y = None;
+        let mut f_pos: Option<Box<CTAdjPoint2D>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"gdRefX" => {
+                    f_gd_ref_x = Some(val.into_owned());
+                }
+                b"minX" => {
+                    f_min_x = Some(val.into_owned());
+                }
+                b"maxX" => {
+                    f_max_x = Some(val.into_owned());
+                }
+                b"gdRefY" => {
+                    f_gd_ref_y = Some(val.into_owned());
+                }
+                b"minY" => {
+                    f_min_y = Some(val.into_owned());
+                }
+                b"maxY" => {
+                    f_max_y = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            gd_ref_x: f_gd_ref_x,
+            min_x: f_min_x,
+            max_x: f_max_x,
+            gd_ref_y: f_gd_ref_y,
+            min_y: f_min_y,
+            max_y: f_max_y,
+            pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPolarAdjustHandle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_gd_ref_r = None;
+        let mut f_min_r = None;
+        let mut f_max_r = None;
+        let mut f_gd_ref_ang = None;
+        let mut f_min_ang = None;
+        let mut f_max_ang = None;
+        let mut f_pos: Option<Box<CTAdjPoint2D>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"gdRefR" => {
+                    f_gd_ref_r = Some(val.into_owned());
+                }
+                b"minR" => {
+                    f_min_r = Some(val.into_owned());
+                }
+                b"maxR" => {
+                    f_max_r = Some(val.into_owned());
+                }
+                b"gdRefAng" => {
+                    f_gd_ref_ang = Some(val.into_owned());
+                }
+                b"minAng" => {
+                    f_min_ang = Some(val.into_owned());
+                }
+                b"maxAng" => {
+                    f_max_ang = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            gd_ref_r: f_gd_ref_r,
+            min_r: f_min_r,
+            max_r: f_max_r,
+            gd_ref_ang: f_gd_ref_ang,
+            min_ang: f_min_ang,
+            max_ang: f_max_ang,
+            pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTConnectionSite {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ang: Option<STAdjAngle> = None;
+        let mut f_pos: Option<Box<CTAdjPoint2D>> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"ang" => {
+                    f_ang = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pos" => {
+                                f_pos = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ang: f_ang.ok_or_else(|| ParseError::MissingAttribute("ang".to_string()))?,
+            pos: f_pos.ok_or_else(|| ParseError::MissingAttribute("pos".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTAdjustHandleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ah_x_y = None;
+        let mut f_ah_polar = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ahXY" => {
+                                f_ah_x_y = Some(Box::new(CTXYAdjustHandle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ahPolar" => {
+                                f_ah_polar = Some(Box::new(CTPolarAdjustHandle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ahXY" => {
+                                f_ah_x_y = Some(Box::new(CTXYAdjustHandle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ahPolar" => {
+                                f_ah_polar = Some(Box::new(CTPolarAdjustHandle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ah_x_y: f_ah_x_y,
+            ah_polar: f_ah_polar,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTConnectionSiteList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_cxn = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"cxn" => {
+                                f_cxn.push(Box::new(CTConnectionSite::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"cxn" => {
+                                f_cxn.push(Box::new(CTConnectionSite::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            cxn: f_cxn,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTConnection {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_id: Option<STDrawingElementId> = None;
+        let mut f_idx: Option<u32> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = val.parse().ok();
+                }
+                b"idx" => {
+                    f_idx = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPath2DArcTo {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_w_r: Option<STAdjCoordinate> = None;
+        let mut f_h_r: Option<STAdjCoordinate> = None;
+        let mut f_st_ang: Option<STAdjAngle> = None;
+        let mut f_sw_ang: Option<STAdjAngle> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"wR" => {
+                    f_w_r = Some(val.into_owned());
+                }
+                b"hR" => {
+                    f_h_r = Some(val.into_owned());
+                }
+                b"stAng" => {
+                    f_st_ang = Some(val.into_owned());
+                }
+                b"swAng" => {
+                    f_sw_ang = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            w_r: f_w_r.ok_or_else(|| ParseError::MissingAttribute("wR".to_string()))?,
+            h_r: f_h_r.ok_or_else(|| ParseError::MissingAttribute("hR".to_string()))?,
+            st_ang: f_st_ang.ok_or_else(|| ParseError::MissingAttribute("stAng".to_string()))?,
+            sw_ang: f_sw_ang.ok_or_else(|| ParseError::MissingAttribute("swAng".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTPath2DQuadBezierTo {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_pt = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pt" => {
+                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pt" => {
+                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            pt: f_pt,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPath2DCubicBezierTo {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_pt = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pt" => {
+                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pt" => {
+                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            pt: f_pt,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPath2DClose {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTPath2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_width = None;
+        let mut f_height = None;
+        let mut f_fill = None;
+        let mut f_stroke = None;
+        let mut f_extrusion_ok = None;
+        let mut f_close = None;
+        let mut f_move_to = None;
+        let mut f_ln_to = None;
+        let mut f_arc_to = None;
+        let mut f_quad_bez_to = None;
+        let mut f_cubic_bez_to = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"w" => {
+                    f_width = val.parse().ok();
+                }
+                b"h" => {
+                    f_height = val.parse().ok();
+                }
+                b"fill" => {
+                    f_fill = val.parse().ok();
+                }
+                b"stroke" => {
+                    f_stroke = Some(val == "true" || val == "1");
+                }
+                b"extrusionOk" => {
+                    f_extrusion_ok = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"close" => {
+                                f_close = Some(Box::new(CTPath2DClose::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"moveTo" => {
+                                f_move_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnTo" => {
+                                f_ln_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"arcTo" => {
+                                f_arc_to = Some(Box::new(CTPath2DArcTo::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"quadBezTo" => {
+                                f_quad_bez_to = Some(Box::new(CTPath2DQuadBezierTo::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cubicBezTo" => {
+                                f_cubic_bez_to = Some(Box::new(CTPath2DCubicBezierTo::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"close" => {
+                                f_close = Some(Box::new(CTPath2DClose::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"moveTo" => {
+                                f_move_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnTo" => {
+                                f_ln_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?)));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"arcTo" => {
+                                f_arc_to = Some(Box::new(CTPath2DArcTo::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"quadBezTo" => {
+                                f_quad_bez_to = Some(Box::new(CTPath2DQuadBezierTo::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cubicBezTo" => {
+                                f_cubic_bez_to = Some(Box::new(CTPath2DCubicBezierTo::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            width: f_width,
+            height: f_height,
+            fill: f_fill,
+            stroke: f_stroke,
+            extrusion_ok: f_extrusion_ok,
+            close: f_close,
+            move_to: f_move_to,
+            ln_to: f_ln_to,
+            arc_to: f_arc_to,
+            quad_bez_to: f_quad_bez_to,
+            cubic_bez_to: f_cubic_bez_to,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPath2DList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_path = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"path" => {
+                                f_path.push(Box::new(CTPath2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"path" => {
+                                f_path.push(Box::new(CTPath2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            path: f_path,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPresetGeometry2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_preset: Option<STShapeType> = None;
+        let mut f_av_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            preset: f_preset.ok_or_else(|| ParseError::MissingAttribute("prst".to_string()))?,
+            av_lst: f_av_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTPresetTextShape {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_preset: Option<STTextShapeType> = None;
+        let mut f_av_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prst" => {
+                    f_preset = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            preset: f_preset.ok_or_else(|| ParseError::MissingAttribute("prst".to_string()))?,
+            av_lst: f_av_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTCustomGeometry2D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_av_lst = None;
+        let mut f_gd_lst = None;
+        let mut f_ah_lst = None;
+        let mut f_cxn_lst = None;
+        let mut f_rect = None;
+        let mut f_path_lst: Option<Box<CTPath2DList>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"gdLst" => {
+                                f_gd_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ahLst" => {
+                                f_ah_lst = Some(Box::new(CTAdjustHandleList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cxnLst" => {
+                                f_cxn_lst = Some(Box::new(CTConnectionSiteList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"rect" => {
+                                f_rect = Some(Box::new(CTGeomRect::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pathLst" => {
+                                f_path_lst = Some(Box::new(CTPath2DList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"avLst" => {
+                                f_av_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"gdLst" => {
+                                f_gd_lst = Some(Box::new(CTGeomGuideList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ahLst" => {
+                                f_ah_lst = Some(Box::new(CTAdjustHandleList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cxnLst" => {
+                                f_cxn_lst = Some(Box::new(CTConnectionSiteList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"rect" => {
+                                f_rect = Some(Box::new(CTGeomRect::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pathLst" => {
+                                f_path_lst = Some(Box::new(CTPath2DList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            av_lst: f_av_lst,
+            gd_lst: f_gd_lst,
+            ah_lst: f_ah_lst,
+            cxn_lst: f_cxn_lst,
+            rect: f_rect,
+            path_lst: f_path_lst.ok_or_else(|| ParseError::MissingAttribute("pathLst".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGGeometry {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"custGeom" => {
+                let inner = CTCustomGeometry2D::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::CustGeom(Box::new(inner)))
+            }
+            b"prstGeom" => {
+                let inner = CTPresetGeometry2D::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PrstGeom(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for EGTextGeometry {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"custGeom" => {
+                let inner = CTCustomGeometry2D::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::CustGeom(Box::new(inner)))
+            }
+            b"prstTxWarp" => {
+                let inner = CTPresetTextShape::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PrstTxWarp(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTLineEndProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_type = None;
+        let mut f_width = None;
+        let mut f_len = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                b"w" => {
+                    f_width = val.parse().ok();
+                }
+                b"len" => {
+                    f_len = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r#type: f_type,
+            width: f_width,
+            len: f_len,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGLineFillProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"noFill" => {
+                let inner = NoFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::NoFill(Box::new(inner)))
+            }
+            b"solidFill" => {
+                let inner = SolidColorFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SolidFill(Box::new(inner)))
+            }
+            b"gradFill" => {
+                let inner = GradientFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::GradFill(Box::new(inner)))
+            }
+            b"pattFill" => {
+                let inner = PatternFill::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PattFill(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTLineJoinBevel {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTLineJoinRound {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTLineJoinMiterProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_lim = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"lim" => {
+                    f_lim = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            lim: f_lim,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGLineJoinProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"round" => {
+                let inner = CTLineJoinRound::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Round(Box::new(inner)))
+            }
+            b"bevel" => {
+                let inner = CTLineJoinBevel::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Bevel(Box::new(inner)))
+            }
+            b"miter" => {
+                let inner = CTLineJoinMiterProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Miter(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTPresetLineDashProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTDashStop {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_d: Option<STPositivePercentage> = None;
+        let mut f_sp: Option<STPositivePercentage> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"d" => {
+                    f_d = Some(val.into_owned());
+                }
+                b"sp" => {
+                    f_sp = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            d: f_d.ok_or_else(|| ParseError::MissingAttribute("d".to_string()))?,
+            sp: f_sp.ok_or_else(|| ParseError::MissingAttribute("sp".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTDashStopList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ds = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ds" => {
+                                f_ds.push(Box::new(CTDashStop::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ds" => {
+                                f_ds.push(Box::new(CTDashStop::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ds: f_ds,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGLineDashProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"prstDash" => {
+                let inner = CTPresetLineDashProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::PrstDash(Box::new(inner)))
+            }
+            b"custDash" => {
+                let inner = CTDashStopList::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::CustDash(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for LineProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_width = None;
+        let mut f_cap = None;
+        let mut f_cmpd = None;
+        let mut f_algn = None;
+        let mut f_line_fill_properties = None;
+        let mut f_line_dash_properties = None;
+        let mut f_line_join_properties = None;
+        let mut f_head_end = None;
+        let mut f_tail_end = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"w" => {
+                    f_width = val.parse().ok();
+                }
+                b"cap" => {
+                    f_cap = val.parse().ok();
+                }
+                b"cmpd" => {
+                    f_cmpd = val.parse().ok();
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"pattFill" => {
+                                f_line_fill_properties = Some(Box::new(EGLineFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"prstDash" | b"custDash" => {
+                                f_line_dash_properties = Some(Box::new(EGLineDashProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"round" | b"bevel" | b"miter" => {
+                                f_line_join_properties = Some(Box::new(EGLineJoinProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"headEnd" => {
+                                f_head_end = Some(Box::new(CTLineEndProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tailEnd" => {
+                                f_tail_end = Some(Box::new(CTLineEndProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"pattFill" => {
+                                f_line_fill_properties = Some(Box::new(EGLineFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"prstDash" | b"custDash" => {
+                                f_line_dash_properties = Some(Box::new(EGLineDashProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"round" | b"bevel" | b"miter" => {
+                                f_line_join_properties = Some(Box::new(EGLineJoinProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"headEnd" => {
+                                f_head_end = Some(Box::new(CTLineEndProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tailEnd" => {
+                                f_tail_end = Some(Box::new(CTLineEndProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            width: f_width,
+            cap: f_cap,
+            cmpd: f_cmpd,
+            algn: f_algn,
+            line_fill_properties: f_line_fill_properties,
+            line_dash_properties: f_line_dash_properties,
+            line_join_properties: f_line_join_properties,
+            head_end: f_head_end,
+            tail_end: f_tail_end,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTShapeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bw_mode = None;
+        let mut f_transform = None;
+        let mut f_geometry = None;
+        let mut f_fill_properties = None;
+        let mut f_line = None;
+        let mut f_effect_properties = None;
+        let mut f_scene3d = None;
+        let mut f_sp3d = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bwMode" => {
+                    f_bw_mode = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"custGeom" | b"prstGeom" => {
+                                f_geometry = Some(Box::new(EGGeometry::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(Transform2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"custGeom" | b"prstGeom" => {
+                                f_geometry = Some(Box::new(EGGeometry::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" => {
+                                f_sp3d = Some(Box::new(CTShape3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bw_mode: f_bw_mode,
+            transform: f_transform,
+            geometry: f_geometry,
+            fill_properties: f_fill_properties,
+            line: f_line,
+            effect_properties: f_effect_properties,
+            scene3d: f_scene3d,
+            sp3d: f_sp3d,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTGroupShapeProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bw_mode = None;
+        let mut f_transform = None;
+        let mut f_fill_properties = None;
+        let mut f_effect_properties = None;
+        let mut f_scene3d = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bwMode" => {
+                    f_bw_mode = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(CTGroupTransform2D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"xfrm" => {
+                                f_transform = Some(Box::new(CTGroupTransform2D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bw_mode: f_bw_mode,
+            transform: f_transform,
+            fill_properties: f_fill_properties,
+            effect_properties: f_effect_properties,
+            scene3d: f_scene3d,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTStyleMatrixReference {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_idx: Option<STStyleMatrixColumnIndex> = None;
+        let mut f_color_choice = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"idx" => {
+                    f_idx = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTFontReference {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_idx: Option<STFontCollectionIndex> = None;
+        let mut f_color_choice = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"idx" => {
+                    f_idx = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            idx: f_idx.ok_or_else(|| ParseError::MissingAttribute("idx".to_string()))?,
+            color_choice: f_color_choice,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for ShapeStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_ln_ref: Option<Box<CTStyleMatrixReference>> = None;
+        let mut f_fill_ref: Option<Box<CTStyleMatrixReference>> = None;
+        let mut f_effect_ref: Option<Box<CTStyleMatrixReference>> = None;
+        let mut f_font_ref: Option<Box<CTFontReference>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnRef" => {
+                                f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillRef" => {
+                                f_fill_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectRef" => {
+                                f_effect_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontRef" => {
+                                f_font_ref = Some(Box::new(CTFontReference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnRef" => {
+                                f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fillRef" => {
+                                f_fill_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectRef" => {
+                                f_effect_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontRef" => {
+                                f_font_ref = Some(Box::new(CTFontReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            ln_ref: f_ln_ref.ok_or_else(|| ParseError::MissingAttribute("lnRef".to_string()))?,
+            fill_ref: f_fill_ref.ok_or_else(|| ParseError::MissingAttribute("fillRef".to_string()))?,
+            effect_ref: f_effect_ref.ok_or_else(|| ParseError::MissingAttribute("effectRef".to_string()))?,
+            font_ref: f_font_ref.ok_or_else(|| ParseError::MissingAttribute("fontRef".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTDefaultShapeDefinition {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_sp_pr: Option<Box<CTShapeProperties>> = None;
+        let mut f_body_pr: Option<Box<CTTextBodyProperties>> = None;
+        let mut f_lst_style: Option<Box<CTTextListStyle>> = None;
+        let mut f_style = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bodyPr" => {
+                                f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lstStyle" => {
+                                f_lst_style = Some(Box::new(CTTextListStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"spPr" => {
+                                f_sp_pr = Some(Box::new(CTShapeProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bodyPr" => {
+                                f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lstStyle" => {
+                                f_lst_style = Some(Box::new(CTTextListStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"style" => {
+                                f_style = Some(Box::new(ShapeStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            sp_pr: f_sp_pr.ok_or_else(|| ParseError::MissingAttribute("spPr".to_string()))?,
+            body_pr: f_body_pr.ok_or_else(|| ParseError::MissingAttribute("bodyPr".to_string()))?,
+            lst_style: f_lst_style.ok_or_else(|| ParseError::MissingAttribute("lstStyle".to_string()))?,
+            style: f_style,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTObjectStyleDefaults {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_sp_def = None;
+        let mut f_ln_def = None;
+        let mut f_tx_def = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"spDef" => {
+                                f_sp_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnDef" => {
+                                f_ln_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txDef" => {
+                                f_tx_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"spDef" => {
+                                f_sp_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnDef" => {
+                                f_ln_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"txDef" => {
+                                f_tx_def = Some(Box::new(CTDefaultShapeDefinition::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            sp_def: f_sp_def,
+            ln_def: f_ln_def,
+            tx_def: f_tx_def,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTEmptyElement {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTColorMapping {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_bg1: Option<STColorSchemeIndex> = None;
+        let mut f_tx1: Option<STColorSchemeIndex> = None;
+        let mut f_bg2: Option<STColorSchemeIndex> = None;
+        let mut f_tx2: Option<STColorSchemeIndex> = None;
+        let mut f_accent1: Option<STColorSchemeIndex> = None;
+        let mut f_accent2: Option<STColorSchemeIndex> = None;
+        let mut f_accent3: Option<STColorSchemeIndex> = None;
+        let mut f_accent4: Option<STColorSchemeIndex> = None;
+        let mut f_accent5: Option<STColorSchemeIndex> = None;
+        let mut f_accent6: Option<STColorSchemeIndex> = None;
+        let mut f_hlink: Option<STColorSchemeIndex> = None;
+        let mut f_fol_hlink: Option<STColorSchemeIndex> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"bg1" => {
+                    f_bg1 = val.parse().ok();
+                }
+                b"tx1" => {
+                    f_tx1 = val.parse().ok();
+                }
+                b"bg2" => {
+                    f_bg2 = val.parse().ok();
+                }
+                b"tx2" => {
+                    f_tx2 = val.parse().ok();
+                }
+                b"accent1" => {
+                    f_accent1 = val.parse().ok();
+                }
+                b"accent2" => {
+                    f_accent2 = val.parse().ok();
+                }
+                b"accent3" => {
+                    f_accent3 = val.parse().ok();
+                }
+                b"accent4" => {
+                    f_accent4 = val.parse().ok();
+                }
+                b"accent5" => {
+                    f_accent5 = val.parse().ok();
+                }
+                b"accent6" => {
+                    f_accent6 = val.parse().ok();
+                }
+                b"hlink" => {
+                    f_hlink = val.parse().ok();
+                }
+                b"folHlink" => {
+                    f_fol_hlink = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            bg1: f_bg1.ok_or_else(|| ParseError::MissingAttribute("bg1".to_string()))?,
+            tx1: f_tx1.ok_or_else(|| ParseError::MissingAttribute("tx1".to_string()))?,
+            bg2: f_bg2.ok_or_else(|| ParseError::MissingAttribute("bg2".to_string()))?,
+            tx2: f_tx2.ok_or_else(|| ParseError::MissingAttribute("tx2".to_string()))?,
+            accent1: f_accent1.ok_or_else(|| ParseError::MissingAttribute("accent1".to_string()))?,
+            accent2: f_accent2.ok_or_else(|| ParseError::MissingAttribute("accent2".to_string()))?,
+            accent3: f_accent3.ok_or_else(|| ParseError::MissingAttribute("accent3".to_string()))?,
+            accent4: f_accent4.ok_or_else(|| ParseError::MissingAttribute("accent4".to_string()))?,
+            accent5: f_accent5.ok_or_else(|| ParseError::MissingAttribute("accent5".to_string()))?,
+            accent6: f_accent6.ok_or_else(|| ParseError::MissingAttribute("accent6".to_string()))?,
+            hlink: f_hlink.ok_or_else(|| ParseError::MissingAttribute("hlink".to_string()))?,
+            fol_hlink: f_fol_hlink.ok_or_else(|| ParseError::MissingAttribute("folHlink".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTColorMappingOverride {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_master_clr_mapping = None;
+        let mut f_override_clr_mapping = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"masterClrMapping" => {
+                                f_master_clr_mapping = Some(Box::new(CTEmptyElement::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"overrideClrMapping" => {
+                                f_override_clr_mapping = Some(Box::new(CTColorMapping::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"masterClrMapping" => {
+                                f_master_clr_mapping = Some(Box::new(CTEmptyElement::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"overrideClrMapping" => {
+                                f_override_clr_mapping = Some(Box::new(CTColorMapping::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            master_clr_mapping: f_master_clr_mapping,
+            override_clr_mapping: f_override_clr_mapping,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTColorSchemeAndMapping {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_clr_scheme: Option<Box<ColorScheme>> = None;
+        let mut f_clr_map = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrMap" => {
+                                f_clr_map = Some(Box::new(CTColorMapping::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrMap" => {
+                                f_clr_map = Some(Box::new(CTColorMapping::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            clr_scheme: f_clr_scheme.ok_or_else(|| ParseError::MissingAttribute("clrScheme".to_string()))?,
+            clr_map: f_clr_map,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTColorSchemeList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_extra_clr_scheme = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extraClrScheme" => {
+                                f_extra_clr_scheme.push(Box::new(CTColorSchemeAndMapping::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extraClrScheme" => {
+                                f_extra_clr_scheme.push(Box::new(CTColorSchemeAndMapping::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            extra_clr_scheme: f_extra_clr_scheme,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTOfficeStyleSheet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_name = None;
+        let mut f_theme_elements: Option<Box<CTBaseStyles>> = None;
+        let mut f_object_defaults = None;
+        let mut f_extra_clr_scheme_lst = None;
+        let mut f_cust_clr_lst = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"name" => {
+                    f_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"themeElements" => {
+                                f_theme_elements = Some(Box::new(CTBaseStyles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"objectDefaults" => {
+                                f_object_defaults = Some(Box::new(CTObjectStyleDefaults::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extraClrSchemeLst" => {
+                                f_extra_clr_scheme_lst = Some(Box::new(CTColorSchemeList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"custClrLst" => {
+                                f_cust_clr_lst = Some(Box::new(CTCustomColorList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"themeElements" => {
+                                f_theme_elements = Some(Box::new(CTBaseStyles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"objectDefaults" => {
+                                f_object_defaults = Some(Box::new(CTObjectStyleDefaults::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extraClrSchemeLst" => {
+                                f_extra_clr_scheme_lst = Some(Box::new(CTColorSchemeList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"custClrLst" => {
+                                f_cust_clr_lst = Some(Box::new(CTCustomColorList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            name: f_name,
+            theme_elements: f_theme_elements.ok_or_else(|| ParseError::MissingAttribute("themeElements".to_string()))?,
+            object_defaults: f_object_defaults,
+            extra_clr_scheme_lst: f_extra_clr_scheme_lst,
+            cust_clr_lst: f_cust_clr_lst,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBaseStylesOverride {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_clr_scheme = None;
+        let mut f_font_scheme = None;
+        let mut f_fmt_scheme = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontScheme" => {
+                                f_font_scheme = Some(Box::new(FontScheme::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fmtScheme" => {
+                                f_fmt_scheme = Some(Box::new(CTStyleMatrix::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"clrScheme" => {
+                                f_clr_scheme = Some(Box::new(ColorScheme::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fontScheme" => {
+                                f_font_scheme = Some(Box::new(FontScheme::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fmtScheme" => {
+                                f_fmt_scheme = Some(Box::new(CTStyleMatrix::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            clr_scheme: f_clr_scheme,
+            font_scheme: f_font_scheme,
+            fmt_scheme: f_fmt_scheme,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTClipboardStyleSheet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_theme_elements: Option<Box<CTBaseStyles>> = None;
+        let mut f_clr_map: Option<Box<CTColorMapping>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"themeElements" => {
+                                f_theme_elements = Some(Box::new(CTBaseStyles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrMap" => {
+                                f_clr_map = Some(Box::new(CTColorMapping::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"themeElements" => {
+                                f_theme_elements = Some(Box::new(CTBaseStyles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"clrMap" => {
+                                f_clr_map = Some(Box::new(CTColorMapping::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            theme_elements: f_theme_elements.ok_or_else(|| ParseError::MissingAttribute("themeElements".to_string()))?,
+            clr_map: f_clr_map.ok_or_else(|| ParseError::MissingAttribute("clrMap".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableCellProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_mar_l = None;
+        let mut f_mar_r = None;
+        let mut f_mar_t = None;
+        let mut f_mar_b = None;
+        let mut f_vert = None;
+        let mut f_anchor = None;
+        let mut f_anchor_ctr = None;
+        let mut f_horz_overflow = None;
+        let mut f_ln_l = None;
+        let mut f_ln_r = None;
+        let mut f_ln_t = None;
+        let mut f_ln_b = None;
+        let mut f_ln_tl_to_br = None;
+        let mut f_ln_bl_to_tr = None;
+        let mut f_cell3_d = None;
+        let mut f_fill_properties = None;
+        let mut f_headers = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"marL" => {
+                    f_mar_l = Some(val.into_owned());
+                }
+                b"marR" => {
+                    f_mar_r = Some(val.into_owned());
+                }
+                b"marT" => {
+                    f_mar_t = Some(val.into_owned());
+                }
+                b"marB" => {
+                    f_mar_b = Some(val.into_owned());
+                }
+                b"vert" => {
+                    f_vert = val.parse().ok();
+                }
+                b"anchor" => {
+                    f_anchor = val.parse().ok();
+                }
+                b"anchorCtr" => {
+                    f_anchor_ctr = Some(val == "true" || val == "1");
+                }
+                b"horzOverflow" => {
+                    f_horz_overflow = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnL" => {
+                                f_ln_l = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnR" => {
+                                f_ln_r = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnT" => {
+                                f_ln_t = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnB" => {
+                                f_ln_b = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnTlToBr" => {
+                                f_ln_tl_to_br = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnBlToTr" => {
+                                f_ln_bl_to_tr = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cell3D" => {
+                                f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnL" => {
+                                f_ln_l = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnR" => {
+                                f_ln_r = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnT" => {
+                                f_ln_t = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnB" => {
+                                f_ln_b = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnTlToBr" => {
+                                f_ln_tl_to_br = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnBlToTr" => {
+                                f_ln_bl_to_tr = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cell3D" => {
+                                f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"headers" => {
+                                f_headers = Some(Box::new(CTHeaders::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            mar_l: f_mar_l,
+            mar_r: f_mar_r,
+            mar_t: f_mar_t,
+            mar_b: f_mar_b,
+            vert: f_vert,
+            anchor: f_anchor,
+            anchor_ctr: f_anchor_ctr,
+            horz_overflow: f_horz_overflow,
+            ln_l: f_ln_l,
+            ln_r: f_ln_r,
+            ln_t: f_ln_t,
+            ln_b: f_ln_b,
+            ln_tl_to_br: f_ln_tl_to_br,
+            ln_bl_to_tr: f_ln_bl_to_tr,
+            cell3_d: f_cell3_d,
+            fill_properties: f_fill_properties,
+            headers: f_headers,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTHeaders {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_header = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"header" => {
+                                f_header.push(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"header" => {
+                                f_header.push(String::new());
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            header: f_header,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableCol {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_width: Option<STCoordinate> = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"w" => {
+                    f_width = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            width: f_width.ok_or_else(|| ParseError::MissingAttribute("w".to_string()))?,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableGrid {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_grid_col = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"gridCol" => {
+                                f_grid_col.push(Box::new(CTTableCol::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"gridCol" => {
+                                f_grid_col.push(Box::new(CTTableCol::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            grid_col: f_grid_col,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableCell {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_row_span = None;
+        let mut f_grid_span = None;
+        let mut f_h_merge = None;
+        let mut f_v_merge = None;
+        let mut f_id = None;
+        let mut f_tx_body = None;
+        let mut f_tc_pr = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rowSpan" => {
+                    f_row_span = val.parse().ok();
+                }
+                b"gridSpan" => {
+                    f_grid_span = val.parse().ok();
+                }
+                b"hMerge" => {
+                    f_h_merge = Some(val == "true" || val == "1");
+                }
+                b"vMerge" => {
+                    f_v_merge = Some(val == "true" || val == "1");
+                }
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"txBody" => {
+                                f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tcPr" => {
+                                f_tc_pr = Some(Box::new(CTTableCellProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"txBody" => {
+                                f_tx_body = Some(Box::new(TextBody::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tcPr" => {
+                                f_tc_pr = Some(Box::new(CTTableCellProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            row_span: f_row_span,
+            grid_span: f_grid_span,
+            h_merge: f_h_merge,
+            v_merge: f_v_merge,
+            id: f_id,
+            tx_body: f_tx_body,
+            tc_pr: f_tc_pr,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableRow {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_height: Option<STCoordinate> = None;
+        let mut f_tc = Vec::new();
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"h" => {
+                    f_height = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tc" => {
+                                f_tc.push(Box::new(CTTableCell::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tc" => {
+                                f_tc.push(Box::new(CTTableCell::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            height: f_height.ok_or_else(|| ParseError::MissingAttribute("h".to_string()))?,
+            tc: f_tc,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rtl = None;
+        let mut f_first_row = None;
+        let mut f_first_col = None;
+        let mut f_last_row = None;
+        let mut f_last_col = None;
+        let mut f_band_row = None;
+        let mut f_band_col = None;
+        let mut f_fill_properties = None;
+        let mut f_effect_properties = None;
+        let mut f_table_style = None;
+        let mut f_table_style_id = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rtl" => {
+                    f_rtl = Some(val == "true" || val == "1");
+                }
+                b"firstRow" => {
+                    f_first_row = Some(val == "true" || val == "1");
+                }
+                b"firstCol" => {
+                    f_first_col = Some(val == "true" || val == "1");
+                }
+                b"lastRow" => {
+                    f_last_row = Some(val == "true" || val == "1");
+                }
+                b"lastCol" => {
+                    f_last_col = Some(val == "true" || val == "1");
+                }
+                b"bandRow" => {
+                    f_band_row = Some(val == "true" || val == "1");
+                }
+                b"bandCol" => {
+                    f_band_col = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tableStyle" => {
+                                f_table_style = Some(Box::new(CTTableStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tableStyleId" => {
+                                f_table_style_id = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tableStyle" => {
+                                f_table_style = Some(Box::new(CTTableStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tableStyleId" => {
+                                f_table_style_id = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rtl: f_rtl,
+            first_row: f_first_row,
+            first_col: f_first_col,
+            last_row: f_last_row,
+            last_col: f_last_col,
+            band_row: f_band_row,
+            band_col: f_band_col,
+            fill_properties: f_fill_properties,
+            effect_properties: f_effect_properties,
+            table_style: f_table_style,
+            table_style_id: f_table_style_id,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTable {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tbl_pr = None;
+        let mut f_tbl_grid: Option<Box<CTTableGrid>> = None;
+        let mut f_tr = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblPr" => {
+                                f_tbl_pr = Some(Box::new(CTTableProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tblGrid" => {
+                                f_tbl_grid = Some(Box::new(CTTableGrid::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tr" => {
+                                f_tr.push(Box::new(CTTableRow::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblPr" => {
+                                f_tbl_pr = Some(Box::new(CTTableProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tblGrid" => {
+                                f_tbl_grid = Some(Box::new(CTTableGrid::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tr" => {
+                                f_tr.push(Box::new(CTTableRow::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tbl_pr: f_tbl_pr,
+            tbl_grid: f_tbl_grid.ok_or_else(|| ParseError::MissingAttribute("tblGrid".to_string()))?,
+            tr: f_tr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTCell3D {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_prst_material = None;
+        let mut f_bevel: Option<Box<CTBevel>> = None;
+        let mut f_light_rig = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"prstMaterial" => {
+                    f_prst_material = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"bevel" => {
+                                f_bevel = Some(Box::new(CTBevel::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lightRig" => {
+                                f_light_rig = Some(Box::new(CTLightRig::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"bevel" => {
+                                f_bevel = Some(Box::new(CTBevel::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lightRig" => {
+                                f_light_rig = Some(Box::new(CTLightRig::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            prst_material: f_prst_material,
+            bevel: f_bevel.ok_or_else(|| ParseError::MissingAttribute("bevel".to_string()))?,
+            light_rig: f_light_rig,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGThemeableFillStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"fill" => {
+                let inner = CTFillProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Fill(Box::new(inner)))
+            }
+            b"fillRef" => {
+                let inner = CTStyleMatrixReference::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::FillRef(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTThemeableLineStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_line = None;
+        let mut f_ln_ref = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnRef" => {
+                                f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lnRef" => {
+                                f_ln_ref = Some(Box::new(CTStyleMatrixReference::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            line: f_line,
+            ln_ref: f_ln_ref,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGThemeableEffectStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"effect" => {
+                let inner = CTEffectProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Effect(Box::new(inner)))
+            }
+            b"effectRef" => {
+                let inner = CTStyleMatrixReference::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::EffectRef(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for EGThemeableFontStyles {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"font" => {
+                let inner = CTFontCollection::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Font(Box::new(inner)))
+            }
+            b"fontRef" => {
+                let inner = CTFontReference::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::FontRef(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTTableStyleTextStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_b = None;
+        let mut f_i = None;
+        let mut f_themeable_font_styles = None;
+        let mut f_color_choice = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"b" => {
+                    f_b = val.parse().ok();
+                }
+                b"i" => {
+                    f_i = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"font" | b"fontRef" => {
+                                f_themeable_font_styles = Some(Box::new(EGThemeableFontStyles::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"font" | b"fontRef" => {
+                                f_themeable_font_styles = Some(Box::new(EGThemeableFontStyles::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr" | b"prstClr" => {
+                                f_color_choice = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            b: f_b,
+            i: f_i,
+            themeable_font_styles: f_themeable_font_styles,
+            color_choice: f_color_choice,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableCellBorderStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_left = None;
+        let mut f_right = None;
+        let mut f_top = None;
+        let mut f_bottom = None;
+        let mut f_inside_h = None;
+        let mut f_inside_v = None;
+        let mut f_tl2br = None;
+        let mut f_tr2bl = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"left" => {
+                                f_left = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"right" => {
+                                f_right = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"top" => {
+                                f_top = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bottom" => {
+                                f_bottom = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"insideH" => {
+                                f_inside_h = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"insideV" => {
+                                f_inside_v = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tl2br" => {
+                                f_tl2br = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tr2bl" => {
+                                f_tr2bl = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"left" => {
+                                f_left = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"right" => {
+                                f_right = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"top" => {
+                                f_top = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"bottom" => {
+                                f_bottom = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"insideH" => {
+                                f_inside_h = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"insideV" => {
+                                f_inside_v = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tl2br" => {
+                                f_tl2br = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tr2bl" => {
+                                f_tr2bl = Some(Box::new(CTThemeableLineStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            left: f_left,
+            right: f_right,
+            top: f_top,
+            bottom: f_bottom,
+            inside_h: f_inside_h,
+            inside_v: f_inside_v,
+            tl2br: f_tl2br,
+            tr2bl: f_tr2bl,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableBackgroundStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_themeable_fill_style = None;
+        let mut f_themeable_effect_style = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"fill" | b"fillRef" => {
+                                f_themeable_fill_style = Some(Box::new(EGThemeableFillStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effect" | b"effectRef" => {
+                                f_themeable_effect_style = Some(Box::new(EGThemeableEffectStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"fill" | b"fillRef" => {
+                                f_themeable_fill_style = Some(Box::new(EGThemeableFillStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effect" | b"effectRef" => {
+                                f_themeable_effect_style = Some(Box::new(EGThemeableEffectStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            themeable_fill_style: f_themeable_fill_style,
+            themeable_effect_style: f_themeable_effect_style,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableStyleCellStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tc_bdr = None;
+        let mut f_themeable_fill_style = None;
+        let mut f_cell3_d = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tcBdr" => {
+                                f_tc_bdr = Some(Box::new(CTTableCellBorderStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fill" | b"fillRef" => {
+                                f_themeable_fill_style = Some(Box::new(EGThemeableFillStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cell3D" => {
+                                f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tcBdr" => {
+                                f_tc_bdr = Some(Box::new(CTTableCellBorderStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"fill" | b"fillRef" => {
+                                f_themeable_fill_style = Some(Box::new(EGThemeableFillStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cell3D" => {
+                                f_cell3_d = Some(Box::new(CTCell3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tc_bdr: f_tc_bdr,
+            themeable_fill_style: f_themeable_fill_style,
+            cell3_d: f_cell3_d,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTablePartStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tc_tx_style = None;
+        let mut f_tc_style = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tcTxStyle" => {
+                                f_tc_tx_style = Some(Box::new(CTTableStyleTextStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tcStyle" => {
+                                f_tc_style = Some(Box::new(CTTableStyleCellStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tcTxStyle" => {
+                                f_tc_tx_style = Some(Box::new(CTTableStyleTextStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tcStyle" => {
+                                f_tc_style = Some(Box::new(CTTableStyleCellStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tc_tx_style: f_tc_tx_style,
+            tc_style: f_tc_style,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_style_id: Option<Guid> = None;
+        let mut f_style_name: Option<String> = None;
+        let mut f_tbl_bg = None;
+        let mut f_whole_tbl = None;
+        let mut f_band1_h = None;
+        let mut f_band2_h = None;
+        let mut f_band1_v = None;
+        let mut f_band2_v = None;
+        let mut f_last_col = None;
+        let mut f_first_col = None;
+        let mut f_last_row = None;
+        let mut f_se_cell = None;
+        let mut f_sw_cell = None;
+        let mut f_first_row = None;
+        let mut f_ne_cell = None;
+        let mut f_nw_cell = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"styleId" => {
+                    f_style_id = Some(val.into_owned());
+                }
+                b"styleName" => {
+                    f_style_name = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblBg" => {
+                                f_tbl_bg = Some(Box::new(CTTableBackgroundStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"wholeTbl" => {
+                                f_whole_tbl = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band1H" => {
+                                f_band1_h = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band2H" => {
+                                f_band2_h = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band1V" => {
+                                f_band1_v = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band2V" => {
+                                f_band2_v = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lastCol" => {
+                                f_last_col = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"firstCol" => {
+                                f_first_col = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lastRow" => {
+                                f_last_row = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"seCell" => {
+                                f_se_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"swCell" => {
+                                f_sw_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"firstRow" => {
+                                f_first_row = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"neCell" => {
+                                f_ne_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"nwCell" => {
+                                f_nw_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblBg" => {
+                                f_tbl_bg = Some(Box::new(CTTableBackgroundStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"wholeTbl" => {
+                                f_whole_tbl = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band1H" => {
+                                f_band1_h = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band2H" => {
+                                f_band2_h = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band1V" => {
+                                f_band1_v = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"band2V" => {
+                                f_band2_v = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lastCol" => {
+                                f_last_col = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"firstCol" => {
+                                f_first_col = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lastRow" => {
+                                f_last_row = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"seCell" => {
+                                f_se_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"swCell" => {
+                                f_sw_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"firstRow" => {
+                                f_first_row = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"neCell" => {
+                                f_ne_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"nwCell" => {
+                                f_nw_cell = Some(Box::new(CTTablePartStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            style_id: f_style_id.ok_or_else(|| ParseError::MissingAttribute("styleId".to_string()))?,
+            style_name: f_style_name.ok_or_else(|| ParseError::MissingAttribute("styleName".to_string()))?,
+            tbl_bg: f_tbl_bg,
+            whole_tbl: f_whole_tbl,
+            band1_h: f_band1_h,
+            band2_h: f_band2_h,
+            band1_v: f_band1_v,
+            band2_v: f_band2_v,
+            last_col: f_last_col,
+            first_col: f_first_col,
+            last_row: f_last_row,
+            se_cell: f_se_cell,
+            sw_cell: f_sw_cell,
+            first_row: f_first_row,
+            ne_cell: f_ne_cell,
+            nw_cell: f_nw_cell,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTableStyleList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_def: Option<Guid> = None;
+        let mut f_tbl_style = Vec::new();
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"def" => {
+                    f_def = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblStyle" => {
+                                f_tbl_style.push(Box::new(CTTableStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tblStyle" => {
+                                f_tbl_style.push(Box::new(CTTableStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            def: f_def.ok_or_else(|| ParseError::MissingAttribute("def".to_string()))?,
+            tbl_style: f_tbl_style,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for TextParagraph {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_p_pr = None;
+        let mut f_text_run = Vec::new();
+        let mut f_end_para_r_pr = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"pPr" => {
+                                f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"r" | b"br" | b"fld" => {
+                                f_text_run.push(Box::new(EGTextRun::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"endParaRPr" => {
+                                f_end_para_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"pPr" => {
+                                f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"r" | b"br" | b"fld" => {
+                                f_text_run.push(Box::new(EGTextRun::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"endParaRPr" => {
+                                f_end_para_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            p_pr: f_p_pr,
+            text_run: f_text_run,
+            end_para_r_pr: f_end_para_r_pr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextListStyle {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_def_p_pr = None;
+        let mut f_lvl1p_pr = None;
+        let mut f_lvl2p_pr = None;
+        let mut f_lvl3p_pr = None;
+        let mut f_lvl4p_pr = None;
+        let mut f_lvl5p_pr = None;
+        let mut f_lvl6p_pr = None;
+        let mut f_lvl7p_pr = None;
+        let mut f_lvl8p_pr = None;
+        let mut f_lvl9p_pr = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"defPPr" => {
+                                f_def_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl1pPr" => {
+                                f_lvl1p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl2pPr" => {
+                                f_lvl2p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl3pPr" => {
+                                f_lvl3p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl4pPr" => {
+                                f_lvl4p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl5pPr" => {
+                                f_lvl5p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl6pPr" => {
+                                f_lvl6p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl7pPr" => {
+                                f_lvl7p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl8pPr" => {
+                                f_lvl8p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl9pPr" => {
+                                f_lvl9p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"defPPr" => {
+                                f_def_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl1pPr" => {
+                                f_lvl1p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl2pPr" => {
+                                f_lvl2p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl3pPr" => {
+                                f_lvl3p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl4pPr" => {
+                                f_lvl4p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl5pPr" => {
+                                f_lvl5p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl6pPr" => {
+                                f_lvl6p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl7pPr" => {
+                                f_lvl7p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl8pPr" => {
+                                f_lvl8p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lvl9pPr" => {
+                                f_lvl9p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            def_p_pr: f_def_p_pr,
+            lvl1p_pr: f_lvl1p_pr,
+            lvl2p_pr: f_lvl2p_pr,
+            lvl3p_pr: f_lvl3p_pr,
+            lvl4p_pr: f_lvl4p_pr,
+            lvl5p_pr: f_lvl5p_pr,
+            lvl6p_pr: f_lvl6p_pr,
+            lvl7p_pr: f_lvl7p_pr,
+            lvl8p_pr: f_lvl8p_pr,
+            lvl9p_pr: f_lvl9p_pr,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextNormalAutofit {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_font_scale = None;
+        let mut f_ln_spc_reduction = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"fontScale" => {
+                    f_font_scale = Some(val.into_owned());
+                }
+                b"lnSpcReduction" => {
+                    f_ln_spc_reduction = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            font_scale: f_font_scale,
+            ln_spc_reduction: f_ln_spc_reduction,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextShapeAutofit {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTTextNoAutofit {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGTextAutofit {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"noAutofit" => {
+                let inner = CTTextNoAutofit::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::NoAutofit(Box::new(inner)))
+            }
+            b"normAutofit" => {
+                let inner = CTTextNormalAutofit::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::NormAutofit(Box::new(inner)))
+            }
+            b"spAutoFit" => {
+                let inner = CTTextShapeAutofit::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::SpAutoFit(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTTextBodyProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_rot = None;
+        let mut f_spc_first_last_para = None;
+        let mut f_vert_overflow = None;
+        let mut f_horz_overflow = None;
+        let mut f_vert = None;
+        let mut f_wrap = None;
+        let mut f_l_ins = None;
+        let mut f_t_ins = None;
+        let mut f_r_ins = None;
+        let mut f_b_ins = None;
+        let mut f_num_col = None;
+        let mut f_spc_col = None;
+        let mut f_rtl_col = None;
+        let mut f_from_word_art = None;
+        let mut f_anchor = None;
+        let mut f_anchor_ctr = None;
+        let mut f_force_a_a = None;
+        let mut f_upright = None;
+        let mut f_compat_ln_spc = None;
+        let mut f_prst_tx_warp = None;
+        let mut f_text_autofit = None;
+        let mut f_scene3d = None;
+        let mut f_text3_d = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"rot" => {
+                    f_rot = val.parse().ok();
+                }
+                b"spcFirstLastPara" => {
+                    f_spc_first_last_para = Some(val == "true" || val == "1");
+                }
+                b"vertOverflow" => {
+                    f_vert_overflow = val.parse().ok();
+                }
+                b"horzOverflow" => {
+                    f_horz_overflow = val.parse().ok();
+                }
+                b"vert" => {
+                    f_vert = val.parse().ok();
+                }
+                b"wrap" => {
+                    f_wrap = val.parse().ok();
+                }
+                b"lIns" => {
+                    f_l_ins = Some(val.into_owned());
+                }
+                b"tIns" => {
+                    f_t_ins = Some(val.into_owned());
+                }
+                b"rIns" => {
+                    f_r_ins = Some(val.into_owned());
+                }
+                b"bIns" => {
+                    f_b_ins = Some(val.into_owned());
+                }
+                b"numCol" => {
+                    f_num_col = val.parse().ok();
+                }
+                b"spcCol" => {
+                    f_spc_col = val.parse().ok();
+                }
+                b"rtlCol" => {
+                    f_rtl_col = Some(val == "true" || val == "1");
+                }
+                b"fromWordArt" => {
+                    f_from_word_art = Some(val == "true" || val == "1");
+                }
+                b"anchor" => {
+                    f_anchor = val.parse().ok();
+                }
+                b"anchorCtr" => {
+                    f_anchor_ctr = Some(val == "true" || val == "1");
+                }
+                b"forceAA" => {
+                    f_force_a_a = Some(val == "true" || val == "1");
+                }
+                b"upright" => {
+                    f_upright = Some(val == "true" || val == "1");
+                }
+                b"compatLnSpc" => {
+                    f_compat_ln_spc = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"prstTxWarp" => {
+                                f_prst_tx_warp = Some(Box::new(CTPresetTextShape::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noAutofit" | b"normAutofit" | b"spAutoFit" => {
+                                f_text_autofit = Some(Box::new(EGTextAutofit::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" | b"flatTx" => {
+                                f_text3_d = Some(Box::new(EGText3D::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"prstTxWarp" => {
+                                f_prst_tx_warp = Some(Box::new(CTPresetTextShape::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noAutofit" | b"normAutofit" | b"spAutoFit" => {
+                                f_text_autofit = Some(Box::new(EGTextAutofit::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"scene3d" => {
+                                f_scene3d = Some(Box::new(CTScene3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sp3d" | b"flatTx" => {
+                                f_text3_d = Some(Box::new(EGText3D::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            rot: f_rot,
+            spc_first_last_para: f_spc_first_last_para,
+            vert_overflow: f_vert_overflow,
+            horz_overflow: f_horz_overflow,
+            vert: f_vert,
+            wrap: f_wrap,
+            l_ins: f_l_ins,
+            t_ins: f_t_ins,
+            r_ins: f_r_ins,
+            b_ins: f_b_ins,
+            num_col: f_num_col,
+            spc_col: f_spc_col,
+            rtl_col: f_rtl_col,
+            from_word_art: f_from_word_art,
+            anchor: f_anchor,
+            anchor_ctr: f_anchor_ctr,
+            force_a_a: f_force_a_a,
+            upright: f_upright,
+            compat_ln_spc: f_compat_ln_spc,
+            prst_tx_warp: f_prst_tx_warp,
+            text_autofit: f_text_autofit,
+            scene3d: f_scene3d,
+            text3_d: f_text3_d,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for TextBody {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_body_pr: Option<Box<CTTextBodyProperties>> = None;
+        let mut f_lst_style = None;
+        let mut f_p = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"bodyPr" => {
+                                f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lstStyle" => {
+                                f_lst_style = Some(Box::new(CTTextListStyle::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"p" => {
+                                f_p.push(Box::new(TextParagraph::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"bodyPr" => {
+                                f_body_pr = Some(Box::new(CTTextBodyProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"lstStyle" => {
+                                f_lst_style = Some(Box::new(CTTextListStyle::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"p" => {
+                                f_p.push(Box::new(TextParagraph::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            body_pr: f_body_pr.ok_or_else(|| ParseError::MissingAttribute("bodyPr".to_string()))?,
+            lst_style: f_lst_style,
+            p: f_p,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextBulletColorFollowText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGTextBulletColor {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"buClrTx" => {
+                let inner = CTTextBulletColorFollowText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuClrTx(Box::new(inner)))
+            }
+            b"buClr" => {
+                let inner = CTColor::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuClr(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTTextBulletSizeFollowText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTTextBulletSizePercent {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STTextBulletSizePercent> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextBulletSizePoint {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STTextFontSize> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for EGTextBulletSize {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"buSzTx" => {
+                let inner = CTTextBulletSizeFollowText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuSzTx(Box::new(inner)))
+            }
+            b"buSzPct" => {
+                let inner = CTTextBulletSizePercent::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuSzPct(Box::new(inner)))
+            }
+            b"buSzPts" => {
+                let inner = CTTextBulletSizePoint::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuSzPts(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTTextBulletTypefaceFollowText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGTextBulletTypeface {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"buFontTx" => {
+                let inner = CTTextBulletTypefaceFollowText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuFontTx(Box::new(inner)))
+            }
+            b"buFont" => {
+                let inner = TextFont::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuFont(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for CTTextAutonumberBullet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_type: Option<STTextAutonumberScheme> = None;
+        let mut f_start_at = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"type" => {
+                    f_type = val.parse().ok();
+                }
+                b"startAt" => {
+                    f_start_at = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            start_at: f_start_at,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextCharBullet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_char: Option<String> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"char" => {
+                    f_char = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            char: f_char.ok_or_else(|| ParseError::MissingAttribute("char".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextNoBullet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for EGTextBullet {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"buNone" => {
+                let inner = CTTextNoBullet::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuNone(Box::new(inner)))
+            }
+            b"buAutoNum" => {
+                let inner = CTTextAutonumberBullet::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuAutoNum(Box::new(inner)))
+            }
+            b"buChar" => {
+                let inner = CTTextCharBullet::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuChar(Box::new(inner)))
+            }
+            b"buBlip" => {
+                let inner = CTTextBlipBullet::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::BuBlip(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for TextFont {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_typeface: Option<STTextTypeface> = None;
+        let mut f_panose = None;
+        let mut f_pitch_family = None;
+        let mut f_charset = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"typeface" => {
+                    f_typeface = Some(val.into_owned());
+                }
+                b"panose" => {
+                    f_panose = decode_hex(&val);
+                }
+                b"pitchFamily" => {
+                    f_pitch_family = Some(val.into_owned());
+                }
+                b"charset" => {
+                    f_charset = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            typeface: f_typeface.ok_or_else(|| ParseError::MissingAttribute("typeface".to_string()))?,
+            panose: f_panose,
+            pitch_family: f_pitch_family,
+            charset: f_charset,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextUnderlineLineFollowText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTTextUnderlineFillFollowText {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, _start: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        if !is_empty {
+            let mut buf = Vec::new();
+            let mut depth = 1u32;
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(_) => depth += 1,
+                    Event::End(_) => { depth -= 1; if depth == 0 { break; } }
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+        Ok(Self {})
+    }
+}
+
+impl FromXml for CTTextUnderlineFillGroupWrapper {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_fill_properties: Option<Box<EGFillProperties>> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            fill_properties: f_fill_properties.ok_or_else(|| ParseError::MissingAttribute("a_EG_FillProperties".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGTextUnderlineLine {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"uLnTx" => {
+                let inner = CTTextUnderlineLineFollowText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::ULnTx(Box::new(inner)))
+            }
+            b"uLn" => {
+                let inner = LineProperties::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::ULn(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for EGTextUnderlineFill {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"uFillTx" => {
+                let inner = CTTextUnderlineFillFollowText::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::UFillTx(Box::new(inner)))
+            }
+            b"uFill" => {
+                let inner = CTTextUnderlineFillGroupWrapper::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::UFill(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for TextCharacterProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_kumimoji = None;
+        let mut f_lang = None;
+        let mut f_alt_lang = None;
+        let mut f_sz = None;
+        let mut f_b = None;
+        let mut f_i = None;
+        let mut f_u = None;
+        let mut f_strike = None;
+        let mut f_kern = None;
+        let mut f_cap = None;
+        let mut f_spc = None;
+        let mut f_normalize_h = None;
+        let mut f_baseline = None;
+        let mut f_no_proof = None;
+        let mut f_dirty = None;
+        let mut f_err = None;
+        let mut f_smt_clean = None;
+        let mut f_smt_id = None;
+        let mut f_bmk = None;
+        let mut f_line = None;
+        let mut f_fill_properties = None;
+        let mut f_effect_properties = None;
+        let mut f_highlight = None;
+        let mut f_text_underline_line = None;
+        let mut f_text_underline_fill = None;
+        let mut f_latin = None;
+        let mut f_ea = None;
+        let mut f_cs = None;
+        let mut f_sym = None;
+        let mut f_hlink_click = None;
+        let mut f_hlink_mouse_over = None;
+        let mut f_rtl = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"kumimoji" => {
+                    f_kumimoji = Some(val == "true" || val == "1");
+                }
+                b"lang" => {
+                    f_lang = Some(val.into_owned());
+                }
+                b"altLang" => {
+                    f_alt_lang = Some(val.into_owned());
+                }
+                b"sz" => {
+                    f_sz = val.parse().ok();
+                }
+                b"b" => {
+                    f_b = Some(val == "true" || val == "1");
+                }
+                b"i" => {
+                    f_i = Some(val == "true" || val == "1");
+                }
+                b"u" => {
+                    f_u = val.parse().ok();
+                }
+                b"strike" => {
+                    f_strike = val.parse().ok();
+                }
+                b"kern" => {
+                    f_kern = val.parse().ok();
+                }
+                b"cap" => {
+                    f_cap = val.parse().ok();
+                }
+                b"spc" => {
+                    f_spc = Some(val.into_owned());
+                }
+                b"normalizeH" => {
+                    f_normalize_h = Some(val == "true" || val == "1");
+                }
+                b"baseline" => {
+                    f_baseline = Some(val.into_owned());
+                }
+                b"noProof" => {
+                    f_no_proof = Some(val == "true" || val == "1");
+                }
+                b"dirty" => {
+                    f_dirty = Some(val == "true" || val == "1");
+                }
+                b"err" => {
+                    f_err = Some(val == "true" || val == "1");
+                }
+                b"smtClean" => {
+                    f_smt_clean = Some(val == "true" || val == "1");
+                }
+                b"smtId" => {
+                    f_smt_id = val.parse().ok();
+                }
+                b"bmk" => {
+                    f_bmk = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"highlight" => {
+                                f_highlight = Some(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"uLnTx" | b"uLn" => {
+                                f_text_underline_line = Some(Box::new(EGTextUnderlineLine::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"uFillTx" | b"uFill" => {
+                                f_text_underline_fill = Some(Box::new(EGTextUnderlineFill::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"latin" => {
+                                f_latin = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ea" => {
+                                f_ea = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cs" => {
+                                f_cs = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sym" => {
+                                f_sym = Some(Box::new(TextFont::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkClick" => {
+                                f_hlink_click = Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkMouseOver" => {
+                                f_hlink_mouse_over = Some(Box::new(CTHyperlink::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"rtl" => {
+                                f_rtl = Some(Box::new(CTBoolean::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"ln" => {
+                                f_line = Some(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill" | b"grpFill" => {
+                                f_fill_properties = Some(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"effectLst" | b"effectDag" => {
+                                f_effect_properties = Some(Box::new(EGEffectProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"highlight" => {
+                                f_highlight = Some(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"uLnTx" | b"uLn" => {
+                                f_text_underline_line = Some(Box::new(EGTextUnderlineLine::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"uFillTx" | b"uFill" => {
+                                f_text_underline_fill = Some(Box::new(EGTextUnderlineFill::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"latin" => {
+                                f_latin = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"ea" => {
+                                f_ea = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"cs" => {
+                                f_cs = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"sym" => {
+                                f_sym = Some(Box::new(TextFont::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkClick" => {
+                                f_hlink_click = Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"hlinkMouseOver" => {
+                                f_hlink_mouse_over = Some(Box::new(CTHyperlink::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"rtl" => {
+                                f_rtl = Some(Box::new(CTBoolean::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            kumimoji: f_kumimoji,
+            lang: f_lang,
+            alt_lang: f_alt_lang,
+            sz: f_sz,
+            b: f_b,
+            i: f_i,
+            u: f_u,
+            strike: f_strike,
+            kern: f_kern,
+            cap: f_cap,
+            spc: f_spc,
+            normalize_h: f_normalize_h,
+            baseline: f_baseline,
+            no_proof: f_no_proof,
+            dirty: f_dirty,
+            err: f_err,
+            smt_clean: f_smt_clean,
+            smt_id: f_smt_id,
+            bmk: f_bmk,
+            line: f_line,
+            fill_properties: f_fill_properties,
+            effect_properties: f_effect_properties,
+            highlight: f_highlight,
+            text_underline_line: f_text_underline_line,
+            text_underline_fill: f_text_underline_fill,
+            latin: f_latin,
+            ea: f_ea,
+            cs: f_cs,
+            sym: f_sym,
+            hlink_click: f_hlink_click,
+            hlink_mouse_over: f_hlink_mouse_over,
+            rtl: f_rtl,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTBoolean {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextSpacingPercent {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STTextSpacingPercentOrPercentString> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextSpacingPoint {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_value: Option<STTextSpacingPoint> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"val" => {
+                    f_value = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            value: f_value.ok_or_else(|| ParseError::MissingAttribute("val".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextTabStop {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_pos = None;
+        let mut f_algn = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"pos" => {
+                    f_pos = Some(val.into_owned());
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            pos: f_pos,
+            algn: f_algn,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+        })
+    }
+}
+
+impl FromXml for CTTextTabStopList {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_tab = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"tab" => {
+                                f_tab.push(Box::new(CTTextTabStop::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"tab" => {
+                                f_tab.push(Box::new(CTTextTabStop::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            tab: f_tab,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextLineBreak {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_r_pr = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r_pr: f_r_pr,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextSpacing {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_spc_pct = None;
+        let mut f_spc_pts = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"spcPct" => {
+                                f_spc_pct = Some(Box::new(CTTextSpacingPercent::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcPts" => {
+                                f_spc_pts = Some(Box::new(CTTextSpacingPoint::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"spcPct" => {
+                                f_spc_pct = Some(Box::new(CTTextSpacingPercent::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcPts" => {
+                                f_spc_pts = Some(Box::new(CTTextSpacingPoint::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            spc_pct: f_spc_pct,
+            spc_pts: f_spc_pts,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for TextParagraphProperties {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_mar_l = None;
+        let mut f_mar_r = None;
+        let mut f_lvl = None;
+        let mut f_indent = None;
+        let mut f_algn = None;
+        let mut f_def_tab_sz = None;
+        let mut f_rtl = None;
+        let mut f_ea_ln_brk = None;
+        let mut f_font_algn = None;
+        let mut f_latin_ln_brk = None;
+        let mut f_hanging_punct = None;
+        let mut f_ln_spc = None;
+        let mut f_spc_bef = None;
+        let mut f_spc_aft = None;
+        let mut f_text_bullet_color = None;
+        let mut f_text_bullet_size = None;
+        let mut f_text_bullet_typeface = None;
+        let mut f_text_bullet = None;
+        let mut f_tab_lst = None;
+        let mut f_def_r_pr = None;
+        let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"marL" => {
+                    f_mar_l = val.parse().ok();
+                }
+                b"marR" => {
+                    f_mar_r = val.parse().ok();
+                }
+                b"lvl" => {
+                    f_lvl = val.parse().ok();
+                }
+                b"indent" => {
+                    f_indent = val.parse().ok();
+                }
+                b"algn" => {
+                    f_algn = val.parse().ok();
+                }
+                b"defTabSz" => {
+                    f_def_tab_sz = Some(val.into_owned());
+                }
+                b"rtl" => {
+                    f_rtl = Some(val == "true" || val == "1");
+                }
+                b"eaLnBrk" => {
+                    f_ea_ln_brk = Some(val == "true" || val == "1");
+                }
+                b"fontAlgn" => {
+                    f_font_algn = val.parse().ok();
+                }
+                b"latinLnBrk" => {
+                    f_latin_ln_brk = Some(val == "true" || val == "1");
+                }
+                b"hangingPunct" => {
+                    f_hanging_punct = Some(val == "true" || val == "1");
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnSpc" => {
+                                f_ln_spc = Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcBef" => {
+                                f_spc_bef = Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcAft" => {
+                                f_spc_aft = Some(Box::new(CTTextSpacing::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buClrTx" | b"buClr" => {
+                                f_text_bullet_color = Some(Box::new(EGTextBulletColor::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buSzTx" | b"buSzPct" | b"buSzPts" => {
+                                f_text_bullet_size = Some(Box::new(EGTextBulletSize::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buFontTx" | b"buFont" => {
+                                f_text_bullet_typeface = Some(Box::new(EGTextBulletTypeface::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buNone" | b"buAutoNum" | b"buChar" | b"buBlip" => {
+                                f_text_bullet = Some(Box::new(EGTextBullet::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tabLst" => {
+                                f_tab_lst = Some(Box::new(CTTextTabStopList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"defRPr" => {
+                                f_def_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"lnSpc" => {
+                                f_ln_spc = Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcBef" => {
+                                f_spc_bef = Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"spcAft" => {
+                                f_spc_aft = Some(Box::new(CTTextSpacing::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buClrTx" | b"buClr" => {
+                                f_text_bullet_color = Some(Box::new(EGTextBulletColor::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buSzTx" | b"buSzPct" | b"buSzPts" => {
+                                f_text_bullet_size = Some(Box::new(EGTextBulletSize::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buFontTx" | b"buFont" => {
+                                f_text_bullet_typeface = Some(Box::new(EGTextBulletTypeface::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"buNone" | b"buAutoNum" | b"buChar" | b"buBlip" => {
+                                f_text_bullet = Some(Box::new(EGTextBullet::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"tabLst" => {
+                                f_tab_lst = Some(Box::new(CTTextTabStopList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"defRPr" => {
+                                f_def_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"extLst" => {
+                                f_ext_lst = Some(Box::new(EGOfficeArtExtensionList::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            mar_l: f_mar_l,
+            mar_r: f_mar_r,
+            lvl: f_lvl,
+            indent: f_indent,
+            algn: f_algn,
+            def_tab_sz: f_def_tab_sz,
+            rtl: f_rtl,
+            ea_ln_brk: f_ea_ln_brk,
+            font_algn: f_font_algn,
+            latin_ln_brk: f_latin_ln_brk,
+            hanging_punct: f_hanging_punct,
+            ln_spc: f_ln_spc,
+            spc_bef: f_spc_bef,
+            spc_aft: f_spc_aft,
+            text_bullet_color: f_text_bullet_color,
+            text_bullet_size: f_text_bullet_size,
+            text_bullet_typeface: f_text_bullet_typeface,
+            text_bullet: f_text_bullet,
+            tab_lst: f_tab_lst,
+            def_r_pr: f_def_r_pr,
+            ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for CTTextField {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_id: Option<Guid> = None;
+        let mut f_type = None;
+        let mut f_r_pr = None;
+        let mut f_p_pr = None;
+        let mut f_t = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                b"type" => {
+                    f_type = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pPr" => {
+                                f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"t" => {
+                                f_t = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"pPr" => {
+                                f_p_pr = Some(Box::new(TextParagraphProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"t" => {
+                                f_t = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            r#type: f_type,
+            r_pr: f_r_pr,
+            p_pr: f_p_pr,
+            t: f_t,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+
+impl FromXml for EGTextRun {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let tag = start_tag.local_name();
+        match tag.as_ref() {
+            b"r" => {
+                let inner = TextRun::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::R(Box::new(inner)))
+            }
+            b"br" => {
+                let inner = CTTextLineBreak::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Br(Box::new(inner)))
+            }
+            b"fld" => {
+                let inner = CTTextField::from_xml(reader, start_tag, is_empty)?;
+                Ok(Self::Fld(Box::new(inner)))
+            }
+            _ => Err(ParseError::UnexpectedElement(
+                String::from_utf8_lossy(start_tag.name().as_ref()).into_owned()
+            )),
+        }
+    }
+}
+
+impl FromXml for TextRun {
+    fn from_xml<R: BufRead>(reader: &mut Reader<R>, start_tag: &BytesStart, is_empty: bool) -> Result<Self, ParseError> {
+        let mut f_r_pr = None;
+        let mut f_t: Option<String> = None;
+        #[cfg(feature = "extra-children")]
+        let mut extra_children = Vec::new();
+        #[cfg(feature = "extra-children")]
+        let mut child_idx: usize = 0;
+
+
+        // Parse child elements
+        if !is_empty {
+            let mut buf = Vec::new();
+            loop {
+                match reader.read_event_into(&mut buf)? {
+                    Event::Start(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, false)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"t" => {
+                                f_t = Some(read_text_content(reader)?);
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown element for roundtrip
+                                let elem = RawXmlElement::from_reader(reader, &e)?;
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {
+                                // Skip unknown element
+                                skip_element(reader)?;
+                            }
+                        }
+                    }
+                    Event::Empty(e) => {
+                        match e.local_name().as_ref() {
+                            b"rPr" => {
+                                f_r_pr = Some(Box::new(TextCharacterProperties::from_xml(reader, &e, true)?));
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            b"t" => {
+                                f_t = Some(String::new());
+                                #[cfg(feature = "extra-children")]
+                                { child_idx += 1; }
+                            }
+                            #[cfg(feature = "extra-children")]
+                            _ => {
+                                // Capture unknown empty element for roundtrip
+                                let elem = RawXmlElement::from_empty(&e);
+                                extra_children.push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                                child_idx += 1;
+                            }
+                            #[cfg(not(feature = "extra-children"))]
+                            _ => {}
+                        }
+                    }
+                    Event::End(_) => break,
+                    Event::Eof => break,
+                    _ => {}
+                }
+                buf.clear();
+            }
+        }
+
+        Ok(Self {
+            r_pr: f_r_pr,
+            t: f_t.ok_or_else(|| ParseError::MissingAttribute("t".to_string()))?,
+            #[cfg(feature = "extra-children")]
+            extra_children,
+        })
+    }
+}
+

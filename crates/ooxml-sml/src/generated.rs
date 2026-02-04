@@ -4449,6 +4449,34 @@ pub struct FilterColumn {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_button: Option<bool>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "filters")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filters: Option<Box<Filters>>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "top10")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub top10: Option<Box<Top10Filter>>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "customFilters")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub custom_filters: Option<Box<CustomFilters>>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "dynamicFilter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dynamic_filter: Option<Box<DynamicFilter>>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "colorFilter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color_filter: Option<Box<ColorFilter>>,
+    #[cfg(feature = "sml-filtering")]
+    #[serde(rename = "iconFilter")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon_filter: Option<Box<IconFilter>>,
+    #[cfg(feature = "sml-extensions")]
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4456,6 +4484,11 @@ pub struct FilterColumn {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5569,6 +5602,15 @@ pub struct DataTables {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
+    #[serde(rename = "m")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub m: Option<Box<TableMissing>>,
+    #[serde(rename = "s")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_index: Option<Box<CTXStringElement>>,
+    #[serde(rename = "x")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x: Option<Box<CTIndex>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5576,6 +5618,11 @@ pub struct DataTables {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -5973,6 +6020,15 @@ pub struct CacheSource {
     #[serde(rename = "@connectionId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub connection_id: Option<u32>,
+    #[serde(rename = "worksheetSource")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub worksheet_source: Option<Box<WorksheetSource>>,
+    #[serde(rename = "consolidation")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consolidation: Option<Box<Consolidation>>,
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extension_list: Option<Box<ExtensionList>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5980,6 +6036,11 @@ pub struct CacheSource {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6227,6 +6288,24 @@ pub struct SharedItems {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub long_text: Option<bool>,
+    #[serde(rename = "m")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub m: Option<Box<CTMissing>>,
+    #[serde(rename = "n")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub n: Option<Box<CTNumber>>,
+    #[serde(rename = "b")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<Box<CTBoolean>>,
+    #[serde(rename = "e")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub e: Option<Box<CTError>>,
+    #[serde(rename = "s")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_index: Option<Box<CTString>>,
+    #[serde(rename = "d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d: Option<Box<CTDateTime>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6234,6 +6313,11 @@ pub struct SharedItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6742,6 +6826,24 @@ pub struct GroupItems {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
+    #[serde(rename = "m")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub m: Option<Box<CTMissing>>,
+    #[serde(rename = "n")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub n: Option<Box<CTNumber>>,
+    #[serde(rename = "b")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<Box<CTBoolean>>,
+    #[serde(rename = "e")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub e: Option<Box<CTError>>,
+    #[serde(rename = "s")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_index: Option<Box<CTString>>,
+    #[serde(rename = "d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d: Option<Box<CTDateTime>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6749,6 +6851,11 @@ pub struct GroupItems {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -6778,6 +6885,27 @@ pub struct PivotCacheRecords {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRecord {
+    #[serde(rename = "m")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub m: Option<Box<CTMissing>>,
+    #[serde(rename = "n")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub n: Option<Box<CTNumber>>,
+    #[serde(rename = "b")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<Box<CTBoolean>>,
+    #[serde(rename = "e")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub e: Option<Box<CTError>>,
+    #[serde(rename = "s")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_index: Option<Box<CTString>>,
+    #[serde(rename = "d")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub d: Option<Box<CTDateTime>>,
+    #[serde(rename = "x")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x: Option<Box<CTIndex>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7259,6 +7387,18 @@ pub struct CTPCDSDTCEntries {
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
+    #[serde(rename = "m")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub m: Option<Box<CTMissing>>,
+    #[serde(rename = "n")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub n: Option<Box<CTNumber>>,
+    #[serde(rename = "e")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub e: Option<Box<CTError>>,
+    #[serde(rename = "s")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub style_index: Option<Box<CTString>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7266,6 +7406,11 @@ pub struct CTPCDSDTCEntries {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -10080,6 +10225,51 @@ pub struct RichTextElement {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "rPr")]
 pub struct RichTextRunProperties {
+    #[serde(rename = "rFont")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub r_font: Option<Box<FontName>>,
+    #[serde(rename = "charset")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub charset: Option<Box<IntProperty>>,
+    #[serde(rename = "family")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub family: Option<Box<IntProperty>>,
+    #[serde(rename = "b")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<Box<BooleanProperty>>,
+    #[serde(rename = "i")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub i: Option<Box<BooleanProperty>>,
+    #[serde(rename = "strike")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub strike: Option<Box<BooleanProperty>>,
+    #[serde(rename = "outline")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outline: Option<Box<BooleanProperty>>,
+    #[serde(rename = "shadow")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shadow: Option<Box<BooleanProperty>>,
+    #[serde(rename = "condense")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub condense: Option<Box<BooleanProperty>>,
+    #[serde(rename = "extend")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extend: Option<Box<BooleanProperty>>,
+    #[serde(rename = "color")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<Box<Color>>,
+    #[serde(rename = "sz")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sz: Option<Box<FontSize>>,
+    #[serde(rename = "u")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub u: Option<Box<UnderlineProperty>>,
+    #[serde(rename = "vertAlign")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vert_align: Option<Box<VerticalAlignFontProperty>>,
+    #[serde(rename = "scheme")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scheme: Option<Box<FontSchemeProperty>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10216,6 +10406,42 @@ pub struct RevisionHeaders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Revisions {
+    #[serde(rename = "rrc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rrc: Vec<Box<RevisionRowColumn>>,
+    #[serde(rename = "rm")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rm: Vec<Box<RevisionMove>>,
+    #[serde(rename = "rcv")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcv: Vec<Box<RevisionCustomView>>,
+    #[serde(rename = "rsnm")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rsnm: Vec<Box<RevisionSheetRename>>,
+    #[serde(rename = "ris")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ris: Vec<Box<RevisionInsertSheet>>,
+    #[serde(rename = "rcc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcc: Vec<Box<RevisionCellChange>>,
+    #[serde(rename = "rfmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rfmt: Vec<Box<RevisionFormatting>>,
+    #[serde(rename = "raf")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub raf: Vec<Box<RevisionAutoFormatting>>,
+    #[serde(rename = "rdn")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rdn: Vec<Box<RevisionDefinedName>>,
+    #[serde(rename = "rcmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcmt: Vec<Box<RevisionComment>>,
+    #[serde(rename = "rqt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rqt: Vec<Box<RevisionQueryTableField>>,
+    #[serde(rename = "rcft")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcft: Vec<Box<RevisionConflict>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10459,6 +10685,15 @@ pub struct RevisionRowColumn {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub edge: Option<bool>,
+    #[serde(rename = "undo")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub undo: Vec<Box<UndoInfo>>,
+    #[serde(rename = "rcc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcc: Vec<Box<RevisionCellChange>>,
+    #[serde(rename = "rfmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rfmt: Vec<Box<RevisionFormatting>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10466,6 +10701,11 @@ pub struct RevisionRowColumn {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10495,6 +10735,15 @@ pub struct RevisionMove {
     #[serde(rename = "@sourceSheetId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_sheet_id: Option<u32>,
+    #[serde(rename = "undo")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub undo: Vec<Box<UndoInfo>>,
+    #[serde(rename = "rcc")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rcc: Vec<Box<RevisionCellChange>>,
+    #[serde(rename = "rfmt")]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rfmt: Vec<Box<RevisionFormatting>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10502,6 +10751,11 @@ pub struct RevisionMove {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -14976,6 +15230,18 @@ pub struct CTMdx {
     pub n: u32,
     #[serde(rename = "@f")]
     pub formula: STMdxFunctionType,
+    #[serde(rename = "t")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell_type: Option<Box<CTMdxTuple>>,
+    #[serde(rename = "ms")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ms: Option<Box<CTMdxSet>>,
+    #[serde(rename = "p")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub p: Option<Box<CTMdxMemeberProp>>,
+    #[serde(rename = "k")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub k: Option<Box<CTMdxKPI>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14983,6 +15249,11 @@ pub struct CTMdx {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -15546,6 +15817,14 @@ pub struct Fills {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "fill")]
 pub struct Fill {
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "patternFill")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pattern_fill: Option<Box<PatternFill>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "gradientFill")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gradient_fill: Option<Box<GradientFill>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16228,6 +16507,66 @@ pub struct UnderlineProperty {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "font")]
 pub struct Font {
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "name")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<Box<FontName>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "charset")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub charset: Option<Box<IntProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "family")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub family: Option<Box<FontFamily>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "b")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "i")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub i: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "strike")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub strike: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "outline")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outline: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "shadow")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shadow: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "condense")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub condense: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "extend")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extend: Option<Box<BooleanProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "color")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<Box<Color>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "sz")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sz: Option<Box<FontSize>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "u")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub u: Option<Box<UnderlineProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "vertAlign")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vert_align: Option<Box<VerticalAlignFontProperty>>,
+    #[cfg(feature = "sml-styling")]
+    #[serde(rename = "scheme")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scheme: Option<Box<FontSchemeProperty>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16308,6 +16647,15 @@ pub type SmlExternalLink = Box<ExternalLink>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ExternalLink {
+    #[serde(rename = "externalBook")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub external_book: Option<Box<ExternalBook>>,
+    #[serde(rename = "ddeLink")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dde_link: Option<Box<DdeLink>>,
+    #[serde(rename = "oleLink")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ole_link: Option<Box<OleLink>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,

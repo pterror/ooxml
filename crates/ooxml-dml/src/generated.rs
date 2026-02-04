@@ -7128,6 +7128,12 @@ pub struct CTAnimationChartElement {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAnimationElementChoice {
+    #[serde(rename = "dgm")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dgm: Option<Box<CTAnimationDgmElement>>,
+    #[serde(rename = "chart")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chart: Option<Box<CTAnimationChartElement>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7179,6 +7185,12 @@ pub struct CTAnimationChartBuildProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAnimationGraphicalObjectBuildProperties {
+    #[serde(rename = "bldDgm")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_dgm: Option<Box<CTAnimationDgmBuildProperties>>,
+    #[serde(rename = "bldChart")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bld_chart: Option<Box<CTAnimationChartBuildProperties>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7223,6 +7235,12 @@ pub struct CTGvmlUseShapeRectangle;
 pub struct CTGvmlTextShape {
     #[serde(rename = "txBody")]
     pub tx_body: Box<TextBody>,
+    #[serde(rename = "useSpRect")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub use_sp_rect: Option<Box<CTGvmlUseShapeRectangle>>,
+    #[serde(rename = "xfrm")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub transform: Option<Box<Transform2D>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -7384,6 +7402,24 @@ pub struct CTGvmlGroupShape {
     pub nv_grp_sp_pr: Box<CTGvmlGroupShapeNonVisual>,
     #[serde(rename = "grpSpPr")]
     pub grp_sp_pr: Box<CTGroupShapeProperties>,
+    #[serde(rename = "txSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tx_sp: Option<Box<CTGvmlTextShape>>,
+    #[serde(rename = "sp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sp: Option<Box<CTGvmlShape>>,
+    #[serde(rename = "cxnSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cxn_sp: Option<Box<CTGvmlConnector>>,
+    #[serde(rename = "pic")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pic: Option<Box<CTGvmlPicture>>,
+    #[serde(rename = "graphicFrame")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graphic_frame: Option<Box<CTGvmlGraphicalObjectFrame>>,
+    #[serde(rename = "grpSp")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grp_sp: Option<Box<CTGvmlGroupShape>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -8187,6 +8223,57 @@ pub struct Blip {
     #[serde(rename = "@cstate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cstate: Option<STBlipCompression>,
+    #[serde(rename = "alphaBiLevel")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_bi_level: Option<Box<CTAlphaBiLevelEffect>>,
+    #[serde(rename = "alphaCeiling")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_ceiling: Option<Box<CTAlphaCeilingEffect>>,
+    #[serde(rename = "alphaFloor")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_floor: Option<Box<CTAlphaFloorEffect>>,
+    #[serde(rename = "alphaInv")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_inv: Option<Box<CTAlphaInverseEffect>>,
+    #[serde(rename = "alphaMod")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_mod: Option<Box<CTAlphaModulateEffect>>,
+    #[serde(rename = "alphaModFix")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_mod_fix: Option<Box<CTAlphaModulateFixedEffect>>,
+    #[serde(rename = "alphaRepl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub alpha_repl: Option<Box<CTAlphaReplaceEffect>>,
+    #[serde(rename = "biLevel")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bi_level: Option<Box<CTBiLevelEffect>>,
+    #[serde(rename = "blur")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub blur: Option<Box<CTBlurEffect>>,
+    #[serde(rename = "clrChange")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_change: Option<Box<CTColorChangeEffect>>,
+    #[serde(rename = "clrRepl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clr_repl: Option<Box<CTColorReplaceEffect>>,
+    #[serde(rename = "duotone")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub duotone: Option<Box<CTDuotoneEffect>>,
+    #[serde(rename = "fillOverlay")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fill_overlay: Option<Box<CTFillOverlayEffect>>,
+    #[serde(rename = "grayscl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub grayscl: Option<Box<CTGrayscaleEffect>>,
+    #[serde(rename = "hsl")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hsl: Option<Box<CTHSLEffect>>,
+    #[serde(rename = "lum")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lum: Option<Box<CTLuminanceEffect>>,
+    #[serde(rename = "tint")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tint: Option<Box<CTTintEffect>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -8574,6 +8661,12 @@ pub struct CTConnectionSite {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAdjustHandleList {
+    #[serde(rename = "ahXY")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ah_x_y: Option<Box<CTXYAdjustHandle>>,
+    #[serde(rename = "ahPolar")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ah_polar: Option<Box<CTPolarAdjustHandle>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8683,6 +8776,24 @@ pub struct CTPath2D {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub extrusion_ok: Option<bool>,
+    #[serde(rename = "close")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub close: Option<Box<CTPath2DClose>>,
+    #[serde(rename = "moveTo")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub move_to: Option<Box<CTPath2DMoveTo>>,
+    #[serde(rename = "lnTo")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_to: Option<Box<CTPath2DLineTo>>,
+    #[serde(rename = "arcTo")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub arc_to: Option<Box<CTPath2DArcTo>>,
+    #[serde(rename = "quadBezTo")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub quad_bez_to: Option<Box<CTPath2DQuadBezierTo>>,
+    #[serde(rename = "cubicBezTo")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cubic_bez_to: Option<Box<CTPath2DCubicBezierTo>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8690,6 +8801,11 @@ pub struct CTPath2D {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -9125,6 +9241,12 @@ pub struct CTColorMapping {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTColorMappingOverride {
+    #[serde(rename = "masterClrMapping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub master_clr_mapping: Option<Box<CTEmptyElement>>,
+    #[serde(rename = "overrideClrMapping")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub override_clr_mapping: Option<Box<CTColorMapping>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9476,6 +9598,12 @@ pub struct CTTableProperties {
     #[serde(skip)]
     #[serde(default)]
     pub effect_properties: Option<Box<EGEffectProperties>>,
+    #[serde(rename = "tableStyle")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table_style: Option<Box<CTTableStyle>>,
+    #[serde(rename = "tableStyleId")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub table_style_id: Option<Guid>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9541,6 +9669,12 @@ pub struct CTCell3D {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTThemeableLineStyle {
+    #[serde(rename = "ln")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub line: Option<Box<LineProperties>>,
+    #[serde(rename = "lnRef")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ln_ref: Option<Box<CTStyleMatrixReference>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10306,6 +10440,12 @@ pub struct CTTextLineBreak {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTextSpacing {
+    #[serde(rename = "spcPct")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spc_pct: Option<Box<CTTextSpacingPercent>>,
+    #[serde(rename = "spcPts")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub spc_pts: Option<Box<CTTextSpacingPoint>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
