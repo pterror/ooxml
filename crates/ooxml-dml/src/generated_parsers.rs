@@ -2,6 +2,7 @@
 // ~3x faster than serde-based deserialization.
 
 #![allow(unused_variables)]
+#![allow(unused_imports)]
 #![allow(clippy::single_match)]
 #![allow(clippy::match_single_binding)]
 #![allow(clippy::manual_is_multiple_of)]

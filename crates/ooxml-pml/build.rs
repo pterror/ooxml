@@ -2,6 +2,7 @@ use ooxml_codegen::{
     CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers,
     generate_serializers, parse_rnc,
 };
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
@@ -108,6 +109,14 @@ fn main() {
     };
 
     // Generate Rust code
+    // DML types use "a_" prefix in schema (e.g., a_CT_Color)
+    // The tuple is (crate_path, module_name) where module_name is used for name mapping lookups
+    let mut cross_crate_type_prefix = HashMap::new();
+    cross_crate_type_prefix.insert(
+        "a_".to_string(),
+        ("ooxml_dml::types::".to_string(), "dml".to_string()),
+    );
+
     let config = CodegenConfig {
         strip_prefix: Some("p_".to_string()),
         module_name: "pml".to_string(),
@@ -117,6 +126,8 @@ fn main() {
         xml_serialize_prefix: Some("p".to_string()),
         // PML references DML types for shared drawing elements
         cross_crate_imports: vec!["ooxml_dml::types::*".to_string()],
+        // Map DML schema names to ooxml_dml crate types
+        cross_crate_type_prefix,
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);
