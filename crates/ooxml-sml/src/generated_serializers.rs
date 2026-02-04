@@ -948,6 +948,7 @@ impl ToXml for CalcChain {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "sml-formulas")]
         for item in &self.cells {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -973,6 +974,7 @@ impl ToXml for CalcChain {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
             val.write_element("extLst", writer)?;
         }
@@ -988,9 +990,11 @@ impl ToXml for CalcChain {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-formulas")]
         if !self.cells.is_empty() {
             return false;
         }
+        #[cfg(feature = "sml-extensions")]
         if self.extension_list.is_some() {
             return false;
         }
@@ -1009,21 +1013,26 @@ impl ToXml for CalcCell {
             let val = &self._any;
             start.push_attribute(("_any", val.as_str()));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.i {
             {
                 let s = val.to_string();
                 start.push_attribute(("i", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.style_index {
             start.push_attribute(("s", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.l {
             start.push_attribute(("l", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.cell_type {
             start.push_attribute(("t", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.a {
             start.push_attribute(("a", if *val { "1" } else { "0" }));
         }
@@ -14696,30 +14705,39 @@ impl ToXml for Cell {
 impl ToXml for SheetProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.sync_horizontal {
             start.push_attribute(("syncHorizontal", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.sync_vertical {
             start.push_attribute(("syncVertical", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.sync_ref {
             start.push_attribute(("syncRef", val.as_str()));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.transition_evaluation {
             start.push_attribute(("transitionEvaluation", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.transition_entry {
             start.push_attribute(("transitionEntry", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-external")]
         if let Some(ref val) = self.published {
             start.push_attribute(("published", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.code_name {
             start.push_attribute(("codeName", val.as_str()));
         }
+        #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.filter_mode {
             start.push_attribute(("filterMode", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.enable_format_conditions_calculation {
             start.push_attribute((
                 "enableFormatConditionsCalculation",
@@ -14747,6 +14765,7 @@ impl ToXml for SheetProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.tab_color {
             val.write_element("tabColor", writer)?;
         }
@@ -14763,6 +14782,7 @@ impl ToXml for SheetProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.outline_pr {
             val.write_element("outlinePr", writer)?;
         }
@@ -14779,6 +14799,7 @@ impl ToXml for SheetProperties {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.page_set_up_pr {
             val.write_element("pageSetUpPr", writer)?;
         }
@@ -14794,12 +14815,15 @@ impl ToXml for SheetProperties {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
         if self.tab_color.is_some() {
             return false;
         }
+        #[cfg(feature = "sml-structure")]
         if self.outline_pr.is_some() {
             return false;
         }
+        #[cfg(feature = "sml-layout")]
         if self.page_set_up_pr.is_some() {
             return false;
         }
@@ -15309,12 +15333,14 @@ impl ToXml for Selection {
 impl ToXml for PageBreaks {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.count {
             {
                 let s = val.to_string();
                 start.push_attribute(("count", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.manual_break_count {
             {
                 let s = val.to_string();
@@ -15333,6 +15359,7 @@ impl ToXml for PageBreaks {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "sml-layout")]
         for item in &self.brk {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -15357,6 +15384,7 @@ impl ToXml for PageBreaks {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-layout")]
         if !self.brk.is_empty() {
             return false;
         }
@@ -17043,6 +17071,7 @@ impl ToXml for ColorScale {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "sml-styling")]
         for item in &self.cfvo {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -17059,6 +17088,7 @@ impl ToXml for ColorScale {
                 emit_idx += 1;
             }
         }
+        #[cfg(feature = "sml-styling")]
         for item in &self.color {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -17083,9 +17113,11 @@ impl ToXml for ColorScale {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
         if !self.cfvo.is_empty() {
             return false;
         }
+        #[cfg(feature = "sml-styling")]
         if !self.color.is_empty() {
             return false;
         }
@@ -17100,18 +17132,21 @@ impl ToXml for ColorScale {
 impl ToXml for DataBar {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.min_length {
             {
                 let s = val.to_string();
                 start.push_attribute(("minLength", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.max_length {
             {
                 let s = val.to_string();
                 start.push_attribute(("maxLength", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.show_value {
             start.push_attribute(("showValue", if *val { "1" } else { "0" }));
         }
@@ -17127,6 +17162,7 @@ impl ToXml for DataBar {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "sml-styling")]
         for item in &self.cfvo {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -17152,6 +17188,7 @@ impl ToXml for DataBar {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-styling")]
         {
             let val = &self.color;
             val.write_element("color", writer)?;
@@ -17168,28 +17205,39 @@ impl ToXml for DataBar {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
         if !self.cfvo.is_empty() {
             return false;
         }
-        false
+        #[cfg(feature = "sml-styling")]
+        return false;
+        #[cfg(feature = "extra-children")]
+        if !self.extra_children.is_empty() {
+            return false;
+        }
+        true
     }
 }
 
 impl ToXml for IconSet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.icon_set {
             {
                 let s = val.to_string();
                 start.push_attribute(("iconSet", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.show_value {
             start.push_attribute(("showValue", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.percent {
             start.push_attribute(("percent", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.reverse {
             start.push_attribute(("reverse", if *val { "1" } else { "0" }));
         }
@@ -17205,6 +17253,7 @@ impl ToXml for IconSet {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
+        #[cfg(feature = "sml-styling")]
         for item in &self.cfvo {
             #[cfg(feature = "extra-children")]
             while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -17229,6 +17278,7 @@ impl ToXml for IconSet {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
         if !self.cfvo.is_empty() {
             return false;
         }
@@ -17243,6 +17293,7 @@ impl ToXml for IconSet {
 impl ToXml for ConditionalFormatValue {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         {
             let val = &self.r#type;
             {
@@ -17250,9 +17301,11 @@ impl ToXml for ConditionalFormatValue {
                 start.push_attribute(("type", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.value {
             start.push_attribute(("val", val.as_str()));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.gte {
             start.push_attribute(("gte", if *val { "1" } else { "0" }));
         }
@@ -21145,45 +21198,54 @@ impl ToXml for Stylesheet {
 impl ToXml for CellAlignment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.horizontal {
             {
                 let s = val.to_string();
                 start.push_attribute(("horizontal", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.vertical {
             {
                 let s = val.to_string();
                 start.push_attribute(("vertical", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.text_rotation {
             {
                 let s = val.to_string();
                 start.push_attribute(("textRotation", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.wrap_text {
             start.push_attribute(("wrapText", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.indent {
             {
                 let s = val.to_string();
                 start.push_attribute(("indent", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.relative_indent {
             {
                 let s = val.to_string();
                 start.push_attribute(("relativeIndent", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.justify_last_line {
             start.push_attribute(("justifyLastLine", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.shrink_to_fit {
             start.push_attribute(("shrinkToFit", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.reading_order {
             {
                 let s = val.to_string();
@@ -21545,9 +21607,11 @@ impl ToXml for BorderProperties {
 impl ToXml for CellProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.locked {
             start.push_attribute(("locked", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.hidden {
             start.push_attribute(("hidden", if *val { "1" } else { "0" }));
         }
@@ -21817,27 +21881,32 @@ impl ToXml for PatternFill {
 impl ToXml for Color {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.auto {
             start.push_attribute(("auto", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.indexed {
             {
                 let s = val.to_string();
                 start.push_attribute(("indexed", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.rgb {
             {
                 let hex = encode_hex(val);
                 start.push_attribute(("rgb", hex.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.theme {
             {
                 let s = val.to_string();
                 start.push_attribute(("theme", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.tint {
             {
                 let s = val.to_string();
@@ -22052,6 +22121,7 @@ impl ToXml for NumberFormats {
 impl ToXml for NumberFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-styling")]
         {
             let val = &self.number_format_id;
             {
@@ -22059,6 +22129,7 @@ impl ToXml for NumberFormat {
                 start.push_attribute(("numFmtId", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-styling")]
         {
             let val = &self.format_code;
             start.push_attribute(("formatCode", val.as_str()));
@@ -22708,6 +22779,7 @@ impl ToXml for Colors {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.indexed_colors {
             val.write_element("indexedColors", writer)?;
         }
@@ -22724,6 +22796,7 @@ impl ToXml for Colors {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.mru_colors {
             val.write_element("mruColors", writer)?;
         }
@@ -22739,9 +22812,11 @@ impl ToXml for Colors {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-styling")]
         if self.indexed_colors.is_some() {
             return false;
         }
+        #[cfg(feature = "sml-styling")]
         if self.mru_colors.is_some() {
             return false;
         }
@@ -25856,54 +25931,65 @@ impl ToXml for BookViews {
 impl ToXml for BookView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.visibility {
             {
                 let s = val.to_string();
                 start.push_attribute(("visibility", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.minimized {
             start.push_attribute(("minimized", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.show_horizontal_scroll {
             start.push_attribute(("showHorizontalScroll", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.show_vertical_scroll {
             start.push_attribute(("showVerticalScroll", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.show_sheet_tabs {
             start.push_attribute(("showSheetTabs", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.x_window {
             {
                 let s = val.to_string();
                 start.push_attribute(("xWindow", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.y_window {
             {
                 let s = val.to_string();
                 start.push_attribute(("yWindow", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.window_width {
             {
                 let s = val.to_string();
                 start.push_attribute(("windowWidth", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.window_height {
             {
                 let s = val.to_string();
                 start.push_attribute(("windowHeight", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.tab_ratio {
             {
                 let s = val.to_string();
                 start.push_attribute(("tabRatio", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.first_sheet {
             {
                 let s = val.to_string();
@@ -25916,6 +26002,7 @@ impl ToXml for BookView {
                 start.push_attribute(("activeTab", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.auto_filter_date_grouping {
             start.push_attribute(("autoFilterDateGrouping", if *val { "1" } else { "0" }));
         }
@@ -25940,6 +26027,7 @@ impl ToXml for BookView {
                 .write_to(writer)
                 .map_err(SerializeError::from)?;
         }
+        #[cfg(feature = "sml-extensions")]
         if let Some(ref val) = self.extension_list {
             val.write_element("extLst", writer)?;
         }
@@ -25955,6 +26043,7 @@ impl ToXml for BookView {
     }
 
     fn is_empty_element(&self) -> bool {
+        #[cfg(feature = "sml-extensions")]
         if self.extension_list.is_some() {
             return false;
         }
@@ -26436,60 +26525,73 @@ impl ToXml for FileRecoveryProperties {
 impl ToXml for CalculationProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_id {
             {
                 let s = val.to_string();
                 start.push_attribute(("calcId", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_mode {
             {
                 let s = val.to_string();
                 start.push_attribute(("calcMode", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.full_calc_on_load {
             start.push_attribute(("fullCalcOnLoad", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.ref_mode {
             {
                 let s = val.to_string();
                 start.push_attribute(("refMode", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.iterate {
             start.push_attribute(("iterate", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.iterate_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("iterateCount", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.iterate_delta {
             {
                 let s = val.to_string();
                 start.push_attribute(("iterateDelta", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.full_precision {
             start.push_attribute(("fullPrecision", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_completed {
             start.push_attribute(("calcCompleted", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_on_save {
             start.push_attribute(("calcOnSave", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.concurrent_calc {
             start.push_attribute(("concurrentCalc", if *val { "1" } else { "0" }));
         }
+        #[cfg(feature = "sml-formulas-advanced")]
         if let Some(ref val) = self.concurrent_manual_count {
             {
                 let s = val.to_string();
                 start.push_attribute(("concurrentManualCount", s.as_str()));
             }
         }
+        #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.force_full_calc {
             start.push_attribute(("forceFullCalc", if *val { "1" } else { "0" }));
         }

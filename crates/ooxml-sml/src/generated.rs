@@ -4867,9 +4867,11 @@ pub type SmlCalcChain = Box<CalcChain>;
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "calcChain")]
 pub struct CalcChain {
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "c")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cells: Vec<CalcCell>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -4884,9 +4886,11 @@ pub struct CalcChain {
 pub struct CalcCell {
     #[serde(rename = "@_any")]
     pub _any: CellRef,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@i")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub i: Option<i32>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@s")]
     #[serde(
         default,
@@ -4894,6 +4898,7 @@ pub struct CalcCell {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub style_index: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@l")]
     #[serde(
         default,
@@ -4901,6 +4906,7 @@ pub struct CalcCell {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub l: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@t")]
     #[serde(
         default,
@@ -4908,6 +4914,7 @@ pub struct CalcCell {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub cell_type: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@a")]
     #[serde(
         default,
@@ -11977,6 +11984,7 @@ pub struct Cell {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "sheetPr")]
 pub struct SheetProperties {
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@syncHorizontal")]
     #[serde(
         default,
@@ -11984,6 +11992,7 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub sync_horizontal: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@syncVertical")]
     #[serde(
         default,
@@ -11991,9 +12000,11 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub sync_vertical: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@syncRef")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sync_ref: Option<Reference>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@transitionEvaluation")]
     #[serde(
         default,
@@ -12001,6 +12012,7 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub transition_evaluation: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@transitionEntry")]
     #[serde(
         default,
@@ -12008,6 +12020,7 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub transition_entry: Option<bool>,
+    #[cfg(feature = "sml-external")]
     #[serde(rename = "@published")]
     #[serde(
         default,
@@ -12015,9 +12028,11 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub published: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@codeName")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub code_name: Option<String>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@filterMode")]
     #[serde(
         default,
@@ -12025,6 +12040,7 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub filter_mode: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@enableFormatConditionsCalculation")]
     #[serde(
         default,
@@ -12032,12 +12048,15 @@ pub struct SheetProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub enable_format_conditions_calculation: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "tabColor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_color: Option<Box<Color>>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "outlinePr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub outline_pr: Option<Box<OutlineProperties>>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "pageSetUpPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub page_set_up_pr: Option<Box<PageSetupProperties>>,
@@ -12374,12 +12393,15 @@ pub struct Selection {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "rowBreaks")]
 pub struct PageBreaks {
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@count")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "@manualBreakCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub manual_break_count: Option<u32>,
+    #[cfg(feature = "sml-layout")]
     #[serde(rename = "brk")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub brk: Vec<PageBreak>,
@@ -13388,9 +13410,11 @@ pub struct CellFormula {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "colorScale")]
 pub struct ColorScale {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<ConditionalFormatValue>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub color: Vec<Color>,
@@ -13404,12 +13428,15 @@ pub struct ColorScale {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "dataBar")]
 pub struct DataBar {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@minLength")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_length: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@maxLength")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max_length: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showValue")]
     #[serde(
         default,
@@ -13417,9 +13444,11 @@ pub struct DataBar {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_value: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<ConditionalFormatValue>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "color")]
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13439,9 +13468,11 @@ pub struct DataBar {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "iconSet")]
 pub struct IconSet {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@iconSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub icon_set: Option<IconSetType>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@showValue")]
     #[serde(
         default,
@@ -13449,6 +13480,7 @@ pub struct IconSet {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_value: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@percent")]
     #[serde(
         default,
@@ -13456,6 +13488,7 @@ pub struct IconSet {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub percent: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@reverse")]
     #[serde(
         default,
@@ -13463,6 +13496,7 @@ pub struct IconSet {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub reverse: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub cfvo: Vec<ConditionalFormatValue>,
@@ -13483,11 +13517,14 @@ pub struct IconSet {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "cfvo")]
 pub struct ConditionalFormatValue {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@type")]
     pub r#type: ConditionalValueType,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@val")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<XmlString>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@gte")]
     #[serde(
         default,
@@ -15573,15 +15610,19 @@ pub struct Stylesheet {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "alignment")]
 pub struct CellAlignment {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@horizontal")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub horizontal: Option<HorizontalAlignment>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@vertical")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vertical: Option<VerticalAlignment>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@textRotation")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text_rotation: Option<STTextRotation>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@wrapText")]
     #[serde(
         default,
@@ -15589,12 +15630,15 @@ pub struct CellAlignment {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub wrap_text: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@indent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indent: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@relativeIndent")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub relative_indent: Option<i32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@justifyLastLine")]
     #[serde(
         default,
@@ -15602,6 +15646,7 @@ pub struct CellAlignment {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub justify_last_line: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@shrinkToFit")]
     #[serde(
         default,
@@ -15609,6 +15654,7 @@ pub struct CellAlignment {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub shrink_to_fit: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@readingOrder")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reading_order: Option<u32>,
@@ -15745,6 +15791,7 @@ pub struct BorderProperties {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "protection")]
 pub struct CellProtection {
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "@locked")]
     #[serde(
         default,
@@ -15752,6 +15799,7 @@ pub struct CellProtection {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub locked: Option<bool>,
+    #[cfg(feature = "sml-protection")]
     #[serde(rename = "@hidden")]
     #[serde(
         default,
@@ -15861,6 +15909,7 @@ pub struct PatternFill {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "color")]
 pub struct Color {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@auto")]
     #[serde(
         default,
@@ -15868,15 +15917,19 @@ pub struct Color {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub auto: Option<bool>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@indexed")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indexed: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@rgb")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rgb: Option<STUnsignedIntHex>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@theme")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub theme: Option<u32>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@tint")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tint: Option<f64>,
@@ -15974,8 +16027,10 @@ pub struct NumberFormats {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "numFmt")]
 pub struct NumberFormat {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@numFmtId")]
     pub number_format_id: STNumFmtId,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "@formatCode")]
     pub format_code: XmlString,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -16271,9 +16326,11 @@ pub struct DifferentialFormat {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "colors")]
 pub struct Colors {
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "indexedColors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub indexed_colors: Option<Box<IndexedColors>>,
+    #[cfg(feature = "sml-styling")]
     #[serde(rename = "mruColors")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub mru_colors: Option<Box<MostRecentColors>>,
@@ -17591,9 +17648,11 @@ pub struct BookViews {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "workbookView")]
 pub struct BookView {
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@visibility")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visibility: Option<Visibility>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@minimized")]
     #[serde(
         default,
@@ -17601,6 +17660,7 @@ pub struct BookView {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub minimized: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showHorizontalScroll")]
     #[serde(
         default,
@@ -17608,6 +17668,7 @@ pub struct BookView {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_horizontal_scroll: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showVerticalScroll")]
     #[serde(
         default,
@@ -17615,6 +17676,7 @@ pub struct BookView {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_vertical_scroll: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@showSheetTabs")]
     #[serde(
         default,
@@ -17622,27 +17684,34 @@ pub struct BookView {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub show_sheet_tabs: Option<bool>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@xWindow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub x_window: Option<i32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@yWindow")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y_window: Option<i32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@windowWidth")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window_width: Option<u32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@windowHeight")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window_height: Option<u32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@tabRatio")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_ratio: Option<u32>,
+    #[cfg(feature = "sml-structure")]
     #[serde(rename = "@firstSheet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_sheet: Option<u32>,
     #[serde(rename = "@activeTab")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_tab: Option<u32>,
+    #[cfg(feature = "sml-filtering")]
     #[serde(rename = "@autoFilterDateGrouping")]
     #[serde(
         default,
@@ -17650,6 +17719,7 @@ pub struct BookView {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub auto_filter_date_grouping: Option<bool>,
+    #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -18069,12 +18139,15 @@ pub struct FileRecoveryProperties {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "calcPr")]
 pub struct CalculationProperties {
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@calcId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_id: Option<u32>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@calcMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub calc_mode: Option<CalculationMode>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@fullCalcOnLoad")]
     #[serde(
         default,
@@ -18082,9 +18155,11 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub full_calc_on_load: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@refMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ref_mode: Option<ReferenceMode>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@iterate")]
     #[serde(
         default,
@@ -18092,12 +18167,15 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub iterate: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@iterateCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate_count: Option<u32>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@iterateDelta")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub iterate_delta: Option<f64>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@fullPrecision")]
     #[serde(
         default,
@@ -18105,6 +18183,7 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub full_precision: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@calcCompleted")]
     #[serde(
         default,
@@ -18112,6 +18191,7 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub calc_completed: Option<bool>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@calcOnSave")]
     #[serde(
         default,
@@ -18119,6 +18199,7 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub calc_on_save: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@concurrentCalc")]
     #[serde(
         default,
@@ -18126,9 +18207,11 @@ pub struct CalculationProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub concurrent_calc: Option<bool>,
+    #[cfg(feature = "sml-formulas-advanced")]
     #[serde(rename = "@concurrentManualCount")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub concurrent_manual_count: Option<u32>,
+    #[cfg(feature = "sml-formulas")]
     #[serde(rename = "@forceFullCalc")]
     #[serde(
         default,
