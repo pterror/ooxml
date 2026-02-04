@@ -17,6 +17,11 @@
 //! ```
 
 use crate::error::Result;
+// Infrastructure for future migration to generated serializers (blocked by namespace prefix issue)
+#[allow(unused_imports)]
+use crate::generated_serializers::ToXml;
+#[allow(unused_imports)]
+use crate::types;
 use ooxml_opc::PackageWriter;
 use std::collections::HashMap;
 use std::fs::File;
@@ -2271,6 +2276,10 @@ impl WorkbookBuilder {
     }
 
     /// Serialize shared strings table to XML.
+    ///
+    /// Note: We use manual string building here instead of generated ToXml because
+    /// the generated serializers use namespace prefixes (e.g., `<sml:si>`) which
+    /// the handwritten readers don't handle. See TODO.md for migration plan.
     fn serialize_shared_strings(&self) -> String {
         let mut xml = String::new();
         xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
@@ -2345,6 +2354,49 @@ fn escape_xml(s: &str) -> String {
         .replace('>', "&gt;")
         .replace('"', "&quot;")
         .replace('\'', "&apos;")
+}
+
+// =============================================================================
+// ToXml serialization helpers (infrastructure for future migration)
+// Currently unused - blocked by namespace prefix issue (see TODO.md)
+// =============================================================================
+
+/// Namespace declarations for SML root elements.
+#[allow(dead_code)]
+const NS_DECLS: &[(&str, &str)] = &[("xmlns", NS_SPREADSHEET), ("xmlns:sml", NS_SPREADSHEET)];
+
+/// Serialize a ToXml value with namespace declarations and XML declaration.
+#[allow(dead_code)]
+fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
+    use quick_xml::Writer;
+    use quick_xml::events::{BytesEnd, BytesStart, Event};
+
+    let inner = Vec::new();
+    let mut writer = Writer::new(inner);
+
+    // Write start tag with namespace declarations + type's own attrs
+    let start = BytesStart::new(tag);
+    let start = value.write_attrs(start);
+    let mut start = start;
+    for &(key, val) in NS_DECLS {
+        start.push_attribute((key, val));
+    }
+
+    if value.is_empty_element() {
+        writer.write_event(Event::Empty(start))?;
+    } else {
+        writer.write_event(Event::Start(start))?;
+        value.write_children(&mut writer)?;
+        writer.write_event(Event::End(BytesEnd::new(tag)))?;
+    }
+
+    let inner = writer.into_inner();
+    let mut buf = Vec::with_capacity(
+        b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n".len() + inner.len(),
+    );
+    buf.extend_from_slice(b"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
+    buf.extend_from_slice(&inner);
+    Ok(buf)
 }
 
 #[cfg(test)]

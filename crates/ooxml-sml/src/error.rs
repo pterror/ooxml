@@ -17,6 +17,10 @@ pub enum Error {
     #[error("I/O error: {0}")]
     Io(#[from] std::io::Error),
 
+    /// XML serialization error.
+    #[error("Serialization error: {0}")]
+    Serialize(#[from] crate::generated_serializers::SerializeError),
+
     /// Invalid or malformed content.
     #[error("Invalid content: {0}")]
     Invalid(String),
