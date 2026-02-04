@@ -549,15 +549,16 @@ fn test_roundtrip_bookmarks() {
     let para = &doc.body().paragraphs()[0];
     assert_eq!(para.text(), "Bookmarked text");
 
-    let has_bookmark_start = para.paragraph_content.iter().any(
-        |c| matches!(c.as_ref(), ParagraphContent::BookmarkStart(b) if b.name == "my_bookmark"),
-    );
+    let has_bookmark_start = para
+        .paragraph_content
+        .iter()
+        .any(|c| matches!(c, ParagraphContent::BookmarkStart(b) if b.name == "my_bookmark"));
     assert!(has_bookmark_start, "should have BookmarkStart");
 
     let has_bookmark_end = para
         .paragraph_content
         .iter()
-        .any(|c| matches!(c.as_ref(), ParagraphContent::BookmarkEnd(_)));
+        .any(|c| matches!(c, ParagraphContent::BookmarkEnd(_)));
     assert!(has_bookmark_end, "should have BookmarkEnd");
 }
 
@@ -637,14 +638,13 @@ fn test_document_save_with_body_modification() {
         ..Default::default()
     };
     let mut run = Run::default();
-    run.run_content
-        .push(Box::new(RunContent::T(Box::new(text))));
+    run.run_content.push(RunContent::T(Box::new(text)));
     let mut para = Paragraph::default();
     para.paragraph_content
-        .push(Box::new(ParagraphContent::R(Box::new(run))));
+        .push(ParagraphContent::R(Box::new(run)));
     doc.body_mut()
         .block_content
-        .push(Box::new(BlockContent::P(Box::new(para))));
+        .push(BlockContent::P(Box::new(para)));
 
     let mut out = Cursor::new(Vec::new());
     doc.write(&mut out).unwrap();

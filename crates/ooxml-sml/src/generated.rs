@@ -4404,7 +4404,7 @@ pub struct AutoFilter {
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "filterColumn")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub filter_column: Vec<Box<FilterColumn>>,
+    pub filter_column: Vec<FilterColumn>,
     #[cfg(feature = "sml-filtering")]
     #[serde(rename = "sortState")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -4506,10 +4506,10 @@ pub struct Filters {
     pub calendar_type: Option<CalendarType>,
     #[serde(rename = "filter")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub filter: Vec<Box<Filter>>,
+    pub filter: Vec<Filter>,
     #[serde(rename = "dateGroupItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub date_group_item: Vec<Box<DateGroupItem>>,
+    pub date_group_item: Vec<DateGroupItem>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4550,7 +4550,7 @@ pub struct CustomFilters {
     pub and: Option<bool>,
     #[serde(rename = "customFilter")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub custom_filter: Vec<Box<CustomFilter>>,
+    pub custom_filter: Vec<CustomFilter>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4698,7 +4698,7 @@ pub struct SortState {
     pub reference: Reference,
     #[serde(rename = "sortCondition")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sort_condition: Vec<Box<SortCondition>>,
+    pub sort_condition: Vec<SortCondition>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -4841,7 +4841,7 @@ pub struct ObjectAnchor {
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ext: Vec<Box<Extension>>,
+    pub ext: Vec<Extension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4854,7 +4854,7 @@ pub struct EGExtensionList {
 pub struct ExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ext: Vec<Box<Extension>>,
+    pub ext: Vec<Extension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4869,7 +4869,7 @@ pub type SmlCalcChain = Box<CalcChain>;
 pub struct CalcChain {
     #[serde(rename = "c")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cells: Vec<Box<CalcCell>>,
+    pub cells: Vec<CalcCell>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -4961,7 +4961,7 @@ pub struct Authors {
 pub struct CommentList {
     #[serde(rename = "comment")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub comment: Vec<Box<Comment>>,
+    pub comment: Vec<Comment>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5104,10 +5104,10 @@ pub struct MapInfo {
     pub selection_namespaces: String,
     #[serde(rename = "Schema")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub schema: Vec<Box<XmlSchema>>,
+    pub schema: Vec<XmlSchema>,
     #[serde(rename = "Map")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub map: Vec<Box<XmlMap>>,
+    pub map: Vec<XmlMap>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5212,7 +5212,7 @@ pub type SmlConnections = Box<Connections>;
 pub struct Connections {
     #[serde(rename = "connection")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub connection: Vec<Box<Connection>>,
+    pub connection: Vec<Connection>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5533,7 +5533,7 @@ pub struct Parameters {
     pub count: Option<u32>,
     #[serde(rename = "parameter")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub parameter: Vec<Box<Parameter>>,
+    pub parameter: Vec<Parameter>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5730,7 +5730,7 @@ pub struct TextFields {
     pub count: Option<u32>,
     #[serde(rename = "textField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub text_field: Vec<Box<TextField>>,
+    pub text_field: Vec<TextField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5916,7 +5916,7 @@ pub struct CacheFields {
     pub count: Option<u32>,
     #[serde(rename = "cacheField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cache_field: Vec<Box<CacheField>>,
+    pub cache_field: Vec<CacheField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5995,7 +5995,7 @@ pub struct CacheField {
     pub field_group: Option<Box<FieldGroup>>,
     #[serde(rename = "mpMap")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub mp_map: Vec<Box<CTX>>,
+    pub mp_map: Vec<CTX>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -6101,7 +6101,7 @@ pub struct CTPages {
     pub count: Option<u32>,
     #[serde(rename = "page")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub page: Vec<Box<CTPCDSCPage>>,
+    pub page: Vec<CTPCDSCPage>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6123,7 +6123,7 @@ pub struct CTPCDSCPage {
     pub count: Option<u32>,
     #[serde(rename = "pageItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub page_item: Vec<Box<CTPageItem>>,
+    pub page_item: Vec<CTPageItem>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6158,7 +6158,7 @@ pub struct CTRangeSets {
     pub count: Option<u32>,
     #[serde(rename = "rangeSet")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub range_set: Vec<Box<CTRangeSet>>,
+    pub range_set: Vec<CTRangeSet>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6381,10 +6381,10 @@ pub struct CTMissing {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tpls: Vec<Box<CTTuples>>,
+    pub tpls: Vec<CTTuples>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6462,10 +6462,10 @@ pub struct CTNumber {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tpls: Vec<Box<CTTuples>>,
+    pub tpls: Vec<CTTuples>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6507,7 +6507,7 @@ pub struct CTBoolean {
     pub cp: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6588,7 +6588,7 @@ pub struct CTError {
     pub tpls: Option<Box<CTTuples>>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6666,10 +6666,10 @@ pub struct CTString {
     pub b: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tpls: Vec<Box<CTTuples>>,
+    pub tpls: Vec<CTTuples>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6710,7 +6710,7 @@ pub struct CTDateTime {
     pub cp: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6806,7 +6806,7 @@ pub struct CTDiscretePr {
     pub count: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTIndex>>,
+    pub x: Vec<CTIndex>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6865,7 +6865,7 @@ pub struct PivotCacheRecords {
     pub count: Option<u32>,
     #[serde(rename = "r")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub reference: Vec<Box<CTRecord>>,
+    pub reference: Vec<CTRecord>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -6920,7 +6920,7 @@ pub struct CTPCDKPIs {
     pub count: Option<u32>,
     #[serde(rename = "kpi")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub kpi: Vec<Box<CTPCDKPI>>,
+    pub kpi: Vec<CTPCDKPI>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6984,7 +6984,7 @@ pub struct CTCacheHierarchies {
     pub count: Option<u32>,
     #[serde(rename = "cacheHierarchy")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cache_hierarchy: Vec<Box<CTCacheHierarchy>>,
+    pub cache_hierarchy: Vec<CTCacheHierarchy>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7135,7 +7135,7 @@ pub struct CTFieldsUsage {
     pub count: Option<u32>,
     #[serde(rename = "fieldUsage")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub field_usage: Vec<Box<CTFieldUsage>>,
+    pub field_usage: Vec<CTFieldUsage>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7170,7 +7170,7 @@ pub struct CTGroupLevels {
     pub count: Option<u32>,
     #[serde(rename = "groupLevel")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub group_level: Vec<Box<CTGroupLevel>>,
+    pub group_level: Vec<CTGroupLevel>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7232,7 +7232,7 @@ pub struct CTGroups {
     pub count: Option<u32>,
     #[serde(rename = "group")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub group: Vec<Box<CTLevelGroup>>,
+    pub group: Vec<CTLevelGroup>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7284,7 +7284,7 @@ pub struct CTGroupMembers {
     pub count: Option<u32>,
     #[serde(rename = "groupMember")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub group_member: Vec<Box<CTGroupMember>>,
+    pub group_member: Vec<CTGroupMember>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7367,7 +7367,7 @@ pub struct CTServerFormats {
     pub count: Option<u32>,
     #[serde(rename = "serverFormat")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub server_format: Vec<Box<CTServerFormat>>,
+    pub server_format: Vec<CTServerFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7420,7 +7420,7 @@ pub struct CTTuples {
     pub cells: Option<u32>,
     #[serde(rename = "tpl")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tpl: Vec<Box<CTTuple>>,
+    pub tpl: Vec<CTTuple>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7461,7 +7461,7 @@ pub struct CTSets {
     pub count: Option<u32>,
     #[serde(rename = "set")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub set: Vec<Box<CTSet>>,
+    pub set: Vec<CTSet>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7497,7 +7497,7 @@ pub struct CTSet {
     pub query_failed: Option<bool>,
     #[serde(rename = "tpls")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tpls: Vec<Box<CTTuples>>,
+    pub tpls: Vec<CTTuples>,
     #[serde(rename = "sortByTuple")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sort_by_tuple: Option<Box<CTTuples>>,
@@ -7522,7 +7522,7 @@ pub struct CTQueryCache {
     pub count: Option<u32>,
     #[serde(rename = "query")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub query: Vec<Box<CTQuery>>,
+    pub query: Vec<CTQuery>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7565,7 +7565,7 @@ pub struct CTCalculatedItems {
     pub count: Option<u32>,
     #[serde(rename = "calculatedItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub calculated_item: Vec<Box<CTCalculatedItem>>,
+    pub calculated_item: Vec<CTCalculatedItem>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7614,7 +7614,7 @@ pub struct CTCalculatedMembers {
     pub count: Option<u32>,
     #[serde(rename = "calculatedMember")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub calculated_member: Vec<Box<CTCalculatedMember>>,
+    pub calculated_member: Vec<CTCalculatedMember>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8162,7 +8162,7 @@ pub struct PivotFields {
     pub count: Option<u32>,
     #[serde(rename = "pivotField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pivot_field: Vec<Box<PivotField>>,
+    pub pivot_field: Vec<PivotField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8488,7 +8488,7 @@ pub struct PivotField {
     pub items: Option<Box<PivotItems>>,
     #[serde(rename = "autoSortScope")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub auto_sort_scope: Option<Box<CTAutoSortScope>>,
+    pub auto_sort_scope: Option<CTAutoSortScope>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -8515,7 +8515,7 @@ pub struct PivotItems {
     pub count: Option<u32>,
     #[serde(rename = "item")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub item: Vec<Box<PivotItem>>,
+    pub item: Vec<PivotItem>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8613,7 +8613,7 @@ pub struct PageFields {
     pub count: Option<u32>,
     #[serde(rename = "pageField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub page_field: Vec<Box<PageField>>,
+    pub page_field: Vec<PageField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8668,7 +8668,7 @@ pub struct DataFields {
     pub count: Option<u32>,
     #[serde(rename = "dataField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub data_field: Vec<Box<DataField>>,
+    pub data_field: Vec<DataField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8729,7 +8729,7 @@ pub struct CTRowItems {
     pub count: Option<u32>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub i: Vec<Box<CTI>>,
+    pub i: Vec<CTI>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8751,7 +8751,7 @@ pub struct CTColItems {
     pub count: Option<u32>,
     #[serde(rename = "i")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub i: Vec<Box<CTI>>,
+    pub i: Vec<CTI>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8779,7 +8779,7 @@ pub struct CTI {
     pub i: Option<u32>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTX>>,
+    pub x: Vec<CTX>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8815,7 +8815,7 @@ pub struct RowFields {
     pub count: Option<u32>,
     #[serde(rename = "field")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub field: Vec<Box<CTField>>,
+    pub field: Vec<CTField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8837,7 +8837,7 @@ pub struct ColFields {
     pub count: Option<u32>,
     #[serde(rename = "field")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub field: Vec<Box<CTField>>,
+    pub field: Vec<CTField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8872,7 +8872,7 @@ pub struct CTFormats {
     pub count: Option<u32>,
     #[serde(rename = "format")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub format: Vec<Box<CTFormat>>,
+    pub format: Vec<CTFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8921,7 +8921,7 @@ pub struct CTConditionalFormats {
     pub count: Option<u32>,
     #[serde(rename = "conditionalFormat")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub conditional_format: Vec<Box<CTConditionalFormat>>,
+    pub conditional_format: Vec<CTConditionalFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8972,7 +8972,7 @@ pub struct PivotAreas {
     pub count: Option<u32>,
     #[serde(rename = "pivotArea")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pivot_area: Vec<Box<PivotArea>>,
+    pub pivot_area: Vec<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8994,7 +8994,7 @@ pub struct CTChartFormats {
     pub count: Option<u32>,
     #[serde(rename = "chartFormat")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub chart_format: Vec<Box<CTChartFormat>>,
+    pub chart_format: Vec<CTChartFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9045,7 +9045,7 @@ pub struct CTPivotHierarchies {
     pub count: Option<u32>,
     #[serde(rename = "pivotHierarchy")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pivot_hierarchy: Vec<Box<CTPivotHierarchy>>,
+    pub pivot_hierarchy: Vec<CTPivotHierarchy>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9140,7 +9140,7 @@ pub struct CTPivotHierarchy {
     pub mps: Option<Box<CTMemberProperties>>,
     #[serde(rename = "members")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub members: Vec<Box<CTMembers>>,
+    pub members: Vec<CTMembers>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -9165,7 +9165,7 @@ pub struct CTRowHierarchiesUsage {
     pub count: Option<u32>,
     #[serde(rename = "rowHierarchyUsage")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub row_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
+    pub row_hierarchy_usage: Vec<CTHierarchyUsage>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9187,7 +9187,7 @@ pub struct CTColHierarchiesUsage {
     pub count: Option<u32>,
     #[serde(rename = "colHierarchyUsage")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub col_hierarchy_usage: Vec<Box<CTHierarchyUsage>>,
+    pub col_hierarchy_usage: Vec<CTHierarchyUsage>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9222,7 +9222,7 @@ pub struct CTMemberProperties {
     pub count: Option<u32>,
     #[serde(rename = "mp")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub mp: Vec<Box<CTMemberProperty>>,
+    pub mp: Vec<CTMemberProperty>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9296,7 +9296,7 @@ pub struct CTMembers {
     pub level: Option<u32>,
     #[serde(rename = "member")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub member: Vec<Box<CTMember>>,
+    pub member: Vec<CTMember>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9331,7 +9331,7 @@ pub struct CTDimensions {
     pub count: Option<u32>,
     #[serde(rename = "dimension")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub dimension: Vec<Box<CTPivotDimension>>,
+    pub dimension: Vec<CTPivotDimension>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9377,7 +9377,7 @@ pub struct CTMeasureGroups {
     pub count: Option<u32>,
     #[serde(rename = "measureGroup")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub measure_group: Vec<Box<CTMeasureGroup>>,
+    pub measure_group: Vec<CTMeasureGroup>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9399,7 +9399,7 @@ pub struct CTMeasureDimensionMaps {
     pub count: Option<u32>,
     #[serde(rename = "map")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub map: Vec<Box<CTMeasureDimensionMap>>,
+    pub map: Vec<CTMeasureDimensionMap>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9502,7 +9502,7 @@ pub struct PivotFilters {
     pub count: Option<u32>,
     #[serde(rename = "filter")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub filter: Vec<Box<PivotFilter>>,
+    pub filter: Vec<PivotFilter>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9661,7 +9661,7 @@ pub struct CTPivotAreaReferences {
     pub count: Option<u32>,
     #[serde(rename = "reference")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub reference: Vec<Box<CTPivotAreaReference>>,
+    pub reference: Vec<CTPivotAreaReference>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9791,7 +9791,7 @@ pub struct CTPivotAreaReference {
     pub var_p_subtotal: Option<bool>,
     #[serde(rename = "x")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub x: Vec<Box<CTIndex>>,
+    pub x: Vec<CTIndex>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -10049,7 +10049,7 @@ pub struct QueryTableDeletedFields {
     pub count: Option<u32>,
     #[serde(rename = "deletedField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub deleted_field: Vec<Box<CTDeletedField>>,
+    pub deleted_field: Vec<CTDeletedField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10084,7 +10084,7 @@ pub struct QueryTableFields {
     pub count: Option<u32>,
     #[serde(rename = "queryTableField")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub query_table_field: Vec<Box<QueryTableField>>,
+    pub query_table_field: Vec<QueryTableField>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10167,7 +10167,7 @@ pub struct SharedStrings {
     pub unique_count: Option<u32>,
     #[serde(rename = "si")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub si: Vec<Box<RichString>>,
+    pub si: Vec<RichString>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -10285,10 +10285,10 @@ pub struct RichString {
     pub cell_type: Option<XmlString>,
     #[serde(rename = "r")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub reference: Vec<Box<RichTextElement>>,
+    pub reference: Vec<RichTextElement>,
     #[serde(rename = "rPh")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub r_ph: Vec<Box<PhoneticRun>>,
+    pub r_ph: Vec<PhoneticRun>,
     #[serde(rename = "phoneticPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
@@ -10389,7 +10389,7 @@ pub struct RevisionHeaders {
     pub preserve_history: Option<u32>,
     #[serde(rename = "header")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub header: Vec<Box<RevisionHeader>>,
+    pub header: Vec<RevisionHeader>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10408,40 +10408,40 @@ pub struct RevisionHeaders {
 pub struct Revisions {
     #[serde(rename = "rrc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rrc: Vec<Box<RevisionRowColumn>>,
+    pub rrc: Vec<RevisionRowColumn>,
     #[serde(rename = "rm")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rm: Vec<Box<RevisionMove>>,
+    pub rm: Vec<RevisionMove>,
     #[serde(rename = "rcv")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcv: Vec<Box<RevisionCustomView>>,
+    pub rcv: Vec<RevisionCustomView>,
     #[serde(rename = "rsnm")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rsnm: Vec<Box<RevisionSheetRename>>,
+    pub rsnm: Vec<RevisionSheetRename>,
     #[serde(rename = "ris")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ris: Vec<Box<RevisionInsertSheet>>,
+    pub ris: Vec<RevisionInsertSheet>,
     #[serde(rename = "rcc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<Box<RevisionCellChange>>,
+    pub rcc: Vec<RevisionCellChange>,
     #[serde(rename = "rfmt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<Box<RevisionFormatting>>,
+    pub rfmt: Vec<RevisionFormatting>,
     #[serde(rename = "raf")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub raf: Vec<Box<RevisionAutoFormatting>>,
+    pub raf: Vec<RevisionAutoFormatting>,
     #[serde(rename = "rdn")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rdn: Vec<Box<RevisionDefinedName>>,
+    pub rdn: Vec<RevisionDefinedName>,
     #[serde(rename = "rcmt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcmt: Vec<Box<RevisionComment>>,
+    pub rcmt: Vec<RevisionComment>,
     #[serde(rename = "rqt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rqt: Vec<Box<RevisionQueryTableField>>,
+    pub rqt: Vec<RevisionQueryTableField>,
     #[serde(rename = "rcft")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcft: Vec<Box<RevisionConflict>>,
+    pub rcft: Vec<RevisionConflict>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10523,7 +10523,7 @@ pub struct CTSheetIdMap {
     pub count: Option<u32>,
     #[serde(rename = "sheetId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet_id: Vec<Box<CTSheetId>>,
+    pub sheet_id: Vec<CTSheetId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10558,7 +10558,7 @@ pub struct ReviewedRevisions {
     pub count: Option<u32>,
     #[serde(rename = "reviewed")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub reviewed: Vec<Box<Reviewed>>,
+    pub reviewed: Vec<Reviewed>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10687,13 +10687,13 @@ pub struct RevisionRowColumn {
     pub edge: Option<bool>,
     #[serde(rename = "undo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub undo: Vec<Box<UndoInfo>>,
+    pub undo: Vec<UndoInfo>,
     #[serde(rename = "rcc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<Box<RevisionCellChange>>,
+    pub rcc: Vec<RevisionCellChange>,
     #[serde(rename = "rfmt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<Box<RevisionFormatting>>,
+    pub rfmt: Vec<RevisionFormatting>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10737,13 +10737,13 @@ pub struct RevisionMove {
     pub source_sheet_id: Option<u32>,
     #[serde(rename = "undo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub undo: Vec<Box<UndoInfo>>,
+    pub undo: Vec<UndoInfo>,
     #[serde(rename = "rcc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<Box<RevisionCellChange>>,
+    pub rcc: Vec<RevisionCellChange>,
     #[serde(rename = "rfmt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<Box<RevisionFormatting>>,
+    pub rfmt: Vec<RevisionFormatting>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -11299,7 +11299,7 @@ pub struct Users {
     pub count: Option<u32>,
     #[serde(rename = "userInfo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub user_info: Vec<Box<SharedUser>>,
+    pub user_info: Vec<SharedUser>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -11363,7 +11363,7 @@ pub struct CTMacrosheet {
     pub sheet_format: Option<Box<SheetFormat>>,
     #[serde(rename = "cols")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cols: Vec<Box<Columns>>,
+    pub cols: Vec<Columns>,
     #[serde(rename = "sheetData")]
     pub sheet_data: Box<SheetData>,
     #[serde(rename = "sheetProtection")]
@@ -11386,7 +11386,7 @@ pub struct CTMacrosheet {
     pub phonetic_pr: Option<Box<PhoneticProperties>>,
     #[serde(rename = "conditionalFormatting")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
+    pub conditional_formatting: Vec<ConditionalFormatting>,
     #[serde(rename = "printOptions")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub print_options: Option<Box<PrintOptions>>,
@@ -11513,7 +11513,7 @@ pub struct Worksheet {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cols")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cols: Vec<Box<Columns>>,
+    pub cols: Vec<Columns>,
     #[serde(rename = "sheetData")]
     pub sheet_data: Box<SheetData>,
     #[cfg(feature = "sml-formulas")]
@@ -11558,7 +11558,7 @@ pub struct Worksheet {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "conditionalFormatting")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub conditional_formatting: Vec<Box<ConditionalFormatting>>,
+    pub conditional_formatting: Vec<ConditionalFormatting>,
     #[cfg(feature = "sml-validation")]
     #[serde(rename = "dataValidations")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -11659,7 +11659,7 @@ pub struct Worksheet {
 pub struct SheetData {
     #[serde(rename = "row")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub row: Vec<Box<Row>>,
+    pub row: Vec<Row>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -11744,7 +11744,7 @@ pub struct SheetFormat {
 pub struct Columns {
     #[serde(rename = "col")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub col: Vec<Box<Column>>,
+    pub col: Vec<Column>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -11900,7 +11900,7 @@ pub struct Row {
     pub placeholder: Option<bool>,
     #[serde(rename = "c")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cells: Vec<Box<Cell>>,
+    pub cells: Vec<Cell>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12074,7 +12074,7 @@ pub struct SheetDimension {
 pub struct SheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet_view: Vec<Box<SheetView>>,
+    pub sheet_view: Vec<SheetView>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -12207,11 +12207,11 @@ pub struct SheetView {
     pub pane: Option<Box<Pane>>,
     #[serde(rename = "selection")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub selection: Vec<Box<Selection>>,
+    pub selection: Vec<Selection>,
     #[cfg(feature = "sml-pivot")]
     #[serde(rename = "pivotSelection")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pivot_selection: Vec<Box<CTPivotSelection>>,
+    pub pivot_selection: Vec<CTPivotSelection>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -12382,7 +12382,7 @@ pub struct PageBreaks {
     pub manual_break_count: Option<u32>,
     #[serde(rename = "brk")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub brk: Vec<Box<PageBreak>>,
+    pub brk: Vec<PageBreak>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12552,7 +12552,7 @@ pub struct CTDataRefs {
     pub count: Option<u32>,
     #[serde(rename = "dataRef")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub data_ref: Vec<Box<CTDataRef>>,
+    pub data_ref: Vec<CTDataRef>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12598,7 +12598,7 @@ pub struct MergedCells {
     pub count: Option<u32>,
     #[serde(rename = "mergeCell")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub merge_cell: Vec<Box<MergedCell>>,
+    pub merge_cell: Vec<MergedCell>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12631,7 +12631,7 @@ pub struct MergedCell {
 pub struct SmartTags {
     #[serde(rename = "cellSmartTags")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell_smart_tags: Vec<Box<CellSmartTags>>,
+    pub cell_smart_tags: Vec<CellSmartTags>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12645,7 +12645,7 @@ pub struct CellSmartTags {
     pub reference: CellRef,
     #[serde(rename = "cellSmartTag")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell_smart_tag: Vec<Box<CellSmartTag>>,
+    pub cell_smart_tag: Vec<CellSmartTag>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12680,7 +12680,7 @@ pub struct CellSmartTag {
     pub xml_based: Option<bool>,
     #[serde(rename = "cellSmartTagPr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell_smart_tag_pr: Vec<Box<CTCellSmartTagPr>>,
+    pub cell_smart_tag_pr: Vec<CTCellSmartTagPr>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12807,7 +12807,7 @@ pub struct DrawingHeaderFooter {
 pub struct CustomSheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub custom_sheet_view: Vec<Box<CustomSheetView>>,
+    pub custom_sheet_view: Vec<CustomSheetView>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12997,7 +12997,7 @@ pub struct DataValidations {
     pub count: Option<u32>,
     #[serde(rename = "dataValidation")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub data_validation: Vec<Box<DataValidation>>,
+    pub data_validation: Vec<DataValidation>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -13122,7 +13122,7 @@ pub struct ConditionalFormatting {
     #[cfg(feature = "sml-styling")]
     #[serde(rename = "cfRule")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cf_rule: Vec<Box<ConditionalRule>>,
+    pub cf_rule: Vec<ConditionalRule>,
     #[cfg(feature = "sml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13254,7 +13254,7 @@ pub struct ConditionalRule {
 pub struct Hyperlinks {
     #[serde(rename = "hyperlink")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub hyperlink: Vec<Box<Hyperlink>>,
+    pub hyperlink: Vec<Hyperlink>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13390,10 +13390,10 @@ pub struct CellFormula {
 pub struct ColorScale {
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cfvo: Vec<Box<ConditionalFormatValue>>,
+    pub cfvo: Vec<ConditionalFormatValue>,
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub color: Vec<Box<Color>>,
+    pub color: Vec<Color>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13419,7 +13419,7 @@ pub struct DataBar {
     pub show_value: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cfvo: Vec<Box<ConditionalFormatValue>>,
+    pub cfvo: Vec<ConditionalFormatValue>,
     #[serde(rename = "color")]
     pub color: Box<Color>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -13465,7 +13465,7 @@ pub struct IconSet {
     pub reverse: Option<bool>,
     #[serde(rename = "cfvo")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cfvo: Vec<Box<ConditionalFormatValue>>,
+    pub cfvo: Vec<ConditionalFormatValue>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -13778,7 +13778,7 @@ pub struct Scenarios {
     pub square_reference: Option<SquareRef>,
     #[serde(rename = "scenario")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub scenario: Vec<Box<Scenario>>,
+    pub scenario: Vec<Scenario>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -13937,7 +13937,7 @@ pub struct SheetProtection {
 pub struct ProtectedRanges {
     #[serde(rename = "protectedRange")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub protected_range: Vec<Box<ProtectedRange>>,
+    pub protected_range: Vec<ProtectedRange>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14008,7 +14008,7 @@ pub struct Scenario {
     pub comment: Option<XmlString>,
     #[serde(rename = "inputCells")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub input_cells: Vec<Box<InputCells>>,
+    pub input_cells: Vec<InputCells>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14059,7 +14059,7 @@ pub struct InputCells {
 pub struct CellWatches {
     #[serde(rename = "cellWatch")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell_watch: Vec<Box<CellWatch>>,
+    pub cell_watch: Vec<CellWatch>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14162,7 +14162,7 @@ pub struct ChartsheetProperties {
 pub struct ChartsheetViews {
     #[serde(rename = "sheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet_view: Vec<Box<ChartsheetView>>,
+    pub sheet_view: Vec<ChartsheetView>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -14321,7 +14321,7 @@ pub struct ChartsheetPageSetup {
 pub struct CustomChartsheetViews {
     #[serde(rename = "customSheetView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub custom_sheet_view: Vec<Box<CustomChartsheetView>>,
+    pub custom_sheet_view: Vec<CustomChartsheetView>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14373,7 +14373,7 @@ pub struct CustomChartsheetView {
 pub struct CTCustomProperties {
     #[serde(rename = "customPr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub custom_pr: Vec<Box<CTCustomProperty>>,
+    pub custom_pr: Vec<CTCustomProperty>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14400,7 +14400,7 @@ pub struct CTCustomProperty {
 pub struct OleObjects {
     #[serde(rename = "oleObject")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ole_object: Vec<Box<OleObject>>,
+    pub ole_object: Vec<OleObject>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14548,7 +14548,7 @@ pub struct WebPublishItems {
     pub count: Option<u32>,
     #[serde(rename = "webPublishItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub web_publish_item: Vec<Box<WebPublishItem>>,
+    pub web_publish_item: Vec<WebPublishItem>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14602,7 +14602,7 @@ pub struct WebPublishItem {
 pub struct Controls {
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub control: Vec<Box<Control>>,
+    pub control: Vec<Control>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -14739,7 +14739,7 @@ pub struct CTControlPr {
 pub struct IgnoredErrors {
     #[serde(rename = "ignoredError")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ignored_error: Vec<Box<IgnoredError>>,
+    pub ignored_error: Vec<IgnoredError>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -14834,7 +14834,7 @@ pub struct TableParts {
     pub count: Option<u32>,
     #[serde(rename = "tablePart")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub table_part: Vec<Box<TablePart>>,
+    pub table_part: Vec<TablePart>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14878,7 +14878,7 @@ pub struct Metadata {
     pub mdx_metadata: Option<Box<CTMdxMetadata>>,
     #[serde(rename = "futureMetadata")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub future_metadata: Vec<Box<CTFutureMetadata>>,
+    pub future_metadata: Vec<CTFutureMetadata>,
     #[serde(rename = "cellMetadata")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cell_metadata: Option<Box<MetadataBlocks>>,
@@ -14902,7 +14902,7 @@ pub struct MetadataTypes {
     pub count: Option<u32>,
     #[serde(rename = "metadataType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub metadata_type: Vec<Box<MetadataType>>,
+    pub metadata_type: Vec<MetadataType>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15121,7 +15121,7 @@ pub struct MetadataBlocks {
     pub count: Option<u32>,
     #[serde(rename = "bk")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub bk: Vec<Box<MetadataBlock>>,
+    pub bk: Vec<MetadataBlock>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15140,7 +15140,7 @@ pub struct MetadataBlocks {
 pub struct MetadataBlock {
     #[serde(rename = "rc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rc: Vec<Box<MetadataRecord>>,
+    pub rc: Vec<MetadataRecord>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -15172,7 +15172,7 @@ pub struct CTFutureMetadata {
     pub count: Option<u32>,
     #[serde(rename = "bk")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub bk: Vec<Box<CTFutureMetadataBlock>>,
+    pub bk: Vec<CTFutureMetadataBlock>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -15209,7 +15209,7 @@ pub struct CTMdxMetadata {
     pub count: Option<u32>,
     #[serde(rename = "mdx")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub mdx: Vec<Box<CTMdx>>,
+    pub mdx: Vec<CTMdx>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15306,7 +15306,7 @@ pub struct CTMdxTuple {
     pub b: Option<bool>,
     #[serde(rename = "n")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub n: Vec<Box<CTMetadataStringIndex>>,
+    pub n: Vec<CTMetadataStringIndex>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15333,7 +15333,7 @@ pub struct CTMdxSet {
     pub o: Option<STMdxSetOrder>,
     #[serde(rename = "n")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub n: Vec<Box<CTMetadataStringIndex>>,
+    pub n: Vec<CTMetadataStringIndex>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15407,7 +15407,7 @@ pub struct MetadataStrings {
     pub count: Option<u32>,
     #[serde(rename = "s")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub style_index: Vec<Box<CTXStringElement>>,
+    pub style_index: Vec<CTXStringElement>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15428,7 +15428,7 @@ pub type SmlSingleXmlCells = Box<SingleXmlCells>;
 pub struct SingleXmlCells {
     #[serde(rename = "singleXmlCell")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub single_xml_cell: Vec<Box<SingleXmlCell>>,
+    pub single_xml_cell: Vec<SingleXmlCell>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -15629,7 +15629,7 @@ pub struct Borders {
     pub count: Option<u32>,
     #[serde(rename = "border")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub border: Vec<Box<Border>>,
+    pub border: Vec<Border>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15776,7 +15776,7 @@ pub struct Fonts {
     pub count: Option<u32>,
     #[serde(rename = "font")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub font: Vec<Box<Font>>,
+    pub font: Vec<Font>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15799,7 +15799,7 @@ pub struct Fills {
     pub count: Option<u32>,
     #[serde(rename = "fill")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub fill: Vec<Box<Fill>>,
+    pub fill: Vec<Fill>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15912,7 +15912,7 @@ pub struct GradientFill {
     pub bottom: Option<f64>,
     #[serde(rename = "stop")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub stop: Vec<Box<GradientStop>>,
+    pub stop: Vec<GradientStop>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15956,7 +15956,7 @@ pub struct NumberFormats {
     pub count: Option<u32>,
     #[serde(rename = "numFmt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub num_fmt: Vec<Box<NumberFormat>>,
+    pub num_fmt: Vec<NumberFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -15995,7 +15995,7 @@ pub struct CellStyleFormats {
     pub count: Option<u32>,
     #[serde(rename = "xf")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub xf: Vec<Box<Format>>,
+    pub xf: Vec<Format>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16018,7 +16018,7 @@ pub struct CellFormats {
     pub count: Option<u32>,
     #[serde(rename = "xf")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub xf: Vec<Box<Format>>,
+    pub xf: Vec<Format>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16154,7 +16154,7 @@ pub struct CellStyles {
     pub count: Option<u32>,
     #[serde(rename = "cellStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell_style: Vec<Box<CellStyle>>,
+    pub cell_style: Vec<CellStyle>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16222,7 +16222,7 @@ pub struct DifferentialFormats {
     pub count: Option<u32>,
     #[serde(rename = "dxf")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub dxf: Vec<Box<DifferentialFormat>>,
+    pub dxf: Vec<DifferentialFormat>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16288,7 +16288,7 @@ pub struct Colors {
 pub struct IndexedColors {
     #[serde(rename = "rgbColor")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rgb_color: Vec<Box<RgbColor>>,
+    pub rgb_color: Vec<RgbColor>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16300,7 +16300,7 @@ pub struct IndexedColors {
 pub struct MostRecentColors {
     #[serde(rename = "color")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub color: Vec<Box<Color>>,
+    pub color: Vec<Color>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16335,7 +16335,7 @@ pub struct TableStyles {
     pub default_pivot_style: Option<String>,
     #[serde(rename = "tableStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub table_style: Vec<Box<TableStyle>>,
+    pub table_style: Vec<TableStyle>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16373,7 +16373,7 @@ pub struct TableStyle {
     pub count: Option<u32>,
     #[serde(rename = "tableStyleElement")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub table_style_element: Vec<Box<TableStyleElement>>,
+    pub table_style_element: Vec<TableStyleElement>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16697,7 +16697,7 @@ pub struct ExternalBook {
 pub struct CTExternalSheetNames {
     #[serde(rename = "sheetName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet_name: Vec<Box<CTExternalSheetName>>,
+    pub sheet_name: Vec<CTExternalSheetName>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16723,7 +16723,7 @@ pub struct CTExternalSheetName {
 pub struct CTExternalDefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub defined_name: Vec<Box<CTExternalDefinedName>>,
+    pub defined_name: Vec<CTExternalDefinedName>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16754,7 +16754,7 @@ pub struct CTExternalDefinedName {
 pub struct ExternalSheetDataSet {
     #[serde(rename = "sheetData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet_data: Vec<Box<ExternalSheetData>>,
+    pub sheet_data: Vec<ExternalSheetData>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16775,7 +16775,7 @@ pub struct ExternalSheetData {
     pub refresh_error: Option<bool>,
     #[serde(rename = "row")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub row: Vec<Box<ExternalRow>>,
+    pub row: Vec<ExternalRow>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16796,7 +16796,7 @@ pub struct ExternalRow {
     pub reference: u32,
     #[serde(rename = "cell")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cell: Vec<Box<ExternalCell>>,
+    pub cell: Vec<ExternalCell>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16866,7 +16866,7 @@ pub struct DdeLink {
 pub struct DdeItems {
     #[serde(rename = "ddeItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub dde_item: Vec<Box<DdeItem>>,
+    pub dde_item: Vec<DdeItem>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16927,7 +16927,7 @@ pub struct CTDdeValues {
     pub cols: Option<u32>,
     #[serde(rename = "value")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub value: Vec<Box<CTDdeValue>>,
+    pub value: Vec<CTDdeValue>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -16990,7 +16990,7 @@ pub struct OleLink {
 pub struct OleItems {
     #[serde(rename = "oleItem")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ole_item: Vec<Box<OleItem>>,
+    pub ole_item: Vec<OleItem>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -17221,7 +17221,7 @@ pub struct TableColumns {
     pub count: Option<u32>,
     #[serde(rename = "tableColumn")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub table_column: Vec<Box<TableColumn>>,
+    pub table_column: Vec<TableColumn>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -17363,7 +17363,7 @@ pub type SmlVolTypes = Box<CTVolTypes>;
 pub struct CTVolTypes {
     #[serde(rename = "volType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub vol_type: Vec<Box<CTVolType>>,
+    pub vol_type: Vec<CTVolType>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub extension_list: Option<Box<ExtensionList>>,
@@ -17380,7 +17380,7 @@ pub struct CTVolType {
     pub r#type: STVolDepType,
     #[serde(rename = "main")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub main: Vec<Box<CTVolMain>>,
+    pub main: Vec<CTVolMain>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -17401,7 +17401,7 @@ pub struct CTVolMain {
     pub first: XmlString,
     #[serde(rename = "tp")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tp: Vec<Box<CTVolTopic>>,
+    pub tp: Vec<CTVolTopic>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -17428,7 +17428,7 @@ pub struct CTVolTopic {
     pub stp: Vec<XmlString>,
     #[serde(rename = "tr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tr: Vec<Box<CTVolTopicRef>>,
+    pub tr: Vec<CTVolTopicRef>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -17526,7 +17526,7 @@ pub struct Workbook {
     pub web_publishing: Option<Box<WebPublishing>>,
     #[serde(rename = "fileRecoveryPr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub file_recovery_pr: Vec<Box<FileRecoveryProperties>>,
+    pub file_recovery_pr: Vec<FileRecoveryProperties>,
     #[cfg(feature = "sml-external")]
     #[serde(rename = "webPublishObjects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -17580,7 +17580,7 @@ pub struct FileVersion {
 pub struct BookViews {
     #[serde(rename = "workbookView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub workbook_view: Vec<Box<BookView>>,
+    pub workbook_view: Vec<BookView>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -17671,7 +17671,7 @@ pub struct BookView {
 pub struct CustomWorkbookViews {
     #[serde(rename = "customWorkbookView")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub custom_workbook_view: Vec<Box<CustomWorkbookView>>,
+    pub custom_workbook_view: Vec<CustomWorkbookView>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -17822,7 +17822,7 @@ pub struct CustomWorkbookView {
 pub struct Sheets {
     #[serde(rename = "sheet")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sheet: Vec<Box<Sheet>>,
+    pub sheet: Vec<Sheet>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -17999,7 +17999,7 @@ pub struct CTSmartTagPr {
 pub struct CTSmartTagTypes {
     #[serde(rename = "smartTagType")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub smart_tag_type: Vec<Box<CTSmartTagType>>,
+    pub smart_tag_type: Vec<CTSmartTagType>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -18150,7 +18150,7 @@ pub struct CalculationProperties {
 pub struct DefinedNames {
     #[serde(rename = "definedName")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub defined_name: Vec<Box<DefinedName>>,
+    pub defined_name: Vec<DefinedName>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -18261,7 +18261,7 @@ pub struct DefinedName {
 pub struct ExternalReferences {
     #[serde(rename = "externalReference")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub external_reference: Vec<Box<ExternalReference>>,
+    pub external_reference: Vec<ExternalReference>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -18299,7 +18299,7 @@ pub struct SheetBackgroundPicture {
 pub struct PivotCaches {
     #[serde(rename = "pivotCache")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pivot_cache: Vec<Box<CTPivotCache>>,
+    pub pivot_cache: Vec<CTPivotCache>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -18505,7 +18505,7 @@ pub struct CTFunctionGroups {
     pub built_in_group_count: Option<u32>,
     #[serde(rename = "functionGroup")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub function_group: Vec<Box<CTFunctionGroup>>,
+    pub function_group: Vec<CTFunctionGroup>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -18541,7 +18541,7 @@ pub struct CTWebPublishObjects {
     pub count: Option<u32>,
     #[serde(rename = "webPublishObject")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub web_publish_object: Vec<Box<CTWebPublishObject>>,
+    pub web_publish_object: Vec<CTWebPublishObject>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]

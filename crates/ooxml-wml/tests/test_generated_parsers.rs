@@ -36,7 +36,7 @@ fn test_parse_run_with_text() {
     assert!(run.r_pr.is_none());
     assert_eq!(run.run_content.len(), 1);
     // Verify it's a text element
-    match run.run_content[0].as_ref() {
+    match &run.run_content[0] {
         RunContent::T(_) => {}
         other => panic!("expected T variant, got {:?}", other),
     }
@@ -82,7 +82,7 @@ fn test_parse_paragraph_simple() {
     assert!(para.p_pr.is_none());
     assert_eq!(para.paragraph_content.len(), 1);
     // First content item should be a Run
-    match para.paragraph_content[0].as_ref() {
+    match &para.paragraph_content[0] {
         ParagraphContent::R(_) => {}
         other => panic!("expected R variant, got {:?}", other),
     }
@@ -135,7 +135,7 @@ fn test_parse_table_basic() {
     let table: Table = parse_from_xml(xml).expect("should parse table");
     assert_eq!(table.rows.len(), 1);
     // First content should be a table row
-    match table.rows[0].as_ref() {
+    match &table.rows[0] {
         RowContent::Tr(_) => {}
         other => panic!("expected Tr variant, got {:?}", other),
     }
@@ -146,7 +146,7 @@ fn test_parse_run_with_break() {
     let xml = r#"<r><t>Before</t><br/><t>After</t></r>"#;
     let run: Run = parse_from_xml(xml).expect("should parse run with break");
     assert_eq!(run.run_content.len(), 3);
-    match run.run_content[1].as_ref() {
+    match &run.run_content[1] {
         RunContent::Br(_) => {}
         other => panic!("expected Br variant, got {:?}", other),
     }
@@ -280,11 +280,11 @@ fn test_parse_table_with_full_properties() {
 
     // Row with properties
     assert_eq!(table.rows.len(), 1);
-    if let RowContent::Tr(row) = table.rows[0].as_ref() {
+    if let RowContent::Tr(row) = &table.rows[0] {
         assert!(row.row_properties.is_some());
         // Two cells
         assert_eq!(row.cells.len(), 2);
-        if let CellContent::Tc(cell) = row.cells[0].as_ref() {
+        if let CellContent::Tc(cell) = &row.cells[0] {
             assert!(cell.cell_properties.is_some());
             let tc_pr = cell.cell_properties.as_ref().unwrap();
             assert!(tc_pr.tc_w.is_some());
@@ -314,8 +314,8 @@ fn test_parse_table_merged_cells() {
     assert_eq!(table.rows.len(), 2);
 
     // First row, first cell has vMerge restart
-    if let RowContent::Tr(row) = table.rows[0].as_ref() {
-        if let CellContent::Tc(cell) = row.cells[0].as_ref() {
+    if let RowContent::Tr(row) = &table.rows[0] {
+        if let CellContent::Tc(cell) = &row.cells[0] {
             let tc_pr = cell.cell_properties.as_ref().unwrap();
             assert!(tc_pr.vertical_merge.is_some());
         } else {
@@ -377,7 +377,7 @@ fn test_parse_paragraph_with_hyperlink() {
     </p>"#;
     let para: Paragraph = parse_from_xml(xml).expect("should parse paragraph with hyperlink");
     assert_eq!(para.paragraph_content.len(), 1);
-    match para.paragraph_content[0].as_ref() {
+    match &para.paragraph_content[0] {
         ParagraphContent::Hyperlink(h) => {
             assert_eq!(h.anchor.as_deref(), Some("bookmark1"));
             assert_eq!(h.tooltip.as_deref(), Some("Click here"));
@@ -406,10 +406,10 @@ fn test_parse_namespace_prefixed_document() {
     assert_eq!(body.block_content.len(), 1);
 
     // Verify we parsed through the namespace prefixes
-    if let BlockContent::P(para) = body.block_content[0].as_ref() {
+    if let BlockContent::P(para) = &body.block_content[0] {
         assert!(para.p_pr.is_some());
         assert_eq!(para.paragraph_content.len(), 1);
-        if let ParagraphContent::R(run) = para.paragraph_content[0].as_ref() {
+        if let ParagraphContent::R(run) = &para.paragraph_content[0] {
             assert!(run.r_pr.is_some());
             let rpr = run.r_pr.as_ref().unwrap();
             assert!(rpr.bold.is_some());

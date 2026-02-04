@@ -36,7 +36,7 @@ struct ParserGenerator<'a> {
 
 impl<'a> ParserGenerator<'a> {
     fn new(schema: &'a Schema, config: &'a CodegenConfig) -> Self {
-        let definitions = schema
+        let definitions: HashMap<&str, &Pattern> = schema
             .definitions
             .iter()
             .map(|d| (d.name.as_str(), &d.pattern))
@@ -377,7 +377,8 @@ impl<'a> ParserGenerator<'a> {
     ) {
         match pattern {
             Pattern::Element { name, pattern } => {
-                let (rust_type, needs_box) = self.pattern_to_rust_type(pattern);
+                // Enum variants are not in Vec context, so may need boxing
+                let (rust_type, needs_box) = self.pattern_to_rust_type(pattern, false);
                 // For type aliases (Pattern::Element wrappers), resolve to the inner type
                 // that actually has a FromXml impl
                 let (actual_type, type_alias_has_box) =
@@ -682,7 +683,8 @@ impl<'a> ParserGenerator<'a> {
             } else if field.is_optional {
                 writeln!(code, "let mut {} = None;", var_name).unwrap();
             } else {
-                let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
+                // Required non-Vec field - may need boxing for recursive types
+                let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern, false);
                 let full_type = if needs_box {
                     format!("Box<{}>", rust_type)
                 } else {
@@ -1389,16 +1391,33 @@ impl<'a> ParserGenerator<'a> {
             .map(|feature| format!("{}-{}", self.config.module_name, feature))
     }
 
-    fn pattern_to_rust_type(&self, pattern: &Pattern) -> (String, bool) {
+    /// Check if a definition is an element-wrapper type alias (Element { pattern: Ref(...) }).
+    /// These generate `pub type Foo = Box<T>;` and should not be double-boxed when used.
+    fn is_element_wrapper_type_alias(&self, name: &str) -> bool {
+        if let Some(def_pattern) = self.definitions.get(name) {
+            matches!(def_pattern, Pattern::Element { pattern, .. } if matches!(pattern.as_ref(), Pattern::Ref(_)))
+        } else {
+            false
+        }
+    }
+
+    /// Convert a pattern to Rust type and boxing requirement.
+    /// - `is_vec`: if true, don't indicate boxing needed (Vec provides heap indirection)
+    fn pattern_to_rust_type(&self, pattern: &Pattern, is_vec: bool) -> (String, bool) {
         match pattern {
             Pattern::Ref(name) => {
                 if self.definitions.contains_key(name.as_str()) {
                     let type_name = self.to_rust_type_name(name);
-                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                    // Box CT_* and EG_* types, but not in Vec context (Vec provides heap indirection)
+                    // Also don't box element-wrapper type aliases - they're already Box<T>
+                    let is_complex = name.contains("_CT_") || name.contains("_EG_");
+                    let is_already_boxed = self.is_element_wrapper_type_alias(name);
+                    let needs_box = is_complex && !is_vec && !is_already_boxed;
                     (type_name, needs_box)
                 } else if let Some(cross_crate) = self.resolve_cross_crate_type(name) {
-                    // Cross-crate type - needs boxing if CT_* or EG_*
-                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                    // Cross-crate type - box CT_* or EG_*, but not in Vec context
+                    let is_complex = name.contains("_CT_") || name.contains("_EG_");
+                    let needs_box = is_complex && !is_vec;
                     (cross_crate, needs_box)
                 } else {
                     ("String".to_string(), false)
@@ -1417,7 +1436,8 @@ impl<'a> ParserGenerator<'a> {
     /// Generate code to parse a child element field.
     /// Returns the expression that produces the parsed value.
     fn gen_element_parse_code(&self, field: &Field, is_empty_element: bool) -> String {
-        let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern);
+        // Pass is_vec to avoid boxing in Vec contexts
+        let (rust_type, needs_box) = self.pattern_to_rust_type(&field.pattern, field.is_vec);
         let strategy = self.get_parse_strategy(&field.pattern);
 
         let parse_expr = match strategy {
@@ -1491,12 +1511,18 @@ impl<'a> ParserGenerator<'a> {
                         return (None, false);
                     }
                     // If it's a type alias (Pattern::Element wrapping another ref),
-                    // the generated type will be `type X = Box<InnerType>`
-                    // So we resolve to the inner type and signal that boxing is already done
+                    // the generated type will be `type X = Box<InnerType>` for CT_*/EG_* inner types
+                    // So we resolve to the inner type and signal boxing status
                     if let Pattern::Element { pattern: inner, .. } = def_pattern
                         && let Some(inner_type) = self.resolve_from_xml_type_simple(inner)
                     {
-                        return (Some(inner_type), true);
+                        // Check if the inner ref is to a CT_* or EG_* type (which gets boxed)
+                        let type_alias_has_box = if let Pattern::Ref(inner_name) = inner.as_ref() {
+                            inner_name.contains("_CT_") || inner_name.contains("_EG_")
+                        } else {
+                            false
+                        };
+                        return (Some(inner_type), type_alias_has_box);
                     }
                     // CT_* types that are NOT type aliases have their own FromXml impl
                     // (generated as structs), even if schema defines them as `CT_Foo = EG_Bar`.

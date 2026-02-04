@@ -1056,9 +1056,9 @@ impl DocumentBuilder {
                         },
                     };
                     let _ = &mut hdr_ref; // suppress unused mut warning
-                    sect_pr.header_footer_refs.push(Box::new(
-                        types::HeaderFooterRef::HeaderReference(Box::new(hdr_ref)),
-                    ));
+                    sect_pr
+                        .header_footer_refs
+                        .push(types::HeaderFooterRef::HeaderReference(Box::new(hdr_ref)));
                 }
 
                 // Add footer references
@@ -1077,9 +1077,9 @@ impl DocumentBuilder {
                         },
                     };
                     let _ = &mut ftr_ref; // suppress unused mut warning
-                    sect_pr.header_footer_refs.push(Box::new(
-                        types::HeaderFooterRef::FooterReference(Box::new(ftr_ref)),
-                    ));
+                    sect_pr
+                        .header_footer_refs
+                        .push(types::HeaderFooterRef::FooterReference(Box::new(ftr_ref)));
                 }
             }
         }
@@ -1331,7 +1331,7 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
         rsid_r: None,
         #[cfg(feature = "wml-styling")]
         r_pr: None,
-        run_content: vec![Box::new(separator_content)],
+        run_content: vec![separator_content],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
@@ -1346,7 +1346,7 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
         rsid_r_default: None,
         #[cfg(feature = "wml-styling")]
         p_pr: None,
-        paragraph_content: vec![Box::new(types::ParagraphContent::R(Box::new(run)))],
+        paragraph_content: vec![types::ParagraphContent::R(Box::new(run))],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
@@ -1356,7 +1356,7 @@ fn build_separator_ftn_edn(id: i64, ftn_type: types::STFtnEdn) -> types::Footnot
     types::FootnoteEndnote {
         r#type: Some(ftn_type),
         id,
-        block_content: vec![Box::new(types::BlockContent::P(Box::new(para)))],
+        block_content: vec![types::BlockContent::P(Box::new(para))],
         #[cfg(feature = "extra-attrs")]
         extra_attrs: std::collections::HashMap::new(),
         #[cfg(feature = "extra-children")]
@@ -1373,20 +1373,18 @@ fn build_footnotes(footnotes: &HashMap<i32, PendingFootnote>) -> types::Footnote
     };
 
     // Add separator footnotes (required by Word)
-    fns.footnote.push(Box::new(build_separator_ftn_edn(
-        -1,
-        types::STFtnEdn::Separator,
-    )));
-    fns.footnote.push(Box::new(build_separator_ftn_edn(
+    fns.footnote
+        .push(build_separator_ftn_edn(-1, types::STFtnEdn::Separator));
+    fns.footnote.push(build_separator_ftn_edn(
         0,
         types::STFtnEdn::ContinuationSeparator,
-    )));
+    ));
 
     // Add user footnotes sorted by ID
     let mut sorted: Vec<_> = footnotes.values().collect();
     sorted.sort_by_key(|f| f.id);
     for footnote in sorted {
-        fns.footnote.push(Box::new(footnote.body.clone()));
+        fns.footnote.push(footnote.body.clone());
     }
 
     fns
@@ -1401,20 +1399,18 @@ fn build_endnotes(endnotes: &HashMap<i32, PendingEndnote>) -> types::Endnotes {
     };
 
     // Add separator endnotes (required by Word)
-    ens.endnote.push(Box::new(build_separator_ftn_edn(
-        -1,
-        types::STFtnEdn::Separator,
-    )));
-    ens.endnote.push(Box::new(build_separator_ftn_edn(
+    ens.endnote
+        .push(build_separator_ftn_edn(-1, types::STFtnEdn::Separator));
+    ens.endnote.push(build_separator_ftn_edn(
         0,
         types::STFtnEdn::ContinuationSeparator,
-    )));
+    ));
 
     // Add user endnotes sorted by ID
     let mut sorted: Vec<_> = endnotes.values().collect();
     sorted.sort_by_key(|e| e.id);
     for endnote in sorted {
-        ens.endnote.push(Box::new(endnote.body.clone()));
+        ens.endnote.push(endnote.body.clone());
     }
 
     ens
@@ -1444,7 +1440,7 @@ fn build_comments(comments: &HashMap<i32, PendingComment>) -> types::Comments {
         if let Some(ref initials) = pc.initials {
             comment.initials = Some(initials.clone());
         }
-        result.comment.push(Box::new(comment));
+        result.comment.push(comment);
     }
 
     result
@@ -1535,13 +1531,13 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
             name: None,
             style_link: None,
             num_style_link: None,
-            lvl: vec![Box::new(level)],
+            lvl: vec![level],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: std::collections::HashMap::new(),
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         };
-        numbering.abstract_num.push(Box::new(abs));
+        numbering.abstract_num.push(abs);
 
         let inst = types::NumberingInstance {
             num_id: pn.num_id as i64,
@@ -1556,7 +1552,7 @@ fn build_numbering(numberings: &HashMap<u32, PendingNumbering>) -> types::Number
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         };
-        numbering.num.push(Box::new(inst));
+        numbering.num.push(inst);
     }
 
     numbering

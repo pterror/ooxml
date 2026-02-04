@@ -232,7 +232,7 @@ struct Generator<'a> {
 
 impl<'a> Generator<'a> {
     fn new(schema: &'a Schema, config: &'a CodegenConfig) -> Self {
-        let definitions = schema
+        let definitions: HashMap<&str, &Pattern> = schema
             .definitions
             .iter()
             .map(|d| (d.name.as_str(), &d.pattern))
@@ -597,7 +597,8 @@ impl<'a> Generator<'a> {
     ) {
         match pattern {
             Pattern::Element { name, pattern } => {
-                let inner_type = self.pattern_to_rust_type(pattern, false);
+                // Enum variants are stored directly, not in Vec, so may need boxing
+                let inner_type = self.pattern_to_rust_type(pattern, false, false);
                 variants.push((name.local.clone(), inner_type));
             }
             Pattern::Optional(inner)
@@ -710,7 +711,8 @@ impl<'a> Generator<'a> {
         // For element-only definitions, generate a type alias to the inner type
         if let Pattern::Element { pattern, .. } = &def.pattern {
             let rust_name = self.to_rust_type_name(&def.name);
-            let inner_type = self.pattern_to_rust_type(pattern, false);
+            // Type aliases may be used in various contexts, use boxed form for recursive types
+            let inner_type = self.pattern_to_rust_type(pattern, false, false);
             let mut code = String::new();
             writeln!(code, "pub type {} = {};", rust_name, inner_type).unwrap();
             return Some(code);
@@ -801,7 +803,8 @@ impl<'a> Generator<'a> {
 
             for field in &fields {
                 let is_eg_content = self.is_eg_content_field(field);
-                let inner_type = self.pattern_to_rust_type(&field.pattern, false);
+                // Pass is_vec to avoid boxing in Vec contexts (Vec provides heap indirection)
+                let inner_type = self.pattern_to_rust_type(&field.pattern, false, field.is_vec);
                 let is_bool = inner_type == "bool";
                 // Required EG content fields are wrapped in Option<> for Default/serde
                 // compatibility — EG enums don't impl Default, but Option<Box<EG>> does.
@@ -1215,19 +1218,36 @@ impl<'a> Generator<'a> {
         None
     }
 
-    fn pattern_to_rust_type(&self, pattern: &Pattern, is_optional: bool) -> String {
+    /// Check if a definition is an element-wrapper type alias (Element { pattern: Ref(...) }).
+    /// These generate `pub type Foo = Box<T>;` and should not be double-boxed when used.
+    fn is_element_wrapper_type_alias(&self, name: &str) -> bool {
+        if let Some(def_pattern) = self.definitions.get(name) {
+            matches!(def_pattern, Pattern::Element { pattern, .. } if matches!(pattern.as_ref(), Pattern::Ref(_)))
+        } else {
+            false
+        }
+    }
+
+    /// Convert a pattern to a Rust type string.
+    /// - `is_optional`: whether to wrap in Option<>
+    /// - `is_vec`: if true, don't box even if recursive (Vec provides heap indirection)
+    fn pattern_to_rust_type(&self, pattern: &Pattern, is_optional: bool, is_vec: bool) -> String {
         let (inner, needs_box) = match pattern {
             Pattern::Ref(name) => {
                 // Check if this is a known definition
                 if self.definitions.contains_key(name.as_str()) {
                     let type_name = self.to_rust_type_name(name);
-                    // Box complex types (CT_*) and element groups (EG_*) to avoid infinite size
-                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                    // Box CT_* and EG_* types, but not in Vec context (Vec provides heap indirection)
+                    // Also don't box element-wrapper type aliases - they're already Box<T>
+                    let is_complex = name.contains("_CT_") || name.contains("_EG_");
+                    let is_already_boxed = self.is_element_wrapper_type_alias(name);
+                    let needs_box = is_complex && !is_vec && !is_already_boxed;
                     (type_name, needs_box)
-                } else if let Some((cross_crate_type, needs_box)) =
+                } else if let Some((cross_crate_type, cross_crate_needs_box)) =
                     self.resolve_cross_crate_type(name)
                 {
-                    // Resolved to a cross-crate type
+                    // Resolved to a cross-crate type - apply same Vec logic
+                    let needs_box = !is_vec && cross_crate_needs_box;
                     (cross_crate_type, needs_box)
                 } else {
                     // Unknown reference (likely from another schema) - use String as fallback

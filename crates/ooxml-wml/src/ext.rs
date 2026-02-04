@@ -108,7 +108,7 @@ impl BodyExt for types::Body {
     fn paragraphs(&self) -> Vec<&types::Paragraph> {
         self.block_content
             .iter()
-            .filter_map(|elt| match elt.as_ref() {
+            .filter_map(|elt| match elt {
                 types::BlockContent::P(p) => Some(p.as_ref()),
                 _ => None,
             })
@@ -118,7 +118,7 @@ impl BodyExt for types::Body {
     fn tables(&self) -> Vec<&types::Table> {
         self.block_content
             .iter()
-            .filter_map(|elt| match elt.as_ref() {
+            .filter_map(|elt| match elt {
                 types::BlockContent::Tbl(t) => Some(t.as_ref()),
                 _ => None,
             })
@@ -129,7 +129,7 @@ impl BodyExt for types::Body {
         let texts: Vec<String> = self
             .block_content
             .iter()
-            .filter_map(|elt| match elt.as_ref() {
+            .filter_map(|elt| match elt {
                 types::BlockContent::P(p) => Some(p.text()),
                 types::BlockContent::Tbl(t) => Some(t.text()),
                 _ => None,
@@ -180,7 +180,7 @@ impl ParagraphExt for types::Paragraph {
     fn hyperlinks(&self) -> Vec<&types::Hyperlink> {
         self.paragraph_content
             .iter()
-            .filter_map(|c| match c.as_ref() {
+            .filter_map(|c| match c {
                 types::ParagraphContent::Hyperlink(h) => Some(h.as_ref()),
                 _ => None,
             })
@@ -194,12 +194,10 @@ impl ParagraphExt for types::Paragraph {
 }
 
 /// Collect runs from paragraph content, including nested runs in hyperlinks and simple fields.
-fn collect_runs_from_paragraph_content(
-    content: &[Box<types::ParagraphContent>],
-) -> Vec<&types::Run> {
+fn collect_runs_from_paragraph_content(content: &[types::ParagraphContent]) -> Vec<&types::Run> {
     let mut runs = Vec::new();
     for item in content {
-        match item.as_ref() {
+        match item {
             types::ParagraphContent::R(r) => runs.push(r.as_ref()),
             types::ParagraphContent::Hyperlink(h) => {
                 runs.extend(collect_runs_from_paragraph_content(&h.paragraph_content));
@@ -284,7 +282,7 @@ impl RunExt for types::Run {
     fn text(&self) -> String {
         let mut out = String::new();
         for item in &self.run_content {
-            match item.as_ref() {
+            match item {
                 types::RunContent::T(t) => {
                     if let Some(ref text) = t.text {
                         out.push_str(text);
@@ -315,7 +313,7 @@ impl RunExt for types::Run {
     fn has_page_break(&self) -> bool {
         self.run_content.iter().any(|item| {
             matches!(
-                item.as_ref(),
+                item,
                 types::RunContent::Br(br) if br.r#type == Some(types::STBrType::Page)
             )
         })
@@ -325,7 +323,7 @@ impl RunExt for types::Run {
     fn drawings(&self) -> Vec<&types::CTDrawing> {
         self.run_content
             .iter()
-            .filter_map(|item| match item.as_ref() {
+            .filter_map(|item| match item {
                 types::RunContent::Drawing(d) => Some(d.as_ref()),
                 _ => None,
             })
@@ -356,25 +354,21 @@ impl RunExt for types::Run {
     fn has_images(&self) -> bool {
         self.run_content
             .iter()
-            .any(|item| matches!(item.as_ref(), types::RunContent::Drawing(_)))
+            .any(|item| matches!(item, types::RunContent::Drawing(_)))
     }
 
     fn footnote_ref(&self) -> Option<&types::FootnoteEndnoteRef> {
-        self.run_content
-            .iter()
-            .find_map(|item| match item.as_ref() {
-                types::RunContent::FootnoteReference(r) => Some(r.as_ref()),
-                _ => None,
-            })
+        self.run_content.iter().find_map(|item| match item {
+            types::RunContent::FootnoteReference(r) => Some(r.as_ref()),
+            _ => None,
+        })
     }
 
     fn endnote_ref(&self) -> Option<&types::FootnoteEndnoteRef> {
-        self.run_content
-            .iter()
-            .find_map(|item| match item.as_ref() {
-                types::RunContent::EndnoteReference(r) => Some(r.as_ref()),
-                _ => None,
-            })
+        self.run_content.iter().find_map(|item| match item {
+            types::RunContent::EndnoteReference(r) => Some(r.as_ref()),
+            _ => None,
+        })
     }
 }
 
@@ -688,7 +682,7 @@ impl TableExt for types::Table {
     fn rows(&self) -> Vec<&types::CTRow> {
         self.rows
             .iter()
-            .filter_map(|c| match c.as_ref() {
+            .filter_map(|c| match c {
                 types::RowContent::Tr(row) => Some(row.as_ref()),
                 _ => None,
             })
@@ -730,7 +724,7 @@ impl RowExt for types::CTRow {
     fn cells(&self) -> Vec<&types::TableCell> {
         self.cells
             .iter()
-            .filter_map(|c| match c.as_ref() {
+            .filter_map(|c| match c {
                 types::CellContent::Tc(cell) => Some(cell.as_ref()),
                 _ => None,
             })
@@ -769,7 +763,7 @@ impl CellExt for types::TableCell {
     fn paragraphs(&self) -> Vec<&types::Paragraph> {
         self.block_content
             .iter()
-            .filter_map(|elt| match elt.as_ref() {
+            .filter_map(|elt| match elt {
                 types::BlockContent::P(p) => Some(p.as_ref()),
                 _ => None,
             })
@@ -857,7 +851,7 @@ impl SectionPropertiesExt for types::SectionProperties {
     fn header_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
         self.header_footer_refs
             .iter()
-            .filter_map(|r| match r.as_ref() {
+            .filter_map(|r| match r {
                 types::HeaderFooterRef::HeaderReference(h) => {
                     h.extra_attrs.get("r:id").map(|id| (&h.r#type, id.as_str()))
                 }
@@ -870,7 +864,7 @@ impl SectionPropertiesExt for types::SectionProperties {
     fn footer_references(&self) -> Vec<(&types::STHdrFtr, &str)> {
         self.header_footer_refs
             .iter()
-            .filter_map(|r| match r.as_ref() {
+            .filter_map(|r| match r {
                 types::HeaderFooterRef::FooterReference(f) => {
                     f.extra_attrs.get("r:id").map(|id| (&f.r#type, id.as_str()))
                 }
@@ -907,7 +901,7 @@ impl StyleContext {
         let mut styles = std::collections::HashMap::new();
         for style in &styles_doc.style {
             if let Some(ref id) = style.style_id {
-                styles.insert(id.clone(), style.as_ref().clone());
+                styles.insert(id.clone(), style.clone());
             }
         }
 
@@ -1293,7 +1287,6 @@ impl ResolvedDocument {
 // =============================================================================
 
 #[cfg(test)]
-#[allow(clippy::vec_box)]
 mod tests {
     use super::*;
 
@@ -1569,32 +1562,32 @@ mod tests {
     // RunExt tests
     // -------------------------------------------------------------------------
 
-    fn make_text(s: &str) -> Box<types::RunContent> {
-        Box::new(types::RunContent::T(Box::new(types::Text {
+    fn make_text(s: &str) -> types::RunContent {
+        types::RunContent::T(Box::new(types::Text {
             text: Some(s.to_string()),
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
-        })))
+        }))
     }
 
-    fn make_tab() -> Box<types::RunContent> {
-        Box::new(types::RunContent::Tab(Box::new(types::CTEmpty)))
+    fn make_tab() -> types::RunContent {
+        types::RunContent::Tab(Box::new(types::CTEmpty))
     }
 
-    fn make_br(br_type: Option<types::STBrType>) -> Box<types::RunContent> {
-        Box::new(types::RunContent::Br(Box::new(types::CTBr {
+    fn make_br(br_type: Option<types::STBrType>) -> types::RunContent {
+        types::RunContent::Br(Box::new(types::CTBr {
             r#type: br_type,
             clear: None,
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
-        })))
+        }))
     }
 
-    fn make_cr() -> Box<types::RunContent> {
-        Box::new(types::RunContent::Cr(Box::new(types::CTEmpty)))
+    fn make_cr() -> types::RunContent {
+        types::RunContent::Cr(Box::new(types::CTEmpty))
     }
 
-    fn make_run(content: Vec<Box<types::RunContent>>) -> types::Run {
+    fn make_run(content: Vec<types::RunContent>) -> types::Run {
         types::Run {
             rsid_r_pr: None,
             rsid_del: None,
@@ -1655,13 +1648,11 @@ mod tests {
     // ParagraphExt tests
     // -------------------------------------------------------------------------
 
-    fn make_p_run(text: &str) -> Box<types::ParagraphContent> {
-        Box::new(types::ParagraphContent::R(Box::new(make_run(vec![
-            make_text(text),
-        ]))))
+    fn make_p_run(text: &str) -> types::ParagraphContent {
+        types::ParagraphContent::R(Box::new(make_run(vec![make_text(text)])))
     }
 
-    fn make_paragraph(content: Vec<Box<types::ParagraphContent>>) -> types::Paragraph {
+    fn make_paragraph(content: Vec<types::ParagraphContent>) -> types::Paragraph {
         types::Paragraph {
             rsid_r_pr: None,
             rsid_r: None,
@@ -1687,20 +1678,18 @@ mod tests {
 
     #[test]
     fn test_paragraph_with_hyperlink() {
-        let hyperlink = Box::new(types::ParagraphContent::Hyperlink(Box::new(
-            types::Hyperlink {
-                tgt_frame: None,
-                tooltip: None,
-                doc_location: None,
-                history: None,
-                anchor: Some("bookmark1".to_string()),
-                paragraph_content: vec![make_p_run("link text")],
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            },
-        )));
+        let hyperlink = types::ParagraphContent::Hyperlink(Box::new(types::Hyperlink {
+            tgt_frame: None,
+            tooltip: None,
+            doc_location: None,
+            history: None,
+            anchor: Some("bookmark1".to_string()),
+            paragraph_content: vec![make_p_run("link text")],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }));
         let para = make_paragraph(vec![make_p_run("Click "), hyperlink]);
         assert_eq!(para.runs().len(), 2);
         assert_eq!(para.text(), "Click link text");
@@ -1710,19 +1699,17 @@ mod tests {
 
     #[test]
     fn test_paragraph_with_fld_simple() {
-        let fld = Box::new(types::ParagraphContent::FldSimple(Box::new(
-            types::CTSimpleField {
-                instr: "PAGE".to_string(),
-                fld_lock: None,
-                dirty: None,
-                fld_data: None,
-                paragraph_content: vec![make_p_run("1")],
-                #[cfg(feature = "extra-attrs")]
-                extra_attrs: Default::default(),
-                #[cfg(feature = "extra-children")]
-                extra_children: Default::default(),
-            },
-        )));
+        let fld = types::ParagraphContent::FldSimple(Box::new(types::CTSimpleField {
+            instr: "PAGE".to_string(),
+            fld_lock: None,
+            dirty: None,
+            fld_data: None,
+            paragraph_content: vec![make_p_run("1")],
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Default::default(),
+        }));
         let para = make_paragraph(vec![make_p_run("Page "), fld]);
         assert_eq!(para.runs().len(), 2);
         assert_eq!(para.text(), "Page 1");
@@ -1732,7 +1719,7 @@ mod tests {
     // BodyExt tests
     // -------------------------------------------------------------------------
 
-    fn make_body(content: Vec<Box<types::BlockContent>>) -> types::Body {
+    fn make_body(content: Vec<types::BlockContent>) -> types::Body {
         types::Body {
             block_content: content,
             #[cfg(feature = "wml-layout")]
@@ -1744,12 +1731,8 @@ mod tests {
 
     #[test]
     fn test_body_paragraphs() {
-        let p1 = Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
-            make_p_run("First"),
-        ]))));
-        let p2 = Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
-            make_p_run("Second"),
-        ]))));
+        let p1 = types::BlockContent::P(Box::new(make_paragraph(vec![make_p_run("First")])));
+        let p2 = types::BlockContent::P(Box::new(make_paragraph(vec![make_p_run("Second")])));
         let body = make_body(vec![p1, p2]);
         assert_eq!(body.paragraphs().len(), 2);
         assert_eq!(body.text(), "First\nSecond");
@@ -1757,14 +1740,14 @@ mod tests {
 
     #[test]
     fn test_body_tables() {
-        let tbl = Box::new(types::BlockContent::Tbl(Box::new(types::Table {
+        let tbl = types::BlockContent::Tbl(Box::new(types::Table {
             range_markup: vec![],
             table_properties: Box::default(),
             tbl_grid: Box::default(),
             rows: vec![],
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
-        })));
+        }));
         let body = make_body(vec![tbl]);
         assert_eq!(body.tables().len(), 1);
         assert_eq!(body.paragraphs().len(), 0);
@@ -1826,22 +1809,22 @@ mod tests {
     // Table/Row/Cell tests
     // -------------------------------------------------------------------------
 
-    fn make_table_cell(text: &str) -> Box<types::CellContent> {
-        Box::new(types::CellContent::Tc(Box::new(types::TableCell {
+    fn make_table_cell(text: &str) -> types::CellContent {
+        types::CellContent::Tc(Box::new(types::TableCell {
             id: None,
             cell_properties: None,
-            block_content: vec![Box::new(types::BlockContent::P(Box::new(make_paragraph(
-                vec![make_p_run(text)],
-            ))))],
+            block_content: vec![types::BlockContent::P(Box::new(make_paragraph(vec![
+                make_p_run(text),
+            ])))],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
-        })))
+        }))
     }
 
-    fn make_table_row(cells: Vec<Box<types::CellContent>>) -> Box<types::RowContent> {
-        Box::new(types::RowContent::Tr(Box::new(types::CTRow {
+    fn make_table_row(cells: Vec<types::CellContent>) -> types::RowContent {
+        types::RowContent::Tr(Box::new(types::CTRow {
             rsid_r_pr: None,
             rsid_r: None,
             rsid_del: None,
@@ -1853,10 +1836,10 @@ mod tests {
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
             extra_children: Default::default(),
-        })))
+        }))
     }
 
-    fn make_table(rows: Vec<Box<types::RowContent>>) -> types::Table {
+    fn make_table(rows: Vec<types::RowContent>) -> types::Table {
         types::Table {
             range_markup: vec![],
             table_properties: Box::default(),
@@ -1903,12 +1886,8 @@ mod tests {
             id: None,
             cell_properties: None,
             block_content: vec![
-                Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
-                    make_p_run("Line 1"),
-                ])))),
-                Box::new(types::BlockContent::P(Box::new(make_paragraph(vec![
-                    make_p_run("Line 2"),
-                ])))),
+                types::BlockContent::P(Box::new(make_paragraph(vec![make_p_run("Line 1")]))),
+                types::BlockContent::P(Box::new(make_paragraph(vec![make_p_run("Line 2")]))),
             ],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),

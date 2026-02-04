@@ -3519,8 +3519,7 @@ impl FromXml for Comment {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3573,8 +3572,7 @@ impl FromXml for Comment {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4917,9 +4915,8 @@ impl FromXml for MathContent {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"customXml" | b"fldSimple" | b"hyperlink" => {
-                                f_p_content_base.push(Box::new(ParagraphContentBase::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_p_content_base
+                                    .push(ParagraphContentBase::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4951,7 +4948,7 @@ impl FromXml for MathContent {
                             | b"moveFrom"
                             | b"moveTo" => {
                                 f_content_run_content_base
-                                    .push(Box::new(RunContentBase::from_xml(reader, &e, false)?));
+                                    .push(RunContentBase::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4977,9 +4974,8 @@ impl FromXml for MathContent {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"customXml" | b"fldSimple" | b"hyperlink" => {
-                                f_p_content_base.push(Box::new(ParagraphContentBase::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_p_content_base
+                                    .push(ParagraphContentBase::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -5011,7 +5007,7 @@ impl FromXml for MathContent {
                             | b"moveFrom"
                             | b"moveTo" => {
                                 f_content_run_content_base
-                                    .push(Box::new(RunContentBase::from_xml(reader, &e, true)?));
+                                    .push(RunContentBase::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -5616,7 +5612,7 @@ impl FromXml for CTTabs {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"tab" => {
-                                f_tab.push(Box::new(CTTabStop::from_xml(reader, &e, false)?));
+                                f_tab.push(CTTabStop::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -5642,7 +5638,7 @@ impl FromXml for CTTabs {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"tab" => {
-                                f_tab.push(Box::new(CTTabStop::from_xml(reader, &e, true)?));
+                                f_tab.push(CTTabStop::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8616,7 +8612,7 @@ impl FromXml for CTSimpleField {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8681,7 +8677,7 @@ impl FromXml for CTSimpleField {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9057,7 +9053,7 @@ impl FromXml for Hyperlink {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9115,7 +9111,7 @@ impl FromXml for Hyperlink {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9709,7 +9705,7 @@ impl FromXml for CTFFDDList {
                                 }
                             }
                             b"listEntry" => {
-                                f_list_entry.push(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_list_entry.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9751,7 +9747,7 @@ impl FromXml for CTFFDDList {
                                 }
                             }
                             b"listEntry" => {
-                                f_list_entry.push(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_list_entry.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10817,7 +10813,7 @@ impl FromXml for Columns {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"col" => {
-                                f_col.push(Box::new(CTColumn::from_xml(reader, &e, false)?));
+                                f_col.push(CTColumn::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10843,7 +10839,7 @@ impl FromXml for Columns {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"col" => {
-                                f_col.push(Box::new(CTColumn::from_xml(reader, &e, true)?));
+                                f_col.push(CTColumn::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -11106,8 +11102,7 @@ impl FromXml for HeaderFooter {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -11160,8 +11155,7 @@ impl FromXml for HeaderFooter {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12176,7 +12170,7 @@ impl FromXml for SectionProperties {
                         match e.local_name().as_ref() {
                             b"headerReference" | b"footerReference" => {
                                 f_header_footer_refs
-                                    .push(Box::new(HeaderFooterRef::from_xml(reader, &e, false)?));
+                                    .push(HeaderFooterRef::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12377,7 +12371,7 @@ impl FromXml for SectionProperties {
                         match e.local_name().as_ref() {
                             b"headerReference" | b"footerReference" => {
                                 f_header_footer_refs
-                                    .push(Box::new(HeaderFooterRef::from_xml(reader, &e, true)?));
+                                    .push(HeaderFooterRef::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13273,8 +13267,7 @@ impl FromXml for Run {
                             | b"drawing"
                             | b"ptab"
                             | b"lastRenderedPageBreak" => {
-                                f_run_content
-                                    .push(Box::new(RunContent::from_xml(reader, &e, false)?));
+                                f_run_content.push(RunContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13340,8 +13333,7 @@ impl FromXml for Run {
                             | b"drawing"
                             | b"ptab"
                             | b"lastRenderedPageBreak" => {
-                                f_run_content
-                                    .push(Box::new(RunContent::from_xml(reader, &e, true)?));
+                                f_run_content.push(RunContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19167,8 +19159,7 @@ impl FromXml for CTRubyContent {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_ruby_content
-                                    .push(Box::new(RubyContent::from_xml(reader, &e, false)?));
+                                f_ruby_content.push(RubyContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19217,8 +19208,7 @@ impl FromXml for CTRubyContent {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_ruby_content
-                                    .push(Box::new(RubyContent::from_xml(reader, &e, true)?));
+                                f_ruby_content.push(RubyContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19765,8 +19755,7 @@ impl FromXml for CTSdtComboBox {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"listItem" => {
-                                f_list_item
-                                    .push(Box::new(CTSdtListItem::from_xml(reader, &e, false)?));
+                                f_list_item.push(CTSdtListItem::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19792,8 +19781,7 @@ impl FromXml for CTSdtComboBox {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"listItem" => {
-                                f_list_item
-                                    .push(Box::new(CTSdtListItem::from_xml(reader, &e, true)?));
+                                f_list_item.push(CTSdtListItem::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19992,8 +19980,7 @@ impl FromXml for CTSdtDropDownList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"listItem" => {
-                                f_list_item
-                                    .push(Box::new(CTSdtListItem::from_xml(reader, &e, false)?));
+                                f_list_item.push(CTSdtListItem::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20019,8 +20006,7 @@ impl FromXml for CTSdtDropDownList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"listItem" => {
-                                f_list_item
-                                    .push(Box::new(CTSdtListItem::from_xml(reader, &e, true)?));
+                                f_list_item.push(CTSdtListItem::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20243,9 +20229,8 @@ impl FromXml for CTSdtPr {
                                 }
                             }
                             b"placeholder" => {
-                                f_placeholder = Some(Box::new(Box::new(CTString::from_xml(
-                                    reader, &e, false,
-                                )?)));
+                                f_placeholder =
+                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20436,7 +20421,7 @@ impl FromXml for CTSdtPr {
                             }
                             b"placeholder" => {
                                 f_placeholder =
-                                    Some(Box::new(Box::new(CTString::from_xml(reader, &e, true)?)));
+                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20909,7 +20894,7 @@ impl FromXml for CTDirContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -20967,7 +20952,7 @@ impl FromXml for CTDirContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21078,7 +21063,7 @@ impl FromXml for CTBdoContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21136,7 +21121,7 @@ impl FromXml for CTBdoContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21227,7 +21212,7 @@ impl FromXml for CTSdtContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21285,7 +21270,7 @@ impl FromXml for CTSdtContentRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21490,9 +21475,8 @@ impl FromXml for CTSdtContentBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21544,9 +21528,8 @@ impl FromXml for CTSdtContentBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21746,7 +21729,7 @@ impl FromXml for CTSdtContentRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21797,7 +21780,7 @@ impl FromXml for CTSdtContentRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21997,7 +21980,7 @@ impl FromXml for CTSdtContentCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22048,7 +22031,7 @@ impl FromXml for CTSdtContentCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22698,7 +22681,7 @@ impl FromXml for CTCustomXmlRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22764,7 +22747,7 @@ impl FromXml for CTCustomXmlRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22891,7 +22874,7 @@ impl FromXml for CTSmartTagRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22957,7 +22940,7 @@ impl FromXml for CTSmartTagRun {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23078,9 +23061,8 @@ impl FromXml for CTCustomXmlBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23140,9 +23122,8 @@ impl FromXml for CTCustomXmlBlock {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23213,7 +23194,7 @@ impl FromXml for CTCustomXmlPr {
                                 }
                             }
                             b"attr" => {
-                                f_attr.push(Box::new(CTAttr::from_xml(reader, &e, false)?));
+                                f_attr.push(CTAttr::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23247,7 +23228,7 @@ impl FromXml for CTCustomXmlPr {
                                 }
                             }
                             b"attr" => {
-                                f_attr.push(Box::new(CTAttr::from_xml(reader, &e, true)?));
+                                f_attr.push(CTAttr::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23362,7 +23343,7 @@ impl FromXml for CTCustomXmlRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23421,7 +23402,7 @@ impl FromXml for CTCustomXmlRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23541,7 +23522,7 @@ impl FromXml for CTCustomXmlCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23600,7 +23581,7 @@ impl FromXml for CTCustomXmlCell {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23662,7 +23643,7 @@ impl FromXml for CTSmartTagPr {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"attr" => {
-                                f_attr.push(Box::new(CTAttr::from_xml(reader, &e, false)?));
+                                f_attr.push(CTAttr::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23688,7 +23669,7 @@ impl FromXml for CTSmartTagPr {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"attr" => {
-                                f_attr.push(Box::new(CTAttr::from_xml(reader, &e, true)?));
+                                f_attr.push(CTAttr::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23967,7 +23948,7 @@ impl FromXml for Paragraph {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, false)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -24035,7 +24016,7 @@ impl FromXml for Paragraph {
                             | b"hyperlink"
                             | b"subDoc" => {
                                 f_paragraph_content
-                                    .push(Box::new(ParagraphContent::from_xml(reader, &e, true)?));
+                                    .push(ParagraphContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -24251,8 +24232,7 @@ impl FromXml for CTTblGridBase {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col
-                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, false)?));
+                                f_grid_col.push(TableGridColumn::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -24278,8 +24258,7 @@ impl FromXml for CTTblGridBase {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col
-                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, true)?));
+                                f_grid_col.push(TableGridColumn::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -24336,8 +24315,7 @@ impl FromXml for TableGrid {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col
-                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, false)?));
+                                f_grid_col.push(TableGridColumn::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -24371,8 +24349,7 @@ impl FromXml for TableGrid {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col
-                                    .push(Box::new(TableGridColumn::from_xml(reader, &e, true)?));
+                                f_grid_col.push(TableGridColumn::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26000,8 +25977,7 @@ impl FromXml for TableCell {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26064,8 +26040,7 @@ impl FromXml for TableCell {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26233,7 +26208,7 @@ impl FromXml for CTHeaders {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"header" => {
-                                f_header.push(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_header.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -26259,7 +26234,7 @@ impl FromXml for CTHeaders {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"header" => {
-                                f_header.push(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_header.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27005,7 +26980,7 @@ impl FromXml for CTRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, false)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -27074,7 +27049,7 @@ impl FromXml for CTRow {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_cells.push(Box::new(CellContent::from_xml(reader, &e, true)?));
+                                f_cells.push(CellContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -28978,8 +28953,7 @@ impl FromXml for Table {
                             | b"customXmlMoveFromRangeEnd"
                             | b"customXmlMoveToRangeStart"
                             | b"customXmlMoveToRangeEnd" => {
-                                f_range_markup
-                                    .push(Box::new(RangeMarkup::from_xml(reader, &e, false)?));
+                                f_range_markup.push(RangeMarkup::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29003,7 +28977,7 @@ impl FromXml for Table {
                             }
                             b"tr" | b"customXml" | b"sdt" | b"proofErr" | b"permStart"
                             | b"permEnd" | b"ins" | b"del" | b"moveFrom" | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, false)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29044,8 +29018,7 @@ impl FromXml for Table {
                             | b"customXmlMoveFromRangeEnd"
                             | b"customXmlMoveToRangeStart"
                             | b"customXmlMoveToRangeEnd" => {
-                                f_range_markup
-                                    .push(Box::new(RangeMarkup::from_xml(reader, &e, true)?));
+                                f_range_markup.push(RangeMarkup::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29068,7 +29041,7 @@ impl FromXml for Table {
                             }
                             b"tr" | b"customXml" | b"sdt" | b"proofErr" | b"permStart"
                             | b"permEnd" | b"ins" | b"del" | b"moveFrom" | b"moveTo" => {
-                                f_rows.push(Box::new(RowContent::from_xml(reader, &e, true)?));
+                                f_rows.push(RowContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29549,8 +29522,7 @@ impl FromXml for FootnoteEndnote {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -29603,8 +29575,7 @@ impl FromXml for FootnoteEndnote {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30068,8 +30039,7 @@ impl FromXml for CTFtnDocProps {
                                 }
                             }
                             b"footnote" => {
-                                f_footnote
-                                    .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, false)?));
+                                f_footnote.push(CTFtnEdnSepRef::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30125,8 +30095,7 @@ impl FromXml for CTFtnDocProps {
                                 }
                             }
                             b"footnote" => {
-                                f_footnote
-                                    .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, true)?));
+                                f_footnote.push(CTFtnEdnSepRef::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30220,8 +30189,7 @@ impl FromXml for CTEdnDocProps {
                                 }
                             }
                             b"endnote" => {
-                                f_endnote
-                                    .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, false)?));
+                                f_endnote.push(CTFtnEdnSepRef::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30277,8 +30245,7 @@ impl FromXml for CTEdnDocProps {
                                 }
                             }
                             b"endnote" => {
-                                f_endnote
-                                    .push(Box::new(CTFtnEdnSepRef::from_xml(reader, &e, true)?));
+                                f_endnote.push(CTFtnEdnSepRef::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30505,7 +30472,7 @@ impl FromXml for CTRecipients {
                         match e.local_name().as_ref() {
                             b"recipientData" => {
                                 f_recipient_data
-                                    .push(Box::new(CTRecipientData::from_xml(reader, &e, false)?));
+                                    .push(CTRecipientData::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30531,8 +30498,7 @@ impl FromXml for CTRecipients {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"recipientData" => {
-                                f_recipient_data
-                                    .push(Box::new(CTRecipientData::from_xml(reader, &e, true)?));
+                                f_recipient_data.push(CTRecipientData::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30859,17 +30825,15 @@ impl FromXml for CTOdso {
                                 }
                             }
                             b"fieldMapData" => {
-                                f_field_map_data.push(Box::new(CTOdsoFieldMapData::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_field_map_data
+                                    .push(CTOdsoFieldMapData::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"recipientData" => {
-                                f_recipient_data
-                                    .push(Box::new(CTRel::from_xml(reader, &e, false)?));
+                                f_recipient_data.push(CTRel::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -30940,16 +30904,15 @@ impl FromXml for CTOdso {
                                 }
                             }
                             b"fieldMapData" => {
-                                f_field_map_data.push(Box::new(CTOdsoFieldMapData::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_field_map_data
+                                    .push(CTOdsoFieldMapData::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"recipientData" => {
-                                f_recipient_data.push(Box::new(CTRel::from_xml(reader, &e, true)?));
+                                f_recipient_data.push(CTRel::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -31998,7 +31961,7 @@ impl FromXml for Compatibility {
                             }
                             b"compatSetting" => {
                                 f_compat_setting
-                                    .push(Box::new(CTCompatSetting::from_xml(reader, &e, false)?));
+                                    .push(CTCompatSetting::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32543,8 +32506,7 @@ impl FromXml for Compatibility {
                                 }
                             }
                             b"compatSetting" => {
-                                f_compat_setting
-                                    .push(Box::new(CTCompatSetting::from_xml(reader, &e, true)?));
+                                f_compat_setting.push(CTCompatSetting::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32774,7 +32736,7 @@ impl FromXml for CTDocVars {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"docVar" => {
-                                f_doc_var.push(Box::new(CTDocVar::from_xml(reader, &e, false)?));
+                                f_doc_var.push(CTDocVar::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32800,7 +32762,7 @@ impl FromXml for CTDocVars {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"docVar" => {
-                                f_doc_var.push(Box::new(CTDocVar::from_xml(reader, &e, true)?));
+                                f_doc_var.push(CTDocVar::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32865,8 +32827,7 @@ impl FromXml for CTDocRsids {
                                 }
                             }
                             b"rsid" => {
-                                f_rsid
-                                    .push(Box::new(CTLongHexNumber::from_xml(reader, &e, false)?));
+                                f_rsid.push(CTLongHexNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -32900,7 +32861,7 @@ impl FromXml for CTDocRsids {
                                 }
                             }
                             b"rsid" => {
-                                f_rsid.push(Box::new(CTLongHexNumber::from_xml(reader, &e, true)?));
+                                f_rsid.push(CTLongHexNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -33888,7 +33849,7 @@ impl FromXml for Settings {
                             }
                             b"activeWritingStyle" => {
                                 f_active_writing_style
-                                    .push(Box::new(CTWritingStyle::from_xml(reader, &e, false)?));
+                                    .push(CTWritingStyle::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34395,8 +34356,7 @@ impl FromXml for Settings {
                                 }
                             }
                             b"attachedSchema" => {
-                                f_attached_schema
-                                    .push(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_attached_schema.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34461,8 +34421,7 @@ impl FromXml for Settings {
                                 }
                             }
                             b"smartTagType" => {
-                                f_smart_tag_type
-                                    .push(Box::new(CTSmartTagType::from_xml(reader, &e, false)?));
+                                f_smart_tag_type.push(CTSmartTagType::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -34690,7 +34649,7 @@ impl FromXml for Settings {
                             }
                             b"activeWritingStyle" => {
                                 f_active_writing_style
-                                    .push(Box::new(CTWritingStyle::from_xml(reader, &e, true)?));
+                                    .push(CTWritingStyle::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35194,8 +35153,7 @@ impl FromXml for Settings {
                                 }
                             }
                             b"attachedSchema" => {
-                                f_attached_schema
-                                    .push(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_attached_schema.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -35260,8 +35218,7 @@ impl FromXml for Settings {
                                 }
                             }
                             b"smartTagType" => {
-                                f_smart_tag_type
-                                    .push(Box::new(CTSmartTagType::from_xml(reader, &e, true)?));
+                                f_smart_tag_type.push(CTSmartTagType::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36479,14 +36436,14 @@ impl FromXml for CTFrameset {
                                 }
                             }
                             b"frameset" => {
-                                f_frameset.push(Box::new(CTFrameset::from_xml(reader, &e, false)?));
+                                f_frameset.push(CTFrameset::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"frame" => {
-                                f_frame.push(Box::new(CTFrame::from_xml(reader, &e, false)?));
+                                f_frame.push(CTFrame::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36542,14 +36499,14 @@ impl FromXml for CTFrameset {
                                 }
                             }
                             b"frameset" => {
-                                f_frameset.push(Box::new(CTFrameset::from_xml(reader, &e, true)?));
+                                f_frameset.push(CTFrameset::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"frame" => {
-                                f_frame.push(Box::new(CTFrame::from_xml(reader, &e, true)?));
+                                f_frame.push(CTFrame::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37312,7 +37269,7 @@ impl FromXml for AbstractNumbering {
                                 }
                             }
                             b"lvl" => {
-                                f_lvl.push(Box::new(Level::from_xml(reader, &e, false)?));
+                                f_lvl.push(Level::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37385,7 +37342,7 @@ impl FromXml for AbstractNumbering {
                                 }
                             }
                             b"lvl" => {
-                                f_lvl.push(Box::new(Level::from_xml(reader, &e, true)?));
+                                f_lvl.push(Level::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37603,8 +37560,7 @@ impl FromXml for NumberingInstance {
                                 }
                             }
                             b"lvlOverride" => {
-                                f_lvl_override
-                                    .push(Box::new(CTNumLvl::from_xml(reader, &e, false)?));
+                                f_lvl_override.push(CTNumLvl::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37638,8 +37594,7 @@ impl FromXml for NumberingInstance {
                                 }
                             }
                             b"lvlOverride" => {
-                                f_lvl_override
-                                    .push(Box::new(CTNumLvl::from_xml(reader, &e, true)?));
+                                f_lvl_override.push(CTNumLvl::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37706,26 +37661,22 @@ impl FromXml for Numbering {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-numbering")]
                             b"numPicBullet" => {
-                                f_num_pic_bullet
-                                    .push(Box::new(CTNumPicBullet::from_xml(reader, &e, false)?));
+                                f_num_pic_bullet.push(CTNumPicBullet::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"abstractNum" => {
-                                f_abstract_num.push(Box::new(AbstractNumbering::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_abstract_num
+                                    .push(AbstractNumbering::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"num" => {
-                                f_num.push(Box::new(NumberingInstance::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_num.push(NumberingInstance::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -37761,24 +37712,21 @@ impl FromXml for Numbering {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "wml-numbering")]
                             b"numPicBullet" => {
-                                f_num_pic_bullet
-                                    .push(Box::new(CTNumPicBullet::from_xml(reader, &e, true)?));
+                                f_num_pic_bullet.push(CTNumPicBullet::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"abstractNum" => {
-                                f_abstract_num
-                                    .push(Box::new(AbstractNumbering::from_xml(reader, &e, true)?));
+                                f_abstract_num.push(AbstractNumbering::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"num" => {
-                                f_num
-                                    .push(Box::new(NumberingInstance::from_xml(reader, &e, true)?));
+                                f_num.push(NumberingInstance::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38268,8 +38216,7 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
-                                f_tbl_style_pr
-                                    .push(Box::new(CTTblStylePr::from_xml(reader, &e, false)?));
+                                f_tbl_style_pr.push(CTTblStylePr::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38467,8 +38414,7 @@ impl FromXml for Style {
                             }
                             #[cfg(feature = "wml-styling")]
                             b"tblStylePr" => {
-                                f_tbl_style_pr
-                                    .push(Box::new(CTTblStylePr::from_xml(reader, &e, true)?));
+                                f_tbl_style_pr.push(CTTblStylePr::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38677,8 +38623,7 @@ impl FromXml for CTLatentStyles {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"lsdException" => {
-                                f_lsd_exception
-                                    .push(Box::new(CTLsdException::from_xml(reader, &e, false)?));
+                                f_lsd_exception.push(CTLsdException::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38704,8 +38649,7 @@ impl FromXml for CTLatentStyles {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"lsdException" => {
-                                f_lsd_exception
-                                    .push(Box::new(CTLsdException::from_xml(reader, &e, true)?));
+                                f_lsd_exception.push(CTLsdException::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38787,7 +38731,7 @@ impl FromXml for Styles {
                                 }
                             }
                             b"style" => {
-                                f_style.push(Box::new(Style::from_xml(reader, &e, false)?));
+                                f_style.push(Style::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -38829,7 +38773,7 @@ impl FromXml for Styles {
                                 }
                             }
                             b"style" => {
-                                f_style.push(Box::new(Style::from_xml(reader, &e, true)?));
+                                f_style.push(Style::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39429,7 +39373,7 @@ impl FromXml for CTFontsList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"font" => {
-                                f_font.push(Box::new(Font::from_xml(reader, &e, false)?));
+                                f_font.push(Font::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39455,7 +39399,7 @@ impl FromXml for CTFontsList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"font" => {
-                                f_font.push(Box::new(Font::from_xml(reader, &e, true)?));
+                                f_font.push(Font::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39726,7 +39670,7 @@ impl FromXml for CTDiv {
                                 }
                             }
                             b"divsChild" => {
-                                f_divs_child.push(Box::new(CTDivs::from_xml(reader, &e, false)?));
+                                f_divs_child.push(CTDivs::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39810,7 +39754,7 @@ impl FromXml for CTDiv {
                                 }
                             }
                             b"divsChild" => {
-                                f_divs_child.push(Box::new(CTDivs::from_xml(reader, &e, true)?));
+                                f_divs_child.push(CTDivs::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39879,7 +39823,7 @@ impl FromXml for CTDivs {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"div" => {
-                                f_div.push(Box::new(CTDiv::from_xml(reader, &e, false)?));
+                                f_div.push(CTDiv::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39905,7 +39849,7 @@ impl FromXml for CTDivs {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"div" => {
-                                f_div.push(Box::new(CTDiv::from_xml(reader, &e, true)?));
+                                f_div.push(CTDiv::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -39988,8 +39932,7 @@ impl FromXml for CTTxbxContent {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40042,8 +39985,7 @@ impl FromXml for CTTxbxContent {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40173,9 +40115,8 @@ impl FromXml for EGBlockLevelChunkElts {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40227,9 +40168,8 @@ impl FromXml for EGBlockLevelChunkElts {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_block_content.push(Box::new(BlockContentChoice::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_block_content
+                                    .push(BlockContentChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40548,8 +40488,7 @@ impl FromXml for Body {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, false)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40611,8 +40550,7 @@ impl FromXml for Body {
                             | b"moveFrom"
                             | b"moveTo"
                             | b"altChunk" => {
-                                f_block_content
-                                    .push(Box::new(BlockContent::from_xml(reader, &e, true)?));
+                                f_block_content.push(BlockContent::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40727,7 +40665,7 @@ impl FromXml for Comments {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"comment" => {
-                                f_comment.push(Box::new(Comment::from_xml(reader, &e, false)?));
+                                f_comment.push(Comment::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40753,7 +40691,7 @@ impl FromXml for Comments {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"comment" => {
-                                f_comment.push(Box::new(Comment::from_xml(reader, &e, true)?));
+                                f_comment.push(Comment::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40809,8 +40747,7 @@ impl FromXml for Footnotes {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"footnote" => {
-                                f_footnote
-                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, false)?));
+                                f_footnote.push(FootnoteEndnote::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40836,8 +40773,7 @@ impl FromXml for Footnotes {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"footnote" => {
-                                f_footnote
-                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, true)?));
+                                f_footnote.push(FootnoteEndnote::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40893,8 +40829,7 @@ impl FromXml for Endnotes {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"endnote" => {
-                                f_endnote
-                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, false)?));
+                                f_endnote.push(FootnoteEndnote::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -40920,8 +40855,7 @@ impl FromXml for Endnotes {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"endnote" => {
-                                f_endnote
-                                    .push(Box::new(FootnoteEndnote::from_xml(reader, &e, true)?));
+                                f_endnote.push(FootnoteEndnote::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41081,9 +41015,7 @@ impl FromXml for CTDocPartBehaviors {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"behavior" => {
-                                f_behavior.push(Box::new(CTDocPartBehavior::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_behavior.push(CTDocPartBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41109,8 +41041,7 @@ impl FromXml for CTDocPartBehaviors {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"behavior" => {
-                                f_behavior
-                                    .push(Box::new(CTDocPartBehavior::from_xml(reader, &e, true)?));
+                                f_behavior.push(CTDocPartBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41233,7 +41164,7 @@ impl FromXml for CTDocPartTypes {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"type" => {
-                                f_type.push(Box::new(CTDocPartType::from_xml(reader, &e, false)?));
+                                f_type.push(CTDocPartType::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41259,7 +41190,7 @@ impl FromXml for CTDocPartTypes {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"type" => {
-                                f_type.push(Box::new(CTDocPartType::from_xml(reader, &e, true)?));
+                                f_type.push(CTDocPartType::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41807,7 +41738,7 @@ impl FromXml for CTDocParts {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"docPart" => {
-                                f_doc_part.push(Box::new(CTDocPart::from_xml(reader, &e, false)?));
+                                f_doc_part.push(CTDocPart::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -41833,7 +41764,7 @@ impl FromXml for CTDocParts {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"docPart" => {
-                                f_doc_part.push(Box::new(CTDocPart::from_xml(reader, &e, true)?));
+                                f_doc_part.push(CTDocPart::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42019,8 +41950,7 @@ impl FromXml for CTAutoCaptions {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"autoCaption" => {
-                                f_auto_caption
-                                    .push(Box::new(CTAutoCaption::from_xml(reader, &e, false)?));
+                                f_auto_caption.push(CTAutoCaption::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42046,8 +41976,7 @@ impl FromXml for CTAutoCaptions {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"autoCaption" => {
-                                f_auto_caption
-                                    .push(Box::new(CTAutoCaption::from_xml(reader, &e, true)?));
+                                f_auto_caption.push(CTAutoCaption::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42104,7 +42033,7 @@ impl FromXml for CTCaptions {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"caption" => {
-                                f_caption.push(Box::new(CTCaption::from_xml(reader, &e, false)?));
+                                f_caption.push(CTCaption::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -42138,7 +42067,7 @@ impl FromXml for CTCaptions {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"caption" => {
-                                f_caption.push(Box::new(CTCaption::from_xml(reader, &e, true)?));
+                                f_caption.push(CTCaption::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;

@@ -202,7 +202,7 @@ fn validate_style_references<R: Read + Seek>(
     let mut checked_styles: HashSet<String> = HashSet::new();
 
     for block in &doc.body().block_content {
-        match block.as_ref() {
+        match block {
             BlockContent::P(para) => {
                 // NOTE: Paragraph style references are in CTPPrBase (not yet flattened).
                 // Checking character style references in runs instead.
@@ -261,7 +261,7 @@ fn validate_fonts<R: Read + Seek>(doc: &Document<R>, result: &mut ValidationResu
         COMMON_FONTS.iter().map(|f| f.to_lowercase()).collect();
 
     for block in &doc.body().block_content {
-        if let BlockContent::P(para) = block.as_ref() {
+        if let BlockContent::P(para) = block {
             for run in para.runs() {
                 if let Some(props) = run.properties()
                     && let Some(font) = props.font_ascii()

@@ -1735,14 +1735,14 @@ impl WorkbookBuilder {
         }
 
         // Build comment list
-        let comment_list: Vec<Box<types::Comment>> = sheet
+        let comment_list: Vec<types::Comment> = sheet
             .comments
             .iter()
             .map(|c| {
                 let author = c.author.clone().unwrap_or_default();
                 let author_id = *author_index.get(&author).unwrap_or(&0);
 
-                Box::new(types::Comment {
+                types::Comment {
                     #[cfg(feature = "sml-comments")]
                     reference: c.reference.clone(),
                     #[cfg(feature = "sml-comments")]
@@ -1754,12 +1754,12 @@ impl WorkbookBuilder {
                     #[cfg(feature = "sml-comments")]
                     text: Box::new(types::RichString {
                         cell_type: None,
-                        reference: vec![Box::new(types::RichTextElement {
+                        reference: vec![types::RichTextElement {
                             r_pr: None,
                             cell_type: c.text.clone(),
                             #[cfg(feature = "extra-children")]
                             extra_children: Vec::new(),
-                        })],
+                        }],
                         r_ph: Vec::new(),
                         phonetic_pr: None,
                         #[cfg(feature = "extra-children")]
@@ -1770,7 +1770,7 @@ impl WorkbookBuilder {
                     extra_attrs: Default::default(),
                     #[cfg(feature = "extra-children")]
                     extra_children: Vec::new(),
-                })
+                }
             })
             .collect();
 
@@ -1811,13 +1811,11 @@ impl WorkbookBuilder {
                     .number_formats
                     .iter()
                     .enumerate()
-                    .map(|(i, fmt)| {
-                        Box::new(types::NumberFormat {
-                            number_format_id: (164 + i) as u32,
-                            format_code: fmt.clone(),
-                            #[cfg(feature = "extra-attrs")]
-                            extra_attrs: Default::default(),
-                        })
+                    .map(|(i, fmt)| types::NumberFormat {
+                        number_format_id: (164 + i) as u32,
+                        format_code: fmt.clone(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
                     })
                     .collect(),
                 #[cfg(feature = "extra-attrs")]
@@ -1830,7 +1828,7 @@ impl WorkbookBuilder {
         // Fonts
         let fonts = Box::new(types::Fonts {
             count: Some(self.fonts.len() as u32),
-            font: self.fonts.iter().map(|f| Box::new(build_font(f))).collect(),
+            font: self.fonts.iter().map(build_font).collect(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1840,7 +1838,7 @@ impl WorkbookBuilder {
         // Fills
         let fills = Box::new(types::Fills {
             count: Some(self.fills.len() as u32),
-            fill: self.fills.iter().map(|f| Box::new(build_fill(f))).collect(),
+            fill: self.fills.iter().map(build_fill).collect(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1850,11 +1848,7 @@ impl WorkbookBuilder {
         // Borders
         let borders = Box::new(types::Borders {
             count: Some(self.borders.len() as u32),
-            border: self
-                .borders
-                .iter()
-                .map(|b| Box::new(build_border(b)))
-                .collect(),
+            border: self.borders.iter().map(build_border).collect(),
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1864,7 +1858,7 @@ impl WorkbookBuilder {
         // Cell style XFs (required, at least one default)
         let cell_style_xfs = Box::new(types::CellStyleFormats {
             count: Some(1),
-            xf: vec![Box::new(types::Format {
+            xf: vec![types::Format {
                 #[cfg(feature = "sml-styling")]
                 number_format_id: Some(0),
                 #[cfg(feature = "sml-styling")]
@@ -1901,7 +1895,7 @@ impl WorkbookBuilder {
                 extra_attrs: Default::default(),
                 #[cfg(feature = "extra-children")]
                 extra_children: Vec::new(),
-            })],
+            }],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -1909,7 +1903,7 @@ impl WorkbookBuilder {
         });
 
         // Cell XFs - includes default format plus custom formats
-        let mut xf_list: Vec<Box<types::Format>> = vec![Box::new(types::Format {
+        let mut xf_list: Vec<types::Format> = vec![types::Format {
             #[cfg(feature = "sml-styling")]
             number_format_id: Some(0),
             #[cfg(feature = "sml-styling")]
@@ -1946,10 +1940,10 @@ impl WorkbookBuilder {
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
-        })];
+        }];
 
         for xf in &self.cell_formats {
-            xf_list.push(Box::new(build_cell_format(xf)));
+            xf_list.push(build_cell_format(xf));
         }
 
         let cell_xfs = Box::new(types::CellFormats {
@@ -1964,7 +1958,7 @@ impl WorkbookBuilder {
         // Cell styles (required)
         let cell_styles = Box::new(types::CellStyles {
             count: Some(1),
-            cell_style: vec![Box::new(types::CellStyle {
+            cell_style: vec![types::CellStyle {
                 name: Some("Normal".to_string()),
                 format_id: 0,
                 builtin_id: Some(0),
@@ -1976,7 +1970,7 @@ impl WorkbookBuilder {
                 extra_attrs: Default::default(),
                 #[cfg(feature = "extra-children")]
                 extra_children: Vec::new(),
-            })],
+            }],
             #[cfg(feature = "extra-attrs")]
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
@@ -2015,43 +2009,41 @@ impl WorkbookBuilder {
     fn serialize_sheet(&self, sheet: &SheetBuilder) -> Result<Vec<u8>> {
         // Build column definitions
         #[cfg(feature = "sml-styling")]
-        let cols: Vec<Box<types::Columns>> = if sheet.column_widths.is_empty() {
+        let cols: Vec<types::Columns> = if sheet.column_widths.is_empty() {
             Vec::new()
         } else {
-            vec![Box::new(types::Columns {
+            vec![types::Columns {
                 col: sheet
                     .column_widths
                     .iter()
-                    .map(|cw| {
-                        Box::new(types::Column {
-                            #[cfg(feature = "sml-styling")]
-                            start_column: cw.min,
-                            #[cfg(feature = "sml-styling")]
-                            end_column: cw.max,
-                            #[cfg(feature = "sml-styling")]
-                            width: Some(cw.width),
-                            #[cfg(feature = "sml-styling")]
-                            style: None,
-                            #[cfg(feature = "sml-structure")]
-                            hidden: None,
-                            #[cfg(feature = "sml-styling")]
-                            best_fit: None,
-                            #[cfg(feature = "sml-styling")]
-                            custom_width: Some(true),
-                            #[cfg(feature = "sml-styling")]
-                            phonetic: None,
-                            #[cfg(feature = "sml-structure")]
-                            outline_level: None,
-                            #[cfg(feature = "sml-structure")]
-                            collapsed: None,
-                            #[cfg(feature = "extra-attrs")]
-                            extra_attrs: Default::default(),
-                        })
+                    .map(|cw| types::Column {
+                        #[cfg(feature = "sml-styling")]
+                        start_column: cw.min,
+                        #[cfg(feature = "sml-styling")]
+                        end_column: cw.max,
+                        #[cfg(feature = "sml-styling")]
+                        width: Some(cw.width),
+                        #[cfg(feature = "sml-styling")]
+                        style: None,
+                        #[cfg(feature = "sml-structure")]
+                        hidden: None,
+                        #[cfg(feature = "sml-styling")]
+                        best_fit: None,
+                        #[cfg(feature = "sml-styling")]
+                        custom_width: Some(true),
+                        #[cfg(feature = "sml-styling")]
+                        phonetic: None,
+                        #[cfg(feature = "sml-structure")]
+                        outline_level: None,
+                        #[cfg(feature = "sml-structure")]
+                        collapsed: None,
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
                     })
                     .collect(),
                 #[cfg(feature = "extra-children")]
                 extra_children: Vec::new(),
-            })]
+            }]
         };
 
         // Group cells by row
@@ -2071,14 +2063,14 @@ impl WorkbookBuilder {
         let mut row_nums: Vec<_> = rows_map.keys().copied().collect();
         row_nums.sort();
 
-        let rows: Vec<Box<types::Row>> = row_nums
+        let rows: Vec<types::Row> = row_nums
             .iter()
             .map(|&row_num| {
                 let cells_data = rows_map.get(&row_num).unwrap();
                 let mut sorted_cells: Vec<_> = cells_data.clone();
                 sorted_cells.sort_by_key(|(col, _)| *col);
 
-                let cells: Vec<Box<types::Cell>> = sorted_cells
+                let cells: Vec<types::Cell> = sorted_cells
                     .iter()
                     .map(|(col, cell)| {
                         let ref_str = column_to_letter(*col) + &row_num.to_string();
@@ -2086,7 +2078,7 @@ impl WorkbookBuilder {
                     })
                     .collect();
 
-                Box::new(types::Row {
+                types::Row {
                     reference: Some(row_num),
                     cell_spans: None,
                     style_index: None,
@@ -2115,7 +2107,7 @@ impl WorkbookBuilder {
                     extra_attrs: Default::default(),
                     #[cfg(feature = "extra-children")]
                     extra_children: Vec::new(),
-                })
+                }
             })
             .collect();
 
@@ -2128,12 +2120,10 @@ impl WorkbookBuilder {
                 merge_cell: sheet
                     .merged_cells
                     .iter()
-                    .map(|range| {
-                        Box::new(types::MergedCell {
-                            reference: range.clone(),
-                            #[cfg(feature = "extra-attrs")]
-                            extra_attrs: Default::default(),
-                        })
+                    .map(|range| types::MergedCell {
+                        reference: range.clone(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
                     })
                     .collect(),
                 #[cfg(feature = "extra-attrs")]
@@ -2233,7 +2223,7 @@ impl WorkbookBuilder {
     }
 
     /// Build a Cell type from builder data.
-    fn build_cell(&self, reference: &str, cell: &BuilderCell) -> Box<types::Cell> {
+    fn build_cell(&self, reference: &str, cell: &BuilderCell) -> types::Cell {
         let style_index = self
             .get_cell_style_index(&cell.style)
             .filter(|&s| s > 0)
@@ -2288,7 +2278,7 @@ impl WorkbookBuilder {
             WriteCellValue::Empty => (None, None, None),
         };
 
-        Box::new(types::Cell {
+        types::Cell {
             reference: Some(reference.to_string()),
             style_index,
             cell_type,
@@ -2307,66 +2297,61 @@ impl WorkbookBuilder {
             extra_attrs: Default::default(),
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
-        })
+        }
     }
 
     /// Build conditional formatting from builder data.
     #[cfg(feature = "sml-styling")]
-    #[allow(clippy::vec_box)] // Generated Worksheet expects Vec<Box<ConditionalFormatting>>
     fn build_conditional_formatting(
         formats: &[ConditionalFormat],
-    ) -> Vec<Box<types::ConditionalFormatting>> {
+    ) -> Vec<types::ConditionalFormatting> {
         formats
             .iter()
-            .map(|cf| {
-                Box::new(types::ConditionalFormatting {
-                    #[cfg(feature = "sml-pivot")]
-                    pivot: None,
-                    square_reference: Some(cf.range.clone()),
-                    cf_rule: cf
-                        .rules
-                        .iter()
-                        .map(|rule| {
-                            Box::new(types::ConditionalRule {
-                                r#type: Some(Self::map_conditional_rule_type(&rule.rule_type)),
-                                dxf_id: rule.dxf_id,
-                                priority: rule.priority as i32,
-                                stop_if_true: None,
-                                above_average: None,
-                                percent: None,
-                                bottom: None,
-                                operator: rule
-                                    .operator
-                                    .as_ref()
-                                    .and_then(|op| Self::parse_conditional_operator(op)),
-                                text: rule.text.clone(),
-                                time_period: None,
-                                rank: None,
-                                std_dev: None,
-                                equal_average: None,
-                                formula: rule.formulas.clone(),
-                                #[cfg(feature = "sml-styling")]
-                                color_scale: None,
-                                #[cfg(feature = "sml-styling")]
-                                data_bar: None,
-                                #[cfg(feature = "sml-styling")]
-                                icon_set: None,
-                                #[cfg(feature = "sml-extensions")]
-                                extension_list: None,
-                                #[cfg(feature = "extra-attrs")]
-                                extra_attrs: Default::default(),
-                                #[cfg(feature = "extra-children")]
-                                extra_children: Vec::new(),
-                            })
-                        })
-                        .collect(),
-                    #[cfg(feature = "sml-extensions")]
-                    extension_list: None,
-                    #[cfg(feature = "extra-attrs")]
-                    extra_attrs: Default::default(),
-                    #[cfg(feature = "extra-children")]
-                    extra_children: Vec::new(),
-                })
+            .map(|cf| types::ConditionalFormatting {
+                #[cfg(feature = "sml-pivot")]
+                pivot: None,
+                square_reference: Some(cf.range.clone()),
+                cf_rule: cf
+                    .rules
+                    .iter()
+                    .map(|rule| types::ConditionalRule {
+                        r#type: Some(Self::map_conditional_rule_type(&rule.rule_type)),
+                        dxf_id: rule.dxf_id,
+                        priority: rule.priority as i32,
+                        stop_if_true: None,
+                        above_average: None,
+                        percent: None,
+                        bottom: None,
+                        operator: rule
+                            .operator
+                            .as_ref()
+                            .and_then(|op| Self::parse_conditional_operator(op)),
+                        text: rule.text.clone(),
+                        time_period: None,
+                        rank: None,
+                        std_dev: None,
+                        equal_average: None,
+                        formula: rule.formulas.clone(),
+                        #[cfg(feature = "sml-styling")]
+                        color_scale: None,
+                        #[cfg(feature = "sml-styling")]
+                        data_bar: None,
+                        #[cfg(feature = "sml-styling")]
+                        icon_set: None,
+                        #[cfg(feature = "sml-extensions")]
+                        extension_list: None,
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    })
+                    .collect(),
+                #[cfg(feature = "sml-extensions")]
+                extension_list: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
             })
             .collect()
     }
@@ -2436,36 +2421,34 @@ impl WorkbookBuilder {
             count: Some(validations.len() as u32),
             data_validation: validations
                 .iter()
-                .map(|dv| {
-                    Box::new(types::DataValidation {
-                        r#type: Self::map_validation_type(&dv.validation_type),
-                        error_style: Self::map_validation_error_style(&dv.error_style),
-                        ime_mode: None,
-                        operator: Self::map_validation_operator(&dv.operator),
-                        allow_blank: if dv.allow_blank { Some(true) } else { None },
-                        show_drop_down: None,
-                        show_input_message: if dv.show_input_message {
-                            Some(true)
-                        } else {
-                            None
-                        },
-                        show_error_message: if dv.show_error_message {
-                            Some(true)
-                        } else {
-                            None
-                        },
-                        error_title: dv.error_title.clone(),
-                        error: dv.error_message.clone(),
-                        prompt_title: dv.prompt_title.clone(),
-                        prompt: dv.prompt_message.clone(),
-                        square_reference: dv.range.clone(),
-                        formula1: dv.formula1.clone(),
-                        formula2: dv.formula2.clone(),
-                        #[cfg(feature = "extra-attrs")]
-                        extra_attrs: Default::default(),
-                        #[cfg(feature = "extra-children")]
-                        extra_children: Vec::new(),
-                    })
+                .map(|dv| types::DataValidation {
+                    r#type: Self::map_validation_type(&dv.validation_type),
+                    error_style: Self::map_validation_error_style(&dv.error_style),
+                    ime_mode: None,
+                    operator: Self::map_validation_operator(&dv.operator),
+                    allow_blank: if dv.allow_blank { Some(true) } else { None },
+                    show_drop_down: None,
+                    show_input_message: if dv.show_input_message {
+                        Some(true)
+                    } else {
+                        None
+                    },
+                    show_error_message: if dv.show_error_message {
+                        Some(true)
+                    } else {
+                        None
+                    },
+                    error_title: dv.error_title.clone(),
+                    error: dv.error_message.clone(),
+                    prompt_title: dv.prompt_title.clone(),
+                    prompt: dv.prompt_message.clone(),
+                    square_reference: dv.range.clone(),
+                    formula1: dv.formula1.clone(),
+                    formula2: dv.formula2.clone(),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
                 })
                 .collect(),
             #[cfg(feature = "extra-attrs")]
@@ -2530,23 +2513,20 @@ impl WorkbookBuilder {
     }
 
     /// Build a Workbook type from builder data.
-    #[allow(clippy::vec_box)] // Generated Sheets expects Vec<Box<Sheet>>
     fn build_workbook(&self) -> types::Workbook {
         // Build sheets
-        let sheets: Vec<Box<types::Sheet>> = self
+        let sheets: Vec<types::Sheet> = self
             .sheets
             .iter()
             .enumerate()
-            .map(|(i, sheet)| {
-                Box::new(types::Sheet {
-                    name: sheet.name.clone(),
-                    sheet_id: (i + 1) as u32,
-                    #[cfg(feature = "sml-structure")]
-                    state: None,
-                    id: format!("rId{}", i + 1),
-                    #[cfg(feature = "extra-attrs")]
-                    extra_attrs: Default::default(),
-                })
+            .map(|(i, sheet)| types::Sheet {
+                name: sheet.name.clone(),
+                sheet_id: (i + 1) as u32,
+                #[cfg(feature = "sml-structure")]
+                state: None,
+                id: format!("rId{}", i + 1),
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
             })
             .collect();
 
@@ -2558,40 +2538,38 @@ impl WorkbookBuilder {
                 defined_name: self
                     .defined_names
                     .iter()
-                    .map(|dn| {
-                        Box::new(types::DefinedName {
-                            text: Some(dn.reference.clone()),
-                            name: dn.name.clone(),
-                            comment: dn.comment.clone(),
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            custom_menu: None,
-                            description: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            help: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            status_bar: None,
-                            local_sheet_id: dn.local_sheet_id,
-                            #[cfg(feature = "sml-structure")]
-                            hidden: if dn.hidden { Some(true) } else { None },
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            function: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            vb_procedure: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            xlm: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            function_group_id: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            shortcut_key: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            publish_to_server: None,
-                            #[cfg(feature = "sml-formulas-advanced")]
-                            workbook_parameter: None,
-                            #[cfg(feature = "extra-attrs")]
-                            extra_attrs: Default::default(),
-                            #[cfg(feature = "extra-children")]
-                            extra_children: Vec::new(),
-                        })
+                    .map(|dn| types::DefinedName {
+                        text: Some(dn.reference.clone()),
+                        name: dn.name.clone(),
+                        comment: dn.comment.clone(),
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        custom_menu: None,
+                        description: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        help: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        status_bar: None,
+                        local_sheet_id: dn.local_sheet_id,
+                        #[cfg(feature = "sml-structure")]
+                        hidden: if dn.hidden { Some(true) } else { None },
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        function: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        vb_procedure: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        xlm: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        function_group_id: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        shortcut_key: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        publish_to_server: None,
+                        #[cfg(feature = "sml-formulas-advanced")]
+                        workbook_parameter: None,
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
                     })
                     .collect(),
                 #[cfg(feature = "extra-children")]
@@ -2653,15 +2631,13 @@ impl WorkbookBuilder {
             si: self
                 .shared_strings
                 .iter()
-                .map(|s| {
-                    Box::new(types::RichString {
-                        cell_type: Some(s.clone()),
-                        reference: Vec::new(),
-                        r_ph: Vec::new(),
-                        phonetic_pr: None,
-                        #[cfg(feature = "extra-children")]
-                        extra_children: Vec::new(),
-                    })
+                .map(|s| types::RichString {
+                    cell_type: Some(s.clone()),
+                    reference: Vec::new(),
+                    r_ph: Vec::new(),
+                    phonetic_pr: None,
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
                 })
                 .collect(),
             extension_list: None,

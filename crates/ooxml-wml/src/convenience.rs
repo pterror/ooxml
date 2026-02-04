@@ -14,8 +14,8 @@ impl types::Body {
     /// Add an empty paragraph and return a mutable reference to it.
     pub fn add_paragraph(&mut self) -> &mut types::Paragraph {
         self.block_content
-            .push(Box::new(types::BlockContent::P(Box::default())));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::P(Box::default()));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::P(p) => p.as_mut(),
             _ => unreachable!(),
         }
@@ -33,8 +33,8 @@ impl types::Body {
             extra_children: Vec::new(),
         };
         self.block_content
-            .push(Box::new(types::BlockContent::Tbl(Box::new(table))));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::Tbl(Box::new(table)));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::Tbl(t) => t.as_mut(),
             _ => unreachable!(),
         }
@@ -55,8 +55,8 @@ impl types::Paragraph {
     /// Add an empty run and return a mutable reference to it.
     pub fn add_run(&mut self) -> &mut types::Run {
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::R(Box::default())));
-        match self.paragraph_content.last_mut().unwrap().as_mut() {
+            .push(types::ParagraphContent::R(Box::default()));
+        match self.paragraph_content.last_mut().unwrap() {
             types::ParagraphContent::R(r) => r.as_mut(),
             _ => unreachable!(),
         }
@@ -66,8 +66,8 @@ impl types::Paragraph {
     #[cfg(feature = "wml-hyperlinks")]
     pub fn add_hyperlink(&mut self) -> &mut types::Hyperlink {
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::Hyperlink(Box::default())));
-        match self.paragraph_content.last_mut().unwrap().as_mut() {
+            .push(types::ParagraphContent::Hyperlink(Box::default()));
+        match self.paragraph_content.last_mut().unwrap() {
             types::ParagraphContent::Hyperlink(h) => h.as_mut(),
             _ => unreachable!(),
         }
@@ -85,9 +85,7 @@ impl types::Paragraph {
             extra_attrs: Default::default(),
         };
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::BookmarkStart(Box::new(
-                bookmark,
-            ))));
+            .push(types::ParagraphContent::BookmarkStart(Box::new(bookmark)));
     }
 
     /// Add a bookmark end marker.
@@ -99,9 +97,7 @@ impl types::Paragraph {
             extra_attrs: Default::default(),
         };
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::BookmarkEnd(Box::new(
-                range,
-            ))));
+            .push(types::ParagraphContent::BookmarkEnd(Box::new(range)));
     }
 
     /// Add a comment range start marker.
@@ -113,9 +109,7 @@ impl types::Paragraph {
             extra_attrs: Default::default(),
         };
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::CommentRangeStart(
-                Box::new(range),
-            )));
+            .push(types::ParagraphContent::CommentRangeStart(Box::new(range)));
     }
 
     /// Add a comment range end marker.
@@ -127,9 +121,7 @@ impl types::Paragraph {
             extra_attrs: Default::default(),
         };
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::CommentRangeEnd(
-                Box::new(range),
-            )));
+            .push(types::ParagraphContent::CommentRangeEnd(Box::new(range)));
     }
 
     /// Set paragraph properties.
@@ -216,8 +208,7 @@ impl types::Run {
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         };
-        self.run_content
-            .push(Box::new(types::RunContent::T(Box::new(t))));
+        self.run_content.push(types::RunContent::T(Box::new(t)));
     }
 
     /// Set bold on this run. Requires `wml-styling` feature.
@@ -257,12 +248,12 @@ impl types::Run {
     /// Add a page break to this run.
     pub fn set_page_break(&mut self) {
         self.run_content
-            .push(Box::new(types::RunContent::Br(Box::new(types::CTBr {
+            .push(types::RunContent::Br(Box::new(types::CTBr {
                 r#type: Some(types::STBrType::Page),
                 clear: None,
                 #[cfg(feature = "extra-attrs")]
                 extra_attrs: Default::default(),
-            }))));
+            })));
     }
 
     /// Set the text color on this run (hex string, e.g. "FF0000" for red).
@@ -346,45 +337,45 @@ impl types::Run {
     /// Add a drawing to this run's inner content.
     pub fn add_drawing(&mut self, drawing: types::CTDrawing) {
         self.run_content
-            .push(Box::new(types::RunContent::Drawing(Box::new(drawing))));
+            .push(types::RunContent::Drawing(Box::new(drawing)));
     }
 
     /// Add a footnote reference to this run.
     pub fn add_footnote_ref(&mut self, id: i64) {
         self.run_content
-            .push(Box::new(types::RunContent::FootnoteReference(Box::new(
+            .push(types::RunContent::FootnoteReference(Box::new(
                 types::FootnoteEndnoteRef {
                     custom_mark_follows: None,
                     id,
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
                 },
-            ))));
+            )));
     }
 
     /// Add an endnote reference to this run.
     pub fn add_endnote_ref(&mut self, id: i64) {
         self.run_content
-            .push(Box::new(types::RunContent::EndnoteReference(Box::new(
+            .push(types::RunContent::EndnoteReference(Box::new(
                 types::FootnoteEndnoteRef {
                     custom_mark_follows: None,
                     id,
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
                 },
-            ))));
+            )));
     }
 
     /// Add a comment reference to this run.
     pub fn add_comment_ref(&mut self, id: i64) {
         self.run_content
-            .push(Box::new(types::RunContent::CommentReference(Box::new(
+            .push(types::RunContent::CommentReference(Box::new(
                 types::CTMarkup {
                     id,
                     #[cfg(feature = "extra-attrs")]
                     extra_attrs: Default::default(),
                 },
-            ))));
+            )));
     }
 }
 
@@ -397,8 +388,8 @@ impl types::Hyperlink {
     /// Add a run to this hyperlink and return a mutable reference.
     pub fn add_run(&mut self) -> &mut types::Run {
         self.paragraph_content
-            .push(Box::new(types::ParagraphContent::R(Box::default())));
-        match self.paragraph_content.last_mut().unwrap().as_mut() {
+            .push(types::ParagraphContent::R(Box::default()));
+        match self.paragraph_content.last_mut().unwrap() {
             types::ParagraphContent::R(r) => r.as_mut(),
             _ => unreachable!(),
         }
@@ -431,9 +422,8 @@ impl types::Hyperlink {
 impl types::Table {
     /// Add a row and return a mutable reference.
     pub fn add_row(&mut self) -> &mut types::CTRow {
-        self.rows
-            .push(Box::new(types::RowContent::Tr(Box::default())));
-        match self.rows.last_mut().unwrap().as_mut() {
+        self.rows.push(types::RowContent::Tr(Box::default()));
+        match self.rows.last_mut().unwrap() {
             types::RowContent::Tr(r) => r.as_mut(),
             _ => unreachable!(),
         }
@@ -444,9 +434,8 @@ impl types::Table {
 impl types::CTRow {
     /// Add a cell and return a mutable reference.
     pub fn add_cell(&mut self) -> &mut types::TableCell {
-        self.cells
-            .push(Box::new(types::CellContent::Tc(Box::default())));
-        match self.cells.last_mut().unwrap().as_mut() {
+        self.cells.push(types::CellContent::Tc(Box::default()));
+        match self.cells.last_mut().unwrap() {
             types::CellContent::Tc(c) => c.as_mut(),
             _ => unreachable!(),
         }
@@ -458,8 +447,8 @@ impl types::TableCell {
     /// Add a paragraph and return a mutable reference.
     pub fn add_paragraph(&mut self) -> &mut types::Paragraph {
         self.block_content
-            .push(Box::new(types::BlockContent::P(Box::default())));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::P(Box::default()));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::P(p) => p.as_mut(),
             _ => unreachable!(),
         }
@@ -474,8 +463,8 @@ impl types::HeaderFooter {
     /// Add an empty paragraph and return a mutable reference.
     pub fn add_paragraph(&mut self) -> &mut types::Paragraph {
         self.block_content
-            .push(Box::new(types::BlockContent::P(Box::default())));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::P(Box::default()));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::P(p) => p.as_mut(),
             _ => unreachable!(),
         }
@@ -490,8 +479,8 @@ impl types::Comment {
     /// Add a paragraph and return a mutable reference.
     pub fn add_paragraph(&mut self) -> &mut types::Paragraph {
         self.block_content
-            .push(Box::new(types::BlockContent::P(Box::default())));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::P(Box::default()));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::P(p) => p.as_mut(),
             _ => unreachable!(),
         }
@@ -506,8 +495,8 @@ impl types::FootnoteEndnote {
     /// Add a paragraph and return a mutable reference.
     pub fn add_paragraph(&mut self) -> &mut types::Paragraph {
         self.block_content
-            .push(Box::new(types::BlockContent::P(Box::default())));
-        match self.block_content.last_mut().unwrap().as_mut() {
+            .push(types::BlockContent::P(Box::default()));
+        match self.block_content.last_mut().unwrap() {
             types::BlockContent::P(p) => p.as_mut(),
             _ => unreachable!(),
         }

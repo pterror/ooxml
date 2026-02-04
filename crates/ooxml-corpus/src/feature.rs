@@ -228,7 +228,7 @@ pub fn extract_features<R: Read + Seek>(doc: &Document<R>) -> DocumentFeatures {
 
     // Process body content
     for block in &doc.body().block_content {
-        process_block(block.as_ref(), &mut features, 0);
+        process_block(block, &mut features, 0);
     }
 
     features

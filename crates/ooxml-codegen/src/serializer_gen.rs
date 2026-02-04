@@ -41,7 +41,7 @@ struct SerializerGenerator<'a> {
 
 impl<'a> SerializerGenerator<'a> {
     fn new(schema: &'a Schema, config: &'a CodegenConfig) -> Self {
-        let definitions = schema
+        let definitions: HashMap<&str, &Pattern> = schema
             .definitions
             .iter()
             .map(|d| (d.name.as_str(), &d.pattern))
@@ -603,7 +603,8 @@ impl<'a> SerializerGenerator<'a> {
     ) {
         match pattern {
             Pattern::Element { name, pattern } => {
-                let (inner_type, needs_box) = self.pattern_to_rust_type(pattern);
+                // Enum variants are not in Vec context
+                let (inner_type, needs_box) = self.pattern_to_rust_type(pattern, false);
                 variants.push((
                     name.prefix.clone(),
                     name.local.clone(),
@@ -1091,12 +1092,28 @@ impl<'a> SerializerGenerator<'a> {
             .map(|feature| format!("{}-{}", self.config.module_name, feature))
     }
 
-    fn pattern_to_rust_type(&self, pattern: &Pattern) -> (String, bool) {
+    /// Check if a definition is an element-wrapper type alias (Element { pattern: Ref(...) }).
+    /// These generate `pub type Foo = Box<T>;` and should not be double-boxed when used.
+    fn is_element_wrapper_type_alias(&self, name: &str) -> bool {
+        if let Some(def_pattern) = self.definitions.get(name) {
+            matches!(def_pattern, Pattern::Element { pattern, .. } if matches!(pattern.as_ref(), Pattern::Ref(_)))
+        } else {
+            false
+        }
+    }
+
+    /// Convert a pattern to Rust type and boxing requirement.
+    /// - `is_vec`: if true, don't indicate boxing needed (Vec provides heap indirection)
+    fn pattern_to_rust_type(&self, pattern: &Pattern, is_vec: bool) -> (String, bool) {
         match pattern {
             Pattern::Ref(name) => {
                 if self.definitions.contains_key(name.as_str()) {
                     let type_name = self.to_rust_type_name(name);
-                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                    // Box CT_* and EG_* types, but not in Vec context (Vec provides heap indirection)
+                    // Also don't box element-wrapper type aliases - they're already Box<T>
+                    let is_complex = name.contains("_CT_") || name.contains("_EG_");
+                    let is_already_boxed = self.is_element_wrapper_type_alias(name);
+                    let needs_box = is_complex && !is_vec && !is_already_boxed;
                     (type_name, needs_box)
                 } else {
                     ("String".to_string(), false)

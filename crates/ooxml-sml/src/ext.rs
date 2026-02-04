@@ -308,20 +308,17 @@ impl RowExt for Row {
     }
 
     fn cell_at_column(&self, col: u32) -> Option<&Cell> {
-        self.cells
-            .iter()
-            .find(|c| {
-                c.reference
-                    .as_ref()
-                    .and_then(|r| parse_column(r))
-                    .map(|c_col| c_col == col)
-                    .unwrap_or(false)
-            })
-            .map(|c| c.as_ref())
+        self.cells.iter().find(|c| {
+            c.reference
+                .as_ref()
+                .and_then(|r| parse_column(r))
+                .map(|c_col| c_col == col)
+                .unwrap_or(false)
+        })
     }
 
     fn cells_iter(&self) -> impl Iterator<Item = &Cell> {
-        self.cells.iter().map(|c| c.as_ref())
+        self.cells.iter()
     }
 }
 
@@ -414,27 +411,23 @@ impl WorksheetExt for Worksheet {
             .row
             .iter()
             .find(|r| r.reference == Some(row_num))
-            .map(|r| r.as_ref())
     }
 
     fn cell(&self, reference: &str) -> Option<&Cell> {
         let col = parse_column(reference)?;
         let row_num = parse_row(reference)?;
         let row = self.row(row_num)?;
-        row.cells
-            .iter()
-            .find(|c| {
-                c.reference
-                    .as_ref()
-                    .and_then(|r| parse_column(r))
-                    .map(|c_col| c_col == col)
-                    .unwrap_or(false)
-            })
-            .map(|c| c.as_ref())
+        row.cells.iter().find(|c| {
+            c.reference
+                .as_ref()
+                .and_then(|r| parse_column(r))
+                .map(|c_col| c_col == col)
+                .unwrap_or(false)
+        })
     }
 
     fn rows(&self) -> impl Iterator<Item = &Row> {
-        self.sheet_data.row.iter().map(|r| r.as_ref())
+        self.sheet_data.row.iter()
     }
 
     #[cfg(feature = "sml-filtering")]
@@ -476,14 +469,11 @@ pub trait SheetDataExt {
 
 impl SheetDataExt for SheetData {
     fn row(&self, row_num: u32) -> Option<&Row> {
-        self.row
-            .iter()
-            .find(|r| r.reference == Some(row_num))
-            .map(|r| r.as_ref())
+        self.row.iter().find(|r| r.reference == Some(row_num))
     }
 
     fn rows(&self) -> impl Iterator<Item = &Row> {
-        self.row.iter().map(|r| r.as_ref())
+        self.row.iter()
     }
 }
 
@@ -777,7 +767,7 @@ impl ResolvedSheet {
 
     /// Get conditional formatting rules (raw data).
     #[cfg(feature = "sml-styling")]
-    pub fn conditional_formatting(&self) -> &[Box<crate::types::ConditionalFormatting>] {
+    pub fn conditional_formatting(&self) -> &[crate::types::ConditionalFormatting] {
         &self.worksheet.conditional_formatting
     }
 
@@ -810,7 +800,7 @@ impl ResolvedSheet {
 
     /// Get column definitions.
     #[cfg(feature = "sml-styling")]
-    pub fn columns(&self) -> &[Box<crate::types::Columns>] {
+    pub fn columns(&self) -> &[crate::types::Columns] {
         &self.worksheet.cols
     }
 }

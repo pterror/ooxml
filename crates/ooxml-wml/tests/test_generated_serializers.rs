@@ -139,7 +139,7 @@ fn test_roundtrip_run_with_text() {
     let xml = r#"<r><t>Hello</t></r>"#;
     let rt: Run = roundtrip(xml, "w:r");
     assert_eq!(rt.run_content.len(), 1);
-    match rt.run_content[0].as_ref() {
+    match &rt.run_content[0] {
         RunContent::T(t) => {
             assert_eq!(t.text.as_deref(), Some("Hello"));
         }
@@ -163,7 +163,7 @@ fn test_roundtrip_run_with_break() {
     let xml = r#"<r><t>Before</t><br/><t>After</t></r>"#;
     let rt: Run = roundtrip(xml, "w:r");
     assert_eq!(rt.run_content.len(), 3);
-    match rt.run_content[1].as_ref() {
+    match &rt.run_content[1] {
         RunContent::Br(_) => {}
         other => panic!("expected Br variant, got {:?}", other),
     }
@@ -219,7 +219,7 @@ fn test_roundtrip_paragraph_simple() {
     let rt: Paragraph = roundtrip(xml, "w:p");
     assert!(rt.p_pr.is_none());
     assert_eq!(rt.paragraph_content.len(), 1);
-    match rt.paragraph_content[0].as_ref() {
+    match &rt.paragraph_content[0] {
         ParagraphContent::R(_) => {}
         other => panic!("expected R variant, got {:?}", other),
     }
@@ -283,7 +283,7 @@ fn test_roundtrip_table() {
     let xml = r#"<tbl><tblPr/><tblGrid><gridCol/></tblGrid><tr><tc><p><r><t>Cell</t></r></p></tc></tr></tbl>"#;
     let rt: Table = roundtrip(xml, "w:tbl");
     assert_eq!(rt.rows.len(), 1);
-    match rt.rows[0].as_ref() {
+    match &rt.rows[0] {
         RowContent::Tr(_) => {}
         other => panic!("expected Tr variant, got {:?}", other),
     }
