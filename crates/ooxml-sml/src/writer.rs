@@ -17,10 +17,7 @@
 //! ```
 
 use crate::error::Result;
-// Infrastructure for future migration to generated serializers (blocked by namespace prefix issue)
-#[allow(unused_imports)]
 use crate::generated_serializers::ToXml;
-#[allow(unused_imports)]
 use crate::types;
 use ooxml_opc::PackageWriter;
 use std::collections::HashMap;
@@ -1586,8 +1583,8 @@ impl WorkbookBuilder {
 
         // Write shared strings if any
         if !self.shared_strings.is_empty() {
-            let ss_xml = self.serialize_shared_strings();
-            pkg.add_part("xl/sharedStrings.xml", CT_SHARED_STRINGS, ss_xml.as_bytes())?;
+            let ss_xml = self.serialize_shared_strings()?;
+            pkg.add_part("xl/sharedStrings.xml", CT_SHARED_STRINGS, &ss_xml)?;
         }
 
         pkg.finish()?;
@@ -2275,29 +2272,33 @@ impl WorkbookBuilder {
         }
     }
 
-    /// Serialize shared strings table to XML.
-    ///
-    /// Note: We use manual string building here instead of generated ToXml because
-    /// the generated serializers use namespace prefixes (e.g., `<sml:si>`) which
-    /// the handwritten readers don't handle. See TODO.md for migration plan.
-    fn serialize_shared_strings(&self) -> String {
-        let mut xml = String::new();
-        xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        xml.push('\n');
-        xml.push_str(&format!(
-            r#"<sst xmlns="{}" count="{}" uniqueCount="{}">"#,
-            NS_SPREADSHEET,
-            self.shared_strings.len(),
-            self.shared_strings.len()
-        ));
-        xml.push('\n');
-
-        for s in &self.shared_strings {
-            xml.push_str(&format!("  <si><t>{}</t></si>\n", escape_xml(s)));
-        }
-
-        xml.push_str("</sst>");
-        xml
+    /// Serialize shared strings table to XML using generated types.
+    fn serialize_shared_strings(&self) -> Result<Vec<u8>> {
+        let count = self.shared_strings.len() as u32;
+        let sst = types::SharedStrings {
+            count: Some(count),
+            unique_count: Some(count),
+            si: self
+                .shared_strings
+                .iter()
+                .map(|s| {
+                    Box::new(types::RichString {
+                        cell_type: Some(s.clone()),
+                        reference: Vec::new(),
+                        r_ph: Vec::new(),
+                        phonetic_pr: None,
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    })
+                })
+                .collect(),
+            extension_list: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        };
+        serialize_with_namespaces(&sst, "sst")
     }
 }
 
@@ -2357,16 +2358,13 @@ fn escape_xml(s: &str) -> String {
 }
 
 // =============================================================================
-// ToXml serialization helpers (infrastructure for future migration)
-// Currently unused - blocked by namespace prefix issue (see TODO.md)
+// ToXml serialization helpers
 // =============================================================================
 
 /// Namespace declarations for SML root elements.
-#[allow(dead_code)]
-const NS_DECLS: &[(&str, &str)] = &[("xmlns", NS_SPREADSHEET), ("xmlns:sml", NS_SPREADSHEET)];
+const NS_DECLS: &[(&str, &str)] = &[("xmlns", NS_SPREADSHEET)];
 
 /// Serialize a ToXml value with namespace declarations and XML declaration.
-#[allow(dead_code)]
 fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
     use quick_xml::Writer;
     use quick_xml::events::{BytesEnd, BytesStart, Event};
