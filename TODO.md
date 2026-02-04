@@ -125,11 +125,12 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
 
 ### DML (Drawing)
-- [~] **Add DML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by codegen issues:
-  - EG_* vs CT_* type mismatches (EGOfficeArtExtensionList vs CTOfficeArtExtensionList, EGColorChoice vs CTColor)
-  - Cross-crate type references (PML→DML types like CTColor, CTTextListStyle)
-  - Optional field serialization for EG_* types
-  - Requires fixes in parser_gen.rs and serializer_gen.rs
+- [~] **Add DML parser/serializer generation** - Build infrastructure ready (build.rs), partially blocked by codegen issues:
+  - [x] Optional field serialization for EG_* types (fixed in serializer_gen.rs)
+  - [ ] CT wrapper type parsing (CTColor wraps EGColorChoice, parser needs to construct wrapper)
+  - [ ] Type alias handling (EGOfficeArtExtensionList vs CTOfficeArtExtensionList)
+  - [ ] Cross-crate type references (PML→DML types like CTColor, CTTextListStyle)
+  - Requires fixes in parser_gen.rs
 
 ### Codegen: Namespace Prefix Convention ✅
 - [x] **Configurable namespace prefixes in serializers** - Added `xml_serialize_prefix` to `CodegenConfig`:

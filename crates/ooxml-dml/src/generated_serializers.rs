@@ -485,7 +485,9 @@ impl ToXml for CTCustomColor {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -632,7 +634,9 @@ impl ToXml for CTEffectStyleItem {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.effect_properties.write_element("", writer)?;
+        if let Some(ref val) = self.effect_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -1996,7 +2000,9 @@ impl ToXml for CTColor {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -4488,7 +4494,9 @@ impl ToXml for CTColorReplaceEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -4559,7 +4567,9 @@ impl ToXml for CTGlowEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -4648,7 +4658,9 @@ impl ToXml for CTInnerShadowEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -4760,7 +4772,9 @@ impl ToXml for CTOuterShadowEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -4813,7 +4827,9 @@ impl ToXml for CTPresetShadowEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -5191,7 +5207,9 @@ impl ToXml for CTGradientStop {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.color_choice.write_element("", writer)?;
+        if let Some(ref val) = self.color_choice {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -5764,7 +5782,9 @@ impl ToXml for CTFillProperties {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.fill_properties.write_element("", writer)?;
+        if let Some(ref val) = self.fill_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -5790,7 +5810,9 @@ impl ToXml for CTFillEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.fill_properties.write_element("", writer)?;
+        if let Some(ref val) = self.fill_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -5831,7 +5853,9 @@ impl ToXml for CTFillOverlayEffect {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.fill_properties.write_element("", writer)?;
+        if let Some(ref val) = self.fill_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -6117,7 +6141,9 @@ impl ToXml for CTEffectProperties {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.effect_properties.write_element("", writer)?;
+        if let Some(ref val) = self.effect_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
@@ -10055,7 +10081,9 @@ impl ToXml for CTTextUnderlineFillGroupWrapper {
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
             extra_iter.next().unwrap().node.write_to(writer).map_err(SerializeError::from)?;
         }
-        self.fill_properties.write_element("", writer)?;
+        if let Some(ref val) = self.fill_properties {
+            val.write_element("", writer)?;
+        }
         #[cfg(feature = "extra-children")]
         { emit_idx += 1; }
         #[cfg(feature = "extra-children")]
