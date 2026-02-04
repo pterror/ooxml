@@ -19,10 +19,12 @@ fn main() {
     // Paths to schemas
     let sml_path = format!("{}/sml.rnc", spec_dir);
     let shared_path = format!("{}/shared-commonSimpleTypes.rnc", spec_dir);
+    let rel_path = format!("{}/shared-relationshipReference.rnc", spec_dir);
 
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", sml_path);
     println!("cargo::rerun-if-changed={}", shared_path);
+    println!("cargo::rerun-if-changed={}", rel_path);
     println!("cargo::rerun-if-changed={}", names_path);
     println!("cargo::rerun-if-changed={}", features_path);
     println!("cargo::rerun-if-changed=build.rs");
@@ -58,6 +60,23 @@ fn main() {
             definitions: vec![],
         }
     };
+
+    // Parse and merge the relationship reference schema (for r:id, r:embed, etc.)
+    if Path::new(&rel_path).exists() {
+        let rel_input =
+            fs::read_to_string(&rel_path).expect("failed to read relationship references");
+        let rel_schema = parse_rnc(&rel_input).expect("failed to parse relationship references");
+        for ns in rel_schema.namespaces {
+            if !combined_schema
+                .namespaces
+                .iter()
+                .any(|n| n.prefix == ns.prefix)
+            {
+                combined_schema.namespaces.push(ns);
+            }
+        }
+        combined_schema.definitions.extend(rel_schema.definitions);
+    }
 
     // Parse and merge the SML schema
     let sml_input = fs::read_to_string(&sml_path).expect("failed to read sml.rnc");

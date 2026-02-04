@@ -482,6 +482,8 @@ pub type STPositivePercentage = String;
 
 pub type STPositiveFixedPercentage = String;
 
+pub type STRelationshipId = String;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum FilterOperator {
     #[serde(rename = "equal")]
@@ -5721,6 +5723,9 @@ pub type SmlPivotTableDefinition = Box<CTPivotTableDefinition>;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PivotCacheDefinition {
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "@invalid")]
     #[serde(
         default,
@@ -5988,6 +5993,9 @@ pub struct WorksheetSource {
     #[serde(rename = "@sheet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6127,6 +6135,9 @@ pub struct CTRangeSet {
     #[serde(rename = "@sheet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10249,6 +10260,8 @@ pub struct RevisionHeader {
     pub max_sheet_id: u32,
     #[serde(rename = "@userName")]
     pub user_name: XmlString,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@minRId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min_r_id: Option<u32>,
@@ -12061,6 +12074,9 @@ pub struct CTPivotSelection {
     #[serde(rename = "@click")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub click: Option<u32>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "pivotArea")]
     pub pivot_area: Box<PivotArea>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -12308,6 +12324,9 @@ pub struct CTDataRef {
     #[serde(rename = "@sheet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet: Option<XmlString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -12437,26 +12456,36 @@ pub struct CTCellSmartTagPr {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Drawing {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LegacyDrawing {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DrawingHeaderFooter {
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@lho")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub lho: Option<u32>,
@@ -12985,6 +13014,9 @@ pub struct Hyperlink {
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@ref")]
     pub reference: Reference,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[cfg(feature = "sml-hyperlinks")]
     #[serde(rename = "@location")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -13394,6 +13426,9 @@ pub struct PageSetup {
     #[serde(rename = "@copies")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub copies: Option<u32>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14016,6 +14051,9 @@ pub struct ChartsheetPageSetup {
     #[serde(rename = "@copies")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub copies: Option<u32>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14093,6 +14131,8 @@ pub struct CTCustomProperties {
 pub struct CTCustomProperty {
     #[serde(rename = "@name")]
     pub name: XmlString,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -14137,6 +14177,9 @@ pub struct OleObject {
     pub auto_load: Option<bool>,
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "objectPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub object_pr: Option<Box<ObjectProperties>>,
@@ -14225,6 +14268,9 @@ pub struct ObjectProperties {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub dde: Option<bool>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -14314,6 +14360,8 @@ pub struct Controls {
 pub struct Control {
     #[serde(rename = "@shapeId")]
     pub shape_id: u32,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -14414,6 +14462,9 @@ pub struct CTControlPr {
     #[serde(rename = "@cf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub cf: Option<XmlString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "anchor")]
     pub anchor: Box<ObjectAnchor>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -14544,14 +14595,18 @@ pub struct TableParts {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "tablePart")]
 pub struct TablePart {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 pub type SmlMetadata = Box<Metadata>;
@@ -16263,8 +16318,10 @@ pub struct ExternalLink {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalBook {
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "sheetNames")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_names: Option<Box<CTExternalSheetNames>>,
@@ -16274,6 +16331,13 @@ pub struct ExternalBook {
     #[serde(rename = "sheetDataSet")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sheet_data_set: Option<Box<ExternalSheetDataSet>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -16553,6 +16617,8 @@ pub struct CTDdeValue {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OleLink {
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@progId")]
     pub prog_id: XmlString,
     #[serde(rename = "oleItems")]
@@ -17427,6 +17493,8 @@ pub struct Sheet {
     #[serde(rename = "@state")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state: Option<SheetState>,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -17853,22 +17921,30 @@ pub struct ExternalReferences {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExternalReference {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SheetBackgroundPicture {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -17887,6 +17963,8 @@ pub struct PivotCaches {
 pub struct CTPivotCache {
     #[serde(rename = "@cacheId")]
     pub cache_id: u32,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]

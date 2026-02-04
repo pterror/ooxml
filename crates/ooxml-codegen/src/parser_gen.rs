@@ -56,6 +56,10 @@ impl<'a> ParserGenerator<'a> {
         // Generate parsers for complex types only
         for def in &self.schema.definitions {
             if !def.name.contains("_ST_") && !self.is_simple_type(&def.pattern) {
+                // Skip inline attribute references (like r_id) - they're inlined into parent types
+                if self.is_inline_attribute_ref(&def.name, &def.pattern) {
+                    continue;
+                }
                 if def.name.contains("_EG_") && self.is_element_choice(&def.pattern) {
                     // Element group - generate enum parser
                     if let Some(code) = self.gen_element_group_parser(def) {
@@ -104,6 +108,12 @@ impl<'a> ParserGenerator<'a> {
             }
             _ => false,
         }
+    }
+
+    /// Check if a definition is a pure attribute reference that should be inlined.
+    /// These are attribute patterns (like r_id, r_embed) that don't have CT_ in their name.
+    fn is_inline_attribute_ref(&self, name: &str, pattern: &Pattern) -> bool {
+        !name.contains("_CT_") && matches!(pattern, Pattern::Attribute { .. })
     }
 
     fn write_header(&mut self) {
@@ -1467,6 +1477,10 @@ impl<'a> ParserGenerator<'a> {
             Pattern::Ref(name) => {
                 // Look up the definition
                 if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    // Skip inline attribute refs (like r_id) - they don't have FromXml impls
+                    if self.is_inline_attribute_ref(name, def_pattern) {
+                        return (None, false);
+                    }
                     // If it's a type alias (Pattern::Element wrapping another ref),
                     // the generated type will be `type X = Box<InnerType>`
                     // So we resolve to the inner type and signal that boxing is already done

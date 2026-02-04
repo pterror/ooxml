@@ -2299,6 +2299,9 @@ impl ToXml for TextField {
 impl ToXml for PivotCacheDefinition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.invalid {
             start.push_attribute(("invalid", if *val { "1" } else { "0" }));
         }
@@ -2815,6 +2818,9 @@ impl ToXml for WorksheetSource {
         if let Some(ref val) = self.sheet {
             start.push_attribute(("sheet", val.as_str()));
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -3115,6 +3121,9 @@ impl ToXml for CTRangeSet {
         }
         if let Some(ref val) = self.sheet {
             start.push_attribute(("sheet", val.as_str()));
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -10023,6 +10032,10 @@ impl ToXml for RevisionHeader {
             let val = &self.user_name;
             start.push_attribute(("userName", val.as_str()));
         }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.min_r_id {
             {
                 let s = val.to_string();
@@ -13846,6 +13859,9 @@ impl ToXml for CTPivotSelection {
                 start.push_attribute(("click", s.as_str()));
             }
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -14205,6 +14221,9 @@ impl ToXml for CTDataRef {
         if let Some(ref val) = self.sheet {
             start.push_attribute(("sheet", val.as_str()));
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -14474,37 +14493,39 @@ impl ToXml for CTCellSmartTagPr {
 }
 
 impl ToXml for Drawing {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
 
 impl ToXml for LegacyDrawing {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -14512,6 +14533,10 @@ impl ToXml for LegacyDrawing {
 impl ToXml for DrawingHeaderFooter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.lho {
             {
                 let s = val.to_string();
@@ -15531,6 +15556,9 @@ impl ToXml for Hyperlink {
             let val = &self.reference;
             start.push_attribute(("ref", val.as_str()));
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "sml-hyperlinks")]
         if let Some(ref val) = self.location {
             start.push_attribute(("location", val.as_str()));
@@ -16108,6 +16136,9 @@ impl ToXml for PageSetup {
                 let s = val.to_string();
                 start.push_attribute(("copies", s.as_str()));
             }
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -17277,6 +17308,9 @@ impl ToXml for ChartsheetPageSetup {
                 start.push_attribute(("copies", s.as_str()));
             }
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -17485,6 +17519,10 @@ impl ToXml for CTCustomProperty {
             let val = &self.name;
             start.push_attribute(("name", val.as_str()));
         }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -17569,6 +17607,9 @@ impl ToXml for OleObject {
                 start.push_attribute(("shapeId", s.as_str()));
             }
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -17651,6 +17692,9 @@ impl ToXml for ObjectProperties {
         }
         if let Some(ref val) = self.dde {
             start.push_attribute(("dde", if *val { "1" } else { "0" }));
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -17849,6 +17893,10 @@ impl ToXml for Control {
                 start.push_attribute(("shapeId", s.as_str()));
             }
         }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
         }
@@ -17943,6 +17991,9 @@ impl ToXml for CTControlPr {
         }
         if let Some(ref val) = self.cf {
             start.push_attribute(("cf", val.as_str()));
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -18148,19 +18199,20 @@ impl ToXml for TableParts {
 }
 
 impl ToXml for TablePart {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -21725,6 +21777,19 @@ impl ToXml for ExternalLink {
 }
 
 impl ToXml for ExternalBook {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -22440,6 +22505,10 @@ impl ToXml for CTDdeValue {
 impl ToXml for OleLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         {
             let val = &self.prog_id;
             start.push_attribute(("progId", val.as_str()));
@@ -24270,6 +24339,10 @@ impl ToXml for Sheet {
                 start.push_attribute(("state", s.as_str()));
             }
         }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -24727,37 +24800,39 @@ impl ToXml for ExternalReferences {
 }
 
 impl ToXml for ExternalReference {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
 
 impl ToXml for SheetBackgroundPicture {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -24812,6 +24887,10 @@ impl ToXml for CTPivotCache {
                 let s = val.to_string();
                 start.push_attribute(("cacheId", s.as_str()));
             }
+        }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
