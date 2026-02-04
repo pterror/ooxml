@@ -114,6 +114,8 @@ fn main() {
         module_name: "sml".to_string(),
         name_mappings,
         feature_mappings,
+        // SML uses unprefixed elements in real XLSX files (default namespace convention)
+        xml_serialize_prefix: None,
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);

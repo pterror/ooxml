@@ -198,6 +198,10 @@ pub struct CodegenConfig {
     pub feature_mappings: Option<FeatureMappings>,
     /// Warn about types/fields without mappings (useful for finding unmapped items).
     pub warn_unmapped: bool,
+    /// XML namespace prefix for serialized element/attribute names (e.g., "w" for WML).
+    /// None = use unprefixed names (default namespace convention, used by SML/XLSX).
+    /// Some("w") = use `w:` prefix (WML/DOCX), Some("p") = use `p:` prefix (PML/PPTX), etc.
+    pub xml_serialize_prefix: Option<String>,
 }
 
 /// Generate Rust code from a parsed schema.

@@ -113,6 +113,8 @@ fn main() {
         module_name: "wml".to_string(),
         name_mappings,
         feature_mappings,
+        // WML uses w: namespace prefix in real DOCX files
+        xml_serialize_prefix: Some("w".to_string()),
         ..Default::default()
     };
     let code = generate(&combined_schema, &config);
