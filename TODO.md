@@ -44,6 +44,7 @@ DocumentBuilder handles common cases but doesn't expose:
 ## Technical Debt
 
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
+- [ ] **Remove unnecessary Box in Vec<Box<T>>** - Codegen uses `Vec<Box<T>>` for all struct types even when not recursive. This adds unnecessary indirection. Consider generating `Vec<T>` for non-recursive types and reserving `Box<T>` for recursive types only. Clippy flags this with `clippy::vec_box`.
 
 ## Codegen Performance
 
