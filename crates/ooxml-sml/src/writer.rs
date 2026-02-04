@@ -2205,9 +2205,9 @@ impl WorkbookBuilder {
             #[cfg(feature = "sml-i18n")]
             phonetic_pr: None,
             #[cfg(feature = "sml-styling")]
-            conditional_formatting: Vec::new(), // TODO: migrate conditional formatting
+            conditional_formatting: Self::build_conditional_formatting(&sheet.conditional_formats),
             #[cfg(feature = "sml-validation")]
-            data_validations: None, // TODO: migrate data validations
+            data_validations: Self::build_data_validations(&sheet.data_validations),
             #[cfg(feature = "sml-hyperlinks")]
             hyperlinks: None,
             #[cfg(feature = "sml-layout")]
@@ -2333,6 +2333,225 @@ impl WorkbookBuilder {
             #[cfg(feature = "extra-children")]
             extra_children: Vec::new(),
         })
+    }
+
+    /// Build conditional formatting from builder data.
+    #[cfg(feature = "sml-styling")]
+    #[allow(clippy::vec_box)] // Generated Worksheet expects Vec<Box<ConditionalFormatting>>
+    fn build_conditional_formatting(
+        formats: &[ConditionalFormat],
+    ) -> Vec<Box<types::ConditionalFormatting>> {
+        formats
+            .iter()
+            .map(|cf| {
+                Box::new(types::ConditionalFormatting {
+                    #[cfg(feature = "sml-pivot")]
+                    pivot: None,
+                    square_reference: Some(cf.range.clone()),
+                    cf_rule: cf
+                        .rules
+                        .iter()
+                        .map(|rule| {
+                            Box::new(types::ConditionalRule {
+                                r#type: Some(Self::map_conditional_rule_type(&rule.rule_type)),
+                                dxf_id: rule.dxf_id,
+                                priority: rule.priority as i32,
+                                stop_if_true: None,
+                                above_average: None,
+                                percent: None,
+                                bottom: None,
+                                operator: rule
+                                    .operator
+                                    .as_ref()
+                                    .and_then(|op| Self::parse_conditional_operator(op)),
+                                text: rule.text.clone(),
+                                time_period: None,
+                                rank: None,
+                                std_dev: None,
+                                equal_average: None,
+                                formula: rule.formulas.clone(),
+                                #[cfg(feature = "sml-styling")]
+                                color_scale: None,
+                                #[cfg(feature = "sml-styling")]
+                                data_bar: None,
+                                #[cfg(feature = "sml-styling")]
+                                icon_set: None,
+                                #[cfg(feature = "sml-extensions")]
+                                extension_list: None,
+                                #[cfg(feature = "extra-attrs")]
+                                extra_attrs: Default::default(),
+                                #[cfg(feature = "extra-children")]
+                                extra_children: Vec::new(),
+                            })
+                        })
+                        .collect(),
+                    #[cfg(feature = "sml-extensions")]
+                    extension_list: None,
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                })
+            })
+            .collect()
+    }
+
+    /// Map ConditionalRuleType to generated ConditionalType.
+    #[cfg(feature = "sml-styling")]
+    fn map_conditional_rule_type(rule_type: &crate::ConditionalRuleType) -> types::ConditionalType {
+        match rule_type {
+            crate::ConditionalRuleType::Expression => types::ConditionalType::Expression,
+            crate::ConditionalRuleType::CellIs => types::ConditionalType::CellIs,
+            crate::ConditionalRuleType::ColorScale => types::ConditionalType::ColorScale,
+            crate::ConditionalRuleType::DataBar => types::ConditionalType::DataBar,
+            crate::ConditionalRuleType::IconSet => types::ConditionalType::IconSet,
+            crate::ConditionalRuleType::Top10 => types::ConditionalType::Top10,
+            crate::ConditionalRuleType::UniqueValues => types::ConditionalType::UniqueValues,
+            crate::ConditionalRuleType::DuplicateValues => types::ConditionalType::DuplicateValues,
+            crate::ConditionalRuleType::ContainsText => types::ConditionalType::ContainsText,
+            crate::ConditionalRuleType::NotContainsText => types::ConditionalType::NotContainsText,
+            crate::ConditionalRuleType::BeginsWith => types::ConditionalType::BeginsWith,
+            crate::ConditionalRuleType::EndsWith => types::ConditionalType::EndsWith,
+            crate::ConditionalRuleType::ContainsBlanks => types::ConditionalType::ContainsBlanks,
+            crate::ConditionalRuleType::NotContainsBlanks => {
+                types::ConditionalType::NotContainsBlanks
+            }
+            crate::ConditionalRuleType::ContainsErrors => types::ConditionalType::ContainsErrors,
+            crate::ConditionalRuleType::NotContainsErrors => {
+                types::ConditionalType::NotContainsErrors
+            }
+            crate::ConditionalRuleType::TimePeriod => types::ConditionalType::TimePeriod,
+            crate::ConditionalRuleType::AboveAverage => types::ConditionalType::AboveAverage,
+        }
+    }
+
+    /// Parse a conditional operator string to the generated type.
+    #[cfg(feature = "sml-styling")]
+    fn parse_conditional_operator(op: &str) -> Option<types::ConditionalOperator> {
+        match op {
+            "lessThan" => Some(types::ConditionalOperator::LessThan),
+            "lessThanOrEqual" => Some(types::ConditionalOperator::LessThanOrEqual),
+            "equal" => Some(types::ConditionalOperator::Equal),
+            "notEqual" => Some(types::ConditionalOperator::NotEqual),
+            "greaterThanOrEqual" => Some(types::ConditionalOperator::GreaterThanOrEqual),
+            "greaterThan" => Some(types::ConditionalOperator::GreaterThan),
+            "between" => Some(types::ConditionalOperator::Between),
+            "notBetween" => Some(types::ConditionalOperator::NotBetween),
+            "containsText" => Some(types::ConditionalOperator::ContainsText),
+            "notContains" => Some(types::ConditionalOperator::NotContains),
+            "beginsWith" => Some(types::ConditionalOperator::BeginsWith),
+            "endsWith" => Some(types::ConditionalOperator::EndsWith),
+            _ => None,
+        }
+    }
+
+    /// Build data validations from builder data.
+    #[cfg(feature = "sml-validation")]
+    fn build_data_validations(
+        validations: &[DataValidationBuilder],
+    ) -> Option<Box<types::DataValidations>> {
+        if validations.is_empty() {
+            return None;
+        }
+
+        Some(Box::new(types::DataValidations {
+            disable_prompts: None,
+            x_window: None,
+            y_window: None,
+            count: Some(validations.len() as u32),
+            data_validation: validations
+                .iter()
+                .map(|dv| {
+                    Box::new(types::DataValidation {
+                        r#type: Self::map_validation_type(&dv.validation_type),
+                        error_style: Self::map_validation_error_style(&dv.error_style),
+                        ime_mode: None,
+                        operator: Self::map_validation_operator(&dv.operator),
+                        allow_blank: if dv.allow_blank { Some(true) } else { None },
+                        show_drop_down: None,
+                        show_input_message: if dv.show_input_message {
+                            Some(true)
+                        } else {
+                            None
+                        },
+                        show_error_message: if dv.show_error_message {
+                            Some(true)
+                        } else {
+                            None
+                        },
+                        error_title: dv.error_title.clone(),
+                        error: dv.error_message.clone(),
+                        prompt_title: dv.prompt_title.clone(),
+                        prompt: dv.prompt_message.clone(),
+                        square_reference: dv.range.clone(),
+                        formula1: dv.formula1.clone(),
+                        formula2: dv.formula2.clone(),
+                        #[cfg(feature = "extra-attrs")]
+                        extra_attrs: Default::default(),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    })
+                })
+                .collect(),
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }))
+    }
+
+    /// Map DataValidationType to generated ValidationType.
+    #[cfg(feature = "sml-validation")]
+    fn map_validation_type(vt: &crate::DataValidationType) -> Option<types::ValidationType> {
+        match vt {
+            crate::DataValidationType::None => None, // None type means no validation
+            crate::DataValidationType::Whole => Some(types::ValidationType::Whole),
+            crate::DataValidationType::Decimal => Some(types::ValidationType::Decimal),
+            crate::DataValidationType::List => Some(types::ValidationType::List),
+            crate::DataValidationType::Date => Some(types::ValidationType::Date),
+            crate::DataValidationType::Time => Some(types::ValidationType::Time),
+            crate::DataValidationType::TextLength => Some(types::ValidationType::TextLength),
+            crate::DataValidationType::Custom => Some(types::ValidationType::Custom),
+        }
+    }
+
+    /// Map DataValidationOperator to generated ValidationOperator.
+    #[cfg(feature = "sml-validation")]
+    fn map_validation_operator(
+        op: &crate::DataValidationOperator,
+    ) -> Option<types::ValidationOperator> {
+        match op {
+            crate::DataValidationOperator::Between => Some(types::ValidationOperator::Between),
+            crate::DataValidationOperator::NotBetween => {
+                Some(types::ValidationOperator::NotBetween)
+            }
+            crate::DataValidationOperator::Equal => Some(types::ValidationOperator::Equal),
+            crate::DataValidationOperator::NotEqual => Some(types::ValidationOperator::NotEqual),
+            crate::DataValidationOperator::LessThan => Some(types::ValidationOperator::LessThan),
+            crate::DataValidationOperator::LessThanOrEqual => {
+                Some(types::ValidationOperator::LessThanOrEqual)
+            }
+            crate::DataValidationOperator::GreaterThan => {
+                Some(types::ValidationOperator::GreaterThan)
+            }
+            crate::DataValidationOperator::GreaterThanOrEqual => {
+                Some(types::ValidationOperator::GreaterThanOrEqual)
+            }
+        }
+    }
+
+    /// Map DataValidationErrorStyle to generated ValidationErrorStyle.
+    #[cfg(feature = "sml-validation")]
+    fn map_validation_error_style(
+        style: &crate::DataValidationErrorStyle,
+    ) -> Option<types::ValidationErrorStyle> {
+        match style {
+            crate::DataValidationErrorStyle::Stop => None, // Stop is the default
+            crate::DataValidationErrorStyle::Warning => Some(types::ValidationErrorStyle::Warning),
+            crate::DataValidationErrorStyle::Information => {
+                Some(types::ValidationErrorStyle::Information)
+            }
+        }
     }
 
     /// Serialize shared strings table to XML using generated types.
@@ -2617,7 +2836,6 @@ mod tests {
 
     #[test]
     #[cfg(feature = "full")]
-    #[ignore = "blocked on migrating conditional_formatting to generated ToXml types"]
     fn test_roundtrip_conditional_formatting() {
         use std::io::Cursor;
 
@@ -2661,7 +2879,6 @@ mod tests {
 
     #[test]
     #[cfg(feature = "full")]
-    #[ignore = "blocked on migrating data_validations to generated ToXml types"]
     fn test_roundtrip_data_validation() {
         use std::io::Cursor;
 
