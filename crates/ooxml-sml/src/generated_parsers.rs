@@ -1658,7 +1658,9 @@ impl FromXml for CalcChain {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-formulas")]
         let mut f_cells = Vec::new();
+        #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -1672,6 +1674,7 @@ impl FromXml for CalcChain {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-formulas")]
                             b"c" => {
                                 f_cells.push(CalcCell::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -1679,6 +1682,7 @@ impl FromXml for CalcChain {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -1706,6 +1710,7 @@ impl FromXml for CalcChain {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-formulas")]
                             b"c" => {
                                 f_cells.push(CalcCell::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -1713,6 +1718,7 @@ impl FromXml for CalcChain {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -1744,7 +1750,9 @@ impl FromXml for CalcChain {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-formulas")]
             cells: f_cells,
+            #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -1759,10 +1767,15 @@ impl FromXml for CalcCell {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_any: Option<CellRef> = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_i = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_style_index = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_l = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_cell_type = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_a = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -1774,18 +1787,23 @@ impl FromXml for CalcCell {
                 b"_any" => {
                     f_any = Some(val.into_owned());
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"i" => {
                     f_i = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"s" => {
                     f_style_index = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"l" => {
                     f_l = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"t" => {
                     f_cell_type = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"a" => {
                     f_a = Some(val == "true" || val == "1");
                 }
@@ -1813,10 +1831,15 @@ impl FromXml for CalcCell {
 
         Ok(Self {
             _any: f_any.ok_or_else(|| ParseError::MissingAttribute("_any".to_string()))?,
+            #[cfg(feature = "sml-formulas")]
             i: f_i,
+            #[cfg(feature = "sml-formulas")]
             style_index: f_style_index,
+            #[cfg(feature = "sml-formulas")]
             l: f_l,
+            #[cfg(feature = "sml-formulas")]
             cell_type: f_cell_type,
+            #[cfg(feature = "sml-formulas")]
             a: f_a,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -23472,17 +23495,29 @@ impl FromXml for SheetProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-structure")]
         let mut f_sync_horizontal = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_sync_vertical = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_sync_ref = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_transition_evaluation = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_transition_entry = None;
+        #[cfg(feature = "sml-external")]
         let mut f_published = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_code_name = None;
+        #[cfg(feature = "sml-filtering")]
         let mut f_filter_mode = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_enable_format_conditions_calculation = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_tab_color = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_outline_pr = None;
+        #[cfg(feature = "sml-layout")]
         let mut f_page_set_up_pr = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -23495,30 +23530,39 @@ impl FromXml for SheetProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-structure")]
                 b"syncHorizontal" => {
                     f_sync_horizontal = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"syncVertical" => {
                     f_sync_vertical = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"syncRef" => {
                     f_sync_ref = Some(val.into_owned());
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"transitionEvaluation" => {
                     f_transition_evaluation = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"transitionEntry" => {
                     f_transition_entry = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-external")]
                 b"published" => {
                     f_published = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"codeName" => {
                     f_code_name = Some(val.into_owned());
                 }
+                #[cfg(feature = "sml-filtering")]
                 b"filterMode" => {
                     f_filter_mode = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"enableFormatConditionsCalculation" => {
                     f_enable_format_conditions_calculation = Some(val == "true" || val == "1");
                 }
@@ -23539,6 +23583,7 @@ impl FromXml for SheetProperties {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -23546,6 +23591,7 @@ impl FromXml for SheetProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-structure")]
                             b"outlinePr" => {
                                 f_outline_pr =
                                     Some(Box::new(OutlineProperties::from_xml(reader, &e, false)?));
@@ -23554,6 +23600,7 @@ impl FromXml for SheetProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-layout")]
                             b"pageSetUpPr" => {
                                 f_page_set_up_pr = Some(Box::new(PageSetupProperties::from_xml(
                                     reader, &e, false,
@@ -23582,6 +23629,7 @@ impl FromXml for SheetProperties {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"tabColor" => {
                                 f_tab_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -23589,6 +23637,7 @@ impl FromXml for SheetProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-structure")]
                             b"outlinePr" => {
                                 f_outline_pr =
                                     Some(Box::new(OutlineProperties::from_xml(reader, &e, true)?));
@@ -23597,6 +23646,7 @@ impl FromXml for SheetProperties {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-layout")]
                             b"pageSetUpPr" => {
                                 f_page_set_up_pr = Some(Box::new(PageSetupProperties::from_xml(
                                     reader, &e, true,
@@ -23629,17 +23679,29 @@ impl FromXml for SheetProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-structure")]
             sync_horizontal: f_sync_horizontal,
+            #[cfg(feature = "sml-structure")]
             sync_vertical: f_sync_vertical,
+            #[cfg(feature = "sml-structure")]
             sync_ref: f_sync_ref,
+            #[cfg(feature = "sml-formulas")]
             transition_evaluation: f_transition_evaluation,
+            #[cfg(feature = "sml-formulas")]
             transition_entry: f_transition_entry,
+            #[cfg(feature = "sml-external")]
             published: f_published,
+            #[cfg(feature = "sml-structure")]
             code_name: f_code_name,
+            #[cfg(feature = "sml-filtering")]
             filter_mode: f_filter_mode,
+            #[cfg(feature = "sml-styling")]
             enable_format_conditions_calculation: f_enable_format_conditions_calculation,
+            #[cfg(feature = "sml-styling")]
             tab_color: f_tab_color,
+            #[cfg(feature = "sml-structure")]
             outline_pr: f_outline_pr,
+            #[cfg(feature = "sml-layout")]
             page_set_up_pr: f_page_set_up_pr,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -24434,8 +24496,11 @@ impl FromXml for PageBreaks {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-layout")]
         let mut f_count = None;
+        #[cfg(feature = "sml-layout")]
         let mut f_manual_break_count = None;
+        #[cfg(feature = "sml-layout")]
         let mut f_brk = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -24448,9 +24513,11 @@ impl FromXml for PageBreaks {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-layout")]
                 b"count" => {
                     f_count = val.parse().ok();
                 }
+                #[cfg(feature = "sml-layout")]
                 b"manualBreakCount" => {
                     f_manual_break_count = val.parse().ok();
                 }
@@ -24471,6 +24538,7 @@ impl FromXml for PageBreaks {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-layout")]
                             b"brk" => {
                                 f_brk.push(PageBreak::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -24497,6 +24565,7 @@ impl FromXml for PageBreaks {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-layout")]
                             b"brk" => {
                                 f_brk.push(PageBreak::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -24527,8 +24596,11 @@ impl FromXml for PageBreaks {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-layout")]
             count: f_count,
+            #[cfg(feature = "sml-layout")]
             manual_break_count: f_manual_break_count,
+            #[cfg(feature = "sml-layout")]
             brk: f_brk,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -27328,7 +27400,9 @@ impl FromXml for ColorScale {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_cfvo = Vec::new();
+        #[cfg(feature = "sml-styling")]
         let mut f_color = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -27342,6 +27416,7 @@ impl FromXml for ColorScale {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -27349,6 +27424,7 @@ impl FromXml for ColorScale {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"color" => {
                                 f_color.push(Color::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -27375,6 +27451,7 @@ impl FromXml for ColorScale {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -27382,6 +27459,7 @@ impl FromXml for ColorScale {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"color" => {
                                 f_color.push(Color::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -27412,7 +27490,9 @@ impl FromXml for ColorScale {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             cfvo: f_cfvo,
+            #[cfg(feature = "sml-styling")]
             color: f_color,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -27426,10 +27506,15 @@ impl FromXml for DataBar {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_min_length = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_max_length = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_show_value = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_cfvo = Vec::new();
+        #[cfg(feature = "sml-styling")]
         let mut f_color: Option<Box<Color>> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -27442,12 +27527,15 @@ impl FromXml for DataBar {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"minLength" => {
                     f_min_length = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"maxLength" => {
                     f_max_length = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"showValue" => {
                     f_show_value = Some(val == "true" || val == "1");
                 }
@@ -27468,6 +27556,7 @@ impl FromXml for DataBar {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -27475,6 +27564,7 @@ impl FromXml for DataBar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
@@ -27501,6 +27591,7 @@ impl FromXml for DataBar {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -27508,6 +27599,7 @@ impl FromXml for DataBar {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"color" => {
                                 f_color = Some(Box::new(Color::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
@@ -27538,10 +27630,15 @@ impl FromXml for DataBar {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             min_length: f_min_length,
+            #[cfg(feature = "sml-styling")]
             max_length: f_max_length,
+            #[cfg(feature = "sml-styling")]
             show_value: f_show_value,
+            #[cfg(feature = "sml-styling")]
             cfvo: f_cfvo,
+            #[cfg(feature = "sml-styling")]
             color: f_color.ok_or_else(|| ParseError::MissingAttribute("color".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -27557,10 +27654,15 @@ impl FromXml for IconSet {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_icon_set = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_show_value = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_percent = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_reverse = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_cfvo = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -27573,15 +27675,19 @@ impl FromXml for IconSet {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"iconSet" => {
                     f_icon_set = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"showValue" => {
                     f_show_value = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"percent" => {
                     f_percent = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"reverse" => {
                     f_reverse = Some(val == "true" || val == "1");
                 }
@@ -27602,6 +27708,7 @@ impl FromXml for IconSet {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
@@ -27628,6 +27735,7 @@ impl FromXml for IconSet {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"cfvo" => {
                                 f_cfvo.push(ConditionalFormatValue::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
@@ -27658,10 +27766,15 @@ impl FromXml for IconSet {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             icon_set: f_icon_set,
+            #[cfg(feature = "sml-styling")]
             show_value: f_show_value,
+            #[cfg(feature = "sml-styling")]
             percent: f_percent,
+            #[cfg(feature = "sml-styling")]
             reverse: f_reverse,
+            #[cfg(feature = "sml-styling")]
             cfvo: f_cfvo,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -27677,8 +27790,11 @@ impl FromXml for ConditionalFormatValue {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_type: Option<ConditionalValueType> = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_value = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_gte = None;
         let mut f_extension_list = None;
         #[cfg(feature = "extra-attrs")]
@@ -27692,12 +27808,15 @@ impl FromXml for ConditionalFormatValue {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"type" => {
                     f_type = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"val" => {
                     f_value = Some(val.into_owned());
                 }
+                #[cfg(feature = "sml-styling")]
                 b"gte" => {
                     f_gte = Some(val == "true" || val == "1");
                 }
@@ -27776,8 +27895,11 @@ impl FromXml for ConditionalFormatValue {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
+            #[cfg(feature = "sml-styling")]
             value: f_value,
+            #[cfg(feature = "sml-styling")]
             gte: f_gte,
             extension_list: f_extension_list,
             #[cfg(feature = "extra-attrs")]
@@ -34149,14 +34271,23 @@ impl FromXml for CellAlignment {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_horizontal = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_vertical = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_text_rotation = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_wrap_text = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_indent = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_relative_indent = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_justify_last_line = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_shrink_to_fit = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_reading_order = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -34165,30 +34296,39 @@ impl FromXml for CellAlignment {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"horizontal" => {
                     f_horizontal = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"vertical" => {
                     f_vertical = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"textRotation" => {
                     f_text_rotation = Some(val.into_owned());
                 }
+                #[cfg(feature = "sml-styling")]
                 b"wrapText" => {
                     f_wrap_text = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"indent" => {
                     f_indent = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"relativeIndent" => {
                     f_relative_indent = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"justifyLastLine" => {
                     f_justify_last_line = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"shrinkToFit" => {
                     f_shrink_to_fit = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"readingOrder" => {
                     f_reading_order = val.parse().ok();
                 }
@@ -34215,14 +34355,23 @@ impl FromXml for CellAlignment {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             horizontal: f_horizontal,
+            #[cfg(feature = "sml-styling")]
             vertical: f_vertical,
+            #[cfg(feature = "sml-styling")]
             text_rotation: f_text_rotation,
+            #[cfg(feature = "sml-styling")]
             wrap_text: f_wrap_text,
+            #[cfg(feature = "sml-styling")]
             indent: f_indent,
+            #[cfg(feature = "sml-styling")]
             relative_indent: f_relative_indent,
+            #[cfg(feature = "sml-styling")]
             justify_last_line: f_justify_last_line,
+            #[cfg(feature = "sml-styling")]
             shrink_to_fit: f_shrink_to_fit,
+            #[cfg(feature = "sml-styling")]
             reading_order: f_reading_order,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -34744,7 +34893,9 @@ impl FromXml for CellProtection {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-protection")]
         let mut f_locked = None;
+        #[cfg(feature = "sml-protection")]
         let mut f_hidden = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -34753,9 +34904,11 @@ impl FromXml for CellProtection {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-protection")]
                 b"locked" => {
                     f_locked = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-protection")]
                 b"hidden" => {
                     f_hidden = Some(val == "true" || val == "1");
                 }
@@ -34782,7 +34935,9 @@ impl FromXml for CellProtection {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-protection")]
             locked: f_locked,
+            #[cfg(feature = "sml-protection")]
             hidden: f_hidden,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -35237,10 +35392,15 @@ impl FromXml for Color {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_auto = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_indexed = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_rgb = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_theme = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_tint = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -35249,18 +35409,23 @@ impl FromXml for Color {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"auto" => {
                     f_auto = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-styling")]
                 b"indexed" => {
                     f_indexed = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"rgb" => {
                     f_rgb = decode_hex(&val);
                 }
+                #[cfg(feature = "sml-styling")]
                 b"theme" => {
                     f_theme = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"tint" => {
                     f_tint = val.parse().ok();
                 }
@@ -35287,10 +35452,15 @@ impl FromXml for Color {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             auto: f_auto,
+            #[cfg(feature = "sml-styling")]
             indexed: f_indexed,
+            #[cfg(feature = "sml-styling")]
             rgb: f_rgb,
+            #[cfg(feature = "sml-styling")]
             theme: f_theme,
+            #[cfg(feature = "sml-styling")]
             tint: f_tint,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -35645,7 +35815,9 @@ impl FromXml for NumberFormat {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_number_format_id: Option<STNumFmtId> = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_format_code: Option<XmlString> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -35654,9 +35826,11 @@ impl FromXml for NumberFormat {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-styling")]
                 b"numFmtId" => {
                     f_number_format_id = val.parse().ok();
                 }
+                #[cfg(feature = "sml-styling")]
                 b"formatCode" => {
                     f_format_code = Some(val.into_owned());
                 }
@@ -35683,8 +35857,10 @@ impl FromXml for NumberFormat {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             number_format_id: f_number_format_id
                 .ok_or_else(|| ParseError::MissingAttribute("numFmtId".to_string()))?,
+            #[cfg(feature = "sml-styling")]
             format_code: f_format_code
                 .ok_or_else(|| ParseError::MissingAttribute("formatCode".to_string()))?,
             #[cfg(feature = "extra-attrs")]
@@ -36692,7 +36868,9 @@ impl FromXml for Colors {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-styling")]
         let mut f_indexed_colors = None;
+        #[cfg(feature = "sml-styling")]
         let mut f_mru_colors = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -36706,6 +36884,7 @@ impl FromXml for Colors {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, false)?));
@@ -36714,6 +36893,7 @@ impl FromXml for Colors {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"mruColors" => {
                                 f_mru_colors =
                                     Some(Box::new(MostRecentColors::from_xml(reader, &e, false)?));
@@ -36741,6 +36921,7 @@ impl FromXml for Colors {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-styling")]
                             b"indexedColors" => {
                                 f_indexed_colors =
                                     Some(Box::new(IndexedColors::from_xml(reader, &e, true)?));
@@ -36749,6 +36930,7 @@ impl FromXml for Colors {
                                     child_idx += 1;
                                 }
                             }
+                            #[cfg(feature = "sml-styling")]
                             b"mruColors" => {
                                 f_mru_colors =
                                     Some(Box::new(MostRecentColors::from_xml(reader, &e, true)?));
@@ -36780,7 +36962,9 @@ impl FromXml for Colors {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-styling")]
             indexed_colors: f_indexed_colors,
+            #[cfg(feature = "sml-styling")]
             mru_colors: f_mru_colors,
             #[cfg(feature = "extra-children")]
             extra_children,
@@ -42010,19 +42194,32 @@ impl FromXml for BookView {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-structure")]
         let mut f_visibility = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_minimized = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_show_horizontal_scroll = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_show_vertical_scroll = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_show_sheet_tabs = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_x_window = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_y_window = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_window_width = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_window_height = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_tab_ratio = None;
+        #[cfg(feature = "sml-structure")]
         let mut f_first_sheet = None;
         let mut f_active_tab = None;
+        #[cfg(feature = "sml-filtering")]
         let mut f_auto_filter_date_grouping = None;
+        #[cfg(feature = "sml-extensions")]
         let mut f_extension_list = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -42035,42 +42232,54 @@ impl FromXml for BookView {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-structure")]
                 b"visibility" => {
                     f_visibility = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"minimized" => {
                     f_minimized = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"showHorizontalScroll" => {
                     f_show_horizontal_scroll = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"showVerticalScroll" => {
                     f_show_vertical_scroll = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"showSheetTabs" => {
                     f_show_sheet_tabs = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-structure")]
                 b"xWindow" => {
                     f_x_window = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"yWindow" => {
                     f_y_window = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"windowWidth" => {
                     f_window_width = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"windowHeight" => {
                     f_window_height = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"tabRatio" => {
                     f_tab_ratio = val.parse().ok();
                 }
+                #[cfg(feature = "sml-structure")]
                 b"firstSheet" => {
                     f_first_sheet = val.parse().ok();
                 }
                 b"activeTab" => {
                     f_active_tab = val.parse().ok();
                 }
+                #[cfg(feature = "sml-filtering")]
                 b"autoFilterDateGrouping" => {
                     f_auto_filter_date_grouping = Some(val == "true" || val == "1");
                 }
@@ -42091,6 +42300,7 @@ impl FromXml for BookView {
                 match reader.read_event_into(&mut buf)? {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, false)?));
@@ -42118,6 +42328,7 @@ impl FromXml for BookView {
                     }
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
+                            #[cfg(feature = "sml-extensions")]
                             b"extLst" => {
                                 f_extension_list =
                                     Some(Box::new(ExtensionList::from_xml(reader, &e, true)?));
@@ -42149,19 +42360,32 @@ impl FromXml for BookView {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-structure")]
             visibility: f_visibility,
+            #[cfg(feature = "sml-structure")]
             minimized: f_minimized,
+            #[cfg(feature = "sml-structure")]
             show_horizontal_scroll: f_show_horizontal_scroll,
+            #[cfg(feature = "sml-structure")]
             show_vertical_scroll: f_show_vertical_scroll,
+            #[cfg(feature = "sml-structure")]
             show_sheet_tabs: f_show_sheet_tabs,
+            #[cfg(feature = "sml-structure")]
             x_window: f_x_window,
+            #[cfg(feature = "sml-structure")]
             y_window: f_y_window,
+            #[cfg(feature = "sml-structure")]
             window_width: f_window_width,
+            #[cfg(feature = "sml-structure")]
             window_height: f_window_height,
+            #[cfg(feature = "sml-structure")]
             tab_ratio: f_tab_ratio,
+            #[cfg(feature = "sml-structure")]
             first_sheet: f_first_sheet,
             active_tab: f_active_tab,
+            #[cfg(feature = "sml-filtering")]
             auto_filter_date_grouping: f_auto_filter_date_grouping,
+            #[cfg(feature = "sml-extensions")]
             extension_list: f_extension_list,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -43019,18 +43243,31 @@ impl FromXml for CalculationProperties {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "sml-formulas")]
         let mut f_calc_id = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_calc_mode = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_full_calc_on_load = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_ref_mode = None;
+        #[cfg(feature = "sml-formulas-advanced")]
         let mut f_iterate = None;
+        #[cfg(feature = "sml-formulas-advanced")]
         let mut f_iterate_count = None;
+        #[cfg(feature = "sml-formulas-advanced")]
         let mut f_iterate_delta = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_full_precision = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_calc_completed = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_calc_on_save = None;
+        #[cfg(feature = "sml-formulas-advanced")]
         let mut f_concurrent_calc = None;
+        #[cfg(feature = "sml-formulas-advanced")]
         let mut f_concurrent_manual_count = None;
+        #[cfg(feature = "sml-formulas")]
         let mut f_force_full_calc = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -43039,42 +43276,55 @@ impl FromXml for CalculationProperties {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "sml-formulas")]
                 b"calcId" => {
                     f_calc_id = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"calcMode" => {
                     f_calc_mode = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"fullCalcOnLoad" => {
                     f_full_calc_on_load = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"refMode" => {
                     f_ref_mode = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas-advanced")]
                 b"iterate" => {
                     f_iterate = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas-advanced")]
                 b"iterateCount" => {
                     f_iterate_count = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas-advanced")]
                 b"iterateDelta" => {
                     f_iterate_delta = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"fullPrecision" => {
                     f_full_precision = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"calcCompleted" => {
                     f_calc_completed = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"calcOnSave" => {
                     f_calc_on_save = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas-advanced")]
                 b"concurrentCalc" => {
                     f_concurrent_calc = Some(val == "true" || val == "1");
                 }
+                #[cfg(feature = "sml-formulas-advanced")]
                 b"concurrentManualCount" => {
                     f_concurrent_manual_count = val.parse().ok();
                 }
+                #[cfg(feature = "sml-formulas")]
                 b"forceFullCalc" => {
                     f_force_full_calc = Some(val == "true" || val == "1");
                 }
@@ -43101,18 +43351,31 @@ impl FromXml for CalculationProperties {
         }
 
         Ok(Self {
+            #[cfg(feature = "sml-formulas")]
             calc_id: f_calc_id,
+            #[cfg(feature = "sml-formulas")]
             calc_mode: f_calc_mode,
+            #[cfg(feature = "sml-formulas")]
             full_calc_on_load: f_full_calc_on_load,
+            #[cfg(feature = "sml-formulas")]
             ref_mode: f_ref_mode,
+            #[cfg(feature = "sml-formulas-advanced")]
             iterate: f_iterate,
+            #[cfg(feature = "sml-formulas-advanced")]
             iterate_count: f_iterate_count,
+            #[cfg(feature = "sml-formulas-advanced")]
             iterate_delta: f_iterate_delta,
+            #[cfg(feature = "sml-formulas")]
             full_precision: f_full_precision,
+            #[cfg(feature = "sml-formulas")]
             calc_completed: f_calc_completed,
+            #[cfg(feature = "sml-formulas")]
             calc_on_save: f_calc_on_save,
+            #[cfg(feature = "sml-formulas-advanced")]
             concurrent_calc: f_concurrent_calc,
+            #[cfg(feature = "sml-formulas-advanced")]
             concurrent_manual_count: f_concurrent_manual_count,
+            #[cfg(feature = "sml-formulas")]
             force_full_calc: f_force_full_calc,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,

@@ -522,6 +522,173 @@ sml:
     webPublishItems: [charts, external]
     extLst: [extensions]
 
+  # ---------------------------------------------------------------------------
+  # Workbook views
+  # ---------------------------------------------------------------------------
+  BookView:
+    visibility: [structure]
+    minimized: [structure]
+    showHorizontalScroll: [structure]
+    showVerticalScroll: [structure]
+    showSheetTabs: [structure]
+    xWindow: [structure]
+    yWindow: [structure]
+    windowWidth: [structure]
+    windowHeight: [structure]
+    tabRatio: [structure]
+    firstSheet: [structure]
+    activeTab: [core]
+    autoFilterDateGrouping: [filtering]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Cell formatting details
+  # ---------------------------------------------------------------------------
+  CellAlignment:
+    horizontal: [styling]
+    vertical: [styling]
+    textRotation: [styling]
+    wrapText: [styling]
+    indent: [styling]
+    relativeIndent: [styling]
+    justifyLastLine: [styling]
+    shrinkToFit: [styling]
+    readingOrder: [styling, i18n]
+
+  CellProtection:
+    locked: [protection]
+    hidden: [protection]
+
+  NumberFormat:
+    numFmtId: [styling]
+    formatCode: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Color palette
+  # ---------------------------------------------------------------------------
+  Color:
+    auto: [styling]
+    indexed: [styling]
+    rgb: [styling]
+    theme: [styling]
+    tint: [styling]
+
+  Colors:
+    indexedColors: [styling]
+    mruColors: [styling]
+
+  # ---------------------------------------------------------------------------
+  # Sheet properties
+  # ---------------------------------------------------------------------------
+  SheetProperties:
+    syncHorizontal: [structure]
+    syncVertical: [structure]
+    syncRef: [structure]
+    transitionEvaluation: [formulas]
+    transitionEntry: [formulas]
+    published: [external]
+    codeName: [structure]
+    filterMode: [filtering]
+    enableFormatConditionsCalculation: [styling]
+    # Children
+    tabColor: [styling]
+    outlinePr: [structure]
+    pageSetUpPr: [layout]
+
+  SheetFormatProperties:
+    baseColWidth: [styling]
+    defaultColWidth: [styling]
+    defaultRowHeight: [styling]
+    customHeight: [styling]
+    zeroHeight: [styling]
+    thickTop: [styling]
+    thickBottom: [styling]
+    outlineLevelRow: [structure]
+    outlineLevelCol: [structure]
+
+  # ---------------------------------------------------------------------------
+  # Selection state
+  # ---------------------------------------------------------------------------
+  Selection:
+    pane: [core]
+    activeCell: [core]
+    activeCellId: [core]
+    sqref: [core]
+
+  # ---------------------------------------------------------------------------
+  # Page breaks
+  # ---------------------------------------------------------------------------
+  PageBreaks:
+    count: [layout]
+    manualBreakCount: [layout]
+    # Children
+    brk: [layout]
+
+  Break:
+    id: [layout]
+    min: [layout]
+    max: [layout]
+    man: [layout]
+    pt: [layout]
+
+  # ---------------------------------------------------------------------------
+  # Calculation chain
+  # ---------------------------------------------------------------------------
+  CalcChain:
+    c: [formulas]
+    extLst: [extensions]
+
+  CalcCell:
+    r: [formulas]                # Cell reference
+    i: [formulas]                # Sheet index
+    s: [formulas]                # Child chain
+    l: [formulas]                # New level dependency
+    t: [formulas]                # New thread
+    a: [formulas]                # Array formula
+
+  CalculationProperties:
+    calcId: [formulas]
+    calcMode: [formulas]
+    fullCalcOnLoad: [formulas]
+    refMode: [formulas]
+    iterate: [formulas-advanced]
+    iterateCount: [formulas-advanced]
+    iterateDelta: [formulas-advanced]
+    fullPrecision: [formulas]
+    calcCompleted: [formulas]
+    calcOnSave: [formulas]
+    concurrentCalc: [formulas-advanced]
+    concurrentManualCount: [formulas-advanced]
+    forceFullCalc: [formulas]
+
+  # ---------------------------------------------------------------------------
+  # Conditional formatting details
+  # ---------------------------------------------------------------------------
+  ColorScale:
+    cfvo: [styling]
+    color: [styling]
+
+  DataBar:
+    minLength: [styling]
+    maxLength: [styling]
+    showValue: [styling]
+    # Children
+    cfvo: [styling]
+    color: [styling]
+
+  IconSet:
+    iconSet: [styling]
+    showValue: [styling]
+    percent: [styling]
+    reverse: [styling]
+    # Children
+    cfvo: [styling]
+
+  ConditionalFormatValue:
+    type: [styling]
+    val: [styling]
+    gte: [styling]
+
 # =============================================================================
 # WordprocessingML (Word)
 # =============================================================================
