@@ -1221,4 +1221,576 @@ pml:
 # DrawingML (shared) - TODO: expand
 # =============================================================================
 dml:
-  # Charts, shapes, etc.
+  # ---------------------------------------------------------------------------
+  # Colors
+  # ---------------------------------------------------------------------------
+  ColorScheme:
+    name: [themes]
+    dk1: [colors]
+    lt1: [colors]
+    dk2: [colors]
+    lt2: [colors]
+    accent1: [colors]
+    accent2: [colors]
+    accent3: [colors]
+    accent4: [colors]
+    accent5: [colors]
+    accent6: [colors]
+    hlink: [colors]
+    folHlink: [colors]
+    extLst: [extensions]
+
+  SrgbColor:
+    val: [colors]
+    # Children - color transforms
+    tint: [colors]
+    shade: [colors]
+    comp: [colors]
+    inv: [colors]
+    gray: [colors]
+    alpha: [colors]
+    alphaOff: [colors]
+    alphaMod: [colors]
+    hue: [colors]
+    hueOff: [colors]
+    hueMod: [colors]
+    sat: [colors]
+    satOff: [colors]
+    satMod: [colors]
+    lum: [colors]
+    lumOff: [colors]
+    lumMod: [colors]
+    red: [colors]
+    redOff: [colors]
+    redMod: [colors]
+    green: [colors]
+    greenOff: [colors]
+    greenMod: [colors]
+    blue: [colors]
+    blueOff: [colors]
+    blueMod: [colors]
+    gamma: [colors]
+    invGamma: [colors]
+
+  HslColor:
+    hue: [colors]
+    sat: [colors]
+    lum: [colors]
+
+  SchemeColor:
+    val: [colors]
+
+  CTColorMappingOverride:
+    masterClrMapping: [colors]
+    overrideClrMapping: [colors]
+
+  # ---------------------------------------------------------------------------
+  # Fills
+  # ---------------------------------------------------------------------------
+  BlipFillProperties:
+    dpi: [fills]
+    rotWithShape: [fills]
+    # Children
+    blip: [fills]
+    srcRect: [fills]
+    tile: [fills]
+    stretch: [fills]
+
+  GradientFill:
+    flip: [fills]
+    rotWithShape: [fills]
+    # Children
+    gsLst: [fills]
+    lin: [fills]
+    path: [fills]
+    tileRect: [fills]
+
+  PatternFill:
+    prst: [fills]
+    # Children
+    fgClr: [fills]
+    bgClr: [fills]
+
+  SolidFill:
+    # Color choice children handled by EG_ColorChoice
+
+  Blip:
+    embed: [fills]
+    link: [fills]
+    cstate: [fills]
+    # Children
+    alphaBiLevel: [fills, effects]
+    alphaCeiling: [fills, effects]
+    alphaFloor: [fills, effects]
+    alphaInv: [fills, effects]
+    alphaMod: [fills, effects]
+    alphaModFix: [fills, effects]
+    alphaRepl: [fills, effects]
+    biLevel: [fills, effects]
+    blur: [fills, effects]
+    clrChange: [fills, effects]
+    clrRepl: [fills, effects]
+    duotone: [fills, effects]
+    fillOverlay: [fills, effects]
+    grayscl: [fills, effects]
+    hsl: [fills, effects]
+    lum: [fills, effects]
+    tint: [fills, effects]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Lines
+  # ---------------------------------------------------------------------------
+  LineProperties:
+    w: [lines]
+    cap: [lines]
+    cmpd: [lines]
+    algn: [lines]
+    # Children (fill, dash, join handled by EG groups)
+    headEnd: [lines]
+    tailEnd: [lines]
+    extLst: [extensions]
+
+  CTLineEndProperties:
+    type: [lines]
+    w: [lines]
+    len: [lines]
+
+  CTDashStop:
+    d: [lines]
+    sp: [lines]
+
+  CTPresetLineDashProperties:
+    val: [lines]
+
+  # ---------------------------------------------------------------------------
+  # Effects
+  # ---------------------------------------------------------------------------
+  EffectList:
+    blur: [effects]
+    fillOverlay: [effects]
+    glow: [effects]
+    innerShdw: [effects]
+    outerShdw: [effects]
+    prstShdw: [effects]
+    reflection: [effects]
+    softEdge: [effects]
+
+  CTBlurEffect:
+    rad: [effects]
+    grow: [effects]
+
+  CTGlowEffect:
+    rad: [effects]
+
+  CTInnerShadowEffect:
+    blurRad: [effects]
+    dist: [effects]
+    dir: [effects]
+
+  CTOuterShadowEffect:
+    blurRad: [effects]
+    dist: [effects]
+    dir: [effects]
+    sx: [effects]
+    sy: [effects]
+    kx: [effects]
+    ky: [effects]
+    algn: [effects]
+    rotWithShape: [effects]
+
+  CTReflectionEffect:
+    blurRad: [effects]
+    stA: [effects]
+    stPos: [effects]
+    endA: [effects]
+    endPos: [effects]
+    dist: [effects]
+    dir: [effects]
+    fadeDir: [effects]
+    sx: [effects]
+    sy: [effects]
+    kx: [effects]
+    ky: [effects]
+    algn: [effects]
+    rotWithShape: [effects]
+
+  CTSoftEdgesEffect:
+    rad: [effects]
+
+  # ---------------------------------------------------------------------------
+  # Shapes
+  # ---------------------------------------------------------------------------
+  CTShapeProperties:
+    bwMode: [shapes]
+    # Children
+    xfrm: [core]
+    custGeom: [shapes]
+    prstGeom: [shapes]
+    ln: [lines]
+    scene3d: [3d]
+    sp3d: [3d]
+    extLst: [extensions]
+
+  CTGroupShapeProperties:
+    bwMode: [shapes]
+    # Children
+    xfrm: [core]
+    scene3d: [3d]
+    extLst: [extensions]
+
+  Transform2D:
+    rot: [core]
+    flipH: [core]
+    flipV: [core]
+    # Children
+    off: [core]
+    ext: [core]
+
+  CTPresetGeometry:
+    prst: [shapes]
+    # Children
+    avLst: [shapes]
+
+  CTCustomGeometry:
+    # Children
+    avLst: [shapes]
+    gdLst: [shapes]
+    ahLst: [shapes]
+    cxnLst: [shapes]
+    rect: [shapes]
+    pathLst: [shapes]
+
+  ShapeStyle:
+    # Children
+    lnRef: [shapes, themes]
+    fillRef: [shapes, themes]
+    effectRef: [shapes, themes]
+    fontRef: [shapes, themes]
+
+  # ---------------------------------------------------------------------------
+  # Text
+  # ---------------------------------------------------------------------------
+  TextBody:
+    # Children
+    bodyPr: [text]
+    lstStyle: [text]
+    p: [text]
+
+  CTTextBodyProperties:
+    rot: [text]
+    spcFirstLastPara: [text]
+    vertOverflow: [text]
+    horzOverflow: [text]
+    vert: [text]
+    wrap: [text]
+    lIns: [text]
+    tIns: [text]
+    rIns: [text]
+    bIns: [text]
+    numCol: [text]
+    spcCol: [text]
+    rtlCol: [text]
+    fromWordArt: [text]
+    anchor: [text]
+    anchorCtr: [text]
+    forceAA: [text]
+    upright: [text]
+    compatLnSpc: [text]
+    # Children
+    prstTxWarp: [text]
+    noAutofit: [text]
+    normAutofit: [text]
+    spAutoFit: [text]
+    scene3d: [3d]
+    sp3d: [3d]
+    flatTx: [text]
+    extLst: [extensions]
+
+  TextParagraph:
+    # Children
+    pPr: [text]
+    r: [text]
+    br: [text]
+    fld: [text]
+    endParaRPr: [text]
+
+  TextParagraphProperties:
+    marL: [text]
+    marR: [text]
+    lvl: [text]
+    indent: [text]
+    algn: [text]
+    defTabSz: [text]
+    rtl: [text]
+    eaLnBrk: [text]
+    fontAlgn: [text]
+    latinLnBrk: [text]
+    hangingPunct: [text]
+    # Children
+    lnSpc: [text]
+    spcBef: [text]
+    spcAft: [text]
+    buClrTx: [text]
+    buClr: [text]
+    buSzTx: [text]
+    buSzPct: [text]
+    buSzPts: [text]
+    buFontTx: [text]
+    buFont: [text]
+    buNone: [text]
+    buAutoNum: [text]
+    buChar: [text]
+    buBlip: [text]
+    tabLst: [text]
+    defRPr: [text]
+    extLst: [extensions]
+
+  TextCharacterProperties:
+    kumimoji: [text]
+    lang: [text]
+    altLang: [text]
+    sz: [text]
+    b: [text]
+    i: [text]
+    u: [text]
+    strike: [text]
+    kern: [text]
+    cap: [text]
+    spc: [text]
+    normalizeH: [text]
+    baseline: [text]
+    noProof: [text]
+    dirty: [text]
+    err: [text]
+    smtClean: [text]
+    smtId: [text]
+    bmk: [text]
+    # Children
+    ln: [text, lines]
+    highlight: [text]
+    latin: [text]
+    ea: [text]
+    cs: [text]
+    sym: [text]
+    hlinkClick: [text]
+    hlinkMouseOver: [text]
+    rtl: [text]
+    extLst: [extensions]
+
+  TextRun:
+    # Children
+    rPr: [text]
+    t: [text]
+
+  TextFont:
+    typeface: [text]
+    panose: [text]
+    pitchFamily: [text]
+    charset: [text]
+
+  # ---------------------------------------------------------------------------
+  # Tables
+  # ---------------------------------------------------------------------------
+  CTTable:
+    # Children
+    tblPr: [tables]
+    tblGrid: [tables]
+    tr: [tables]
+
+  CTTableProperties:
+    rtl: [tables]
+    firstRow: [tables]
+    firstCol: [tables]
+    lastRow: [tables]
+    lastCol: [tables]
+    bandRow: [tables]
+    bandCol: [tables]
+    # Children (fill handled by EG)
+    tableStyleId: [tables, themes]
+    extLst: [extensions]
+
+  CTTableRow:
+    h: [tables]
+    # Children
+    tc: [tables]
+    extLst: [extensions]
+
+  CTTableCell:
+    rowSpan: [tables]
+    gridSpan: [tables]
+    hMerge: [tables]
+    vMerge: [tables]
+    # Children
+    txBody: [tables, text]
+    tcPr: [tables]
+    extLst: [extensions]
+
+  CTTableCellProperties:
+    marL: [tables]
+    marR: [tables]
+    marT: [tables]
+    marB: [tables]
+    vert: [tables]
+    anchor: [tables]
+    anchorCtr: [tables]
+    horzOverflow: [tables]
+    # Children
+    lnL: [tables, lines]
+    lnR: [tables, lines]
+    lnT: [tables, lines]
+    lnB: [tables, lines]
+    lnTlToBr: [tables, lines]
+    lnBlToTr: [tables, lines]
+    cell3D: [tables, 3d]
+    extLst: [extensions]
+
+  CTTableGrid:
+    # Children
+    gridCol: [tables]
+
+  # ---------------------------------------------------------------------------
+  # Themes
+  # ---------------------------------------------------------------------------
+  CTOfficeStyleSheet:
+    name: [themes]
+    # Children
+    themeElements: [themes]
+    objectDefaults: [themes]
+    extraClrSchemeLst: [themes]
+    custClrLst: [themes]
+    extLst: [extensions]
+
+  CTBaseStyles:
+    # Children
+    clrScheme: [colors, themes]
+    fontScheme: [themes]
+    fmtScheme: [themes]
+    extLst: [extensions]
+
+  FontScheme:
+    name: [themes]
+    # Children
+    majorFont: [themes]
+    minorFont: [themes]
+    extLst: [extensions]
+
+  CTStyleMatrix:
+    name: [themes]
+    # Children
+    fillStyleLst: [themes, fills]
+    lnStyleLst: [themes, lines]
+    effectStyleLst: [themes, effects]
+    bgFillStyleLst: [themes, fills]
+
+  CTStyleMatrixReference:
+    idx: [themes]
+    # Color choice children
+
+  CTFontReference:
+    idx: [themes]
+    # Color choice children
+
+  # ---------------------------------------------------------------------------
+  # 3D Effects
+  # ---------------------------------------------------------------------------
+  CTScene3D:
+    # Children
+    camera: [3d]
+    lightRig: [3d]
+    backdrop: [3d]
+    extLst: [extensions]
+
+  CTCamera:
+    prst: [3d]
+    fov: [3d]
+    zoom: [3d]
+    # Children
+    rot: [3d]
+
+  CTLightRig:
+    rig: [3d]
+    dir: [3d]
+    # Children
+    rot: [3d]
+
+  CTShape3D:
+    z: [3d]
+    extrusionH: [3d]
+    contourW: [3d]
+    prstMaterial: [3d]
+    # Children
+    bevelT: [3d]
+    bevelB: [3d]
+    extrusionClr: [3d]
+    contourClr: [3d]
+    extLst: [extensions]
+
+  CTBevel:
+    w: [3d]
+    h: [3d]
+    prst: [3d]
+
+  # ---------------------------------------------------------------------------
+  # Media
+  # ---------------------------------------------------------------------------
+  CTAudioFile:
+    link: [media]
+    contentType: [media]
+
+  CTVideoFile:
+    link: [media]
+    contentType: [media]
+
+  # ---------------------------------------------------------------------------
+  # Hyperlinks
+  # ---------------------------------------------------------------------------
+  CTHyperlink:
+    id: [text]
+    invalidUrl: [text]
+    action: [text]
+    tgtFrame: [text]
+    tooltip: [text]
+    history: [text]
+    highlightClick: [text]
+    endSnd: [text]
+    # Children
+    snd: [text, media]
+    extLst: [extensions]
+
+  # ---------------------------------------------------------------------------
+  # Non-visual properties
+  # ---------------------------------------------------------------------------
+  CTNonVisualDrawingProps:
+    id: [core]
+    name: [core]
+    descr: [core]
+    hidden: [core]
+    title: [core]
+    # Children
+    hlinkClick: [text]
+    hlinkHover: [text]
+    extLst: [extensions]
+
+  CTNonVisualPictureProperties:
+    preferRelativeResize: [shapes]
+    # Children
+    picLocks: [shapes]
+    extLst: [extensions]
+
+  CTNonVisualConnectorProperties:
+    # Children
+    cxnSpLocks: [shapes]
+    stCxn: [shapes]
+    endCxn: [shapes]
+    extLst: [extensions]
+
+  CTNonVisualGraphicFrameProperties:
+    # Children
+    graphicFrameLocks: [shapes]
+    extLst: [extensions]
+
+  CTNonVisualGroupDrawingShapeProps:
+    # Children
+    grpSpLocks: [shapes]
+    extLst: [extensions]

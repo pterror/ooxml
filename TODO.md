@@ -144,7 +144,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
   - `Some("a")` = `a:` prefixed elements (DML when embedded)
   - Verified against real Office files from corpus: XLSX uses unprefixed, DOCX uses `w:`, PPTX uses `p:`
   - SML writer migration is now unblocked
-- [ ] **Port feature flags to DML** - Add ooxml-features.yaml mappings for DML elements.
+- [x] **Port feature flags to DML** - Added 11 feature flags and ~350 field mappings for 45 DML types. 977 feature annotations generated.
 - [ ] **Port extra-attrs/extra-children to DML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten DML code** - Remove old implementations once tests pass.
