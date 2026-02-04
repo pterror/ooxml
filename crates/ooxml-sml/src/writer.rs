@@ -1488,57 +1488,9 @@ impl WorkbookBuilder {
 
         wb_rels.push_str("</Relationships>");
 
-        // Build workbook.xml
-        let mut workbook_xml = String::new();
-        workbook_xml.push_str(r#"<?xml version="1.0" encoding="UTF-8" standalone="yes"?>"#);
-        workbook_xml.push('\n');
-        workbook_xml.push_str(&format!(
-            r#"<workbook xmlns="{}" xmlns:r="{}">"#,
-            NS_SPREADSHEET, NS_RELATIONSHIPS
-        ));
-        workbook_xml.push('\n');
-        workbook_xml.push_str("  <sheets>\n");
-
-        for (i, sheet) in self.sheets.iter().enumerate() {
-            let sheet_id = i + 1;
-            let rel_id = i + 1;
-            workbook_xml.push_str(&format!(
-                r#"    <sheet name="{}" sheetId="{}" r:id="rId{}"/>"#,
-                escape_xml(&sheet.name),
-                sheet_id,
-                rel_id
-            ));
-            workbook_xml.push('\n');
-        }
-
-        workbook_xml.push_str("  </sheets>\n");
-
-        // Add defined names if any
-        if !self.defined_names.is_empty() {
-            workbook_xml.push_str("  <definedNames>\n");
-            for dn in &self.defined_names {
-                workbook_xml.push_str("    <definedName name=\"");
-                workbook_xml.push_str(&escape_xml(&dn.name));
-                workbook_xml.push('"');
-                if let Some(sheet_id) = dn.local_sheet_id {
-                    workbook_xml.push_str(&format!(" localSheetId=\"{}\"", sheet_id));
-                }
-                if let Some(ref comment) = dn.comment {
-                    workbook_xml.push_str(" comment=\"");
-                    workbook_xml.push_str(&escape_xml(comment));
-                    workbook_xml.push('"');
-                }
-                if dn.hidden {
-                    workbook_xml.push_str(" hidden=\"1\"");
-                }
-                workbook_xml.push('>');
-                workbook_xml.push_str(&escape_xml(&dn.reference));
-                workbook_xml.push_str("</definedName>\n");
-            }
-            workbook_xml.push_str("  </definedNames>\n");
-        }
-
-        workbook_xml.push_str("</workbook>");
+        // Build workbook.xml using generated types
+        let workbook = self.build_workbook();
+        let workbook_xml = serialize_workbook(&workbook)?;
 
         // Write parts to package
         pkg.add_part("_rels/.rels", CT_RELATIONSHIPS, root_rels.as_bytes())?;
@@ -1547,7 +1499,7 @@ impl WorkbookBuilder {
             CT_RELATIONSHIPS,
             wb_rels.as_bytes(),
         )?;
-        pkg.add_part("xl/workbook.xml", CT_WORKBOOK, workbook_xml.as_bytes())?;
+        pkg.add_part("xl/workbook.xml", CT_WORKBOOK, &workbook_xml)?;
 
         // Write styles if any
         if has_styles {
@@ -2554,6 +2506,121 @@ impl WorkbookBuilder {
         }
     }
 
+    /// Build a Workbook type from builder data.
+    #[allow(clippy::vec_box)] // Generated Sheets expects Vec<Box<Sheet>>
+    fn build_workbook(&self) -> types::Workbook {
+        // Build sheets
+        let sheets: Vec<Box<types::Sheet>> = self
+            .sheets
+            .iter()
+            .enumerate()
+            .map(|(i, sheet)| {
+                Box::new(types::Sheet {
+                    name: sheet.name.clone(),
+                    sheet_id: (i + 1) as u32,
+                    #[cfg(feature = "sml-structure")]
+                    state: None,
+                    id: format!("rId{}", i + 1),
+                    #[cfg(feature = "extra-attrs")]
+                    extra_attrs: Default::default(),
+                })
+            })
+            .collect();
+
+        // Build defined names if any
+        let defined_names: Option<Box<types::DefinedNames>> = if self.defined_names.is_empty() {
+            None
+        } else {
+            Some(Box::new(types::DefinedNames {
+                defined_name: self
+                    .defined_names
+                    .iter()
+                    .map(|dn| {
+                        Box::new(types::DefinedName {
+                            text: Some(dn.reference.clone()),
+                            name: dn.name.clone(),
+                            comment: dn.comment.clone(),
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            custom_menu: None,
+                            description: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            help: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            status_bar: None,
+                            local_sheet_id: dn.local_sheet_id,
+                            #[cfg(feature = "sml-structure")]
+                            hidden: if dn.hidden { Some(true) } else { None },
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            function: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            vb_procedure: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            xlm: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            function_group_id: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            shortcut_key: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            publish_to_server: None,
+                            #[cfg(feature = "sml-formulas-advanced")]
+                            workbook_parameter: None,
+                            #[cfg(feature = "extra-attrs")]
+                            extra_attrs: Default::default(),
+                            #[cfg(feature = "extra-children")]
+                            extra_children: Vec::new(),
+                        })
+                    })
+                    .collect(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }))
+        };
+
+        types::Workbook {
+            conformance: None,
+            file_version: None,
+            #[cfg(feature = "sml-protection")]
+            file_sharing: None,
+            workbook_pr: None,
+            #[cfg(feature = "sml-protection")]
+            workbook_protection: None,
+            book_views: None,
+            sheets: Box::new(types::Sheets {
+                sheet: sheets,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }),
+            #[cfg(feature = "sml-formulas-advanced")]
+            function_groups: None,
+            #[cfg(feature = "sml-external")]
+            external_references: None,
+            defined_names,
+            #[cfg(feature = "sml-formulas")]
+            calc_pr: None,
+            #[cfg(feature = "sml-external")]
+            ole_size: None,
+            #[cfg(feature = "sml-structure")]
+            custom_workbook_views: None,
+            #[cfg(feature = "sml-pivot")]
+            pivot_caches: None,
+            #[cfg(feature = "sml-metadata")]
+            smart_tag_pr: None,
+            #[cfg(feature = "sml-metadata")]
+            smart_tag_types: None,
+            #[cfg(feature = "sml-external")]
+            web_publishing: None,
+            file_recovery_pr: Vec::new(),
+            #[cfg(feature = "sml-external")]
+            web_publish_objects: None,
+            #[cfg(feature = "sml-extensions")]
+            extension_list: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
     /// Serialize shared strings table to XML using generated types.
     fn serialize_shared_strings(&self) -> Result<Vec<u8>> {
         let count = self.shared_strings.len() as u32;
@@ -2643,11 +2710,29 @@ fn escape_xml(s: &str) -> String {
 // ToXml serialization helpers
 // =============================================================================
 
-/// Namespace declarations for SML root elements.
+/// Namespace declarations for SML root elements (worksheet, etc.).
 const NS_DECLS: &[(&str, &str)] = &[("xmlns", NS_SPREADSHEET)];
+
+/// Namespace declarations for workbook element (includes relationship namespace for r:id).
+const NS_WORKBOOK_DECLS: &[(&str, &str)] =
+    &[("xmlns", NS_SPREADSHEET), ("xmlns:r", NS_RELATIONSHIPS)];
 
 /// Serialize a ToXml value with namespace declarations and XML declaration.
 fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
+    serialize_with_ns_decls(value, tag, NS_DECLS)
+}
+
+/// Serialize a workbook with both spreadsheet and relationship namespaces.
+fn serialize_workbook(value: &impl ToXml) -> Result<Vec<u8>> {
+    serialize_with_ns_decls(value, "workbook", NS_WORKBOOK_DECLS)
+}
+
+/// Serialize a ToXml value with custom namespace declarations and XML declaration.
+fn serialize_with_ns_decls(
+    value: &impl ToXml,
+    tag: &str,
+    ns_decls: &[(&str, &str)],
+) -> Result<Vec<u8>> {
     use quick_xml::Writer;
     use quick_xml::events::{BytesEnd, BytesStart, Event};
 
@@ -2658,7 +2743,7 @@ fn serialize_with_namespaces(value: &impl ToXml, tag: &str) -> Result<Vec<u8>> {
     let start = BytesStart::new(tag);
     let start = value.write_attrs(start);
     let mut start = start;
-    for &(key, val) in NS_DECLS {
+    for &(key, val) in ns_decls {
         start.push_attribute((key, val));
     }
 
