@@ -202,6 +202,10 @@ pub struct CodegenConfig {
     /// None = use unprefixed names (default namespace convention, used by SML/XLSX).
     /// Some("w") = use `w:` prefix (WML/DOCX), Some("p") = use `p:` prefix (PML/PPTX), etc.
     pub xml_serialize_prefix: Option<String>,
+    /// Cross-crate imports for parser/serializer generation.
+    /// Each entry is a full use path (e.g., "ooxml_dml::types::*" or "ooxml_dml::parsers::*").
+    /// Used when types from another crate are referenced in this schema.
+    pub cross_crate_imports: Vec<String>,
 }
 
 /// Generate Rust code from a parsed schema.

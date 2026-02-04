@@ -7,46 +7,12 @@
 #![allow(clippy::manual_is_multiple_of)]
 
 use super::generated::*;
+pub use ooxml_xml::{FromXml, ParseError};
 #[cfg(feature = "extra-children")]
 use ooxml_xml::{PositionedNode, RawXmlElement, RawXmlNode};
 use quick_xml::Reader;
 use quick_xml::events::{BytesStart, Event};
 use std::io::BufRead;
-
-/// Error type for XML parsing.
-#[derive(Debug)]
-pub enum ParseError {
-    Xml(quick_xml::Error),
-    #[cfg(feature = "extra-children")]
-    RawXml(ooxml_xml::Error),
-    UnexpectedElement(String),
-    MissingAttribute(String),
-    InvalidValue(String),
-}
-
-impl From<quick_xml::Error> for ParseError {
-    fn from(e: quick_xml::Error) -> Self {
-        ParseError::Xml(e)
-    }
-}
-
-#[cfg(feature = "extra-children")]
-impl From<ooxml_xml::Error> for ParseError {
-    fn from(e: ooxml_xml::Error) -> Self {
-        ParseError::RawXml(e)
-    }
-}
-
-/// Trait for types that can be parsed from XML events.
-pub trait FromXml: Sized {
-    /// Parse from a reader, given the opening tag.
-    /// If `is_empty` is true, the element was self-closing (no children to read).
-    fn from_xml<R: BufRead>(
-        reader: &mut Reader<R>,
-        start: &BytesStart,
-        is_empty: bool,
-    ) -> Result<Self, ParseError>;
-}
 
 #[allow(dead_code)]
 /// Skip an element and all its children.

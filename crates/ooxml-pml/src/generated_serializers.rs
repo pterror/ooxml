@@ -1,97 +1,17 @@
 // ToXml serializers for generated types.
 // Enables roundtrip XML serialization alongside FromXml parsers.
 
-#![allow(unused_variables, unused_assignments, unreachable_code)]
+#![allow(unused_variables, unused_assignments, unreachable_code, unused_imports)]
 #![allow(clippy::single_match)]
 #![allow(clippy::match_single_binding)]
 #![allow(clippy::explicit_counter_loop)]
 
 use super::generated::*;
+use ooxml_dml::types::*;
 use quick_xml::Writer;
 use quick_xml::events::{BytesEnd, BytesStart, BytesText, Event};
 use std::io::Write;
-
-/// Error type for XML serialization.
-#[derive(Debug)]
-pub enum SerializeError {
-    Xml(quick_xml::Error),
-    Io(std::io::Error),
-    #[cfg(feature = "extra-children")]
-    RawXml(ooxml_xml::Error),
-}
-
-impl From<quick_xml::Error> for SerializeError {
-    fn from(e: quick_xml::Error) -> Self {
-        SerializeError::Xml(e)
-    }
-}
-
-impl From<std::io::Error> for SerializeError {
-    fn from(e: std::io::Error) -> Self {
-        SerializeError::Io(e)
-    }
-}
-
-#[cfg(feature = "extra-children")]
-impl From<ooxml_xml::Error> for SerializeError {
-    fn from(e: ooxml_xml::Error) -> Self {
-        SerializeError::RawXml(e)
-    }
-}
-
-impl std::fmt::Display for SerializeError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Xml(e) => write!(f, "XML error: {}", e),
-            Self::Io(e) => write!(f, "IO error: {}", e),
-            #[cfg(feature = "extra-children")]
-            Self::RawXml(e) => write!(f, "RawXml error: {}", e),
-        }
-    }
-}
-
-impl std::error::Error for SerializeError {}
-
-/// Trait for types that can be serialized to XML events.
-pub trait ToXml {
-    /// Write attributes onto the start tag and return it.
-    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> { start }
-
-    /// Write child elements and text content inside the element.
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> { Ok(()) }
-
-    /// Whether this element has no children (self-closing).
-    fn is_empty_element(&self) -> bool { false }
-
-    /// Write a complete element: `<tag attrs>children</tag>` or `<tag attrs/>`.
-    fn write_element<W: Write>(&self, tag: &str, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        let start = BytesStart::new(tag);
-        let start = self.write_attrs(start);
-        if self.is_empty_element() {
-            writer.write_event(Event::Empty(start))?;
-        } else {
-            writer.write_event(Event::Start(start))?;
-            self.write_children(writer)?;
-            writer.write_event(Event::End(BytesEnd::new(tag)))?;
-        }
-        Ok(())
-    }
-}
-
-impl<T: ToXml> ToXml for Box<T> {
-    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
-        (**self).write_attrs(start)
-    }
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        (**self).write_children(writer)
-    }
-    fn is_empty_element(&self) -> bool {
-        (**self).is_empty_element()
-    }
-    fn write_element<W: Write>(&self, tag: &str, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        (**self).write_element(tag, writer)
-    }
-}
+pub use ooxml_xml::{SerializeError, ToXml};
 
 #[allow(dead_code)]
 /// Encode bytes as a hex string.

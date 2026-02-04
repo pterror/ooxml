@@ -45,8 +45,9 @@ pub mod writer;
 pub mod generated;
 pub use generated as types;
 
-// TODO: PML parser/serializer blocked on cross-crate DML type imports
-// Uncomment once cross-crate codegen is implemented:
+// TODO: PML parser/serializer requires cross-crate type awareness in codegen
+// The type generator needs to know about DML types (not just the parser/serializer).
+// See cross_crate_imports in CodegenConfig - needs extension to type generation.
 // pub mod generated_parsers;
 // pub use generated_parsers as parsers;
 // pub mod generated_serializers;

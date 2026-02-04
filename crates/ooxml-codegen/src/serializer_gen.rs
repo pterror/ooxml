@@ -97,7 +97,7 @@ impl<'a> SerializerGenerator<'a> {
         writeln!(self.output).unwrap();
         writeln!(
             self.output,
-            "#![allow(unused_variables, unused_assignments, unreachable_code)]"
+            "#![allow(unused_variables, unused_assignments, unreachable_code, unused_imports)]"
         )
         .unwrap();
         writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();
@@ -105,6 +105,10 @@ impl<'a> SerializerGenerator<'a> {
         writeln!(self.output, "#![allow(clippy::explicit_counter_loop)]").unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "use super::generated::*;").unwrap();
+        // Add cross-crate imports for types from other schemas
+        for import in &self.config.cross_crate_imports {
+            writeln!(self.output, "use {};", import).unwrap();
+        }
         writeln!(self.output, "use quick_xml::Writer;").unwrap();
         writeln!(
             self.output,
@@ -112,190 +116,8 @@ impl<'a> SerializerGenerator<'a> {
         )
         .unwrap();
         writeln!(self.output, "use std::io::Write;").unwrap();
-        writeln!(self.output).unwrap();
-
-        // SerializeError
-        writeln!(self.output, "/// Error type for XML serialization.").unwrap();
-        writeln!(self.output, "#[derive(Debug)]").unwrap();
-        writeln!(self.output, "pub enum SerializeError {{").unwrap();
-        writeln!(self.output, "    Xml(quick_xml::Error),").unwrap();
-        writeln!(self.output, "    Io(std::io::Error),").unwrap();
-        writeln!(self.output, "    #[cfg(feature = \"extra-children\")]").unwrap();
-        writeln!(self.output, "    RawXml(ooxml_xml::Error),").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "impl From<quick_xml::Error> for SerializeError {{"
-        )
-        .unwrap();
-        writeln!(self.output, "    fn from(e: quick_xml::Error) -> Self {{").unwrap();
-        writeln!(self.output, "        SerializeError::Xml(e)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "impl From<std::io::Error> for SerializeError {{"
-        )
-        .unwrap();
-        writeln!(self.output, "    fn from(e: std::io::Error) -> Self {{").unwrap();
-        writeln!(self.output, "        SerializeError::Io(e)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "#[cfg(feature = \"extra-children\")]").unwrap();
-        writeln!(
-            self.output,
-            "impl From<ooxml_xml::Error> for SerializeError {{"
-        )
-        .unwrap();
-        writeln!(self.output, "    fn from(e: ooxml_xml::Error) -> Self {{").unwrap();
-        writeln!(self.output, "        SerializeError::RawXml(e)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(self.output, "impl std::fmt::Display for SerializeError {{").unwrap();
-        writeln!(
-            self.output,
-            "    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{"
-        )
-        .unwrap();
-        writeln!(self.output, "        match self {{").unwrap();
-        writeln!(
-            self.output,
-            "            Self::Xml(e) => write!(f, \"XML error: {{}}\", e),"
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "            Self::Io(e) => write!(f, \"IO error: {{}}\", e),"
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "            #[cfg(feature = \"extra-children\")]"
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "            Self::RawXml(e) => write!(f, \"RawXml error: {{}}\", e),"
-        )
-        .unwrap();
-        writeln!(self.output, "        }}").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "impl std::error::Error for SerializeError {{}}"
-        )
-        .unwrap();
-        writeln!(self.output).unwrap();
-
-        // ToXml trait
-        writeln!(
-            self.output,
-            "/// Trait for types that can be serialized to XML events."
-        )
-        .unwrap();
-        writeln!(self.output, "pub trait ToXml {{").unwrap();
-        writeln!(
-            self.output,
-            "    /// Write attributes onto the start tag and return it."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {{ start }}"
-        )
-        .unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "    /// Write child elements and text content inside the element."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {{ Ok(()) }}"
-        )
-        .unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "    /// Whether this element has no children (self-closing)."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    fn is_empty_element(&self) -> bool {{ false }}"
-        )
-        .unwrap();
-        writeln!(self.output).unwrap();
-        writeln!(
-            self.output,
-            "    /// Write a complete element: `<tag attrs>children</tag>` or `<tag attrs/>`."
-        )
-        .unwrap();
-        writeln!(
-            self.output,
-            "    fn write_element<W: Write>(&self, tag: &str, writer: &mut Writer<W>) -> Result<(), SerializeError> {{"
-        )
-        .unwrap();
-        writeln!(self.output, "        let start = BytesStart::new(tag);").unwrap();
-        writeln!(self.output, "        let start = self.write_attrs(start);").unwrap();
-        writeln!(self.output, "        if self.is_empty_element() {{").unwrap();
-        writeln!(
-            self.output,
-            "            writer.write_event(Event::Empty(start))?;"
-        )
-        .unwrap();
-        writeln!(self.output, "        }} else {{").unwrap();
-        writeln!(
-            self.output,
-            "            writer.write_event(Event::Start(start))?;"
-        )
-        .unwrap();
-        writeln!(self.output, "            self.write_children(writer)?;").unwrap();
-        writeln!(
-            self.output,
-            "            writer.write_event(Event::End(BytesEnd::new(tag)))?;"
-        )
-        .unwrap();
-        writeln!(self.output, "        }}").unwrap();
-        writeln!(self.output, "        Ok(())").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
-        writeln!(self.output).unwrap();
-
-        // Box<T> blanket impl
-        writeln!(self.output, "impl<T: ToXml> ToXml for Box<T> {{").unwrap();
-        writeln!(
-            self.output,
-            "    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {{"
-        )
-        .unwrap();
-        writeln!(self.output, "        (**self).write_attrs(start)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(
-            self.output,
-            "    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {{"
-        )
-        .unwrap();
-        writeln!(self.output, "        (**self).write_children(writer)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "    fn is_empty_element(&self) -> bool {{").unwrap();
-        writeln!(self.output, "        (**self).is_empty_element()").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(
-            self.output,
-            "    fn write_element<W: Write>(&self, tag: &str, writer: &mut Writer<W>) -> Result<(), SerializeError> {{"
-        )
-        .unwrap();
-        writeln!(self.output, "        (**self).write_element(tag, writer)").unwrap();
-        writeln!(self.output, "    }}").unwrap();
-        writeln!(self.output, "}}").unwrap();
+        // Import shared traits and error types from ooxml-xml
+        writeln!(self.output, "pub use ooxml_xml::{{SerializeError, ToXml}};").unwrap();
         writeln!(self.output).unwrap();
 
         // encode_hex helper
