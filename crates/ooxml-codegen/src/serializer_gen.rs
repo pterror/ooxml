@@ -97,7 +97,7 @@ impl<'a> SerializerGenerator<'a> {
         writeln!(self.output).unwrap();
         writeln!(
             self.output,
-            "#![allow(unused_variables, unused_assignments)]"
+            "#![allow(unused_variables, unused_assignments, unreachable_code)]"
         )
         .unwrap();
         writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();

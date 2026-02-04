@@ -1,7 +1,7 @@
 // ToXml serializers for generated types.
 // Enables roundtrip XML serialization alongside FromXml parsers.
 
-#![allow(unused_variables, unused_assignments)]
+#![allow(unused_variables, unused_assignments, unreachable_code)]
 #![allow(clippy::single_match)]
 #![allow(clippy::match_single_binding)]
 #![allow(clippy::explicit_counter_loop)]

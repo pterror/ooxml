@@ -48,6 +48,9 @@ pub use generated as types;
 pub mod generated_parsers;
 pub use generated_parsers as parsers;
 
+pub mod generated_serializers;
+pub use generated_serializers as serializers;
+
 // Lazy/streaming API for memory-efficient parsing
 pub mod lazy;
 pub use lazy::{LazyCell, LazyRow, LazyWorksheet};

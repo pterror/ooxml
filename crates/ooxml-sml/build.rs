@@ -1,5 +1,6 @@
 use ooxml_codegen::{
-    CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers, parse_rnc,
+    CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers,
+    generate_serializers, parse_rnc,
 };
 use std::fs;
 use std::path::Path;
@@ -133,6 +134,20 @@ fn main() {
         eprintln!(
             "Generated {} bytes to src/generated_parsers.rs",
             parser_dest.metadata().map(|m| m.len()).unwrap_or(0)
+        );
+    }
+
+    // Generate ToXml serializers
+    // Enable with OOXML_GENERATE_SERIALIZERS=1
+    if std::env::var("OOXML_GENERATE_SERIALIZERS").is_ok() {
+        let serializer_dest =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/generated_serializers.rs");
+        let serializer_code = generate_serializers(&combined_schema, &config);
+        fs::write(&serializer_dest, serializer_code)
+            .expect("failed to write generated serializers");
+        eprintln!(
+            "Generated {} bytes to src/generated_serializers.rs",
+            serializer_dest.metadata().map(|m| m.len()).unwrap_or(0)
         );
     }
 }
