@@ -112,7 +112,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 ### SML (Spreadsheet)
 - [x] **Regenerate SML types with EG_\*/AG_\* inlining** - Types, parsers, and serializers regenerated with latest codegen.
 - [x] **Add SML serializer unit tests** - 25 roundtrip tests in test_generated_serializers.rs.
-- [~] **Migrate SML writer to generated serializers** - In progress. Migrated: serialize_shared_strings, serialize_comments. Remaining: serialize_styles, serialize_sheet, workbook XML.
+- [~] **Migrate SML writer to generated serializers** - In progress. Migrated: serialize_shared_strings, serialize_comments, serialize_sheet. Remaining: serialize_styles, workbook XML, conditional_formatting, data_validations.
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
