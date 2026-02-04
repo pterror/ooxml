@@ -206,6 +206,12 @@ pub struct CodegenConfig {
     /// Each entry is a full use path (e.g., "ooxml_dml::types::*" or "ooxml_dml::parsers::*").
     /// Used when types from another crate are referenced in this schema.
     pub cross_crate_imports: Vec<String>,
+    /// Cross-crate type resolution for the type generator.
+    /// Maps schema name prefixes (e.g., "a_") to (crate_path, module_name) tuples.
+    /// Example: "a_" → ("ooxml_dml::types::", "dml")
+    /// When a reference like "a_CT_Color" is not found locally, it's resolved using the
+    /// module's name mappings (if available) or converted to PascalCase.
+    pub cross_crate_type_prefix: HashMap<String, (String, String)>,
 }
 
 /// Generate Rust code from a parsed schema.
@@ -525,6 +531,9 @@ impl<'a> Generator<'a> {
                 // Type alias - check if target exists in this schema
                 let target_rust = if self.definitions.contains_key(target.as_str()) {
                     self.to_rust_type_name(target)
+                } else if let Some((cross_crate_type, _)) = self.resolve_cross_crate_type(target) {
+                    // Resolved to a cross-crate type
+                    cross_crate_type
                 } else {
                     // Unknown type from another schema - use String as fallback
                     "String".to_string()
@@ -1183,6 +1192,29 @@ impl<'a> Generator<'a> {
         }
     }
 
+    /// Try to resolve a schema reference name to a cross-crate Rust type.
+    /// Returns Some((full_path, needs_box)) if the name matches a configured prefix.
+    fn resolve_cross_crate_type(&self, name: &str) -> Option<(String, bool)> {
+        for (prefix, (crate_path, module_name)) in &self.config.cross_crate_type_prefix {
+            if name.starts_with(prefix) {
+                // Convert schema name (a_CT_Color) to Rust type name using the cross-crate module's mappings
+                let spec_name = strip_namespace_prefix(name);
+                let rust_type_name = if let Some(mappings) = &self.config.name_mappings
+                    && let Some(mapped) = mappings.resolve_type(module_name, spec_name)
+                {
+                    mapped.to_string()
+                } else {
+                    to_pascal_case(spec_name)
+                };
+                let full_path = format!("{}{}", crate_path, rust_type_name);
+                // Box complex types (CT_*) and element groups (EG_*) to avoid infinite size
+                let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                return Some((full_path, needs_box));
+            }
+        }
+        None
+    }
+
     fn pattern_to_rust_type(&self, pattern: &Pattern, is_optional: bool) -> String {
         let (inner, needs_box) = match pattern {
             Pattern::Ref(name) => {
@@ -1192,6 +1224,11 @@ impl<'a> Generator<'a> {
                     // Box complex types (CT_*) and element groups (EG_*) to avoid infinite size
                     let needs_box = name.contains("_CT_") || name.contains("_EG_");
                     (type_name, needs_box)
+                } else if let Some((cross_crate_type, needs_box)) =
+                    self.resolve_cross_crate_type(name)
+                {
+                    // Resolved to a cross-crate type
+                    (cross_crate_type, needs_box)
                 } else {
                     // Unknown reference (likely from another schema) - use String as fallback
                     ("String".to_string(), false)

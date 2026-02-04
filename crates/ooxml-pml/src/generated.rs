@@ -2503,7 +2503,7 @@ pub enum EGBackground {
     #[serde(rename = "bgPr")]
     BgPr(Box<CTBackgroundProperties>),
     #[serde(rename = "bgRef")]
-    BgRef(String),
+    BgRef(Box<ooxml_dml::types::CTStyleMatrixReference>),
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -2635,7 +2635,7 @@ pub struct CTTransitionStartSoundAction {
     )]
     pub r#loop: Option<bool>,
     #[serde(rename = "snd")]
-    pub snd: String,
+    pub snd: Box<ooxml_dml::types::CTEmbeddedWAVAudioFile>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2779,7 +2779,7 @@ pub struct CTTLIterateIntervalTime {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLIterateIntervalPercentage {
     #[serde(rename = "@val")]
-    pub value: String,
+    pub value: ooxml_dml::types::STPositivePercentage,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2824,7 +2824,7 @@ pub struct CTTLIterateData {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLSubShapeId {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STShapeID,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2868,7 +2868,7 @@ pub struct CTTLOleChartTargetElement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLShapeTargetElement {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "bg")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub bg: Option<Box<CTEmpty>>,
@@ -2883,7 +2883,7 @@ pub struct CTTLShapeTargetElement {
     pub tx_el: Option<Box<CTTLTextTargetElement>>,
     #[serde(rename = "graphicEl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub graphic_el: Option<String>,
+    pub graphic_el: Option<Box<ooxml_dml::types::CTAnimationElementChoice>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -2905,7 +2905,7 @@ pub struct CTTLTimeTargetElement {
     pub sld_tgt: Option<Box<CTEmpty>>,
     #[serde(rename = "sndTgt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snd_tgt: Option<String>,
+    pub snd_tgt: Option<Box<ooxml_dml::types::CTEmbeddedWAVAudioFile>>,
     #[serde(rename = "spTgt")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sp_tgt: Option<Box<CTTLShapeTargetElement>>,
@@ -3061,13 +3061,13 @@ pub struct CTTLCommonTimeNodeData {
     pub repeat_dur: Option<STTLTime>,
     #[serde(rename = "@spd")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spd: Option<String>,
+    pub spd: Option<ooxml_dml::types::STPercentage>,
     #[serde(rename = "@accel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub accel: Option<String>,
+    pub accel: Option<ooxml_dml::types::STPositiveFixedPercentage>,
     #[serde(rename = "@decel")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub decel: Option<String>,
+    pub decel: Option<ooxml_dml::types::STPositiveFixedPercentage>,
     #[serde(rename = "@autoRev")]
     #[serde(
         default,
@@ -3324,7 +3324,7 @@ pub struct CTTLAnimVariant {
     pub str_val: Option<Box<CTTLAnimVariantStringVal>>,
     #[serde(rename = "clrVal")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_val: Option<String>,
+    pub clr_val: Option<Box<ooxml_dml::types::CTColor>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -3408,11 +3408,11 @@ pub struct CTTLAnimateBehavior {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLByRgbColorTransform {
     #[serde(rename = "@r")]
-    pub reference: String,
+    pub reference: ooxml_dml::types::STFixedPercentage,
     #[serde(rename = "@g")]
-    pub g: String,
+    pub g: ooxml_dml::types::STFixedPercentage,
     #[serde(rename = "@b")]
-    pub b: String,
+    pub b: ooxml_dml::types::STFixedPercentage,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3425,11 +3425,11 @@ pub struct CTTLByRgbColorTransform {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLByHslColorTransform {
     #[serde(rename = "@h")]
-    pub height: String,
+    pub height: ooxml_dml::types::STAngle,
     #[serde(rename = "@s")]
-    pub s: String,
+    pub s: ooxml_dml::types::STFixedPercentage,
     #[serde(rename = "@l")]
-    pub l: String,
+    pub l: ooxml_dml::types::STFixedPercentage,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3469,10 +3469,10 @@ pub struct CTTLAnimateColorBehavior {
     pub by: Option<Box<CTTLByAnimateColorTransform>>,
     #[serde(rename = "from")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub from: Option<String>,
+    pub from: Option<Box<ooxml_dml::types::CTColor>>,
     #[serde(rename = "to")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub to: Option<String>,
+    pub to: Option<Box<ooxml_dml::types::CTColor>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3520,9 +3520,9 @@ pub struct CTTLAnimateEffectBehavior {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLPoint {
     #[serde(rename = "@x")]
-    pub x: String,
+    pub x: ooxml_dml::types::STPercentage,
     #[serde(rename = "@y")]
-    pub y: String,
+    pub y: ooxml_dml::types::STPercentage,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -3545,7 +3545,7 @@ pub struct CTTLAnimateMotionBehavior {
     pub path_edit_mode: Option<STTLAnimateMotionPathEditMode>,
     #[serde(rename = "@rAng")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub r_ang: Option<String>,
+    pub r_ang: Option<ooxml_dml::types::STAngle>,
     #[serde(rename = "@ptsTypes")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pts_types: Option<String>,
@@ -3581,13 +3581,13 @@ pub struct CTTLAnimateMotionBehavior {
 pub struct CTTLAnimateRotationBehavior {
     #[serde(rename = "@by")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub by: Option<String>,
+    pub by: Option<ooxml_dml::types::STAngle>,
     #[serde(rename = "@from")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub from: Option<String>,
+    pub from: Option<ooxml_dml::types::STAngle>,
     #[serde(rename = "@to")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub to: Option<String>,
+    pub to: Option<ooxml_dml::types::STAngle>,
     #[serde(rename = "cBhvr")]
     pub c_bhvr: Box<CTTLCommonBehaviorData>,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -3680,7 +3680,7 @@ pub struct CTTLSetBehavior {
 pub struct CTTLCommonMediaNodeData {
     #[serde(rename = "@vol")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub vol: Option<String>,
+    pub vol: Option<ooxml_dml::types::STPositiveFixedPercentage>,
     #[serde(rename = "@mute")]
     #[serde(
         default,
@@ -3769,7 +3769,7 @@ pub struct CTTLMediaNodeVideo {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PAGTLBuild {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "@grpId")]
     pub grp_id: u32,
     #[serde(rename = "@uiExpand")]
@@ -3824,7 +3824,7 @@ pub struct CTTLTemplateList {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLBuildParagraph {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "@grpId")]
     pub grp_id: u32,
     #[serde(rename = "@uiExpand")]
@@ -3884,7 +3884,7 @@ pub struct CTTLBuildParagraph {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLBuildDiagram {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "@grpId")]
     pub grp_id: u32,
     #[serde(rename = "@uiExpand")]
@@ -3909,7 +3909,7 @@ pub struct CTTLBuildDiagram {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLOleBuildChart {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "@grpId")]
     pub grp_id: u32,
     #[serde(rename = "@uiExpand")]
@@ -3941,7 +3941,7 @@ pub struct CTTLOleBuildChart {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTTLGraphicalObjectBuild {
     #[serde(rename = "@spid")]
-    pub spid: String,
+    pub spid: ooxml_dml::types::STDrawingElementId,
     #[serde(rename = "@grpId")]
     pub grp_id: u32,
     #[serde(rename = "@uiExpand")]
@@ -3956,7 +3956,7 @@ pub struct CTTLGraphicalObjectBuild {
     pub bld_as_one: Option<Box<CTEmpty>>,
     #[serde(rename = "bldSub")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bld_sub: Option<String>,
+    pub bld_sub: Option<Box<ooxml_dml::types::CTAnimationGraphicalObjectBuildProperties>>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4213,7 +4213,7 @@ pub struct CTComment {
     #[serde(rename = "@idx")]
     pub idx: STIndex,
     #[serde(rename = "pos")]
-    pub pos: String,
+    pub pos: Box<ooxml_dml::types::Point2D>,
     #[serde(rename = "text")]
     pub text: String,
     #[serde(rename = "extLst")]
@@ -4261,10 +4261,10 @@ pub struct PAGOle {
     pub show_as_icon: Option<bool>,
     #[serde(rename = "@imgW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_w: Option<String>,
+    pub img_w: Option<ooxml_dml::types::STPositiveCoordinate32>,
     #[serde(rename = "@imgH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_h: Option<String>,
+    pub img_h: Option<ooxml_dml::types::STPositiveCoordinate32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4336,10 +4336,10 @@ pub struct CTOleObject {
     pub show_as_icon: Option<bool>,
     #[serde(rename = "@imgW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_w: Option<String>,
+    pub img_w: Option<ooxml_dml::types::STPositiveCoordinate32>,
     #[serde(rename = "@imgH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_h: Option<String>,
+    pub img_h: Option<ooxml_dml::types::STPositiveCoordinate32>,
     #[serde(rename = "@progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<String>,
@@ -4351,7 +4351,7 @@ pub struct CTOleObject {
     pub link: Option<Box<CTOleObjectLink>>,
     #[serde(rename = "@spid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spid: Option<String>,
+    pub spid: Option<ooxml_dml::types::STShapeID>,
     #[serde(rename = "pic")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<Picture>>,
@@ -4385,16 +4385,16 @@ pub struct CTControl {
     pub show_as_icon: Option<bool>,
     #[serde(rename = "@imgW")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_w: Option<String>,
+    pub img_w: Option<ooxml_dml::types::STPositiveCoordinate32>,
     #[serde(rename = "@imgH")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub img_h: Option<String>,
+    pub img_h: Option<ooxml_dml::types::STPositiveCoordinate32>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
     #[serde(rename = "@spid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub spid: Option<String>,
+    pub spid: Option<ooxml_dml::types::STShapeID>,
     #[serde(rename = "pic")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub picture: Option<Box<Picture>>,
@@ -4551,7 +4551,7 @@ pub struct CTEmbeddedFontDataId {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEmbeddedFontListEntry {
     #[serde(rename = "font")]
-    pub font: String,
+    pub font: Box<ooxml_dml::types::TextFont>,
     #[serde(rename = "regular")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub regular: Option<Box<CTEmbeddedFontDataId>>,
@@ -4767,7 +4767,7 @@ pub struct CTModifyVerifier {
 pub struct Presentation {
     #[serde(rename = "@serverZoom")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub server_zoom: Option<String>,
+    pub server_zoom: Option<ooxml_dml::types::STPercentage>,
     #[serde(rename = "@firstSlideNum")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub first_slide_num: Option<i32>,
@@ -4849,7 +4849,7 @@ pub struct Presentation {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_sz: Option<Box<CTSlideSize>>,
     #[serde(rename = "notesSz")]
-    pub notes_sz: String,
+    pub notes_sz: Box<ooxml_dml::types::PositiveSize2D>,
     #[serde(rename = "smartTags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub smart_tags: Option<Box<CTSmartTags>>,
@@ -4870,7 +4870,7 @@ pub struct Presentation {
     pub kinsoku: Option<Box<CTKinsoku>>,
     #[serde(rename = "defaultTextStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub default_text_style: Option<String>,
+    pub default_text_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "modifyVerifier")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modify_verifier: Option<Box<CTModifyVerifier>>,
@@ -5114,7 +5114,7 @@ pub struct CTShowProperties {
     pub slide_list_choice: Option<Box<EGSlideListChoice>>,
     #[serde(rename = "penClr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub pen_clr: Option<String>,
+    pub pen_clr: Option<Box<ooxml_dml::types::CTColor>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5148,7 +5148,7 @@ pub struct CTPresentationProperties {
     pub show_pr: Option<Box<CTShowProperties>>,
     #[serde(rename = "clrMru")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_mru: Option<String>,
+    pub clr_mru: Option<Box<ooxml_dml::types::CTColorMRU>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5288,9 +5288,9 @@ pub struct CTApplicationNonVisualDrawingProps {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShapeNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: String,
+    pub c_nv_pr: Box<ooxml_dml::types::CTNonVisualDrawingProps>,
     #[serde(rename = "cNvSpPr")]
-    pub c_nv_sp_pr: String,
+    pub c_nv_sp_pr: Box<ooxml_dml::types::CTNonVisualDrawingShapeProps>,
     #[serde(rename = "nvPr")]
     pub nv_pr: Box<CTApplicationNonVisualDrawingProps>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -5312,13 +5312,13 @@ pub struct Shape {
     #[serde(rename = "nvSpPr")]
     pub non_visual_properties: Box<ShapeNonVisual>,
     #[serde(rename = "spPr")]
-    pub shape_properties: String,
+    pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style: Option<String>,
+    pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
     #[serde(rename = "txBody")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text_body: Option<String>,
+    pub text_body: Option<Box<ooxml_dml::types::TextBody>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5339,9 +5339,9 @@ pub struct Shape {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTConnectorNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: String,
+    pub c_nv_pr: Box<ooxml_dml::types::CTNonVisualDrawingProps>,
     #[serde(rename = "cNvCxnSpPr")]
-    pub c_nv_cxn_sp_pr: String,
+    pub c_nv_cxn_sp_pr: Box<ooxml_dml::types::CTNonVisualConnectorProperties>,
     #[serde(rename = "nvPr")]
     pub nv_pr: Box<CTApplicationNonVisualDrawingProps>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -5356,10 +5356,10 @@ pub struct Connector {
     #[serde(rename = "nvCxnSpPr")]
     pub non_visual_connector_properties: Box<CTConnectorNonVisual>,
     #[serde(rename = "spPr")]
-    pub shape_properties: String,
+    pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style: Option<String>,
+    pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5373,9 +5373,9 @@ pub struct Connector {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTPictureNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: String,
+    pub c_nv_pr: Box<ooxml_dml::types::CTNonVisualDrawingProps>,
     #[serde(rename = "cNvPicPr")]
-    pub c_nv_pic_pr: String,
+    pub c_nv_pic_pr: Box<ooxml_dml::types::CTNonVisualPictureProperties>,
     #[serde(rename = "nvPr")]
     pub nv_pr: Box<CTApplicationNonVisualDrawingProps>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -5390,12 +5390,12 @@ pub struct Picture {
     #[serde(rename = "nvPicPr")]
     pub non_visual_picture_properties: Box<CTPictureNonVisual>,
     #[serde(rename = "blipFill")]
-    pub blip_fill: String,
+    pub blip_fill: Box<ooxml_dml::types::BlipFillProperties>,
     #[serde(rename = "spPr")]
-    pub shape_properties: String,
+    pub shape_properties: Box<ooxml_dml::types::CTShapeProperties>,
     #[serde(rename = "style")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style: Option<String>,
+    pub style: Option<Box<ooxml_dml::types::ShapeStyle>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5409,9 +5409,9 @@ pub struct Picture {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGraphicalObjectFrameNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: String,
+    pub c_nv_pr: Box<ooxml_dml::types::CTNonVisualDrawingProps>,
     #[serde(rename = "cNvGraphicFramePr")]
-    pub c_nv_graphic_frame_pr: String,
+    pub c_nv_graphic_frame_pr: Box<ooxml_dml::types::CTNonVisualGraphicFrameProperties>,
     #[serde(rename = "nvPr")]
     pub nv_pr: Box<CTApplicationNonVisualDrawingProps>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -5425,11 +5425,11 @@ pub struct CTGraphicalObjectFrameNonVisual {
 pub struct GraphicalObjectFrame {
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bw_mode: Option<String>,
+    pub bw_mode: Option<ooxml_dml::types::STBlackWhiteMode>,
     #[serde(rename = "nvGraphicFramePr")]
     pub nv_graphic_frame_pr: Box<CTGraphicalObjectFrameNonVisual>,
     #[serde(rename = "xfrm")]
-    pub xfrm: String,
+    pub xfrm: Box<ooxml_dml::types::Transform2D>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5450,9 +5450,9 @@ pub struct GraphicalObjectFrame {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTGroupShapeNonVisual {
     #[serde(rename = "cNvPr")]
-    pub c_nv_pr: String,
+    pub c_nv_pr: Box<ooxml_dml::types::CTNonVisualDrawingProps>,
     #[serde(rename = "cNvGrpSpPr")]
-    pub c_nv_grp_sp_pr: String,
+    pub c_nv_grp_sp_pr: Box<ooxml_dml::types::CTNonVisualGroupDrawingShapeProps>,
     #[serde(rename = "nvPr")]
     pub nv_pr: Box<CTApplicationNonVisualDrawingProps>,
     /// Unknown child elements captured for roundtrip fidelity.
@@ -5467,7 +5467,7 @@ pub struct GroupShape {
     #[serde(rename = "nvGrpSpPr")]
     pub non_visual_group_properties: Box<CTGroupShapeNonVisual>,
     #[serde(rename = "grpSpPr")]
-    pub grp_sp_pr: String,
+    pub grp_sp_pr: Box<ooxml_dml::types::CTGroupShapeProperties>,
     #[serde(rename = "sp")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shape: Option<Box<Shape>>,
@@ -5505,13 +5505,13 @@ pub struct CTRel {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-pub type EGTopLevelSlide = String;
+pub type EGTopLevelSlide = Box<ooxml_dml::types::CTColorMapping>;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EGChildSlide {
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_map_ovr: Option<String>,
+    pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5574,7 +5574,7 @@ pub struct CTBackgroundProperties {
 pub struct CTBackground {
     #[serde(rename = "@bwMode")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bw_mode: Option<String>,
+    pub bw_mode: Option<ooxml_dml::types::STBlackWhiteMode>,
     #[serde(skip)]
     #[serde(default)]
     pub background: Option<Box<EGBackground>>,
@@ -5652,7 +5652,7 @@ pub struct Slide {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_map_ovr: Option<String>,
+    pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
     #[cfg(feature = "pml-transitions")]
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5720,7 +5720,7 @@ pub struct SlideLayout {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_map_ovr: Option<String>,
+    pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
     #[serde(rename = "transition")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub transition: Option<Box<SlideTransition>>,
@@ -5753,13 +5753,13 @@ pub type PSldLayout = Box<SlideLayout>;
 pub struct CTSlideMasterTextStyles {
     #[serde(rename = "titleStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub title_style: Option<String>,
+    pub title_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "bodyStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub body_style: Option<String>,
+    pub body_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "otherStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub other_style: Option<String>,
+    pub other_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,
@@ -5816,7 +5816,7 @@ pub struct SlideMaster {
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
-    pub clr_map: String,
+    pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
     #[serde(rename = "sldLayoutIdLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sld_layout_id_lst: Option<Box<CTSlideLayoutIdList>>,
@@ -5856,7 +5856,7 @@ pub struct HandoutMaster {
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
-    pub clr_map: String,
+    pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
@@ -5877,13 +5877,13 @@ pub struct NotesMaster {
     #[serde(rename = "cSld")]
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMap")]
-    pub clr_map: String,
+    pub clr_map: Box<ooxml_dml::types::CTColorMapping>,
     #[serde(rename = "hf")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hf: Option<Box<CTHeaderFooter>>,
     #[serde(rename = "notesStyle")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub notes_style: Option<String>,
+    pub notes_style: Option<Box<ooxml_dml::types::CTTextListStyle>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5916,7 +5916,7 @@ pub struct NotesSlide {
     pub common_slide_data: Box<CommonSlideData>,
     #[serde(rename = "clrMapOvr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_map_ovr: Option<String>,
+    pub clr_map_ovr: Option<Box<ooxml_dml::types::CTColorMappingOverride>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionListModify>>,
@@ -5995,7 +5995,7 @@ pub type PTagLst = Box<CTTagList>;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTNormalViewPortion {
     #[serde(rename = "@sz")]
-    pub sz: String,
+    pub sz: ooxml_dml::types::STPositiveFixedPercentage,
     #[serde(rename = "@autoAdjust")]
     #[serde(
         default,
@@ -6072,9 +6072,9 @@ pub struct CTCommonViewProperties {
     )]
     pub var_scale: Option<bool>,
     #[serde(rename = "scale")]
-    pub scale: String,
+    pub scale: Box<ooxml_dml::types::CTScale2D>,
     #[serde(rename = "origin")]
-    pub origin: String,
+    pub origin: Box<ooxml_dml::types::Point2D>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6185,7 +6185,7 @@ pub struct CTGuide {
     pub orient: Option<STDirection>,
     #[serde(rename = "@pos")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub pos: Option<String>,
+    pub pos: Option<ooxml_dml::types::STCoordinate32>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6309,7 +6309,7 @@ pub struct CTViewProperties {
     pub notes_view_pr: Option<Box<CTNotesViewProperties>>,
     #[serde(rename = "gridSpacing")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub grid_spacing: Option<String>,
+    pub grid_spacing: Option<Box<ooxml_dml::types::PositiveSize2D>>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTExtensionList>>,

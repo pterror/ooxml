@@ -125,6 +125,7 @@ impl<'a> ParserGenerator<'a> {
         .unwrap();
         writeln!(self.output).unwrap();
         writeln!(self.output, "#![allow(unused_variables)]").unwrap();
+        writeln!(self.output, "#![allow(unused_imports)]").unwrap();
         writeln!(self.output, "#![allow(clippy::single_match)]").unwrap();
         writeln!(self.output, "#![allow(clippy::match_single_binding)]").unwrap();
         writeln!(self.output, "#![allow(clippy::manual_is_multiple_of)]").unwrap();
@@ -1330,6 +1331,26 @@ impl<'a> ParserGenerator<'a> {
         to_pascal_case(spec_name)
     }
 
+    /// Try to resolve a schema reference name to a cross-crate Rust type.
+    /// Returns Some(full_path) if the name matches a configured prefix.
+    fn resolve_cross_crate_type(&self, name: &str) -> Option<String> {
+        for (prefix, (crate_path, module_name)) in &self.config.cross_crate_type_prefix {
+            if name.starts_with(prefix) {
+                // Convert schema name (a_CT_Color) to Rust type name using the cross-crate module's mappings
+                let spec_name = strip_namespace_prefix(name);
+                let rust_type_name = if let Some(mappings) = &self.config.name_mappings
+                    && let Some(mapped) = mappings.resolve_type(module_name, spec_name)
+                {
+                    mapped.to_string()
+                } else {
+                    to_pascal_case(spec_name)
+                };
+                return Some(format!("{}{}", crate_path, rust_type_name));
+            }
+        }
+        None
+    }
+
     fn to_rust_variant_name(&self, name: &str) -> String {
         if name.is_empty() {
             return "Empty".to_string();
@@ -1375,6 +1396,10 @@ impl<'a> ParserGenerator<'a> {
                     let type_name = self.to_rust_type_name(name);
                     let needs_box = name.contains("_CT_") || name.contains("_EG_");
                     (type_name, needs_box)
+                } else if let Some(cross_crate) = self.resolve_cross_crate_type(name) {
+                    // Cross-crate type - needs boxing if CT_* or EG_*
+                    let needs_box = name.contains("_CT_") || name.contains("_EG_");
+                    (cross_crate, needs_box)
                 } else {
                     ("String".to_string(), false)
                 }
@@ -1484,12 +1509,19 @@ impl<'a> ParserGenerator<'a> {
                     if let Pattern::Ref(inner_name) = def_pattern
                         && !self.definitions.contains_key(inner_name.as_str())
                     {
-                        // External ref like r_id - don't try to resolve, use original type
+                        // External ref - check if it's a cross-crate type
+                        if let Some(cross_crate) = self.resolve_cross_crate_type(inner_name) {
+                            return (Some(cross_crate), false);
+                        }
+                        // Otherwise don't try to resolve, use original type
                         return (None, false);
                     } else if let Pattern::Ref(inner_name) = def_pattern {
                         return self
                             .resolve_from_xml_type_with_box(&Pattern::Ref(inner_name.clone()));
                     }
+                } else if let Some(cross_crate) = self.resolve_cross_crate_type(name) {
+                    // Not in local definitions but matches a cross-crate prefix
+                    return (Some(cross_crate), false);
                 }
                 // Type in definitions - use its name
                 (Some(self.to_rust_type_name(name)), false)
@@ -1509,12 +1541,19 @@ impl<'a> ParserGenerator<'a> {
                     if let Pattern::Ref(inner_name) = def_pattern {
                         // Check if the inner ref is external
                         if !self.definitions.contains_key(inner_name.as_str()) {
-                            // External ref - stop resolution
+                            // External ref - check if it's a cross-crate type
+                            if let Some(cross_crate) = self.resolve_cross_crate_type(inner_name) {
+                                return Some(cross_crate);
+                            }
+                            // Otherwise stop resolution
                             return None;
                         }
                         return self
                             .resolve_from_xml_type_simple(&Pattern::Ref(inner_name.clone()));
                     }
+                } else if let Some(cross_crate) = self.resolve_cross_crate_type(name) {
+                    // Not in local definitions but matches a cross-crate prefix
+                    return Some(cross_crate);
                 }
                 Some(self.to_rust_type_name(name))
             }
@@ -1538,11 +1577,18 @@ impl<'a> ParserGenerator<'a> {
                     if let Pattern::Ref(inner_name) = def_pattern
                         && !self.definitions.contains_key(inner_name.as_str())
                     {
+                        // External ref - check if it's a cross-crate CT/EG type
+                        if inner_name.contains("_CT_") || inner_name.contains("_EG_") {
+                            return ParseStrategy::FromXml;
+                        }
                         // External ref (e.g., r_id from another schema)
                         // These generate empty structs that need simple FromXml impls
                         return ParseStrategy::FromXml;
                     }
                     return self.get_parse_strategy(def_pattern);
+                } else if self.resolve_cross_crate_type(name).is_some() {
+                    // Cross-crate type - use FromXml
+                    return ParseStrategy::FromXml;
                 }
 
                 // Unknown ref - treat as string
