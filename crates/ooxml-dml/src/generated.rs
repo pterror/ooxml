@@ -5182,7 +5182,7 @@ pub enum EGEffect {
     #[serde(rename = "alphaInv")]
     AlphaInv(Box<CTAlphaInverseEffect>),
     #[serde(rename = "alphaMod")]
-    AlphaMod(Box<CTAlphaModulateEffect>),
+    AlphaMod(CTAlphaModulateEffect),
     #[serde(rename = "alphaModFix")]
     AlphaModFix(Box<CTAlphaModulateFixedEffect>),
     #[serde(rename = "alphaOutset")]
@@ -5354,7 +5354,7 @@ pub enum EGTextBullet {
     #[serde(rename = "buChar")]
     BuChar(Box<CTTextCharBullet>),
     #[serde(rename = "buBlip")]
-    BuBlip(Box<CTTextBlipBullet>),
+    BuBlip(CTTextBlipBullet),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -5559,7 +5559,7 @@ pub struct CTSupplementalFont {
 pub struct CTCustomColorList {
     #[serde(rename = "custClr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cust_clr: Vec<Box<CTCustomColor>>,
+    pub cust_clr: Vec<CTCustomColor>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5577,7 +5577,7 @@ pub struct CTFontCollection {
     pub cs: Box<TextFont>,
     #[serde(rename = "font")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub font: Vec<Box<CTSupplementalFont>>,
+    pub font: Vec<CTSupplementalFont>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -5635,7 +5635,7 @@ pub struct FontScheme {
 pub struct CTFillStyleList {
     #[serde(skip)]
     #[serde(default)]
-    pub fill_properties: Vec<Box<EGFillProperties>>,
+    pub fill_properties: Vec<EGFillProperties>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5647,7 +5647,7 @@ pub struct CTFillStyleList {
 pub struct CTLineStyleList {
     #[serde(rename = "ln")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub line: Vec<Box<LineProperties>>,
+    pub line: Vec<LineProperties>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5659,7 +5659,7 @@ pub struct CTLineStyleList {
 pub struct CTEffectStyleList {
     #[serde(rename = "effectStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub effect_style: Vec<Box<CTEffectStyleItem>>,
+    pub effect_style: Vec<CTEffectStyleItem>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5671,7 +5671,7 @@ pub struct CTEffectStyleList {
 pub struct CTBackgroundFillStyleList {
     #[serde(skip)]
     #[serde(default)]
-    pub fill_properties: Vec<Box<EGFillProperties>>,
+    pub fill_properties: Vec<EGFillProperties>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5887,7 +5887,7 @@ pub struct CTScRgbColor {
     pub b: STPercentage,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5908,7 +5908,7 @@ pub struct SrgbColor {
     pub value: HexColorRgb,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5933,7 +5933,7 @@ pub struct HslColor {
     pub lum: STPercentage,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5957,7 +5957,7 @@ pub struct SystemColor {
     pub last_clr: Option<HexColorRgb>,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5978,7 +5978,7 @@ pub struct SchemeColor {
     pub value: STSchemeColorVal,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -5999,7 +5999,7 @@ pub struct PresetColor {
     pub value: STPresetColorVal,
     #[serde(skip)]
     #[serde(default)]
-    pub color_transform: Vec<Box<EGColorTransform>>,
+    pub color_transform: Vec<EGColorTransform>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6018,7 +6018,7 @@ pub struct PresetColor {
 pub struct EGOfficeArtExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub extents: Vec<Box<CTOfficeArtExtension>>,
+    pub extents: Vec<CTOfficeArtExtension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -6030,7 +6030,7 @@ pub struct EGOfficeArtExtensionList {
 pub struct CTOfficeArtExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub extents: Vec<Box<CTOfficeArtExtension>>,
+    pub extents: Vec<CTOfficeArtExtension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -6225,7 +6225,7 @@ pub struct CTColor {
 pub struct CTColorMRU {
     #[serde(skip)]
     #[serde(default)]
-    pub color_choice: Vec<Box<EGColorChoice>>,
+    pub color_choice: Vec<EGColorChoice>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7088,7 +7088,7 @@ pub type CTGraphicalObjectDataAny = String;
 
 pub type CTGraphicalObject = Box<CTGraphicalObjectData>;
 
-pub type AGraphic = Box<CTGraphicalObject>;
+pub type AGraphic = CTGraphicalObject;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAnimationDgmElement {
@@ -7370,7 +7370,7 @@ pub struct CTGvmlGraphicalObjectFrame {
     #[serde(rename = "nvGraphicFramePr")]
     pub nv_graphic_frame_pr: Box<CTGvmlGraphicFrameNonVisual>,
     #[serde(rename = "graphic")]
-    pub graphic: Box<CTGraphicalObject>,
+    pub graphic: CTGraphicalObject,
     #[serde(rename = "xfrm")]
     pub transform: Box<Transform2D>,
     #[serde(rename = "extLst")]
@@ -7743,7 +7743,7 @@ pub struct CTColorReplaceEffect {
 pub struct CTDuotoneEffect {
     #[serde(skip)]
     #[serde(default)]
-    pub color_choice: Vec<Box<EGColorChoice>>,
+    pub color_choice: Vec<EGColorChoice>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8134,7 +8134,7 @@ pub struct CTGradientStop {
 pub struct CTGradientStopList {
     #[serde(rename = "gs")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub gs: Vec<Box<CTGradientStop>>,
+    pub gs: Vec<CTGradientStop>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8237,7 +8237,7 @@ pub struct Blip {
     pub alpha_inv: Option<Box<CTAlphaInverseEffect>>,
     #[serde(rename = "alphaMod")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_mod: Option<Box<CTAlphaModulateEffect>>,
+    pub alpha_mod: Option<CTAlphaModulateEffect>,
     #[serde(rename = "alphaModFix")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alpha_mod_fix: Option<Box<CTAlphaModulateFixedEffect>>,
@@ -8422,7 +8422,7 @@ pub struct EffectContainer {
     pub name: Option<String>,
     #[serde(skip)]
     #[serde(default)]
-    pub effect: Vec<Box<EGEffect>>,
+    pub effect: Vec<EGEffect>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8525,7 +8525,7 @@ pub struct CTGeomGuide {
 pub struct CTGeomGuideList {
     #[serde(rename = "gd")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub gd: Vec<Box<CTGeomGuide>>,
+    pub gd: Vec<CTGeomGuide>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8678,7 +8678,7 @@ pub struct CTAdjustHandleList {
 pub struct CTConnectionSiteList {
     #[serde(rename = "cxn")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cxn: Vec<Box<CTConnectionSite>>,
+    pub cxn: Vec<CTConnectionSite>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8728,7 +8728,7 @@ pub struct CTPath2DArcTo {
 pub struct CTPath2DQuadBezierTo {
     #[serde(rename = "pt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pt: Vec<Box<CTAdjPoint2D>>,
+    pub pt: Vec<CTAdjPoint2D>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8740,7 +8740,7 @@ pub struct CTPath2DQuadBezierTo {
 pub struct CTPath2DCubicBezierTo {
     #[serde(rename = "pt")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub pt: Vec<Box<CTAdjPoint2D>>,
+    pub pt: Vec<CTAdjPoint2D>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8781,10 +8781,10 @@ pub struct CTPath2D {
     pub close: Option<Box<CTPath2DClose>>,
     #[serde(rename = "moveTo")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub move_to: Option<Box<CTPath2DMoveTo>>,
+    pub move_to: Option<CTPath2DMoveTo>,
     #[serde(rename = "lnTo")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ln_to: Option<Box<CTPath2DLineTo>>,
+    pub ln_to: Option<CTPath2DLineTo>,
     #[serde(rename = "arcTo")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub arc_to: Option<Box<CTPath2DArcTo>>,
@@ -8812,7 +8812,7 @@ pub struct CTPath2D {
 pub struct CTPath2DList {
     #[serde(rename = "path")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub path: Vec<Box<CTPath2D>>,
+    pub path: Vec<CTPath2D>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8961,7 +8961,7 @@ pub struct CTDashStop {
 pub struct CTDashStopList {
     #[serde(rename = "ds")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ds: Vec<Box<CTDashStop>>,
+    pub ds: Vec<CTDashStop>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9272,7 +9272,7 @@ pub struct CTColorSchemeAndMapping {
 pub struct CTColorSchemeList {
     #[serde(rename = "extraClrScheme")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub extra_clr_scheme: Vec<Box<CTColorSchemeAndMapping>>,
+    pub extra_clr_scheme: Vec<CTColorSchemeAndMapping>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9461,7 +9461,7 @@ pub struct CTTableCol {
 pub struct CTTableGrid {
     #[serde(rename = "gridCol")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub grid_col: Vec<Box<CTTableCol>>,
+    pub grid_col: Vec<CTTableCol>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9523,7 +9523,7 @@ pub struct CTTableRow {
     pub height: STCoordinate,
     #[serde(rename = "tc")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tc: Vec<Box<CTTableCell>>,
+    pub tc: Vec<CTTableCell>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -9630,7 +9630,7 @@ pub struct CTTable {
     pub tbl_grid: Box<CTTableGrid>,
     #[serde(rename = "tr")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tr: Vec<Box<CTTableRow>>,
+    pub tr: Vec<CTTableRow>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -9868,7 +9868,7 @@ pub struct CTTableStyleList {
     pub def: Guid,
     #[serde(rename = "tblStyle")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tbl_style: Vec<Box<CTTableStyle>>,
+    pub tbl_style: Vec<CTTableStyle>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -9892,7 +9892,7 @@ pub struct TextParagraph {
     pub p_pr: Option<Box<TextParagraphProperties>>,
     #[serde(skip)]
     #[serde(default)]
-    pub text_run: Vec<Box<EGTextRun>>,
+    pub text_run: Vec<EGTextRun>,
     #[serde(rename = "endParaRPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_para_r_pr: Option<Box<TextCharacterProperties>>,
@@ -10093,7 +10093,7 @@ pub struct TextBody {
     pub lst_style: Option<Box<CTTextListStyle>>,
     #[serde(rename = "p")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub p: Vec<Box<TextParagraph>>,
+    pub p: Vec<TextParagraph>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10418,7 +10418,7 @@ pub struct CTTextTabStop {
 pub struct CTTextTabStopList {
     #[serde(rename = "tab")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tab: Vec<Box<CTTextTabStop>>,
+    pub tab: Vec<CTTextTabStop>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]

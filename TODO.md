@@ -44,7 +44,7 @@ DocumentBuilder handles common cases but doesn't expose:
 ## Technical Debt
 
 - [x] **Generate types for SML/PML/DML from schemas** - All crates now use codegen from ECMA-376 RELAX NG schemas (wml.rnc, sml.rnc, pml.rnc, dml-main.rnc). Generated types are committed to avoid spec dependency.
-- [ ] **Remove unnecessary Box in Vec<Box<T>>** - Codegen uses `Vec<Box<T>>` for all struct types even when not recursive. This adds unnecessary indirection. Consider generating `Vec<T>` for non-recursive types and reserving `Box<T>` for recursive types only. Clippy flags this with `clippy::vec_box`.
+- [x] **Remove unnecessary Box in Vec<Box<T>>** - Codegen now generates `Vec<T>` for Vec elements since the Vec provides heap indirection. Box is only used for non-Vec fields that need indirection (recursive types, large structs). Clippy `vec_box` lint now passes.
 - [x] **Handle repeating choice patterns** - Fixed codegen to handle `OneOrMore(Group(Choice([...])))` patterns. Font/Fill types now have proper optional fields for each choice alternative.
 
 ## Codegen Performance
@@ -60,7 +60,7 @@ DocumentBuilder handles common cases but doesn't expose:
 Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with codegen'd types and FromXml parsers.
 
 ### Phase 1: Fix codegen to compose element groups ✅
-- [x] **Fix `collect_fields()` for EG_\* refs** - Element choice groups become `Vec<Box<EGType>>` fields; struct-like groups inline their fields.
+- [x] **Fix `collect_fields()` for EG_\* refs** - Element choice groups become `Vec<EGType>` fields; struct-like groups inline their fields.
 - [x] **Flatten element group enums** - `collect_element_variants()` recursively follows EG_\* refs with cycle detection.
 - [x] **Handle AG_\* attribute groups** - Inline attribute group fields into parent structs.
 - [x] **Regenerate WML types** - Body, Paragraph, Run, RunProperties, SectionProperties, Table, CTRow, TableCell all now complete.
@@ -118,7 +118,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
-- [~] **Add PML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by cross-crate DML type references (CTColor, CTTextListStyle, etc.). Need to add imports to generated code.
+- [x] **Add PML parser/serializer generation** - Parser and serializer modules now compile and are enabled. Cross-crate DML type references resolved via `cross_crate_type_prefix` config with module-aware name mapping lookups.
 - [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
 - [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.

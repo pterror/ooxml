@@ -2980,7 +2980,7 @@ pub struct CTTLTimeCondition {
 pub struct CTTLTimeConditionList {
     #[serde(rename = "cond")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cond: Vec<Box<CTTLTimeCondition>>,
+    pub cond: Vec<CTTLTimeCondition>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -2992,13 +2992,13 @@ pub struct CTTLTimeConditionList {
 pub struct CTTimeNodeList {
     #[serde(rename = "par")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub par: Option<Box<CTTLTimeNodeParallel>>,
+    pub par: Option<CTTLTimeNodeParallel>,
     #[serde(rename = "seq")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub seq: Option<Box<CTTLTimeNodeSequence>>,
     #[serde(rename = "excl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub excl: Option<Box<CTTLTimeNodeExclusive>>,
+    pub excl: Option<CTTLTimeNodeExclusive>,
     #[serde(rename = "anim")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anim: Option<Box<CTTLAnimateBehavior>>,
@@ -3361,7 +3361,7 @@ pub struct CTTLTimeAnimateValue {
 pub struct CTTLTimeAnimateValueList {
     #[serde(rename = "tav")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tav: Vec<Box<CTTLTimeAnimateValue>>,
+    pub tav: Vec<CTTLTimeAnimateValue>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -3813,7 +3813,7 @@ pub struct CTTLTemplate {
 pub struct CTTLTemplateList {
     #[serde(rename = "tmpl")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tmpl: Vec<Box<CTTLTemplate>>,
+    pub tmpl: Vec<CTTLTemplate>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4041,7 +4041,7 @@ pub struct CTSlideRelationshipListEntry {
 pub struct CTSlideRelationshipList {
     #[serde(rename = "sld")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sld: Vec<Box<CTSlideRelationshipListEntry>>,
+    pub sld: Vec<CTSlideRelationshipListEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4084,7 +4084,7 @@ pub struct CTTagsData {
 pub struct CTCustomerDataList {
     #[serde(rename = "custData")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cust_data: Vec<Box<CTCustomerData>>,
+    pub cust_data: Vec<CTCustomerData>,
     #[serde(rename = "tags")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tags: Option<Box<CTTagsData>>,
@@ -4114,7 +4114,7 @@ pub type CTExtensionAny = String;
 pub struct EGExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ext: Vec<Box<CTExtension>>,
+    pub ext: Vec<CTExtension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4126,7 +4126,7 @@ pub struct EGExtensionList {
 pub struct CTExtensionList {
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ext: Vec<Box<CTExtension>>,
+    pub ext: Vec<CTExtension>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4145,7 +4145,7 @@ pub struct CTExtensionListModify {
     pub r#mod: Option<bool>,
     #[serde(rename = "ext")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ext: Vec<Box<CTExtension>>,
+    pub ext: Vec<CTExtension>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -4193,7 +4193,7 @@ pub struct CTCommentAuthor {
 pub struct CTCommentAuthorList {
     #[serde(rename = "cmAuthor")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cm_author: Vec<Box<CTCommentAuthor>>,
+    pub cm_author: Vec<CTCommentAuthor>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4237,7 +4237,7 @@ pub struct CTComment {
 pub struct CTCommentList {
     #[serde(rename = "cm")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cm: Vec<Box<CTComment>>,
+    pub cm: Vec<CTComment>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4416,7 +4416,7 @@ pub struct CTControl {
 pub struct CTControlList {
     #[serde(rename = "control")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub control: Vec<Box<CTControl>>,
+    pub control: Vec<CTControl>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4449,7 +4449,7 @@ pub struct CTSlideIdListEntry {
 pub struct SlideIdList {
     #[serde(rename = "sldId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sld_id: Vec<Box<CTSlideIdListEntry>>,
+    pub sld_id: Vec<CTSlideIdListEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4483,7 +4483,7 @@ pub struct CTSlideMasterIdListEntry {
 pub struct CTSlideMasterIdList {
     #[serde(rename = "sldMasterId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sld_master_id: Vec<Box<CTSlideMasterIdListEntry>>,
+    pub sld_master_id: Vec<CTSlideMasterIdListEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4575,7 +4575,7 @@ pub struct CTEmbeddedFontListEntry {
 pub struct CTEmbeddedFontList {
     #[serde(rename = "embeddedFont")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub embedded_font: Vec<Box<CTEmbeddedFontListEntry>>,
+    pub embedded_font: Vec<CTEmbeddedFontListEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4621,7 +4621,7 @@ pub struct CTCustomShow {
 pub struct CTCustomShowList {
     #[serde(rename = "custShow")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub cust_show: Vec<Box<CTCustomShow>>,
+    pub cust_show: Vec<CTCustomShow>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5796,7 +5796,7 @@ pub struct CTSlideLayoutIdListEntry {
 pub struct CTSlideLayoutIdList {
     #[serde(rename = "sldLayoutId")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sld_layout_id: Vec<Box<CTSlideLayoutIdListEntry>>,
+    pub sld_layout_id: Vec<CTSlideLayoutIdListEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5982,7 +5982,7 @@ pub struct CTStringTag {
 pub struct CTTagList {
     #[serde(rename = "tag")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub tag: Vec<Box<CTStringTag>>,
+    pub tag: Vec<CTStringTag>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -6125,7 +6125,7 @@ pub struct CTOutlineViewSlideEntry {
 pub struct CTOutlineViewSlideList {
     #[serde(rename = "sld")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub sld: Vec<Box<CTOutlineViewSlideEntry>>,
+    pub sld: Vec<CTOutlineViewSlideEntry>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -6199,7 +6199,7 @@ pub struct CTGuide {
 pub struct CTGuideList {
     #[serde(rename = "guide")]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub guide: Vec<Box<CTGuide>>,
+    pub guide: Vec<CTGuide>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]

@@ -1067,8 +1067,7 @@ impl FromXml for CTCustomColorList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"custClr" => {
-                                f_cust_clr
-                                    .push(Box::new(CTCustomColor::from_xml(reader, &e, false)?));
+                                f_cust_clr.push(CTCustomColor::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1094,8 +1093,7 @@ impl FromXml for CTCustomColorList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"custClr" => {
-                                f_cust_clr
-                                    .push(Box::new(CTCustomColor::from_xml(reader, &e, true)?));
+                                f_cust_clr.push(CTCustomColor::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1176,9 +1174,7 @@ impl FromXml for CTFontCollection {
                                 }
                             }
                             b"font" => {
-                                f_font.push(Box::new(CTSupplementalFont::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_font.push(CTSupplementalFont::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1234,9 +1230,7 @@ impl FromXml for CTFontCollection {
                                 }
                             }
                             b"font" => {
-                                f_font.push(Box::new(CTSupplementalFont::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_font.push(CTSupplementalFont::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1571,7 +1565,7 @@ impl FromXml for CTFillStyleList {
                             b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill"
                             | b"grpFill" => {
                                 f_fill_properties
-                                    .push(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                    .push(EGFillProperties::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1599,7 +1593,7 @@ impl FromXml for CTFillStyleList {
                             b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill"
                             | b"grpFill" => {
                                 f_fill_properties
-                                    .push(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                    .push(EGFillProperties::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1655,7 +1649,7 @@ impl FromXml for CTLineStyleList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"ln" => {
-                                f_line.push(Box::new(LineProperties::from_xml(reader, &e, false)?));
+                                f_line.push(LineProperties::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1681,7 +1675,7 @@ impl FromXml for CTLineStyleList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"ln" => {
-                                f_line.push(Box::new(LineProperties::from_xml(reader, &e, true)?));
+                                f_line.push(LineProperties::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1737,9 +1731,8 @@ impl FromXml for CTEffectStyleList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"effectStyle" => {
-                                f_effect_style.push(Box::new(CTEffectStyleItem::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_effect_style
+                                    .push(CTEffectStyleItem::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1765,8 +1758,7 @@ impl FromXml for CTEffectStyleList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"effectStyle" => {
-                                f_effect_style
-                                    .push(Box::new(CTEffectStyleItem::from_xml(reader, &e, true)?));
+                                f_effect_style.push(CTEffectStyleItem::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1824,7 +1816,7 @@ impl FromXml for CTBackgroundFillStyleList {
                             b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill"
                             | b"grpFill" => {
                                 f_fill_properties
-                                    .push(Box::new(EGFillProperties::from_xml(reader, &e, false)?));
+                                    .push(EGFillProperties::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -1852,7 +1844,7 @@ impl FromXml for CTBackgroundFillStyleList {
                             b"noFill" | b"solidFill" | b"gradFill" | b"blipFill" | b"pattFill"
                             | b"grpFill" => {
                                 f_fill_properties
-                                    .push(Box::new(EGFillProperties::from_xml(reader, &e, true)?));
+                                    .push(EGFillProperties::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3004,7 +2996,7 @@ impl FromXml for CTScRgbColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3036,7 +3028,7 @@ impl FromXml for CTScRgbColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3124,7 +3116,7 @@ impl FromXml for SrgbColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3156,7 +3148,7 @@ impl FromXml for SrgbColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3249,7 +3241,7 @@ impl FromXml for HslColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3281,7 +3273,7 @@ impl FromXml for HslColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3372,7 +3364,7 @@ impl FromXml for SystemColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3404,7 +3396,7 @@ impl FromXml for SystemColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3490,7 +3482,7 @@ impl FromXml for SchemeColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3522,7 +3514,7 @@ impl FromXml for SchemeColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3607,7 +3599,7 @@ impl FromXml for PresetColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, false)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3639,7 +3631,7 @@ impl FromXml for PresetColor {
                             | b"greenMod" | b"blue" | b"blueOff" | b"blueMod" | b"gamma"
                             | b"invGamma" => {
                                 f_color_transform
-                                    .push(Box::new(EGColorTransform::from_xml(reader, &e, true)?));
+                                    .push(EGColorTransform::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3698,9 +3690,7 @@ impl FromXml for EGOfficeArtExtensionList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"ext" => {
-                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_extents.push(CTOfficeArtExtension::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3726,9 +3716,7 @@ impl FromXml for EGOfficeArtExtensionList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"ext" => {
-                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_extents.push(CTOfficeArtExtension::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3784,9 +3772,7 @@ impl FromXml for CTOfficeArtExtensionList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"ext" => {
-                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_extents.push(CTOfficeArtExtension::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3812,9 +3798,7 @@ impl FromXml for CTOfficeArtExtensionList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"ext" => {
-                                f_extents.push(Box::new(CTOfficeArtExtension::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_extents.push(CTOfficeArtExtension::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4629,8 +4613,7 @@ impl FromXml for CTColorMRU {
                         match e.local_name().as_ref() {
                             b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
                             | b"prstClr" => {
-                                f_color_choice
-                                    .push(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4657,8 +4640,7 @@ impl FromXml for CTColorMRU {
                         match e.local_name().as_ref() {
                             b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
                             | b"prstClr" => {
-                                f_color_choice
-                                    .push(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8589,7 +8571,7 @@ impl FromXml for CTGvmlGraphicalObjectFrame {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_nv_graphic_frame_pr: Option<Box<CTGvmlGraphicFrameNonVisual>> = None;
-        let mut f_graphic: Option<Box<CTGraphicalObject>> = None;
+        let mut f_graphic: Option<CTGraphicalObject> = None;
         let mut f_transform: Option<Box<Transform2D>> = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
@@ -8614,9 +8596,9 @@ impl FromXml for CTGvmlGraphicalObjectFrame {
                                 }
                             }
                             b"graphic" => {
-                                f_graphic = Some(Box::new(Box::new(
-                                    CTGraphicalObjectData::from_xml(reader, &e, false)?,
-                                )));
+                                f_graphic = Some(Box::new(CTGraphicalObjectData::from_xml(
+                                    reader, &e, false,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -8668,9 +8650,9 @@ impl FromXml for CTGvmlGraphicalObjectFrame {
                                 }
                             }
                             b"graphic" => {
-                                f_graphic = Some(Box::new(Box::new(
-                                    CTGraphicalObjectData::from_xml(reader, &e, true)?,
-                                )));
+                                f_graphic = Some(Box::new(CTGraphicalObjectData::from_xml(
+                                    reader, &e, true,
+                                )?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10548,8 +10530,7 @@ impl FromXml for CTDuotoneEffect {
                         match e.local_name().as_ref() {
                             b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
                             | b"prstClr" => {
-                                f_color_choice
-                                    .push(Box::new(EGColorChoice::from_xml(reader, &e, false)?));
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -10576,8 +10557,7 @@ impl FromXml for CTDuotoneEffect {
                         match e.local_name().as_ref() {
                             b"scrgbClr" | b"srgbClr" | b"hslClr" | b"sysClr" | b"schemeClr"
                             | b"prstClr" => {
-                                f_color_choice
-                                    .push(Box::new(EGColorChoice::from_xml(reader, &e, true)?));
+                                f_color_choice.push(EGColorChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12006,7 +11986,7 @@ impl FromXml for CTGradientStopList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"gs" => {
-                                f_gs.push(Box::new(CTGradientStop::from_xml(reader, &e, false)?));
+                                f_gs.push(CTGradientStop::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12032,7 +12012,7 @@ impl FromXml for CTGradientStopList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"gs" => {
-                                f_gs.push(Box::new(CTGradientStop::from_xml(reader, &e, true)?));
+                                f_gs.push(CTGradientStop::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12489,9 +12469,8 @@ impl FromXml for Blip {
                                 }
                             }
                             b"alphaMod" => {
-                                f_alpha_mod = Some(Box::new(Box::new(EffectContainer::from_xml(
-                                    reader, &e, false,
-                                )?)));
+                                f_alpha_mod =
+                                    Some(Box::new(EffectContainer::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12659,9 +12638,8 @@ impl FromXml for Blip {
                                 }
                             }
                             b"alphaMod" => {
-                                f_alpha_mod = Some(Box::new(Box::new(EffectContainer::from_xml(
-                                    reader, &e, true,
-                                )?)));
+                                f_alpha_mod =
+                                    Some(Box::new(EffectContainer::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13522,7 +13500,7 @@ impl FromXml for EGEffect {
             }
             b"alphaMod" => {
                 let inner = EffectContainer::from_xml(reader, start_tag, is_empty)?;
-                Ok(Self::AlphaMod(Box::new(Box::new(inner))))
+                Ok(Self::AlphaMod(Box::new(inner)))
             }
             b"alphaModFix" => {
                 let inner = CTAlphaModulateFixedEffect::from_xml(reader, start_tag, is_empty)?;
@@ -13673,7 +13651,7 @@ impl FromXml for EffectContainer {
                             | b"glow" | b"grayscl" | b"hsl" | b"innerShdw" | b"lum"
                             | b"outerShdw" | b"prstShdw" | b"reflection" | b"relOff"
                             | b"softEdge" | b"tint" | b"xfrm" => {
-                                f_effect.push(Box::new(EGEffect::from_xml(reader, &e, false)?));
+                                f_effect.push(EGEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13705,7 +13683,7 @@ impl FromXml for EffectContainer {
                             | b"glow" | b"grayscl" | b"hsl" | b"innerShdw" | b"lum"
                             | b"outerShdw" | b"prstShdw" | b"reflection" | b"relOff"
                             | b"softEdge" | b"tint" | b"xfrm" => {
-                                f_effect.push(Box::new(EGEffect::from_xml(reader, &e, true)?));
+                                f_effect.push(EGEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14247,7 +14225,7 @@ impl FromXml for CTGeomGuideList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"gd" => {
-                                f_gd.push(Box::new(CTGeomGuide::from_xml(reader, &e, false)?));
+                                f_gd.push(CTGeomGuide::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14273,7 +14251,7 @@ impl FromXml for CTGeomGuideList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"gd" => {
-                                f_gd.push(Box::new(CTGeomGuide::from_xml(reader, &e, true)?));
+                                f_gd.push(CTGeomGuide::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14913,8 +14891,7 @@ impl FromXml for CTConnectionSiteList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"cxn" => {
-                                f_cxn
-                                    .push(Box::new(CTConnectionSite::from_xml(reader, &e, false)?));
+                                f_cxn.push(CTConnectionSite::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -14940,7 +14917,7 @@ impl FromXml for CTConnectionSiteList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"cxn" => {
-                                f_cxn.push(Box::new(CTConnectionSite::from_xml(reader, &e, true)?));
+                                f_cxn.push(CTConnectionSite::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15110,7 +15087,7 @@ impl FromXml for CTPath2DQuadBezierTo {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"pt" => {
-                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                f_pt.push(CTAdjPoint2D::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15136,7 +15113,7 @@ impl FromXml for CTPath2DQuadBezierTo {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"pt" => {
-                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                f_pt.push(CTAdjPoint2D::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15192,7 +15169,7 @@ impl FromXml for CTPath2DCubicBezierTo {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"pt" => {
-                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                f_pt.push(CTAdjPoint2D::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15218,7 +15195,7 @@ impl FromXml for CTPath2DCubicBezierTo {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"pt" => {
-                                f_pt.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                f_pt.push(CTAdjPoint2D::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15351,18 +15328,16 @@ impl FromXml for CTPath2D {
                                 }
                             }
                             b"moveTo" => {
-                                f_move_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(
-                                    reader, &e, false,
-                                )?)));
+                                f_move_to =
+                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"lnTo" => {
-                                f_ln_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(
-                                    reader, &e, false,
-                                )?)));
+                                f_ln_to =
+                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15422,18 +15397,15 @@ impl FromXml for CTPath2D {
                                 }
                             }
                             b"moveTo" => {
-                                f_move_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(
-                                    reader, &e, true,
-                                )?)));
+                                f_move_to =
+                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"lnTo" => {
-                                f_ln_to = Some(Box::new(Box::new(CTAdjPoint2D::from_xml(
-                                    reader, &e, true,
-                                )?)));
+                                f_ln_to = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15527,7 +15499,7 @@ impl FromXml for CTPath2DList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"path" => {
-                                f_path.push(Box::new(CTPath2D::from_xml(reader, &e, false)?));
+                                f_path.push(CTPath2D::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15553,7 +15525,7 @@ impl FromXml for CTPath2DList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"path" => {
-                                f_path.push(Box::new(CTPath2D::from_xml(reader, &e, true)?));
+                                f_path.push(CTPath2D::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16362,7 +16334,7 @@ impl FromXml for CTDashStopList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"ds" => {
-                                f_ds.push(Box::new(CTDashStop::from_xml(reader, &e, false)?));
+                                f_ds.push(CTDashStop::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -16388,7 +16360,7 @@ impl FromXml for CTDashStopList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"ds" => {
-                                f_ds.push(Box::new(CTDashStop::from_xml(reader, &e, true)?));
+                                f_ds.push(CTDashStop::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18182,9 +18154,8 @@ impl FromXml for CTColorSchemeList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"extraClrScheme" => {
-                                f_extra_clr_scheme.push(Box::new(
-                                    CTColorSchemeAndMapping::from_xml(reader, &e, false)?,
-                                ));
+                                f_extra_clr_scheme
+                                    .push(CTColorSchemeAndMapping::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18210,9 +18181,8 @@ impl FromXml for CTColorSchemeList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"extraClrScheme" => {
-                                f_extra_clr_scheme.push(Box::new(
-                                    CTColorSchemeAndMapping::from_xml(reader, &e, true)?,
-                                ));
+                                f_extra_clr_scheme
+                                    .push(CTColorSchemeAndMapping::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19170,7 +19140,7 @@ impl FromXml for CTTableGrid {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col.push(Box::new(CTTableCol::from_xml(reader, &e, false)?));
+                                f_grid_col.push(CTTableCol::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19196,7 +19166,7 @@ impl FromXml for CTTableGrid {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"gridCol" => {
-                                f_grid_col.push(Box::new(CTTableCol::from_xml(reader, &e, true)?));
+                                f_grid_col.push(CTTableCol::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19438,7 +19408,7 @@ impl FromXml for CTTableRow {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"tc" => {
-                                f_tc.push(Box::new(CTTableCell::from_xml(reader, &e, false)?));
+                                f_tc.push(CTTableCell::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19473,7 +19443,7 @@ impl FromXml for CTTableRow {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"tc" => {
-                                f_tc.push(Box::new(CTTableCell::from_xml(reader, &e, true)?));
+                                f_tc.push(CTTableCell::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19772,7 +19742,7 @@ impl FromXml for CTTable {
                                 }
                             }
                             b"tr" => {
-                                f_tr.push(Box::new(CTTableRow::from_xml(reader, &e, false)?));
+                                f_tr.push(CTTableRow::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -19814,7 +19784,7 @@ impl FromXml for CTTable {
                                 }
                             }
                             b"tr" => {
-                                f_tr.push(Box::new(CTTableRow::from_xml(reader, &e, true)?));
+                                f_tr.push(CTTableRow::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21313,8 +21283,7 @@ impl FromXml for CTTableStyleList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"tblStyle" => {
-                                f_tbl_style
-                                    .push(Box::new(CTTableStyle::from_xml(reader, &e, false)?));
+                                f_tbl_style.push(CTTableStyle::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21340,8 +21309,7 @@ impl FromXml for CTTableStyleList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"tblStyle" => {
-                                f_tbl_style
-                                    .push(Box::new(CTTableStyle::from_xml(reader, &e, true)?));
+                                f_tbl_style.push(CTTableStyle::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21411,7 +21379,7 @@ impl FromXml for TextParagraph {
                                 }
                             }
                             b"r" | b"br" | b"fld" => {
-                                f_text_run.push(Box::new(EGTextRun::from_xml(reader, &e, false)?));
+                                f_text_run.push(EGTextRun::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -21455,7 +21423,7 @@ impl FromXml for TextParagraph {
                                 }
                             }
                             b"r" | b"br" | b"fld" => {
-                                f_text_run.push(Box::new(EGTextRun::from_xml(reader, &e, true)?));
+                                f_text_run.push(EGTextRun::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22229,7 +22197,7 @@ impl FromXml for TextBody {
                                 }
                             }
                             b"p" => {
-                                f_p.push(Box::new(TextParagraph::from_xml(reader, &e, false)?));
+                                f_p.push(TextParagraph::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22272,7 +22240,7 @@ impl FromXml for TextBody {
                                 }
                             }
                             b"p" => {
-                                f_p.push(Box::new(TextParagraph::from_xml(reader, &e, true)?));
+                                f_p.push(TextParagraph::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -22710,7 +22678,7 @@ impl FromXml for EGTextBullet {
             }
             b"buBlip" => {
                 let inner = Blip::from_xml(reader, start_tag, is_empty)?;
-                Ok(Self::BuBlip(Box::new(Box::new(inner))))
+                Ok(Self::BuBlip(Box::new(inner)))
             }
             _ => Err(ParseError::UnexpectedElement(
                 String::from_utf8_lossy(start_tag.name().as_ref()).into_owned(),
@@ -23611,7 +23579,7 @@ impl FromXml for CTTextTabStopList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"tab" => {
-                                f_tab.push(Box::new(CTTextTabStop::from_xml(reader, &e, false)?));
+                                f_tab.push(CTTextTabStop::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -23637,7 +23605,7 @@ impl FromXml for CTTextTabStopList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"tab" => {
-                                f_tab.push(Box::new(CTTextTabStop::from_xml(reader, &e, true)?));
+                                f_tab.push(CTTextTabStop::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
