@@ -118,19 +118,18 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
 
 ### PML (PowerPoint)
-- [~] **Add PML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by codegen issues. See DML section.
+- [~] **Add PML parser/serializer generation** - Build infrastructure ready (build.rs), but blocked by cross-crate DML type references (CTColor, CTTextListStyle, etc.). Need to add imports to generated code.
 - [ ] **Port feature flags to PML** - Add ooxml-features.yaml mappings for PML elements.
 - [ ] **Port extra-attrs/extra-children to PML** - Enable roundtrip fidelity features.
 - [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
 
 ### DML (Drawing)
-- [~] **Add DML parser/serializer generation** - Build infrastructure ready (build.rs), partially blocked by codegen issues:
-  - [x] Optional field serialization for EG_* types (fixed in serializer_gen.rs)
-  - [ ] CT wrapper type parsing (CTColor wraps EGColorChoice, parser needs to construct wrapper)
-  - [ ] Type alias handling (EGOfficeArtExtensionList vs CTOfficeArtExtensionList)
-  - [ ] Cross-crate type references (PML→DML types like CTColor, CTTextListStyle)
-  - Requires fixes in parser_gen.rs
+- [x] **Add DML parser/serializer generation** - Parser and serializer modules now compile and are enabled in lib.rs. Fixed codegen issues:
+  - [x] Optional field serialization for EG_* types (serializer_gen.rs)
+  - [x] CT wrapper type parsing (parser_gen.rs - resolve_from_xml_type_with_box)
+  - [x] Type alias handling for Pattern::Element wrappers
+  - [x] Required EG fields wrapped in Option for Default compatibility
 
 ### Codegen: Namespace Prefix Convention ✅
 - [x] **Configurable namespace prefixes in serializers** - Added `xml_serialize_prefix` to `CodegenConfig`:

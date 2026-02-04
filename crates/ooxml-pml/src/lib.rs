@@ -45,10 +45,8 @@ pub mod writer;
 pub mod generated;
 pub use generated as types;
 
-// TODO: PML parser/serializer generation has codegen issues:
-// - Cross-crate DML type references (CTColor, CTTextListStyle, etc.)
-// - CT wrapper types need wrapping in parser
-// Uncomment once codegen is fixed:
+// TODO: PML parser/serializer blocked on cross-crate DML type imports
+// Uncomment once cross-crate codegen is implemented:
 // pub mod generated_parsers;
 // pub use generated_parsers as parsers;
 // pub mod generated_serializers;

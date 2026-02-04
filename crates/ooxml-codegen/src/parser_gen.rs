@@ -408,16 +408,27 @@ impl<'a> ParserGenerator<'a> {
     }
 
     /// Recursively collect element variants with their types for EG enum parsers.
+    /// Returns tuples of (xml_name, parse_type, needs_box, type_alias_has_box).
     fn collect_eg_variants(
         &self,
         pattern: &Pattern,
-        variants: &mut Vec<(String, String, bool)>,
+        variants: &mut Vec<(String, String, bool, bool)>,
         visited: &mut std::collections::HashSet<String>,
     ) {
         match pattern {
             Pattern::Element { name, pattern } => {
-                let (inner_type, needs_box) = self.pattern_to_rust_type(pattern);
-                variants.push((name.local.clone(), inner_type, needs_box));
+                let (rust_type, needs_box) = self.pattern_to_rust_type(pattern);
+                // For type aliases (Pattern::Element wrappers), resolve to the inner type
+                // that actually has a FromXml impl
+                let (actual_type, type_alias_has_box) =
+                    self.resolve_from_xml_type_with_box(pattern);
+                let inner_type = actual_type.unwrap_or(rust_type);
+                variants.push((
+                    name.local.clone(),
+                    inner_type,
+                    needs_box,
+                    type_alias_has_box,
+                ));
             }
             Pattern::Optional(inner)
             | Pattern::ZeroOrMore(inner)
@@ -455,7 +466,7 @@ impl<'a> ParserGenerator<'a> {
         }
         // Dedup by xml name
         let mut seen = std::collections::HashSet::new();
-        element_variants.retain(|(name, _, _)| seen.insert(name.clone()));
+        element_variants.retain(|(name, _, _, _)| seen.insert(name.clone()));
 
         if element_variants.is_empty() {
             return None;
@@ -471,31 +482,30 @@ impl<'a> ParserGenerator<'a> {
         writeln!(code, "        let tag = start_tag.local_name();").unwrap();
         writeln!(code, "        match tag.as_ref() {{").unwrap();
 
-        for (xml_name, inner_type, needs_box) in &element_variants {
+        for (xml_name, inner_type, needs_box, type_alias_has_box) in &element_variants {
             let variant_name = self.to_rust_variant_name(xml_name);
             writeln!(code, "            b\"{}\" => {{", xml_name).unwrap();
-            if *needs_box {
-                writeln!(
-                    code,
-                    "                let inner = {}::from_xml(reader, start_tag, is_empty)?;",
-                    inner_type
-                )
-                .unwrap();
-                writeln!(
-                    code,
-                    "                Ok(Self::{}(Box::new(inner)))",
-                    variant_name
-                )
-                .unwrap();
-            } else {
-                writeln!(
-                    code,
-                    "                let inner = {}::from_xml(reader, start_tag, is_empty)?;",
-                    inner_type
-                )
-                .unwrap();
-                writeln!(code, "                Ok(Self::{}(inner))", variant_name).unwrap();
-            }
+            writeln!(
+                code,
+                "                let inner = {}::from_xml(reader, start_tag, is_empty)?;",
+                inner_type
+            )
+            .unwrap();
+            // When the type alias already has Box (e.g., CTFoo = Box<Inner>),
+            // we need to wrap inner once for the alias, then again for the enum variant.
+            // When no type alias box, we just need one Box for the enum variant.
+            let wrap_expr = match (*needs_box, *type_alias_has_box) {
+                (true, true) => "Box::new(Box::new(inner))",
+                (true, false) => "Box::new(inner)",
+                (false, true) => "Box::new(inner)",
+                (false, false) => "inner",
+            };
+            writeln!(
+                code,
+                "                Ok(Self::{}({}))",
+                variant_name, wrap_expr
+            )
+            .unwrap();
             writeln!(code, "            }}").unwrap();
         }
 
@@ -1118,7 +1128,12 @@ impl<'a> ParserGenerator<'a> {
                 writeln!(code, "            #[cfg(feature = \"{}\")]", feature).unwrap();
             }
 
-            if field.is_optional || field.is_vec {
+            // EG content fields that are required in schema are still Option<Box<...>>
+            // in Rust for Default compatibility (see codegen.rs eg_needs_option).
+            let eg_needs_option =
+                self.is_eg_content_field(field) && !field.is_optional && !field.is_vec;
+
+            if field.is_optional || field.is_vec || eg_needs_option {
                 writeln!(code, "            {}: {},", field.name, var_name).unwrap();
             } else {
                 // Required field - unwrap with error
@@ -1498,6 +1513,12 @@ impl<'a> ParserGenerator<'a> {
                         && let Some(inner_type) = self.resolve_from_xml_type_simple(inner)
                     {
                         return (Some(inner_type), true);
+                    }
+                    // CT_* types that are NOT type aliases have their own FromXml impl
+                    // (generated as structs), even if schema defines them as `CT_Foo = EG_Bar`.
+                    // Don't resolve through - use the CT type directly.
+                    if name.contains("_CT_") {
+                        return (Some(self.to_rust_type_name(name)), false);
                     }
                     // If it's a simple ref, just a type alias like `type X = Y`
                     // Check if the inner ref is external (not in our definitions)
