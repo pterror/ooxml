@@ -34,6 +34,7 @@
 //! ```
 
 pub mod error;
+pub mod ext;
 pub mod presentation;
 pub mod writer;
 
@@ -57,4 +58,12 @@ pub use presentation::{
 };
 pub use writer::{
     ImageFormat, PresentationBuilder, SlideBuilder, SlideTransition, TableBuilder, TextRun,
+};
+
+// Extension traits for generated types
+#[cfg(feature = "pml-notes")]
+pub use ext::NotesSlideExt;
+pub use ext::{
+    CommonSlideDataExt, ConnectorExt, GraphicalObjectFrameExt, GroupShapeExt, PictureExt, ShapeExt,
+    SlideExt, SlideLayoutExt, SlideMasterExt,
 };
