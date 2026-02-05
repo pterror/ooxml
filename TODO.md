@@ -126,7 +126,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Port extra-attrs/extra-children to PML** - Working. 285 extra-attrs, 226 extra-children annotations.
 - [x] **Replace handwritten PML types** - Slide now wraps `types::Slide`. Shape and Picture re-exported from `types`. Users access shape/picture methods via `ShapeExt`/`PictureExt` traits. ~280 lines of handwritten parsing code removed.
 - [x] **Add table extraction from graphic frames** - Tables in graphic frames parsed from `extra_children` using DML's `CTTable::from_xml()`. Recursively searches for `a:tbl` elements in raw XML.
-- [x] **Clean table parsing API** - Added `RawXmlElement::parse_as::<T: FromXml>()` helper that encapsulates the serialize-reparse pattern. Still involves serialization internally, but the API is now clean and reusable. A future optimization could add true in-memory parsing from RawXmlElement without serialization.
+- [x] **Streaming table parsing** - `RawXmlElement::parse_as::<T: FromXml>()` uses `RawXmlStreamReader` which implements `BufRead` to stream XML bytes lazily from the in-memory tree. No upfront full serialization - bytes are generated on-demand as the parser reads.
 - [ ] **Delete handwritten PML code** - Table/TableRow/TableCell types remain handwritten (simple data types, not worth migrating to generated).
 
 #### PML Migration Breaking Changes
