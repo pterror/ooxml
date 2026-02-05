@@ -30,11 +30,6 @@
 pub mod error;
 pub mod ext;
 
-// Legacy text module - DEPRECATED, prefer using generated types with ext traits.
-// This module is being phased out in favor of generated types from ECMA-376 schemas.
-// Use `ooxml_dml::types::TextBody` with `TextBodyExt` trait for new code.
-pub mod text;
-
 // Generated types from ECMA-376 schema.
 // Access via `ooxml_dml::types::*` for generated structs/enums.
 // This file is pre-generated and committed to avoid requiring spec downloads.
