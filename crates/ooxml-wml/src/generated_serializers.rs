@@ -2691,21 +2691,21 @@ impl ToXml for CTRunTrackChange {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.run_content {
-            val.write_element("", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
+        for item in &self.run_content {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
         }
         #[cfg(feature = "extra-children")]
         for extra in extra_iter {
@@ -2715,7 +2715,7 @@ impl ToXml for CTRunTrackChange {
     }
 
     fn is_empty_element(&self) -> bool {
-        if self.run_content.is_some() {
+        if !self.run_content.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -6042,21 +6042,21 @@ impl ToXml for CTFFData {
         let mut extra_iter = self.extra_children.iter().peekable();
         #[cfg(feature = "extra-children")]
         let mut emit_idx: usize = 0;
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.name {
-            val.write_element("w:name", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
+        for item in &self.name {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("w:name", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
         }
         #[cfg(feature = "extra-children")]
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6090,37 +6090,37 @@ impl ToXml for CTFFData {
         {
             emit_idx += 1;
         }
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
+        for item in &self.enabled {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("w:enabled", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
         }
-        if let Some(ref val) = self.enabled {
-            val.write_element("w:enabled", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
-        }
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.calc_on_exit {
-            val.write_element("w:calcOnExit", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
+        for item in &self.calc_on_exit {
+            #[cfg(feature = "extra-children")]
+            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
+                extra_iter
+                    .next()
+                    .unwrap()
+                    .node
+                    .write_to(writer)
+                    .map_err(SerializeError::from)?;
+            }
+            item.write_element("w:calcOnExit", writer)?;
+            #[cfg(feature = "extra-children")]
+            {
+                emit_idx += 1;
+            }
         }
         #[cfg(feature = "extra-children")]
         while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
@@ -6187,54 +6187,6 @@ impl ToXml for CTFFData {
             emit_idx += 1;
         }
         #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.check_box {
-            val.write_element("w:checkBox", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
-        }
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.dd_list {
-            val.write_element("w:ddList", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
-        }
-        #[cfg(feature = "extra-children")]
-        while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-            extra_iter
-                .next()
-                .unwrap()
-                .node
-                .write_to(writer)
-                .map_err(SerializeError::from)?;
-        }
-        if let Some(ref val) = self.text_input {
-            val.write_element("w:textInput", writer)?;
-        }
-        #[cfg(feature = "extra-children")]
-        {
-            emit_idx += 1;
-        }
-        #[cfg(feature = "extra-children")]
         for extra in extra_iter {
             extra.node.write_to(writer).map_err(SerializeError::from)?;
         }
@@ -6242,7 +6194,7 @@ impl ToXml for CTFFData {
     }
 
     fn is_empty_element(&self) -> bool {
-        if self.name.is_some() {
+        if !self.name.is_empty() {
             return false;
         }
         if self.label.is_some() {
@@ -6251,10 +6203,10 @@ impl ToXml for CTFFData {
         if self.tab_index.is_some() {
             return false;
         }
-        if self.enabled.is_some() {
+        if !self.enabled.is_empty() {
             return false;
         }
-        if self.calc_on_exit.is_some() {
+        if !self.calc_on_exit.is_empty() {
             return false;
         }
         if self.entry_macro.is_some() {
@@ -6267,15 +6219,6 @@ impl ToXml for CTFFData {
             return false;
         }
         if self.status_text.is_some() {
-            return false;
-        }
-        if self.check_box.is_some() {
-            return false;
-        }
-        if self.dd_list.is_some() {
-            return false;
-        }
-        if self.text_input.is_some() {
             return false;
         }
         #[cfg(feature = "extra-children")]
@@ -27372,38 +27315,6 @@ impl ToXml for CTFrameset {
         {
             emit_idx += 1;
         }
-        for item in &self.frameset {
-            #[cfg(feature = "extra-children")]
-            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-                extra_iter
-                    .next()
-                    .unwrap()
-                    .node
-                    .write_to(writer)
-                    .map_err(SerializeError::from)?;
-            }
-            item.write_element("w:frameset", writer)?;
-            #[cfg(feature = "extra-children")]
-            {
-                emit_idx += 1;
-            }
-        }
-        for item in &self.frame {
-            #[cfg(feature = "extra-children")]
-            while extra_iter.peek().is_some_and(|e| e.position <= emit_idx) {
-                extra_iter
-                    .next()
-                    .unwrap()
-                    .node
-                    .write_to(writer)
-                    .map_err(SerializeError::from)?;
-            }
-            item.write_element("w:frame", writer)?;
-            #[cfg(feature = "extra-children")]
-            {
-                emit_idx += 1;
-            }
-        }
         #[cfg(feature = "extra-children")]
         for extra in extra_iter {
             extra.node.write_to(writer).map_err(SerializeError::from)?;
@@ -27422,12 +27333,6 @@ impl ToXml for CTFrameset {
             return false;
         }
         if self.title.is_some() {
-            return false;
-        }
-        if !self.frameset.is_empty() {
-            return false;
-        }
-        if !self.frame.is_empty() {
             return false;
         }
         #[cfg(feature = "extra-children")]

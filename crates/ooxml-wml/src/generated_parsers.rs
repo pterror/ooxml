@@ -4739,7 +4739,7 @@ impl FromXml for CTRunTrackChange {
         let mut f_id: Option<STDecimalNumber> = None;
         let mut f_author: Option<STString> = None;
         let mut f_date = None;
-        let mut f_run_content = None;
+        let mut f_run_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -4806,8 +4806,7 @@ impl FromXml for CTRunTrackChange {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_run_content =
-                                    Some(Box::new(RunContentChoice::from_xml(reader, &e, false)?));
+                                f_run_content.push(RunContentChoice::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -4861,8 +4860,7 @@ impl FromXml for CTRunTrackChange {
                             | b"del"
                             | b"moveFrom"
                             | b"moveTo" => {
-                                f_run_content =
-                                    Some(Box::new(RunContentChoice::from_xml(reader, &e, true)?));
+                                f_run_content.push(RunContentChoice::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9188,18 +9186,15 @@ impl FromXml for CTFFData {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_name = None;
+        let mut f_name = Vec::new();
         let mut f_label = None;
         let mut f_tab_index = None;
-        let mut f_enabled = None;
-        let mut f_calc_on_exit = None;
+        let mut f_enabled = Vec::new();
+        let mut f_calc_on_exit = Vec::new();
         let mut f_entry_macro = None;
         let mut f_exit_macro = None;
         let mut f_help_text = None;
         let mut f_status_text = None;
-        let mut f_check_box = None;
-        let mut f_dd_list = None;
-        let mut f_text_input = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -9213,7 +9208,7 @@ impl FromXml for CTFFData {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"name" => {
-                                f_name = Some(Box::new(CTFFName::from_xml(reader, &e, false)?));
+                                f_name.push(CTFFName::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9237,15 +9232,14 @@ impl FromXml for CTFFData {
                                 }
                             }
                             b"enabled" => {
-                                f_enabled = Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_enabled.push(CTOnOff::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"calcOnExit" => {
-                                f_calc_on_exit =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, false)?));
+                                f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9283,30 +9277,6 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
-                            b"checkBox" => {
-                                f_check_box =
-                                    Some(Box::new(CTFFCheckBox::from_xml(reader, &e, false)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"ddList" => {
-                                f_dd_list =
-                                    Some(Box::new(CTFFDDList::from_xml(reader, &e, false)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"textInput" => {
-                                f_text_input =
-                                    Some(Box::new(CTFFTextInput::from_xml(reader, &e, false)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown element for roundtrip
@@ -9327,7 +9297,7 @@ impl FromXml for CTFFData {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"name" => {
-                                f_name = Some(Box::new(CTFFName::from_xml(reader, &e, true)?));
+                                f_name.push(CTFFName::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9351,15 +9321,14 @@ impl FromXml for CTFFData {
                                 }
                             }
                             b"enabled" => {
-                                f_enabled = Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_enabled.push(CTOnOff::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"calcOnExit" => {
-                                f_calc_on_exit =
-                                    Some(Box::new(CTOnOff::from_xml(reader, &e, true)?));
+                                f_calc_on_exit.push(CTOnOff::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9397,29 +9366,6 @@ impl FromXml for CTFFData {
                                     child_idx += 1;
                                 }
                             }
-                            b"checkBox" => {
-                                f_check_box =
-                                    Some(Box::new(CTFFCheckBox::from_xml(reader, &e, true)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"ddList" => {
-                                f_dd_list = Some(Box::new(CTFFDDList::from_xml(reader, &e, true)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"textInput" => {
-                                f_text_input =
-                                    Some(Box::new(CTFFTextInput::from_xml(reader, &e, true)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
@@ -9452,9 +9398,6 @@ impl FromXml for CTFFData {
             exit_macro: f_exit_macro,
             help_text: f_help_text,
             status_text: f_status_text,
-            check_box: f_check_box,
-            dd_list: f_dd_list,
-            text_input: f_text_input,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -36486,8 +36429,6 @@ impl FromXml for CTFrameset {
         let mut f_frameset_splitbar = None;
         let mut f_frame_layout = None;
         let mut f_title = None;
-        let mut f_frameset = Vec::new();
-        let mut f_frame = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -36526,20 +36467,6 @@ impl FromXml for CTFrameset {
                             }
                             b"title" => {
                                 f_title = Some(Box::new(CTString::from_xml(reader, &e, false)?));
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"frameset" => {
-                                f_frameset.push(CTFrameset::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"frame" => {
-                                f_frame.push(CTFrame::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -36594,20 +36521,6 @@ impl FromXml for CTFrameset {
                                     child_idx += 1;
                                 }
                             }
-                            b"frameset" => {
-                                f_frameset.push(CTFrameset::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"frame" => {
-                                f_frame.push(CTFrame::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
                             #[cfg(feature = "extra-children")]
                             _ => {
                                 // Capture unknown empty element for roundtrip
@@ -36635,8 +36548,6 @@ impl FromXml for CTFrameset {
             frameset_splitbar: f_frameset_splitbar,
             frame_layout: f_frame_layout,
             title: f_title,
-            frameset: f_frameset,
-            frame: f_frame,
             #[cfg(feature = "extra-children")]
             extra_children,
         })

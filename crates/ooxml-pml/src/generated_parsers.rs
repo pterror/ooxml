@@ -2394,19 +2394,19 @@ impl FromXml for CTTimeNodeList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_par = None;
-        let mut f_seq = None;
-        let mut f_excl = None;
-        let mut f_anim = None;
-        let mut f_anim_clr = None;
-        let mut f_anim_effect = None;
-        let mut f_anim_motion = None;
-        let mut f_anim_rot = None;
-        let mut f_anim_scale = None;
-        let mut f_cmd = None;
-        let mut f_set = None;
-        let mut f_audio = None;
-        let mut f_video = None;
+        let mut f_par = Vec::new();
+        let mut f_seq = Vec::new();
+        let mut f_excl = Vec::new();
+        let mut f_anim = Vec::new();
+        let mut f_anim_clr = Vec::new();
+        let mut f_anim_effect = Vec::new();
+        let mut f_anim_motion = Vec::new();
+        let mut f_anim_rot = Vec::new();
+        let mut f_anim_scale = Vec::new();
+        let mut f_cmd = Vec::new();
+        let mut f_set = Vec::new();
+        let mut f_audio = Vec::new();
+        let mut f_video = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -2420,7 +2420,7 @@ impl FromXml for CTTimeNodeList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"par" => {
-                                f_par = Some(Box::new(CTTLCommonTimeNodeData::from_xml(
+                                f_par.push(Box::new(CTTLCommonTimeNodeData::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -2429,16 +2429,14 @@ impl FromXml for CTTimeNodeList {
                                 }
                             }
                             b"seq" => {
-                                f_seq = Some(Box::new(CTTLTimeNodeSequence::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_seq.push(CTTLTimeNodeSequence::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"excl" => {
-                                f_excl = Some(Box::new(CTTLCommonTimeNodeData::from_xml(
+                                f_excl.push(Box::new(CTTLCommonTimeNodeData::from_xml(
                                     reader, &e, false,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -2447,89 +2445,76 @@ impl FromXml for CTTimeNodeList {
                                 }
                             }
                             b"anim" => {
-                                f_anim = Some(Box::new(CTTLAnimateBehavior::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_anim.push(CTTLAnimateBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animClr" => {
-                                f_anim_clr = Some(Box::new(CTTLAnimateColorBehavior::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_anim_clr
+                                    .push(CTTLAnimateColorBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animEffect" => {
-                                f_anim_effect = Some(Box::new(
-                                    CTTLAnimateEffectBehavior::from_xml(reader, &e, false)?,
-                                ));
+                                f_anim_effect
+                                    .push(CTTLAnimateEffectBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animMotion" => {
-                                f_anim_motion = Some(Box::new(
-                                    CTTLAnimateMotionBehavior::from_xml(reader, &e, false)?,
-                                ));
+                                f_anim_motion
+                                    .push(CTTLAnimateMotionBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animRot" => {
-                                f_anim_rot = Some(Box::new(CTTLAnimateRotationBehavior::from_xml(
+                                f_anim_rot.push(CTTLAnimateRotationBehavior::from_xml(
                                     reader, &e, false,
-                                )?));
+                                )?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animScale" => {
-                                f_anim_scale = Some(Box::new(CTTLAnimateScaleBehavior::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_anim_scale
+                                    .push(CTTLAnimateScaleBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cmd" => {
-                                f_cmd = Some(Box::new(CTTLCommandBehavior::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_cmd.push(CTTLCommandBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"set" => {
-                                f_set =
-                                    Some(Box::new(CTTLSetBehavior::from_xml(reader, &e, false)?));
+                                f_set.push(CTTLSetBehavior::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"audio" => {
-                                f_audio = Some(Box::new(CTTLMediaNodeAudio::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_audio.push(CTTLMediaNodeAudio::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"video" => {
-                                f_video = Some(Box::new(CTTLMediaNodeVideo::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_video.push(CTTLMediaNodeVideo::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -2555,7 +2540,7 @@ impl FromXml for CTTimeNodeList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"par" => {
-                                f_par = Some(Box::new(CTTLCommonTimeNodeData::from_xml(
+                                f_par.push(Box::new(CTTLCommonTimeNodeData::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -2564,16 +2549,14 @@ impl FromXml for CTTimeNodeList {
                                 }
                             }
                             b"seq" => {
-                                f_seq = Some(Box::new(CTTLTimeNodeSequence::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_seq.push(CTTLTimeNodeSequence::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"excl" => {
-                                f_excl = Some(Box::new(CTTLCommonTimeNodeData::from_xml(
+                                f_excl.push(Box::new(CTTLCommonTimeNodeData::from_xml(
                                     reader, &e, true,
                                 )?));
                                 #[cfg(feature = "extra-children")]
@@ -2582,87 +2565,75 @@ impl FromXml for CTTimeNodeList {
                                 }
                             }
                             b"anim" => {
-                                f_anim = Some(Box::new(CTTLAnimateBehavior::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_anim.push(CTTLAnimateBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animClr" => {
-                                f_anim_clr = Some(Box::new(CTTLAnimateColorBehavior::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_anim_clr
+                                    .push(CTTLAnimateColorBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animEffect" => {
-                                f_anim_effect = Some(Box::new(
-                                    CTTLAnimateEffectBehavior::from_xml(reader, &e, true)?,
-                                ));
+                                f_anim_effect
+                                    .push(CTTLAnimateEffectBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animMotion" => {
-                                f_anim_motion = Some(Box::new(
-                                    CTTLAnimateMotionBehavior::from_xml(reader, &e, true)?,
-                                ));
+                                f_anim_motion
+                                    .push(CTTLAnimateMotionBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animRot" => {
-                                f_anim_rot = Some(Box::new(CTTLAnimateRotationBehavior::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_anim_rot
+                                    .push(CTTLAnimateRotationBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"animScale" => {
-                                f_anim_scale = Some(Box::new(CTTLAnimateScaleBehavior::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_anim_scale
+                                    .push(CTTLAnimateScaleBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cmd" => {
-                                f_cmd = Some(Box::new(CTTLCommandBehavior::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_cmd.push(CTTLCommandBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"set" => {
-                                f_set =
-                                    Some(Box::new(CTTLSetBehavior::from_xml(reader, &e, true)?));
+                                f_set.push(CTTLSetBehavior::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"audio" => {
-                                f_audio =
-                                    Some(Box::new(CTTLMediaNodeAudio::from_xml(reader, &e, true)?));
+                                f_audio.push(CTTLMediaNodeAudio::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"video" => {
-                                f_video =
-                                    Some(Box::new(CTTLMediaNodeVideo::from_xml(reader, &e, true)?));
+                                f_video.push(CTTLMediaNodeVideo::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6436,10 +6407,10 @@ impl FromXml for CTBuildList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_bld_p = None;
-        let mut f_bld_dgm = None;
-        let mut f_bld_ole_chart = None;
-        let mut f_bld_graphic = None;
+        let mut f_bld_p = Vec::new();
+        let mut f_bld_dgm = Vec::new();
+        let mut f_bld_ole_chart = Vec::new();
+        let mut f_bld_graphic = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -6453,34 +6424,30 @@ impl FromXml for CTBuildList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"bldP" => {
-                                f_bld_p = Some(Box::new(CTTLBuildParagraph::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_bld_p.push(CTTLBuildParagraph::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldDgm" => {
-                                f_bld_dgm =
-                                    Some(Box::new(CTTLBuildDiagram::from_xml(reader, &e, false)?));
+                                f_bld_dgm.push(CTTLBuildDiagram::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldOleChart" => {
-                                f_bld_ole_chart =
-                                    Some(Box::new(CTTLOleBuildChart::from_xml(reader, &e, false)?));
+                                f_bld_ole_chart
+                                    .push(CTTLOleBuildChart::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldGraphic" => {
-                                f_bld_graphic = Some(Box::new(CTTLGraphicalObjectBuild::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_bld_graphic
+                                    .push(CTTLGraphicalObjectBuild::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -6506,33 +6473,30 @@ impl FromXml for CTBuildList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"bldP" => {
-                                f_bld_p =
-                                    Some(Box::new(CTTLBuildParagraph::from_xml(reader, &e, true)?));
+                                f_bld_p.push(CTTLBuildParagraph::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldDgm" => {
-                                f_bld_dgm =
-                                    Some(Box::new(CTTLBuildDiagram::from_xml(reader, &e, true)?));
+                                f_bld_dgm.push(CTTLBuildDiagram::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldOleChart" => {
-                                f_bld_ole_chart =
-                                    Some(Box::new(CTTLOleBuildChart::from_xml(reader, &e, true)?));
+                                f_bld_ole_chart
+                                    .push(CTTLOleBuildChart::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"bldGraphic" => {
-                                f_bld_graphic = Some(Box::new(CTTLGraphicalObjectBuild::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_bld_graphic
+                                    .push(CTTLGraphicalObjectBuild::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13487,13 +13451,13 @@ impl FromXml for GroupShape {
     ) -> Result<Self, ParseError> {
         let mut f_non_visual_group_properties: Option<Box<CTGroupShapeNonVisual>> = None;
         let mut f_grp_sp_pr: Option<Box<ooxml_dml::types::CTGroupShapeProperties>> = None;
-        let mut f_shape = None;
-        let mut f_group_shape = None;
-        let mut f_graphic_frame = None;
-        let mut f_connector = None;
-        let mut f_picture = None;
+        let mut f_shape = Vec::new();
+        let mut f_group_shape = Vec::new();
+        let mut f_graphic_frame = Vec::new();
+        let mut f_connector = Vec::new();
+        let mut f_picture = Vec::new();
         #[cfg(feature = "pml-external")]
-        let mut f_content_part = None;
+        let mut f_content_part = Vec::new();
         #[cfg(feature = "pml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
@@ -13529,39 +13493,36 @@ impl FromXml for GroupShape {
                                 }
                             }
                             b"sp" => {
-                                f_shape = Some(Box::new(Shape::from_xml(reader, &e, false)?));
+                                f_shape.push(Shape::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"grpSp" => {
-                                f_group_shape =
-                                    Some(Box::new(GroupShape::from_xml(reader, &e, false)?));
+                                f_group_shape.push(GroupShape::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"graphicFrame" => {
-                                f_graphic_frame = Some(Box::new(GraphicalObjectFrame::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_graphic_frame
+                                    .push(GraphicalObjectFrame::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cxnSp" => {
-                                f_connector =
-                                    Some(Box::new(Connector::from_xml(reader, &e, false)?));
+                                f_connector.push(Connector::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pic" => {
-                                f_picture = Some(Box::new(Picture::from_xml(reader, &e, false)?));
+                                f_picture.push(Picture::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13569,8 +13530,7 @@ impl FromXml for GroupShape {
                             }
                             #[cfg(feature = "pml-external")]
                             b"contentPart" => {
-                                f_content_part =
-                                    Some(Box::new(CTRel::from_xml(reader, &e, false)?));
+                                f_content_part.push(CTRel::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13626,39 +13586,36 @@ impl FromXml for GroupShape {
                                 }
                             }
                             b"sp" => {
-                                f_shape = Some(Box::new(Shape::from_xml(reader, &e, true)?));
+                                f_shape.push(Shape::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"grpSp" => {
-                                f_group_shape =
-                                    Some(Box::new(GroupShape::from_xml(reader, &e, true)?));
+                                f_group_shape.push(GroupShape::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"graphicFrame" => {
-                                f_graphic_frame = Some(Box::new(GraphicalObjectFrame::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_graphic_frame
+                                    .push(GraphicalObjectFrame::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cxnSp" => {
-                                f_connector =
-                                    Some(Box::new(Connector::from_xml(reader, &e, true)?));
+                                f_connector.push(Connector::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pic" => {
-                                f_picture = Some(Box::new(Picture::from_xml(reader, &e, true)?));
+                                f_picture.push(Picture::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13666,7 +13623,7 @@ impl FromXml for GroupShape {
                             }
                             #[cfg(feature = "pml-external")]
                             b"contentPart" => {
-                                f_content_part = Some(Box::new(CTRel::from_xml(reader, &e, true)?));
+                                f_content_part.push(CTRel::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;

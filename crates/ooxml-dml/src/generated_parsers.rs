@@ -9102,12 +9102,12 @@ impl FromXml for CTGvmlGroupShape {
     ) -> Result<Self, ParseError> {
         let mut f_nv_grp_sp_pr: Option<Box<CTGvmlGroupShapeNonVisual>> = None;
         let mut f_grp_sp_pr: Option<Box<CTGroupShapeProperties>> = None;
-        let mut f_tx_sp = None;
-        let mut f_sp = None;
-        let mut f_cxn_sp = None;
-        let mut f_pic = None;
-        let mut f_graphic_frame = None;
-        let mut f_grp_sp = None;
+        let mut f_tx_sp = Vec::new();
+        let mut f_sp = Vec::new();
+        let mut f_cxn_sp = Vec::new();
+        let mut f_pic = Vec::new();
+        let mut f_graphic_frame = Vec::new();
+        let mut f_grp_sp = Vec::new();
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
@@ -9140,47 +9140,43 @@ impl FromXml for CTGvmlGroupShape {
                                 }
                             }
                             b"txSp" => {
-                                f_tx_sp =
-                                    Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, false)?));
+                                f_tx_sp.push(CTGvmlTextShape::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sp" => {
-                                f_sp = Some(Box::new(CTGvmlShape::from_xml(reader, &e, false)?));
+                                f_sp.push(CTGvmlShape::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cxnSp" => {
-                                f_cxn_sp =
-                                    Some(Box::new(CTGvmlConnector::from_xml(reader, &e, false)?));
+                                f_cxn_sp.push(CTGvmlConnector::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pic" => {
-                                f_pic = Some(Box::new(CTGvmlPicture::from_xml(reader, &e, false)?));
+                                f_pic.push(CTGvmlPicture::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"graphicFrame" => {
-                                f_graphic_frame = Some(Box::new(
-                                    CTGvmlGraphicalObjectFrame::from_xml(reader, &e, false)?,
-                                ));
+                                f_graphic_frame
+                                    .push(CTGvmlGraphicalObjectFrame::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"grpSp" => {
-                                f_grp_sp =
-                                    Some(Box::new(CTGvmlGroupShape::from_xml(reader, &e, false)?));
+                                f_grp_sp.push(CTGvmlGroupShape::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9233,47 +9229,43 @@ impl FromXml for CTGvmlGroupShape {
                                 }
                             }
                             b"txSp" => {
-                                f_tx_sp =
-                                    Some(Box::new(CTGvmlTextShape::from_xml(reader, &e, true)?));
+                                f_tx_sp.push(CTGvmlTextShape::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"sp" => {
-                                f_sp = Some(Box::new(CTGvmlShape::from_xml(reader, &e, true)?));
+                                f_sp.push(CTGvmlShape::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cxnSp" => {
-                                f_cxn_sp =
-                                    Some(Box::new(CTGvmlConnector::from_xml(reader, &e, true)?));
+                                f_cxn_sp.push(CTGvmlConnector::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"pic" => {
-                                f_pic = Some(Box::new(CTGvmlPicture::from_xml(reader, &e, true)?));
+                                f_pic.push(CTGvmlPicture::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"graphicFrame" => {
-                                f_graphic_frame = Some(Box::new(
-                                    CTGvmlGraphicalObjectFrame::from_xml(reader, &e, true)?,
-                                ));
+                                f_graphic_frame
+                                    .push(CTGvmlGraphicalObjectFrame::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"grpSp" => {
-                                f_grp_sp =
-                                    Some(Box::new(CTGvmlGroupShape::from_xml(reader, &e, true)?));
+                                f_grp_sp.push(CTGvmlGroupShape::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12848,39 +12840,39 @@ impl FromXml for Blip {
         #[cfg(feature = "dml-fills")]
         let mut f_cstate = None;
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_bi_level = None;
+        let mut f_alpha_bi_level = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_ceiling = None;
+        let mut f_alpha_ceiling = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_floor = None;
+        let mut f_alpha_floor = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_inv = None;
+        let mut f_alpha_inv = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_mod = None;
+        let mut f_alpha_mod = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_mod_fix = None;
+        let mut f_alpha_mod_fix = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_alpha_repl = None;
+        let mut f_alpha_repl = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_bi_level = None;
+        let mut f_bi_level = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_blur = None;
+        let mut f_blur = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_clr_change = None;
+        let mut f_clr_change = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_clr_repl = None;
+        let mut f_clr_repl = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_duotone = None;
+        let mut f_duotone = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_fill_overlay = None;
+        let mut f_fill_overlay = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_grayscl = None;
+        let mut f_grayscl = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_hsl = None;
+        let mut f_hsl = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_lum = None;
+        let mut f_lum = Vec::new();
         #[cfg(feature = "dml-fills")]
-        let mut f_tint = None;
+        let mut f_tint = Vec::new();
         #[cfg(feature = "dml-extensions")]
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -12925,9 +12917,8 @@ impl FromXml for Blip {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "dml-fills")]
                             b"alphaBiLevel" => {
-                                f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_alpha_bi_level
+                                    .push(CTAlphaBiLevelEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12935,9 +12926,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaCeiling" => {
-                                f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_alpha_ceiling
+                                    .push(CTAlphaCeilingEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12945,9 +12935,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaFloor" => {
-                                f_alpha_floor = Some(Box::new(CTAlphaFloorEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_alpha_floor
+                                    .push(CTAlphaFloorEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12955,9 +12944,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaInv" => {
-                                f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_alpha_inv
+                                    .push(CTAlphaInverseEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12965,8 +12953,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaMod" => {
-                                f_alpha_mod =
-                                    Some(Box::new(EffectContainer::from_xml(reader, &e, false)?));
+                                f_alpha_mod
+                                    .push(Box::new(EffectContainer::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12974,9 +12962,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaModFix" => {
-                                f_alpha_mod_fix = Some(Box::new(
-                                    CTAlphaModulateFixedEffect::from_xml(reader, &e, false)?,
-                                ));
+                                f_alpha_mod_fix
+                                    .push(CTAlphaModulateFixedEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12984,9 +12971,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaRepl" => {
-                                f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_alpha_repl
+                                    .push(CTAlphaReplaceEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -12994,8 +12980,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"biLevel" => {
-                                f_bi_level =
-                                    Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, false)?));
+                                f_bi_level.push(CTBiLevelEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13003,7 +12988,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"blur" => {
-                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, false)?));
+                                f_blur.push(CTBlurEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13011,9 +12996,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"clrChange" => {
-                                f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_clr_change
+                                    .push(CTColorChangeEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13021,9 +13005,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"clrRepl" => {
-                                f_clr_repl = Some(Box::new(CTColorReplaceEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_clr_repl.push(CTColorReplaceEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13031,8 +13013,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"duotone" => {
-                                f_duotone =
-                                    Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, false)?));
+                                f_duotone.push(CTDuotoneEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13040,9 +13021,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"fillOverlay" => {
-                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_fill_overlay
+                                    .push(CTFillOverlayEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13050,8 +13030,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"grayscl" => {
-                                f_grayscl =
-                                    Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, false)?));
+                                f_grayscl.push(CTGrayscaleEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13059,7 +13038,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"hsl" => {
-                                f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, false)?));
+                                f_hsl.push(CTHSLEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13067,8 +13046,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"lum" => {
-                                f_lum =
-                                    Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, false)?));
+                                f_lum.push(CTLuminanceEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13076,7 +13054,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"tint" => {
-                                f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, false)?));
+                                f_tint.push(CTTintEffect::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13113,9 +13091,8 @@ impl FromXml for Blip {
                         match e.local_name().as_ref() {
                             #[cfg(feature = "dml-fills")]
                             b"alphaBiLevel" => {
-                                f_alpha_bi_level = Some(Box::new(CTAlphaBiLevelEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_alpha_bi_level
+                                    .push(CTAlphaBiLevelEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13123,9 +13100,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaCeiling" => {
-                                f_alpha_ceiling = Some(Box::new(CTAlphaCeilingEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_alpha_ceiling
+                                    .push(CTAlphaCeilingEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13133,8 +13109,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaFloor" => {
-                                f_alpha_floor =
-                                    Some(Box::new(CTAlphaFloorEffect::from_xml(reader, &e, true)?));
+                                f_alpha_floor.push(CTAlphaFloorEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13142,9 +13117,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaInv" => {
-                                f_alpha_inv = Some(Box::new(CTAlphaInverseEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_alpha_inv.push(CTAlphaInverseEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13152,8 +13125,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaMod" => {
-                                f_alpha_mod =
-                                    Some(Box::new(EffectContainer::from_xml(reader, &e, true)?));
+                                f_alpha_mod
+                                    .push(Box::new(EffectContainer::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13161,9 +13134,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaModFix" => {
-                                f_alpha_mod_fix = Some(Box::new(
-                                    CTAlphaModulateFixedEffect::from_xml(reader, &e, true)?,
-                                ));
+                                f_alpha_mod_fix
+                                    .push(CTAlphaModulateFixedEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13171,9 +13143,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"alphaRepl" => {
-                                f_alpha_repl = Some(Box::new(CTAlphaReplaceEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_alpha_repl
+                                    .push(CTAlphaReplaceEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13181,8 +13152,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"biLevel" => {
-                                f_bi_level =
-                                    Some(Box::new(CTBiLevelEffect::from_xml(reader, &e, true)?));
+                                f_bi_level.push(CTBiLevelEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13190,7 +13160,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"blur" => {
-                                f_blur = Some(Box::new(CTBlurEffect::from_xml(reader, &e, true)?));
+                                f_blur.push(CTBlurEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13198,9 +13168,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"clrChange" => {
-                                f_clr_change = Some(Box::new(CTColorChangeEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_clr_change.push(CTColorChangeEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13208,9 +13176,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"clrRepl" => {
-                                f_clr_repl = Some(Box::new(CTColorReplaceEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_clr_repl.push(CTColorReplaceEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13218,8 +13184,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"duotone" => {
-                                f_duotone =
-                                    Some(Box::new(CTDuotoneEffect::from_xml(reader, &e, true)?));
+                                f_duotone.push(CTDuotoneEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13227,9 +13192,8 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"fillOverlay" => {
-                                f_fill_overlay = Some(Box::new(CTFillOverlayEffect::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_fill_overlay
+                                    .push(CTFillOverlayEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13237,8 +13201,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"grayscl" => {
-                                f_grayscl =
-                                    Some(Box::new(CTGrayscaleEffect::from_xml(reader, &e, true)?));
+                                f_grayscl.push(CTGrayscaleEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13246,7 +13209,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"hsl" => {
-                                f_hsl = Some(Box::new(CTHSLEffect::from_xml(reader, &e, true)?));
+                                f_hsl.push(CTHSLEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13254,8 +13217,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"lum" => {
-                                f_lum =
-                                    Some(Box::new(CTLuminanceEffect::from_xml(reader, &e, true)?));
+                                f_lum.push(CTLuminanceEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -13263,7 +13225,7 @@ impl FromXml for Blip {
                             }
                             #[cfg(feature = "dml-fills")]
                             b"tint" => {
-                                f_tint = Some(Box::new(CTTintEffect::from_xml(reader, &e, true)?));
+                                f_tint.push(CTTintEffect::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15380,8 +15342,8 @@ impl FromXml for CTAdjustHandleList {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_ah_x_y = None;
-        let mut f_ah_polar = None;
+        let mut f_ah_x_y = Vec::new();
+        let mut f_ah_polar = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -15395,17 +15357,14 @@ impl FromXml for CTAdjustHandleList {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"ahXY" => {
-                                f_ah_x_y =
-                                    Some(Box::new(CTXYAdjustHandle::from_xml(reader, &e, false)?));
+                                f_ah_x_y.push(CTXYAdjustHandle::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"ahPolar" => {
-                                f_ah_polar = Some(Box::new(CTPolarAdjustHandle::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_ah_polar.push(CTPolarAdjustHandle::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15431,17 +15390,14 @@ impl FromXml for CTAdjustHandleList {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"ahXY" => {
-                                f_ah_x_y =
-                                    Some(Box::new(CTXYAdjustHandle::from_xml(reader, &e, true)?));
+                                f_ah_x_y.push(CTXYAdjustHandle::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"ahPolar" => {
-                                f_ah_polar = Some(Box::new(CTPolarAdjustHandle::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_ah_polar.push(CTPolarAdjustHandle::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15877,12 +15833,12 @@ impl FromXml for CTPath2D {
         let mut f_fill = None;
         let mut f_stroke = None;
         let mut f_extrusion_ok = None;
-        let mut f_close = None;
-        let mut f_move_to = None;
-        let mut f_ln_to = None;
-        let mut f_arc_to = None;
-        let mut f_quad_bez_to = None;
-        let mut f_cubic_bez_to = None;
+        let mut f_close = Vec::new();
+        let mut f_move_to = Vec::new();
+        let mut f_ln_to = Vec::new();
+        let mut f_arc_to = Vec::new();
+        let mut f_quad_bez_to = Vec::new();
+        let mut f_cubic_bez_to = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -15927,50 +15883,45 @@ impl FromXml for CTPath2D {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"close" => {
-                                f_close =
-                                    Some(Box::new(CTPath2DClose::from_xml(reader, &e, false)?));
+                                f_close.push(CTPath2DClose::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"moveTo" => {
-                                f_move_to =
-                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                f_move_to
+                                    .push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"lnTo" => {
-                                f_ln_to =
-                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
+                                f_ln_to.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, false)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"arcTo" => {
-                                f_arc_to =
-                                    Some(Box::new(CTPath2DArcTo::from_xml(reader, &e, false)?));
+                                f_arc_to.push(CTPath2DArcTo::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"quadBezTo" => {
-                                f_quad_bez_to = Some(Box::new(CTPath2DQuadBezierTo::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_quad_bez_to
+                                    .push(CTPath2DQuadBezierTo::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cubicBezTo" => {
-                                f_cubic_bez_to = Some(Box::new(CTPath2DCubicBezierTo::from_xml(
-                                    reader, &e, false,
-                                )?));
+                                f_cubic_bez_to
+                                    .push(CTPath2DCubicBezierTo::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -15996,49 +15947,44 @@ impl FromXml for CTPath2D {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"close" => {
-                                f_close =
-                                    Some(Box::new(CTPath2DClose::from_xml(reader, &e, true)?));
+                                f_close.push(CTPath2DClose::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"moveTo" => {
-                                f_move_to =
-                                    Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                f_move_to.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"lnTo" => {
-                                f_ln_to = Some(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
+                                f_ln_to.push(Box::new(CTAdjPoint2D::from_xml(reader, &e, true)?));
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"arcTo" => {
-                                f_arc_to =
-                                    Some(Box::new(CTPath2DArcTo::from_xml(reader, &e, true)?));
+                                f_arc_to.push(CTPath2DArcTo::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"quadBezTo" => {
-                                f_quad_bez_to = Some(Box::new(CTPath2DQuadBezierTo::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_quad_bez_to
+                                    .push(CTPath2DQuadBezierTo::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"cubicBezTo" => {
-                                f_cubic_bez_to = Some(Box::new(CTPath2DCubicBezierTo::from_xml(
-                                    reader, &e, true,
-                                )?));
+                                f_cubic_bez_to
+                                    .push(CTPath2DCubicBezierTo::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
