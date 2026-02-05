@@ -128,6 +128,19 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [ ] **Delete handwritten PML code** - Table extraction still uses handwritten code (tables in graphic frames need extra_children parsing). Table/TableRow/TableCell remain handwritten for now.
 - [ ] **Add table extraction from graphic frames** - Parse DrawingML tables from `extra_children` in graphic frames.
 
+#### PML Migration Breaking Changes
+Users upgrading to the new API need to:
+- Import `ShapeExt` trait to call `shape.name()`, `shape.text()`, `shape.paragraphs()`, etc.
+- Import `PictureExt` trait to call `picture.name()`, `picture.description()`, `picture.embed_rel_id()`
+- Note: `ShapeExt::name()` returns `&str` (always present), not `Option<&str>`
+- Note: `PictureExt::name()` returns `&str` (always present), not `Option<&str>`
+- Note: `slide.transition()` returns `Option<Transition>` (owned), not `Option<&Transition>`
+
+#### PML Migration Known Limitations
+- **Tables not detected**: `slide.tables()` returns empty. Tables in graphic frames require parsing `extra_children` which isn't implemented yet. Test `test_roundtrip_with_table` is ignored.
+- **Nested group shapes**: Shapes in nested `p:grpSp` elements are accessible via `GroupShapeExt::group_shapes()` but `slide.shapes()` only returns top-level shapes.
+- **Connectors and graphic frames**: Available via `GroupShapeExt::connectors()` and `GroupShapeExt::graphic_frames()` but not exposed directly on Slide.
+
 ### DML (Drawing)
 - [x] **Add DML parser/serializer generation** - Parser and serializer modules now compile and are enabled in lib.rs. Fixed codegen issues:
   - [x] Optional field serialization for EG_* types (serializer_gen.rs)
