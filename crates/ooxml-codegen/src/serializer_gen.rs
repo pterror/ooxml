@@ -234,6 +234,8 @@ impl<'a> SerializerGenerator<'a> {
                 "    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {{"
             )
             .unwrap();
+            // Allow unused_mut when all attribute writes are feature-gated
+            writeln!(code, "        #[allow(unused_mut)]").unwrap();
             writeln!(code, "        let mut start = start;").unwrap();
 
             for field in &attr_fields {
