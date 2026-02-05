@@ -3,6 +3,7 @@
 //! This crate parses RELAX NG Compact (.rnc) schema files from the ECMA-376
 //! specification and generates Rust structs for Office Open XML types.
 
+pub mod analysis;
 pub mod ast;
 pub mod codegen;
 pub mod lexer;
@@ -10,6 +11,7 @@ pub mod parser;
 pub mod parser_gen;
 pub mod serializer_gen;
 
+pub use analysis::{ModuleReport, analyze_schema};
 pub use ast::{DatatypeParam, Definition, Namespace, Pattern, QName, Schema};
 pub use codegen::{CodegenConfig, FeatureMappings, ModuleMappings, NameMappings, generate};
 pub use lexer::{LexError, Lexer};
