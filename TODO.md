@@ -125,8 +125,8 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Port feature flags to PML** - Added 10 feature flags and ~200 field mappings for 25 PML types. 630 feature annotations generated.
 - [x] **Port extra-attrs/extra-children to PML** - Working. 285 extra-attrs, 226 extra-children annotations.
 - [x] **Replace handwritten PML types** - Slide now wraps `types::Slide`. Shape and Picture re-exported from `types`. Users access shape/picture methods via `ShapeExt`/`PictureExt` traits. ~280 lines of handwritten parsing code removed.
-- [ ] **Delete handwritten PML code** - Table extraction still uses handwritten code (tables in graphic frames need extra_children parsing). Table/TableRow/TableCell remain handwritten for now.
-- [ ] **Add table extraction from graphic frames** - Parse DrawingML tables from `extra_children` in graphic frames.
+- [x] **Add table extraction from graphic frames** - Tables in graphic frames parsed from `extra_children` using DML's `CTTable::from_xml()`. Recursively searches for `a:tbl` elements in raw XML.
+- [ ] **Delete handwritten PML code** - Table/TableRow/TableCell types remain handwritten (simple data types, not worth migrating to generated).
 
 #### PML Migration Breaking Changes
 Users upgrading to the new API need to:
@@ -137,7 +137,6 @@ Users upgrading to the new API need to:
 - Note: `slide.transition()` returns `Option<Transition>` (owned), not `Option<&Transition>`
 
 #### PML Migration Known Limitations
-- **Tables not detected**: `slide.tables()` returns empty. Tables in graphic frames require parsing `extra_children` which isn't implemented yet. Test `test_roundtrip_with_table` is ignored.
 - **Nested group shapes**: Shapes in nested `p:grpSp` elements are accessible via `GroupShapeExt::group_shapes()` but `slide.shapes()` only returns top-level shapes.
 - **Connectors and graphic frames**: Available via `GroupShapeExt::connectors()` and `GroupShapeExt::graphic_frames()` but not exposed directly on Slide.
 
