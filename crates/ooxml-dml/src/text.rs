@@ -4,6 +4,13 @@
 //! in PowerPoint and text boxes in Word/Excel.
 //!
 //! Reference: ECMA-376 Part 4, Section 21.1.2 (DrawingML - Text)
+//!
+//! # Deprecation Notice
+//!
+//! This module is being phased out. Use generated types with extension traits instead:
+//! - `ooxml_dml::types::TextBody` with `TextBodyExt`
+//! - `ooxml_dml::types::TextParagraph` with `TextParagraphExt`
+//! - `ooxml_dml::types::TextRun` with `TextRunExt`
 
 use quick_xml::Reader;
 use quick_xml::events::Event;

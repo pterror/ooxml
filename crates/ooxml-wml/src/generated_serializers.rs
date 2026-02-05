@@ -5240,6 +5240,9 @@ impl ToXml for CTControl {
         if let Some(ref val) = self.shapeid {
             start.push_attribute(("w:shapeid", val.as_str()));
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -5327,19 +5330,20 @@ impl ToXml for CTBackground {
 }
 
 impl ToXml for CTRel {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
-        Ok(())
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -5551,6 +5555,10 @@ impl ToXml for CTObjectEmbed {
                 start.push_attribute(("w:drawAspect", s.as_str()));
             }
         }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.prog_id {
             start.push_attribute(("w:progId", val.as_str()));
         }
@@ -5580,6 +5588,10 @@ impl ToXml for CTObjectLink {
                 let s = val.to_string();
                 start.push_attribute(("w:drawAspect", s.as_str()));
             }
+        }
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
         }
         if let Some(ref val) = self.prog_id {
             start.push_attribute(("w:progId", val.as_str()));
@@ -5885,6 +5897,9 @@ impl ToXml for Hyperlink {
         }
         if let Some(ref val) = self.anchor {
             start.push_attribute(("w:anchor", val.as_str()));
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -6840,6 +6855,9 @@ impl ToXml for CTPageBorder {
                 start.push_attribute(("w:frame", s.as_str()));
             }
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -6910,6 +6928,15 @@ impl ToXml for CTBottomPageBorder {
                 start.push_attribute(("w:frame", s.as_str()));
             }
         }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        if let Some(ref val) = self.bottom_left {
+            start.push_attribute(("r:bottomLeft", val.as_str()));
+        }
+        if let Some(ref val) = self.bottom_right {
+            start.push_attribute(("r:bottomRight", val.as_str()));
+        }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
             start.push_attribute((key.as_str(), value.as_str()));
@@ -6979,6 +7006,15 @@ impl ToXml for CTTopPageBorder {
                 let s = val.to_string();
                 start.push_attribute(("w:frame", s.as_str()));
             }
+        }
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        if let Some(ref val) = self.top_left {
+            start.push_attribute(("r:topLeft", val.as_str()));
+        }
+        if let Some(ref val) = self.top_right {
+            start.push_attribute(("r:topRight", val.as_str()));
         }
         #[cfg(feature = "extra-attrs")]
         for (key, value) in &self.extra_attrs {
@@ -7229,6 +7265,10 @@ impl ToXml for DocumentGrid {
 impl ToXml for HeaderFooterReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         {
             let val = &self.r#type;
             {
@@ -14201,6 +14241,18 @@ impl ToXml for EGParaRPrTrackChanges {
 }
 
 impl ToXml for CTAltChunk {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -24031,6 +24083,9 @@ impl ToXml for CTCharacterSpacing {
 impl ToXml for CTSaveThroughXslt {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.solution_i_d {
             start.push_attribute(("w:solutionID", val.as_str()));
         }
@@ -29053,6 +29108,10 @@ impl ToXml for CTFontSig {
 impl ToXml for CTFontRel {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.id;
+            start.push_attribute(("r:id", val.as_str()));
+        }
         if let Some(ref val) = self.font_key {
             start.push_attribute(("w:fontKey", val.as_str()));
         }

@@ -623,11 +623,9 @@ pub trait HyperlinkExt {
     fn anchor_str(&self) -> Option<&str>;
 
     /// Get the relationship ID (`r:id` attribute) for external hyperlinks.
-    #[cfg(feature = "extra-attrs")]
     fn rel_id(&self) -> Option<&str>;
 
     /// Check if this is an external hyperlink (has a relationship ID).
-    #[cfg(feature = "extra-attrs")]
     fn is_external(&self) -> bool;
 }
 
@@ -648,14 +646,12 @@ impl HyperlinkExt for types::Hyperlink {
         self.anchor.as_deref()
     }
 
-    #[cfg(feature = "extra-attrs")]
     fn rel_id(&self) -> Option<&str> {
-        self.extra_attrs.get("r:id").map(|s| s.as_str())
+        self.id.as_deref()
     }
 
-    #[cfg(feature = "extra-attrs")]
     fn is_external(&self) -> bool {
-        self.extra_attrs.contains_key("r:id")
+        self.id.is_some()
     }
 }
 
@@ -1679,6 +1675,7 @@ mod tests {
     #[test]
     fn test_paragraph_with_hyperlink() {
         let hyperlink = types::ParagraphContent::Hyperlink(Box::new(types::Hyperlink {
+            id: None,
             tgt_frame: None,
             tooltip: None,
             doc_location: None,
@@ -1789,6 +1786,7 @@ mod tests {
     #[test]
     fn test_hyperlink_ext() {
         let h = types::Hyperlink {
+            id: None,
             tgt_frame: None,
             tooltip: None,
             doc_location: None,

@@ -75,6 +75,8 @@ impl FromXml for CTAudioFile {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "dml-media")]
+        let mut f_link: Option<STRelationshipId> = None;
+        #[cfg(feature = "dml-media")]
         let mut f_content_type = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -88,6 +90,10 @@ impl FromXml for CTAudioFile {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-media")]
+                b"link" => {
+                    f_link = Some(val.into_owned());
+                }
                 #[cfg(feature = "dml-media")]
                 b"contentType" => {
                     f_content_type = Some(val.into_owned());
@@ -169,6 +175,8 @@ impl FromXml for CTAudioFile {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-media")]
+            link: f_link.ok_or_else(|| ParseError::MissingAttribute("link".to_string()))?,
             #[cfg(feature = "dml-media")]
             content_type: f_content_type,
             ext_lst: f_ext_lst,
@@ -187,6 +195,8 @@ impl FromXml for CTVideoFile {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "dml-media")]
+        let mut f_link: Option<STRelationshipId> = None;
+        #[cfg(feature = "dml-media")]
         let mut f_content_type = None;
         let mut f_ext_lst = None;
         #[cfg(feature = "extra-attrs")]
@@ -200,6 +210,10 @@ impl FromXml for CTVideoFile {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-media")]
+                b"link" => {
+                    f_link = Some(val.into_owned());
+                }
                 #[cfg(feature = "dml-media")]
                 b"contentType" => {
                     f_content_type = Some(val.into_owned());
@@ -282,6 +296,8 @@ impl FromXml for CTVideoFile {
 
         Ok(Self {
             #[cfg(feature = "dml-media")]
+            link: f_link.ok_or_else(|| ParseError::MissingAttribute("link".to_string()))?,
+            #[cfg(feature = "dml-media")]
             content_type: f_content_type,
             ext_lst: f_ext_lst,
             #[cfg(feature = "extra-attrs")]
@@ -298,11 +314,31 @@ impl FromXml for CTQuickTimeFile {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_link: Option<STRelationshipId> = None;
         let mut f_ext_lst = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"link" => {
+                    f_link = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -371,7 +407,10 @@ impl FromXml for CTQuickTimeFile {
         }
 
         Ok(Self {
+            link: f_link.ok_or_else(|| ParseError::MissingAttribute("link".to_string()))?,
             ext_lst: f_ext_lst,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -4808,34 +4847,35 @@ impl FromXml for AAGBlob {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
-        #[cfg(feature = "extra-children")]
-        let mut child_idx: usize = 0;
+        let mut f_embed = None;
+        let mut f_link = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"embed" => {
+                    f_embed = Some(val.into_owned());
+                }
+                b"link" => {
+                    f_link = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children
-                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
-                        child_idx += 1;
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children
-                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
-                        child_idx += 1;
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -4843,9 +4883,12 @@ impl FromXml for AAGBlob {
                 buf.clear();
             }
         }
+
         Ok(Self {
-            #[cfg(feature = "extra-children")]
-            extra_children,
+            embed: f_embed,
+            link: f_link,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
         })
     }
 }
@@ -4856,6 +4899,7 @@ impl FromXml for CTEmbeddedWAVAudioFile {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_embed: Option<STRelationshipId> = None;
         let mut f_name = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -4864,6 +4908,9 @@ impl FromXml for CTEmbeddedWAVAudioFile {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"embed" => {
+                    f_embed = Some(val.into_owned());
+                }
                 b"name" => {
                     f_name = Some(val.into_owned());
                 }
@@ -4890,6 +4937,7 @@ impl FromXml for CTEmbeddedWAVAudioFile {
         }
 
         Ok(Self {
+            embed: f_embed.ok_or_else(|| ParseError::MissingAttribute("embed".to_string()))?,
             name: f_name,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -4903,6 +4951,8 @@ impl FromXml for CTHyperlink {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        #[cfg(feature = "dml-text")]
+        let mut f_id = None;
         #[cfg(feature = "dml-text")]
         let mut f_invalid_url = None;
         #[cfg(feature = "dml-text")]
@@ -4932,6 +4982,10 @@ impl FromXml for CTHyperlink {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-text")]
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
                 #[cfg(feature = "dml-text")]
                 b"invalidUrl" => {
                     f_invalid_url = Some(val.into_owned());
@@ -5059,6 +5113,8 @@ impl FromXml for CTHyperlink {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-text")]
+            id: f_id,
             #[cfg(feature = "dml-text")]
             invalid_url: f_invalid_url,
             #[cfg(feature = "dml-text")]
@@ -12777,6 +12833,10 @@ impl FromXml for Blip {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         #[cfg(feature = "dml-fills")]
+        let mut f_embed = None;
+        #[cfg(feature = "dml-fills")]
+        let mut f_link = None;
+        #[cfg(feature = "dml-fills")]
         let mut f_cstate = None;
         #[cfg(feature = "dml-fills")]
         let mut f_alpha_bi_level = None;
@@ -12825,6 +12885,14 @@ impl FromXml for Blip {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                #[cfg(feature = "dml-fills")]
+                b"embed" => {
+                    f_embed = Some(val.into_owned());
+                }
+                #[cfg(feature = "dml-fills")]
+                b"link" => {
+                    f_link = Some(val.into_owned());
+                }
                 #[cfg(feature = "dml-fills")]
                 b"cstate" => {
                     f_cstate = val.parse().ok();
@@ -13225,6 +13293,10 @@ impl FromXml for Blip {
         }
 
         Ok(Self {
+            #[cfg(feature = "dml-fills")]
+            embed: f_embed,
+            #[cfg(feature = "dml-fills")]
+            link: f_link,
             #[cfg(feature = "dml-fills")]
             cstate: f_cstate,
             #[cfg(feature = "dml-fills")]

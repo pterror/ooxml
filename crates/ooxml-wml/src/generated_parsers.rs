@@ -7853,6 +7853,7 @@ impl FromXml for CTControl {
     ) -> Result<Self, ParseError> {
         let mut f_name = None;
         let mut f_shapeid = None;
+        let mut f_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
@@ -7865,6 +7866,9 @@ impl FromXml for CTControl {
                 }
                 b"shapeid" => {
                     f_shapeid = Some(val.into_owned());
+                }
+                b"id" => {
+                    f_id = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
@@ -7891,6 +7895,7 @@ impl FromXml for CTControl {
         Ok(Self {
             name: f_name,
             shapeid: f_shapeid,
+            id: f_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
@@ -8023,34 +8028,31 @@ impl FromXml for CTRel {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
-        #[cfg(feature = "extra-children")]
-        let mut child_idx: usize = 0;
+        let mut f_id: Option<STRelationshipId> = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
+
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    #[cfg(feature = "extra-children")]
-                    Event::Start(e) => {
-                        let elem = RawXmlElement::from_reader(reader, &e)?;
-                        extra_children
-                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
-                        child_idx += 1;
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Start(_) => {
-                        skip_element(reader)?;
-                    }
-                    #[cfg(feature = "extra-children")]
-                    Event::Empty(e) => {
-                        let elem = RawXmlElement::from_empty(&e);
-                        extra_children
-                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
-                        child_idx += 1;
-                    }
-                    #[cfg(not(feature = "extra-children"))]
-                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -8058,9 +8060,11 @@ impl FromXml for CTRel {
                 buf.clear();
             }
         }
+
         Ok(Self {
-            #[cfg(feature = "extra-children")]
-            extra_children,
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
         })
     }
 }
@@ -8348,6 +8352,7 @@ impl FromXml for CTObjectEmbed {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_draw_aspect = None;
+        let mut f_id: Option<STRelationshipId> = None;
         let mut f_prog_id = None;
         let mut f_shape_id = None;
         let mut f_field_codes = None;
@@ -8360,6 +8365,9 @@ impl FromXml for CTObjectEmbed {
             match attr.key.local_name().as_ref() {
                 b"drawAspect" => {
                     f_draw_aspect = val.parse().ok();
+                }
+                b"id" => {
+                    f_id = Some(val.into_owned());
                 }
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
@@ -8394,6 +8402,7 @@ impl FromXml for CTObjectEmbed {
 
         Ok(Self {
             draw_aspect: f_draw_aspect,
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             prog_id: f_prog_id,
             shape_id: f_shape_id,
             field_codes: f_field_codes,
@@ -8410,6 +8419,7 @@ impl FromXml for CTObjectLink {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_draw_aspect = None;
+        let mut f_id: Option<STRelationshipId> = None;
         let mut f_prog_id = None;
         let mut f_shape_id = None;
         let mut f_field_codes = None;
@@ -8424,6 +8434,9 @@ impl FromXml for CTObjectLink {
             match attr.key.local_name().as_ref() {
                 b"drawAspect" => {
                     f_draw_aspect = val.parse().ok();
+                }
+                b"id" => {
+                    f_id = Some(val.into_owned());
                 }
                 b"progId" => {
                     f_prog_id = Some(val.into_owned());
@@ -8464,6 +8477,7 @@ impl FromXml for CTObjectLink {
 
         Ok(Self {
             draw_aspect: f_draw_aspect,
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             prog_id: f_prog_id,
             shape_id: f_shape_id,
             field_codes: f_field_codes,
@@ -8976,6 +8990,7 @@ impl FromXml for Hyperlink {
         let mut f_doc_location = None;
         let mut f_history = None;
         let mut f_anchor = None;
+        let mut f_id = None;
         let mut f_paragraph_content = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -9002,6 +9017,9 @@ impl FromXml for Hyperlink {
                 }
                 b"anchor" => {
                     f_anchor = Some(val.into_owned());
+                }
+                b"id" => {
+                    f_id = Some(val.into_owned());
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
@@ -9145,6 +9163,7 @@ impl FromXml for Hyperlink {
             doc_location: f_doc_location,
             history: f_history,
             anchor: f_anchor,
+            id: f_id,
             paragraph_content: f_paragraph_content,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -10339,6 +10358,7 @@ impl FromXml for CTPageBorder {
         let mut f_space = None;
         let mut f_shadow = None;
         let mut f_frame = None;
+        let mut f_id = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
@@ -10373,6 +10393,9 @@ impl FromXml for CTPageBorder {
                 b"frame" => {
                     f_frame = Some(val.into_owned());
                 }
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
                     let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
@@ -10405,6 +10428,7 @@ impl FromXml for CTPageBorder {
             space: f_space,
             shadow: f_shadow,
             frame: f_frame,
+            id: f_id,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
@@ -10426,6 +10450,9 @@ impl FromXml for CTBottomPageBorder {
         let mut f_space = None;
         let mut f_shadow = None;
         let mut f_frame = None;
+        let mut f_id = None;
+        let mut f_bottom_left = None;
+        let mut f_bottom_right = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
@@ -10460,6 +10487,15 @@ impl FromXml for CTBottomPageBorder {
                 b"frame" => {
                     f_frame = Some(val.into_owned());
                 }
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                b"bottomLeft" => {
+                    f_bottom_left = Some(val.into_owned());
+                }
+                b"bottomRight" => {
+                    f_bottom_right = Some(val.into_owned());
+                }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
                     let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
@@ -10492,6 +10528,9 @@ impl FromXml for CTBottomPageBorder {
             space: f_space,
             shadow: f_shadow,
             frame: f_frame,
+            id: f_id,
+            bottom_left: f_bottom_left,
+            bottom_right: f_bottom_right,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
@@ -10513,6 +10552,9 @@ impl FromXml for CTTopPageBorder {
         let mut f_space = None;
         let mut f_shadow = None;
         let mut f_frame = None;
+        let mut f_id = None;
+        let mut f_top_left = None;
+        let mut f_top_right = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
 
@@ -10547,6 +10589,15 @@ impl FromXml for CTTopPageBorder {
                 b"frame" => {
                     f_frame = Some(val.into_owned());
                 }
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                b"topLeft" => {
+                    f_top_left = Some(val.into_owned());
+                }
+                b"topRight" => {
+                    f_top_right = Some(val.into_owned());
+                }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
                     let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
@@ -10579,6 +10630,9 @@ impl FromXml for CTTopPageBorder {
             space: f_space,
             shadow: f_shadow,
             frame: f_frame,
+            id: f_id,
+            top_left: f_top_left,
+            top_right: f_top_right,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
         })
@@ -10991,6 +11045,7 @@ impl FromXml for HeaderFooterReference {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STRelationshipId> = None;
         let mut f_type: Option<STHdrFtr> = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -10999,6 +11054,9 @@ impl FromXml for HeaderFooterReference {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
                 b"type" => {
                     f_type = val.parse().ok();
                 }
@@ -11025,6 +11083,7 @@ impl FromXml for HeaderFooterReference {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             r#type: f_type.ok_or_else(|| ParseError::MissingAttribute("type".to_string()))?,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -18627,11 +18686,31 @@ impl FromXml for CTAltChunk {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id = None;
         let mut f_alt_chunk_pr = None;
+        #[cfg(feature = "extra-attrs")]
+        let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut child_idx: usize = 0;
+
+        // Parse attributes
+        for attr in start_tag.attributes().filter_map(|a| a.ok()) {
+            let val = String::from_utf8_lossy(&attr.value);
+            match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
+                #[cfg(feature = "extra-attrs")]
+                unknown => {
+                    let key = String::from_utf8_lossy(attr.key.as_ref()).into_owned();
+                    extra_attrs.insert(key, val.into_owned());
+                }
+                #[cfg(not(feature = "extra-attrs"))]
+                _ => {}
+            }
+        }
 
         // Parse child elements
         if !is_empty {
@@ -18698,7 +18777,10 @@ impl FromXml for CTAltChunk {
         }
 
         Ok(Self {
+            id: f_id,
             alt_chunk_pr: f_alt_chunk_pr,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -32951,6 +33033,7 @@ impl FromXml for CTSaveThroughXslt {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id = None;
         let mut f_solution_i_d = None;
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
@@ -32959,6 +33042,9 @@ impl FromXml for CTSaveThroughXslt {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
                 b"solutionID" => {
                     f_solution_i_d = Some(val.into_owned());
                 }
@@ -32985,6 +33071,7 @@ impl FromXml for CTSaveThroughXslt {
         }
 
         Ok(Self {
+            id: f_id,
             solution_i_d: f_solution_i_d,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
@@ -39030,6 +39117,7 @@ impl FromXml for CTFontRel {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
+        let mut f_id: Option<STRelationshipId> = None;
         let mut f_font_key = None;
         let mut f_subsetted = None;
         #[cfg(feature = "extra-attrs")]
@@ -39039,6 +39127,9 @@ impl FromXml for CTFontRel {
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
+                b"id" => {
+                    f_id = Some(val.into_owned());
+                }
                 b"fontKey" => {
                     f_font_key = Some(val.into_owned());
                 }
@@ -39068,6 +39159,7 @@ impl FromXml for CTFontRel {
         }
 
         Ok(Self {
+            id: f_id.ok_or_else(|| ParseError::MissingAttribute("id".to_string()))?,
             font_key: f_font_key,
             subsetted: f_subsetted,
             #[cfg(feature = "extra-attrs")]

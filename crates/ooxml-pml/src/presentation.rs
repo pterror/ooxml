@@ -2,6 +2,8 @@
 //!
 //! This module provides the main entry point for working with PPTX files.
 
+// TODO: Migrate from ooxml_dml::text types to generated types with ext traits
+
 use crate::error::{Error, Result};
 use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
@@ -627,7 +629,7 @@ pub struct Shape {
     /// Shape name (if any).
     name: Option<String>,
     /// Text paragraphs (DrawingML).
-    paragraphs: Vec<ooxml_dml::Paragraph>,
+    paragraphs: Vec<ooxml_dml::text::Paragraph>,
 }
 
 impl Shape {
@@ -637,7 +639,7 @@ impl Shape {
     }
 
     /// Get the text paragraphs.
-    pub fn paragraphs(&self) -> &[ooxml_dml::Paragraph] {
+    pub fn paragraphs(&self) -> &[ooxml_dml::text::Paragraph] {
         &self.paragraphs
     }
 
@@ -809,7 +811,7 @@ impl TableRow {
 #[derive(Debug, Clone)]
 pub struct TableCell {
     /// Text paragraphs in the cell.
-    paragraphs: Vec<ooxml_dml::Paragraph>,
+    paragraphs: Vec<ooxml_dml::text::Paragraph>,
     /// Row span (number of rows this cell spans).
     row_span: u32,
     /// Column span (number of columns this cell spans).
@@ -818,7 +820,7 @@ pub struct TableCell {
 
 impl TableCell {
     /// Get the text paragraphs.
-    pub fn paragraphs(&self) -> &[ooxml_dml::Paragraph] {
+    pub fn paragraphs(&self) -> &[ooxml_dml::text::Paragraph] {
         &self.paragraphs
     }
 
@@ -913,7 +915,7 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut tables = Vec::new();
 
     let mut current_shape_name: Option<String> = None;
-    let mut current_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
+    let mut current_paragraphs: Vec<ooxml_dml::text::Paragraph> = Vec::new();
     let mut in_sp = false; // Inside a shape
 
     // Picture parsing state
@@ -931,7 +933,7 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
     let mut current_row_cells: Vec<TableCell> = Vec::new();
     let mut current_row_height: Option<i64> = None;
     let mut in_tc = false;
-    let mut current_cell_paragraphs: Vec<ooxml_dml::Paragraph> = Vec::new();
+    let mut current_cell_paragraphs: Vec<ooxml_dml::text::Paragraph> = Vec::new();
     let mut current_cell_row_span: u32 = 1;
     let mut current_cell_col_span: u32 = 1;
 
@@ -996,7 +998,8 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                     }
                     b"a:txBody" if in_tc => {
                         // Parse text body for table cell
-                        if let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader) {
+                        if let Ok(paras) = ooxml_dml::text::parse_text_body_from_reader(&mut reader)
+                        {
                             current_cell_paragraphs = paras;
                         }
                     }
@@ -1040,7 +1043,8 @@ fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
                     b"p:txBody" => {
                         // Use DML parser for text body content
                         if in_sp
-                            && let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader)
+                            && let Ok(paras) =
+                                ooxml_dml::text::parse_text_body_from_reader(&mut reader)
                         {
                             current_paragraphs = paras;
                         }
@@ -1278,7 +1282,7 @@ fn parse_notes_slide(xml: &[u8]) -> Option<String> {
                 let name = name.as_ref();
                 // Notes text is in p:txBody elements
                 if name == b"p:txBody"
-                    && let Ok(paras) = ooxml_dml::parse_text_body_from_reader(&mut reader)
+                    && let Ok(paras) = ooxml_dml::text::parse_text_body_from_reader(&mut reader)
                 {
                     for para in paras {
                         let text = para.text();

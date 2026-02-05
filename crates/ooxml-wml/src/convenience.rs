@@ -397,15 +397,7 @@ impl types::Hyperlink {
 
     /// Set the relationship ID (for external hyperlinks).
     pub fn set_rel_id(&mut self, rel_id: &str) {
-        #[cfg(feature = "extra-attrs")]
-        {
-            self.extra_attrs
-                .insert("r:id".to_string(), rel_id.to_string());
-        }
-        #[cfg(not(feature = "extra-attrs"))]
-        {
-            let _ = rel_id;
-        }
+        self.id = Some(rel_id.to_string());
     }
 
     /// Set the anchor (for internal bookmarks).
