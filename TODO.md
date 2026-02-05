@@ -127,7 +127,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Replace handwritten PML types** - Slide now wraps `types::Slide`. Shape and Picture re-exported from `types`. Users access shape/picture methods via `ShapeExt`/`PictureExt` traits. ~280 lines of handwritten parsing code removed.
 - [x] **Add table extraction from graphic frames** - Tables in graphic frames parsed from `extra_children` using DML's `CTTable::from_xml()`. Recursively searches for `a:tbl` elements in raw XML.
 - [x] **Streaming table parsing** - `RawXmlElement::parse_as::<T: FromXml>()` uses `RawXmlStreamReader` which implements `BufRead` to stream XML bytes lazily from the in-memory tree. No upfront full serialization - bytes are generated on-demand as the parser reads.
-- [ ] **Delete handwritten PML code** - Table/TableRow/TableCell types remain handwritten (simple data types, not worth migrating to generated).
+- [x] **Migrate PML table types to DML extension traits** - Table is now a thin wrapper around `CTTable`. Removed handwritten `TableRow`/`TableCell` types; users access row/cell data via `TableRowExt`/`TableCellExt` traits from ooxml-dml.
 
 #### PML Migration Breaking Changes
 Users upgrading to the new API need to:

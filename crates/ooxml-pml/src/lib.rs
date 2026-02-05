@@ -54,10 +54,13 @@ pub use generated_serializers as serializers;
 pub use error::{Error, Result};
 pub use presentation::{
     Hyperlink, ImageData, Presentation, Slide, SlideLayout, SlideLayoutType, SlideMaster, Table,
-    TableCell, TableRow, Transition, TransitionSpeed, TransitionType,
+    Transition, TransitionSpeed, TransitionType,
 };
 // Re-export generated types that replace handwritten ones
 pub use types::{Picture, Shape};
+// Re-export DML table types and extension traits for table access
+pub use ooxml_dml::types::{CTTable, CTTableCell, CTTableRow};
+pub use ooxml_dml::{TableCellExt, TableExt, TableRowExt};
 pub use writer::{
     ImageFormat, PresentationBuilder, SlideBuilder, SlideTransition, TableBuilder, TextRun,
 };
