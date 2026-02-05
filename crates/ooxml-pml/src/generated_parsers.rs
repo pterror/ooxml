@@ -69,6 +69,15 @@ fn decode_hex(s: &str) -> Option<Vec<u8>> {
         .collect()
 }
 
+#[allow(dead_code)]
+/// Decode a base64 string to bytes.
+fn decode_base64(s: &str) -> Option<Vec<u8>> {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD
+        .decode(s.trim())
+        .ok()
+}
+
 impl FromXml for CTSideDirectionTransition {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
@@ -10201,10 +10210,10 @@ impl FromXml for CTModifyVerifier {
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    f_hash_value = decode_hex(&val);
+                    f_hash_value = decode_base64(&val);
                 }
                 b"saltValue" => {
-                    f_salt_value = decode_hex(&val);
+                    f_salt_value = decode_base64(&val);
                 }
                 b"spinValue" => {
                     f_spin_value = val.parse().ok();
@@ -10225,10 +10234,10 @@ impl FromXml for CTModifyVerifier {
                     f_spin_count = val.parse().ok();
                 }
                 b"saltData" => {
-                    f_salt_data = decode_hex(&val);
+                    f_salt_data = decode_base64(&val);
                 }
                 b"hashData" => {
-                    f_hash_data = decode_hex(&val);
+                    f_hash_data = decode_base64(&val);
                 }
                 b"cryptProvider" => {
                     f_crypt_provider = Some(val.into_owned());

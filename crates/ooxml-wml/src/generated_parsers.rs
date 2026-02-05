@@ -68,6 +68,15 @@ fn decode_hex(s: &str) -> Option<Vec<u8>> {
         .collect()
 }
 
+#[allow(dead_code)]
+/// Decode a base64 string to bytes.
+fn decode_base64(s: &str) -> Option<Vec<u8>> {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD
+        .decode(s.trim())
+        .ok()
+}
+
 impl FromXml for CTEmpty {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,
@@ -2268,10 +2277,10 @@ impl FromXml for WAGPassword {
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    f_hash_value = decode_hex(&val);
+                    f_hash_value = decode_base64(&val);
                 }
                 b"saltValue" => {
-                    f_salt_value = decode_hex(&val);
+                    f_salt_value = decode_base64(&val);
                 }
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
@@ -2365,10 +2374,10 @@ impl FromXml for WAGTransitionalPassword {
                     f_crypt_provider_type_ext_source = Some(val.into_owned());
                 }
                 b"hash" => {
-                    f_hash = decode_hex(&val);
+                    f_hash = decode_base64(&val);
                 }
                 b"salt" => {
-                    f_salt = decode_hex(&val);
+                    f_salt = decode_base64(&val);
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
@@ -2456,10 +2465,10 @@ impl FromXml for CTDocProtect {
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    f_hash_value = decode_hex(&val);
+                    f_hash_value = decode_base64(&val);
                 }
                 b"saltValue" => {
-                    f_salt_value = decode_hex(&val);
+                    f_salt_value = decode_base64(&val);
                 }
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
@@ -2495,10 +2504,10 @@ impl FromXml for CTDocProtect {
                     f_crypt_provider_type_ext_source = Some(val.into_owned());
                 }
                 b"hash" => {
-                    f_hash = decode_hex(&val);
+                    f_hash = decode_base64(&val);
                 }
                 b"salt" => {
-                    f_salt = decode_hex(&val);
+                    f_salt = decode_base64(&val);
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
@@ -30501,7 +30510,7 @@ impl FromXml for CTBase64Binary {
             let val = String::from_utf8_lossy(&attr.value);
             match attr.key.local_name().as_ref() {
                 b"val" => {
-                    f_value = decode_hex(&val);
+                    f_value = decode_base64(&val);
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
@@ -33548,10 +33557,10 @@ impl FromXml for CTWriteProtection {
                     f_algorithm_name = Some(val.into_owned());
                 }
                 b"hashValue" => {
-                    f_hash_value = decode_hex(&val);
+                    f_hash_value = decode_base64(&val);
                 }
                 b"saltValue" => {
-                    f_salt_value = decode_hex(&val);
+                    f_salt_value = decode_base64(&val);
                 }
                 b"spinCount" => {
                     f_spin_count = val.parse().ok();
@@ -33587,10 +33596,10 @@ impl FromXml for CTWriteProtection {
                     f_crypt_provider_type_ext_source = Some(val.into_owned());
                 }
                 b"hash" => {
-                    f_hash = decode_hex(&val);
+                    f_hash = decode_base64(&val);
                 }
                 b"salt" => {
-                    f_salt = decode_hex(&val);
+                    f_salt = decode_base64(&val);
                 }
                 #[cfg(feature = "extra-attrs")]
                 unknown => {
