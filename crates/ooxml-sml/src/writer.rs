@@ -1794,12 +1794,22 @@ impl WorkbookBuilder {
     }
 
     /// Serialize styles to XML using generated ToXml serializers.
+    #[cfg(feature = "sml-styling")]
     fn serialize_styles(&self) -> Result<Vec<u8>> {
         let stylesheet = self.build_stylesheet();
         serialize_with_namespaces(&stylesheet, "styleSheet")
     }
 
+    /// Stub for serialize_styles when sml-styling is not enabled.
+    #[cfg(not(feature = "sml-styling"))]
+    fn serialize_styles(&self) -> Result<Vec<u8>> {
+        // Return a minimal empty stylesheet
+        let stylesheet = types::Stylesheet::default();
+        serialize_with_namespaces(&stylesheet, "styleSheet")
+    }
+
     /// Build a Stylesheet type from builder data.
+    #[cfg(feature = "sml-styling")]
     fn build_stylesheet(&self) -> types::Stylesheet {
         // Number formats (custom formats start at ID 164)
         let num_fmts: Option<Box<types::NumberFormats>> = if self.number_formats.is_empty() {
@@ -2755,6 +2765,7 @@ fn serialize_with_ns_decls(
 }
 
 /// Build a types::Font from FontStyle.
+#[cfg(feature = "sml-styling")]
 fn build_font(font: &FontStyle) -> types::Font {
     types::Font {
         #[cfg(feature = "sml-styling")]
@@ -2845,6 +2856,7 @@ fn build_font(font: &FontStyle) -> types::Font {
 }
 
 /// Build a types::Fill from FillStyle.
+#[cfg(feature = "sml-styling")]
 fn build_fill(fill: &FillStyle) -> types::Fill {
     types::Fill {
         #[cfg(feature = "sml-styling")]
@@ -2885,6 +2897,7 @@ fn build_fill(fill: &FillStyle) -> types::Fill {
 }
 
 /// Build a types::Border from BorderStyle.
+#[cfg(feature = "sml-styling")]
 fn build_border(border: &BorderStyle) -> types::Border {
     types::Border {
         #[cfg(feature = "sml-styling")]
@@ -2921,6 +2934,7 @@ fn build_border(border: &BorderStyle) -> types::Border {
 }
 
 /// Build a types::BorderProperties from BorderSideStyle.
+#[cfg(feature = "sml-styling")]
 fn build_border_properties(side: &Option<BorderSideStyle>) -> Option<Box<types::BorderProperties>> {
     // Always emit border properties for each side (empty if none)
     let (style, color) = if let Some(s) = side {
@@ -2957,6 +2971,7 @@ fn build_border_properties(side: &Option<BorderSideStyle>) -> Option<Box<types::
 }
 
 /// Build a types::Format (xf) from CellFormatRecord.
+#[cfg(feature = "sml-styling")]
 fn build_cell_format(xf: &CellFormatRecord) -> types::Format {
     let has_alignment = xf.horizontal.is_some() || xf.vertical.is_some() || xf.wrap_text;
 
@@ -3019,6 +3034,7 @@ fn build_cell_format(xf: &CellFormatRecord) -> types::Format {
 }
 
 /// Convert writer's UnderlineStyle to generated types::UnderlineStyle.
+#[cfg(feature = "sml-styling")]
 fn convert_underline_style(style: UnderlineStyle) -> types::UnderlineStyle {
     match style {
         UnderlineStyle::Single => types::UnderlineStyle::Single,
@@ -3029,6 +3045,7 @@ fn convert_underline_style(style: UnderlineStyle) -> types::UnderlineStyle {
 }
 
 /// Convert writer's FillPattern to generated types::PatternType.
+#[cfg(feature = "sml-styling")]
 fn convert_pattern_type(pattern: FillPattern) -> types::PatternType {
     match pattern {
         FillPattern::None => types::PatternType::None,
@@ -3054,6 +3071,7 @@ fn convert_pattern_type(pattern: FillPattern) -> types::PatternType {
 }
 
 /// Convert writer's BorderLineStyle to generated types::BorderStyle.
+#[cfg(feature = "sml-styling")]
 fn convert_border_style(style: BorderLineStyle) -> types::BorderStyle {
     match style {
         BorderLineStyle::None => types::BorderStyle::None,
@@ -3074,6 +3092,7 @@ fn convert_border_style(style: BorderLineStyle) -> types::BorderStyle {
 }
 
 /// Convert writer's HorizontalAlignment to generated types::HorizontalAlignment.
+#[cfg(feature = "sml-styling")]
 fn convert_horizontal_alignment(align: HorizontalAlignment) -> types::HorizontalAlignment {
     match align {
         HorizontalAlignment::General => types::HorizontalAlignment::General,
@@ -3088,6 +3107,7 @@ fn convert_horizontal_alignment(align: HorizontalAlignment) -> types::Horizontal
 }
 
 /// Convert writer's VerticalAlignment to generated types::VerticalAlignment.
+#[cfg(feature = "sml-styling")]
 fn convert_vertical_alignment(align: VerticalAlignment) -> types::VerticalAlignment {
     match align {
         VerticalAlignment::Top => types::VerticalAlignment::Top,
