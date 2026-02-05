@@ -8,7 +8,7 @@ use quick_xml::events::{BytesCData, BytesEnd, BytesStart, BytesText, Event};
 use quick_xml::{Reader, Writer};
 use std::io::{BufRead, Write};
 
-use crate::{Error, Result};
+use crate::{Error, FromXml, ParseError, Result};
 
 /// A raw XML node with its original position for correct round-trip ordering.
 ///
@@ -182,6 +182,56 @@ impl RawXmlElement {
             attributes,
             children: Vec::new(),
             self_closing: true,
+        }
+    }
+
+    /// Parse this element as a typed struct using the FromXml trait.
+    ///
+    /// This serializes the element back to XML bytes and re-parses using the
+    /// generated FromXml implementation. Useful for parsing known element types
+    /// that were captured in `extra_children` during initial parsing.
+    ///
+    /// # Example
+    /// ```ignore
+    /// use ooxml_dml::types::CTTable;
+    /// if let Some(table) = raw_element.parse_as::<CTTable>() {
+    ///     // Use the parsed table
+    /// }
+    /// ```
+    pub fn parse_as<T: FromXml>(&self) -> std::result::Result<T, ParseError> {
+        use std::io::Cursor;
+
+        // Serialize to XML bytes
+        let mut xml_buf = Vec::new();
+        {
+            let mut writer = Writer::new(Cursor::new(&mut xml_buf));
+            self.write_to(&mut writer).map_err(|e| match e {
+                Error::Xml(e) => ParseError::Xml(e),
+                Error::Io(_) | Error::Invalid(_) => ParseError::InvalidValue(e.to_string()),
+            })?;
+        }
+
+        // Parse using FromXml
+        let mut reader = Reader::from_reader(Cursor::new(&xml_buf));
+        let mut buf = Vec::new();
+
+        loop {
+            match reader.read_event_into(&mut buf) {
+                Ok(Event::Start(e)) => {
+                    return T::from_xml(&mut reader, &e, false);
+                }
+                Ok(Event::Empty(e)) => {
+                    return T::from_xml(&mut reader, &e, true);
+                }
+                Ok(Event::Eof) => {
+                    return Err(ParseError::UnexpectedElement(
+                        "empty XML in parse_as".to_string(),
+                    ));
+                }
+                Err(e) => return Err(ParseError::Xml(e)),
+                _ => {}
+            }
+            buf.clear();
         }
     }
 
