@@ -1,6 +1,6 @@
 use ooxml_codegen::{
-    CodegenConfig, FeatureMappings, NameMappings, Schema, generate, generate_parsers,
-    generate_serializers, parse_rnc,
+    CodegenConfig, FeatureMappings, NameMappings, Schema, analyze_schema, generate,
+    generate_parsers, generate_serializers, parse_rnc,
 };
 use std::fs;
 use std::path::Path;
@@ -137,6 +137,15 @@ fn main() {
         xml_serialize_prefix: None,
         ..Default::default()
     };
+
+    // Run static analysis if OOXML_ANALYZE is set
+    if std::env::var("OOXML_ANALYZE").is_ok() {
+        eprintln!("\n=== Static Analysis: SML ===");
+        let report = analyze_schema(&combined_schema, &config);
+        report.print("sml");
+        eprintln!();
+    }
+
     let code = generate(&combined_schema, &config);
 
     // Write the generated code

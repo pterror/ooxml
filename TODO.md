@@ -117,10 +117,7 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Add SML serializer unit tests** - 25 roundtrip tests in test_generated_serializers.rs.
 - [x] **Migrate SML writer to generated serializers** - Complete. All serializers now use generated ToXml: serialize_shared_strings, serialize_comments, serialize_sheet, serialize_workbook, serialize_styles.
 - [ ] **Expand SML feature mappings** - Cover remaining ungated fields.
-- [ ] **Static analysis for codegen config files** - Add codegen warnings for:
-  - Types/fields not in ooxml-features.yaml (feature mappings)
-  - Types/fields not in ooxml-names.yaml (name mappings)
-  - Could emit report or fail build if unmapped items found.
+- [x] **Static analysis for codegen config files** - `analyze_schema()` reports types/fields missing from ooxml-names.yaml and ooxml-features.yaml. Enable with `OOXML_ANALYZE=1 OOXML_REGENERATE=1 cargo build -p ooxml-*`.
 
 ### PML (PowerPoint)
 - [x] **Add PML parser/serializer generation** - Parser and serializer modules now compile and are enabled. Cross-crate DML type references resolved via `cross_crate_type_prefix` config with module-aware name mapping lookups.
