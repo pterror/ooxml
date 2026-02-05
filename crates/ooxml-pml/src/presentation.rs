@@ -1230,41 +1230,12 @@ fn parse_table_element(
     elem: &ooxml_xml::RawXmlElement,
     frame_name: Option<String>,
 ) -> Option<Table> {
-    use ooxml_dml::parsers::FromXml as DmlFromXml;
     use ooxml_dml::types::CTTable;
-    use quick_xml::Writer;
 
-    // Serialize the element back to XML
-    let mut xml_buf = Vec::new();
-    {
-        let mut writer = Writer::new(Cursor::new(&mut xml_buf));
-        if elem.write_to(&mut writer).is_err() {
-            return None;
-        }
-    }
-
-    // Parse as CTTable using the generated parser
-    let mut reader = Reader::from_reader(Cursor::new(&xml_buf));
-    let mut buf = Vec::new();
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
-                let local = e.local_name();
-                if local.as_ref() == b"tbl"
-                    && let Ok(ct_table) = CTTable::from_xml(&mut reader, &e, false)
-                {
-                    return Some(convert_ct_table(ct_table, frame_name));
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(_) => break,
-            _ => {}
-        }
-        buf.clear();
-    }
-
-    None
+    // Use the RawXmlElement::parse_as helper to convert to typed struct
+    elem.parse_as::<CTTable>()
+        .ok()
+        .map(|ct_table| convert_ct_table(ct_table, frame_name))
 }
 
 /// Convert a DML CTTable to our Table type.
