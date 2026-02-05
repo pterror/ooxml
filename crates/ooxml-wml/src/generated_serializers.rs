@@ -18,6 +18,13 @@ fn encode_hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02X}", b)).collect()
 }
 
+#[allow(dead_code)]
+/// Encode bytes as a base64 string.
+fn encode_base64(bytes: &[u8]) -> String {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD.encode(bytes)
+}
+
 impl ToXml for CTEmpty {
     fn is_empty_element(&self) -> bool {
         true
@@ -1294,14 +1301,14 @@ impl ToXml for WAGPassword {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -1379,14 +1386,14 @@ impl ToXml for WAGTransitionalPassword {
         }
         if let Some(ref val) = self.hash {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hash", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hash", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:salt", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:salt", b64.as_str()));
             }
         }
         #[cfg(feature = "extra-attrs")]
@@ -1428,14 +1435,14 @@ impl ToXml for CTDocProtect {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -1497,14 +1504,14 @@ impl ToXml for CTDocProtect {
         }
         if let Some(ref val) = self.hash {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hash", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hash", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:salt", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:salt", b64.as_str()));
             }
         }
         #[cfg(feature = "extra-attrs")]
@@ -22098,8 +22105,8 @@ impl ToXml for CTBase64Binary {
         {
             let val = &self.value;
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:val", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:val", b64.as_str()));
             }
         }
         #[cfg(feature = "extra-attrs")]
@@ -24547,14 +24554,14 @@ impl ToXml for CTWriteProtection {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -24616,14 +24623,14 @@ impl ToXml for CTWriteProtection {
         }
         if let Some(ref val) = self.hash {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:hash", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:hash", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("w:salt", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("w:salt", b64.as_str()));
             }
         }
         #[cfg(feature = "extra-attrs")]
