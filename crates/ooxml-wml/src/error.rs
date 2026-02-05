@@ -57,7 +57,6 @@ impl From<crate::generated_serializers::SerializeError> for Error {
         match e {
             crate::generated_serializers::SerializeError::Xml(x) => Error::Xml(x),
             crate::generated_serializers::SerializeError::Io(io) => Error::Io(io),
-            #[cfg(feature = "extra-children")]
             crate::generated_serializers::SerializeError::RawXml(r) => Error::RawXml(r),
         }
     }
@@ -67,7 +66,6 @@ impl From<crate::generated_parsers::ParseError> for Error {
     fn from(e: crate::generated_parsers::ParseError) -> Self {
         match e {
             crate::generated_parsers::ParseError::Xml(x) => Error::Xml(x),
-            #[cfg(feature = "extra-children")]
             crate::generated_parsers::ParseError::RawXml(r) => Error::RawXml(r),
             crate::generated_parsers::ParseError::UnexpectedElement(msg) => Error::Invalid(msg),
             crate::generated_parsers::ParseError::MissingAttribute(msg) => Error::Invalid(msg),

@@ -45,5 +45,4 @@ pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
 #[cfg(feature = "dml-text")]
-pub use ext::TextRunExt;
-pub use ext::{TextBodyExt, TextParagraphExt};
+pub use ext::{TextBodyExt, TextParagraphExt, TextRunExt};

@@ -2,9 +2,11 @@
 //!
 //! Provides convenience methods for working with generated DML types.
 
+#[cfg(feature = "dml-text")]
 use crate::types::*;
 
 /// Extension trait for [`TextBody`] providing convenience methods.
+#[cfg(feature = "dml-text")]
 pub trait TextBodyExt {
     /// Get all paragraphs in the text body.
     fn paragraphs(&self) -> &[TextParagraph];
@@ -13,6 +15,7 @@ pub trait TextBodyExt {
     fn text(&self) -> String;
 }
 
+#[cfg(feature = "dml-text")]
 impl TextBodyExt for TextBody {
     fn paragraphs(&self) -> &[TextParagraph] {
         &self.p
@@ -28,6 +31,7 @@ impl TextBodyExt for TextBody {
 }
 
 /// Extension trait for [`TextParagraph`] providing convenience methods.
+#[cfg(feature = "dml-text")]
 pub trait TextParagraphExt {
     /// Get all text runs in the paragraph.
     fn runs(&self) -> Vec<&TextRun>;
@@ -36,14 +40,13 @@ pub trait TextParagraphExt {
     fn text(&self) -> String;
 
     /// Get the paragraph level (for bullets/numbering).
-    #[cfg(feature = "dml-text")]
     fn level(&self) -> Option<i32>;
 
     /// Get the text alignment.
-    #[cfg(feature = "dml-text")]
     fn alignment(&self) -> Option<STTextAlignType>;
 }
 
+#[cfg(feature = "dml-text")]
 impl TextParagraphExt for TextParagraph {
     fn runs(&self) -> Vec<&TextRun> {
         self.text_run
@@ -66,12 +69,10 @@ impl TextParagraphExt for TextParagraph {
             .collect()
     }
 
-    #[cfg(feature = "dml-text")]
     fn level(&self) -> Option<i32> {
         self.p_pr.as_ref().and_then(|p| p.lvl)
     }
 
-    #[cfg(feature = "dml-text")]
     fn alignment(&self) -> Option<STTextAlignType> {
         self.p_pr.as_ref().and_then(|p| p.algn)
     }
