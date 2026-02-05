@@ -20,6 +20,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 
 impl ToXml for AutoFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-filtering")]
         if let Some(ref val) = self.reference {
@@ -118,6 +119,7 @@ impl ToXml for AutoFilter {
 
 impl ToXml for FilterColumn {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-filtering")]
         {
@@ -312,6 +314,7 @@ impl ToXml for FilterColumn {
 
 impl ToXml for Filters {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.blank {
             start.push_attribute(("blank", if *val { "1" } else { "0" }));
@@ -390,6 +393,7 @@ impl ToXml for Filters {
 
 impl ToXml for Filter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.value {
             start.push_attribute(("val", val.as_str()));
@@ -408,6 +412,7 @@ impl ToXml for Filter {
 
 impl ToXml for CustomFilters {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.and {
             start.push_attribute(("and", if *val { "1" } else { "0" }));
@@ -461,6 +466,7 @@ impl ToXml for CustomFilters {
 
 impl ToXml for CustomFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.operator {
             {
@@ -485,6 +491,7 @@ impl ToXml for CustomFilter {
 
 impl ToXml for Top10Filter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.top {
             start.push_attribute(("top", if *val { "1" } else { "0" }));
@@ -519,6 +526,7 @@ impl ToXml for Top10Filter {
 
 impl ToXml for ColorFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dxf_id {
             {
@@ -543,6 +551,7 @@ impl ToXml for ColorFilter {
 
 impl ToXml for IconFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.icon_set;
@@ -571,6 +580,7 @@ impl ToXml for IconFilter {
 
 impl ToXml for DynamicFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -611,6 +621,7 @@ impl ToXml for DynamicFilter {
 
 impl ToXml for SortState {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.column_sort {
             start.push_attribute(("columnSort", if *val { "1" } else { "0" }));
@@ -696,6 +707,7 @@ impl ToXml for SortState {
 
 impl ToXml for SortCondition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.descending {
             start.push_attribute(("descending", if *val { "1" } else { "0" }));
@@ -745,6 +757,7 @@ impl ToXml for SortCondition {
 
 impl ToXml for DateGroupItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.year;
@@ -804,6 +817,7 @@ impl ToXml for DateGroupItem {
 
 impl ToXml for CTXStringElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -823,6 +837,7 @@ impl ToXml for CTXStringElement {
 
 impl ToXml for Extension {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.uri {
             start.push_attribute(("uri", val.as_str()));
@@ -841,6 +856,7 @@ impl ToXml for Extension {
 
 impl ToXml for ObjectAnchor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.move_with_cells {
             start.push_attribute(("moveWithCells", if *val { "1" } else { "0" }));
@@ -1008,6 +1024,7 @@ impl ToXml for CalcChain {
 
 impl ToXml for CalcCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self._any;
@@ -1205,6 +1222,7 @@ impl ToXml for CommentList {
 
 impl ToXml for Comment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-comments")]
         {
@@ -1299,6 +1317,7 @@ impl ToXml for Comment {
 
 impl ToXml for CTCommentPr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.locked {
             start.push_attribute(("locked", if *val { "1" } else { "0" }));
@@ -1385,6 +1404,7 @@ impl ToXml for CTCommentPr {
 
 impl ToXml for MapInfo {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.selection_namespaces;
@@ -1476,6 +1496,7 @@ impl ToXml for XmlSchema {
 
 impl ToXml for XmlMap {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.i_d;
@@ -1568,6 +1589,7 @@ impl ToXml for XmlMap {
 
 impl ToXml for DataBinding {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.data_binding_name {
             start.push_attribute(("DataBindingName", val.as_str()));
@@ -1646,6 +1668,7 @@ impl ToXml for Connections {
 
 impl ToXml for Connection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -1874,6 +1897,7 @@ impl ToXml for Connection {
 
 impl ToXml for DatabaseProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.connection;
@@ -1905,6 +1929,7 @@ impl ToXml for DatabaseProperties {
 
 impl ToXml for OlapProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.local {
             start.push_attribute(("local", if *val { "1" } else { "0" }));
@@ -1950,6 +1975,7 @@ impl ToXml for OlapProperties {
 
 impl ToXml for WebQueryProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.xml {
             start.push_attribute(("xml", if *val { "1" } else { "0" }));
@@ -2042,6 +2068,7 @@ impl ToXml for WebQueryProperties {
 
 impl ToXml for Parameters {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -2098,6 +2125,7 @@ impl ToXml for Parameters {
 
 impl ToXml for Parameter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -2155,6 +2183,7 @@ impl ToXml for Parameter {
 
 impl ToXml for DataTables {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -2255,6 +2284,7 @@ impl ToXml for TableMissing {
 
 impl ToXml for TextImportProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.prompt {
             start.push_attribute(("prompt", if *val { "1" } else { "0" }));
@@ -2365,6 +2395,7 @@ impl ToXml for TextImportProperties {
 
 impl ToXml for TextFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -2421,6 +2452,7 @@ impl ToXml for TextFields {
 
 impl ToXml for TextField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#type {
             {
@@ -2448,6 +2480,7 @@ impl ToXml for TextField {
 
 impl ToXml for PivotCacheDefinition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.id {
             start.push_attribute(("r:id", val.as_str()));
@@ -2712,6 +2745,7 @@ impl ToXml for PivotCacheDefinition {
 
 impl ToXml for CacheFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -2768,6 +2802,7 @@ impl ToXml for CacheFields {
 
 impl ToXml for CacheField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -2930,6 +2965,7 @@ impl ToXml for CacheField {
 
 impl ToXml for CacheSource {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -3031,6 +3067,7 @@ impl ToXml for CacheSource {
 
 impl ToXml for WorksheetSource {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.reference {
             start.push_attribute(("ref", val.as_str()));
@@ -3058,6 +3095,7 @@ impl ToXml for WorksheetSource {
 
 impl ToXml for Consolidation {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.auto_page {
             start.push_attribute(("autoPage", if *val { "1" } else { "0" }));
@@ -3124,6 +3162,7 @@ impl ToXml for Consolidation {
 
 impl ToXml for CTPages {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -3180,6 +3219,7 @@ impl ToXml for CTPages {
 
 impl ToXml for CTPCDSCPage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -3236,6 +3276,7 @@ impl ToXml for CTPCDSCPage {
 
 impl ToXml for CTPageItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -3255,6 +3296,7 @@ impl ToXml for CTPageItem {
 
 impl ToXml for CTRangeSets {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -3311,6 +3353,7 @@ impl ToXml for CTRangeSets {
 
 impl ToXml for CTRangeSet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.i1 {
             {
@@ -3362,6 +3405,7 @@ impl ToXml for CTRangeSet {
 
 impl ToXml for SharedItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.contains_semi_mixed_types {
             start.push_attribute(("containsSemiMixedTypes", if *val { "1" } else { "0" }));
@@ -3558,6 +3602,7 @@ impl ToXml for SharedItems {
 
 impl ToXml for CTMissing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.u {
             start.push_attribute(("u", if *val { "1" } else { "0" }));
@@ -3672,6 +3717,7 @@ impl ToXml for CTMissing {
 
 impl ToXml for CTNumber {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -3793,6 +3839,7 @@ impl ToXml for CTNumber {
 
 impl ToXml for CTBoolean {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -3862,6 +3909,7 @@ impl ToXml for CTBoolean {
 
 impl ToXml for CTError {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -3980,6 +4028,7 @@ impl ToXml for CTError {
 
 impl ToXml for CTString {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -4098,6 +4147,7 @@ impl ToXml for CTString {
 
 impl ToXml for CTDateTime {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -4167,6 +4217,7 @@ impl ToXml for CTDateTime {
 
 impl ToXml for FieldGroup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.par {
             {
@@ -4267,6 +4318,7 @@ impl ToXml for FieldGroup {
 
 impl ToXml for CTRangePr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.auto_start {
             start.push_attribute(("autoStart", if *val { "1" } else { "0" }));
@@ -4318,6 +4370,7 @@ impl ToXml for CTRangePr {
 
 impl ToXml for CTDiscretePr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -4374,6 +4427,7 @@ impl ToXml for CTDiscretePr {
 
 impl ToXml for GroupItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -4525,6 +4579,7 @@ impl ToXml for GroupItems {
 
 impl ToXml for PivotCacheRecords {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -4755,6 +4810,7 @@ impl ToXml for CTRecord {
 
 impl ToXml for CTPCDKPIs {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -4811,6 +4867,7 @@ impl ToXml for CTPCDKPIs {
 
 impl ToXml for CTPCDKPI {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.unique_name;
@@ -4861,6 +4918,7 @@ impl ToXml for CTPCDKPI {
 
 impl ToXml for CTCacheHierarchies {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -4917,6 +4975,7 @@ impl ToXml for CTCacheHierarchies {
 
 impl ToXml for CTCacheHierarchy {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.unique_name;
@@ -5085,6 +5144,7 @@ impl ToXml for CTCacheHierarchy {
 
 impl ToXml for CTFieldsUsage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5141,6 +5201,7 @@ impl ToXml for CTFieldsUsage {
 
 impl ToXml for CTFieldUsage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.x;
@@ -5163,6 +5224,7 @@ impl ToXml for CTFieldUsage {
 
 impl ToXml for CTGroupLevels {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5219,6 +5281,7 @@ impl ToXml for CTGroupLevels {
 
 impl ToXml for CTGroupLevel {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.unique_name;
@@ -5302,6 +5365,7 @@ impl ToXml for CTGroupLevel {
 
 impl ToXml for CTGroups {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5358,6 +5422,7 @@ impl ToXml for CTGroups {
 
 impl ToXml for CTLevelGroup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -5423,6 +5488,7 @@ impl ToXml for CTLevelGroup {
 
 impl ToXml for CTGroupMembers {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5479,6 +5545,7 @@ impl ToXml for CTGroupMembers {
 
 impl ToXml for CTGroupMember {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.unique_name;
@@ -5618,6 +5685,7 @@ impl ToXml for CTTupleCache {
 
 impl ToXml for CTServerFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.culture {
             start.push_attribute(("culture", val.as_str()));
@@ -5639,6 +5707,7 @@ impl ToXml for CTServerFormat {
 
 impl ToXml for CTServerFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5695,6 +5764,7 @@ impl ToXml for CTServerFormats {
 
 impl ToXml for CTPCDSDTCEntries {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5808,6 +5878,7 @@ impl ToXml for CTPCDSDTCEntries {
 
 impl ToXml for CTTuples {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cells {
             {
@@ -5864,6 +5935,7 @@ impl ToXml for CTTuples {
 
 impl ToXml for CTTuple {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.fld {
             {
@@ -5898,6 +5970,7 @@ impl ToXml for CTTuple {
 
 impl ToXml for CTSets {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -5954,6 +6027,7 @@ impl ToXml for CTSets {
 
 impl ToXml for CTSet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -6049,6 +6123,7 @@ impl ToXml for CTSet {
 
 impl ToXml for CTQueryCache {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -6105,6 +6180,7 @@ impl ToXml for CTQueryCache {
 
 impl ToXml for CTQuery {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.mdx;
@@ -6159,6 +6235,7 @@ impl ToXml for CTQuery {
 
 impl ToXml for CTCalculatedItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -6215,6 +6292,7 @@ impl ToXml for CTCalculatedItems {
 
 impl ToXml for CTCalculatedItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.field {
             {
@@ -6284,6 +6362,7 @@ impl ToXml for CTCalculatedItem {
 
 impl ToXml for CTCalculatedMembers {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -6340,6 +6419,7 @@ impl ToXml for CTCalculatedMembers {
 
 impl ToXml for CTCalculatedMember {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -6416,6 +6496,7 @@ impl ToXml for CTCalculatedMember {
 
 impl ToXml for CTPivotTableDefinition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -6950,6 +7031,7 @@ impl ToXml for CTPivotTableDefinition {
 
 impl ToXml for PivotLocation {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -7002,6 +7084,7 @@ impl ToXml for PivotLocation {
 
 impl ToXml for PivotFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7058,6 +7141,7 @@ impl ToXml for PivotFields {
 
 impl ToXml for PivotField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -7305,6 +7389,7 @@ impl ToXml for PivotField {
 
 impl ToXml for PivotItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7361,6 +7446,7 @@ impl ToXml for PivotItems {
 
 impl ToXml for PivotItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.n {
             start.push_attribute(("n", val.as_str()));
@@ -7415,6 +7501,7 @@ impl ToXml for PivotItem {
 
 impl ToXml for PageFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7471,6 +7558,7 @@ impl ToXml for PageFields {
 
 impl ToXml for PageField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.fld;
@@ -7546,6 +7634,7 @@ impl ToXml for PageField {
 
 impl ToXml for DataFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7602,6 +7691,7 @@ impl ToXml for DataFields {
 
 impl ToXml for DataField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -7692,6 +7782,7 @@ impl ToXml for DataField {
 
 impl ToXml for CTRowItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7748,6 +7839,7 @@ impl ToXml for CTRowItems {
 
 impl ToXml for CTColItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7804,6 +7896,7 @@ impl ToXml for CTColItems {
 
 impl ToXml for CTI {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cell_type {
             {
@@ -7872,6 +7965,7 @@ impl ToXml for CTI {
 
 impl ToXml for CTX {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.value {
             {
@@ -7893,6 +7987,7 @@ impl ToXml for CTX {
 
 impl ToXml for RowFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -7949,6 +8044,7 @@ impl ToXml for RowFields {
 
 impl ToXml for ColFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8005,6 +8101,7 @@ impl ToXml for ColFields {
 
 impl ToXml for CTField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.x;
@@ -8027,6 +8124,7 @@ impl ToXml for CTField {
 
 impl ToXml for CTFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8083,6 +8181,7 @@ impl ToXml for CTFormats {
 
 impl ToXml for CTFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.action {
             {
@@ -8155,6 +8254,7 @@ impl ToXml for CTFormat {
 
 impl ToXml for CTConditionalFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8211,6 +8311,7 @@ impl ToXml for CTConditionalFormats {
 
 impl ToXml for CTConditionalFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.scope {
             {
@@ -8290,6 +8391,7 @@ impl ToXml for CTConditionalFormat {
 
 impl ToXml for PivotAreas {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8346,6 +8448,7 @@ impl ToXml for PivotAreas {
 
 impl ToXml for CTChartFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8402,6 +8505,7 @@ impl ToXml for CTChartFormats {
 
 impl ToXml for CTChartFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.chart;
@@ -8463,6 +8567,7 @@ impl ToXml for CTChartFormat {
 
 impl ToXml for CTPivotHierarchies {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8519,6 +8624,7 @@ impl ToXml for CTPivotHierarchies {
 
 impl ToXml for CTPivotHierarchy {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.outline {
             start.push_attribute(("outline", if *val { "1" } else { "0" }));
@@ -8640,6 +8746,7 @@ impl ToXml for CTPivotHierarchy {
 
 impl ToXml for CTRowHierarchiesUsage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8696,6 +8803,7 @@ impl ToXml for CTRowHierarchiesUsage {
 
 impl ToXml for CTColHierarchiesUsage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8752,6 +8860,7 @@ impl ToXml for CTColHierarchiesUsage {
 
 impl ToXml for CTHierarchyUsage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.hierarchy_usage;
@@ -8774,6 +8883,7 @@ impl ToXml for CTHierarchyUsage {
 
 impl ToXml for CTMemberProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8830,6 +8940,7 @@ impl ToXml for CTMemberProperties {
 
 impl ToXml for CTMemberProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -8888,6 +8999,7 @@ impl ToXml for CTMemberProperty {
 
 impl ToXml for CTMembers {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -8950,6 +9062,7 @@ impl ToXml for CTMembers {
 
 impl ToXml for CTMember {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -8969,6 +9082,7 @@ impl ToXml for CTMember {
 
 impl ToXml for CTDimensions {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -9025,6 +9139,7 @@ impl ToXml for CTDimensions {
 
 impl ToXml for CTPivotDimension {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.measure {
             start.push_attribute(("measure", if *val { "1" } else { "0" }));
@@ -9055,6 +9170,7 @@ impl ToXml for CTPivotDimension {
 
 impl ToXml for CTMeasureGroups {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -9111,6 +9227,7 @@ impl ToXml for CTMeasureGroups {
 
 impl ToXml for CTMeasureDimensionMaps {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -9167,6 +9284,7 @@ impl ToXml for CTMeasureDimensionMaps {
 
 impl ToXml for CTMeasureGroup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -9190,6 +9308,7 @@ impl ToXml for CTMeasureGroup {
 
 impl ToXml for CTMeasureDimensionMap {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.measure_group {
             {
@@ -9217,6 +9336,7 @@ impl ToXml for CTMeasureDimensionMap {
 
 impl ToXml for CTPivotTableStyle {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -9250,6 +9370,7 @@ impl ToXml for CTPivotTableStyle {
 
 impl ToXml for PivotFilters {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -9306,6 +9427,7 @@ impl ToXml for PivotFilters {
 
 impl ToXml for PivotFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.fld;
@@ -9423,6 +9545,7 @@ impl ToXml for PivotFilter {
 
 impl ToXml for PivotArea {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.field {
             {
@@ -9540,6 +9663,7 @@ impl ToXml for PivotArea {
 
 impl ToXml for CTPivotAreaReferences {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -9596,6 +9720,7 @@ impl ToXml for CTPivotAreaReferences {
 
 impl ToXml for CTPivotAreaReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.field {
             {
@@ -9722,6 +9847,7 @@ impl ToXml for CTPivotAreaReference {
 
 impl ToXml for CTIndex {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -9744,6 +9870,7 @@ impl ToXml for CTIndex {
 
 impl ToXml for QueryTable {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -9890,6 +10017,7 @@ impl ToXml for QueryTable {
 
 impl ToXml for QueryTableRefresh {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.preserve_sort_filter_layout {
             start.push_attribute(("preserveSortFilterLayout", if *val { "1" } else { "0" }));
@@ -10015,6 +10143,7 @@ impl ToXml for QueryTableRefresh {
 
 impl ToXml for QueryTableDeletedFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -10071,6 +10200,7 @@ impl ToXml for QueryTableDeletedFields {
 
 impl ToXml for CTDeletedField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -10090,6 +10220,7 @@ impl ToXml for CTDeletedField {
 
 impl ToXml for QueryTableFields {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -10146,6 +10277,7 @@ impl ToXml for QueryTableFields {
 
 impl ToXml for QueryTableField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -10224,6 +10356,7 @@ impl ToXml for QueryTableField {
 
 impl ToXml for SharedStrings {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -10305,6 +10438,7 @@ impl ToXml for SharedStrings {
 
 impl ToXml for PhoneticRun {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sb;
@@ -10837,6 +10971,7 @@ impl ToXml for RichString {
 
 impl ToXml for PhoneticProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.font_id;
@@ -10871,6 +11006,7 @@ impl ToXml for PhoneticProperties {
 
 impl ToXml for RevisionHeaders {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -11217,6 +11353,7 @@ impl ToXml for Revisions {
 
 impl ToXml for SmlAGRevData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11245,6 +11382,7 @@ impl ToXml for SmlAGRevData {
 
 impl ToXml for RevisionHeader {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -11356,6 +11494,7 @@ impl ToXml for RevisionHeader {
 
 impl ToXml for CTSheetIdMap {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -11412,6 +11551,7 @@ impl ToXml for CTSheetIdMap {
 
 impl ToXml for CTSheetId {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -11434,6 +11574,7 @@ impl ToXml for CTSheetId {
 
 impl ToXml for ReviewedRevisions {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -11490,6 +11631,7 @@ impl ToXml for ReviewedRevisions {
 
 impl ToXml for Reviewed {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11512,6 +11654,7 @@ impl ToXml for Reviewed {
 
 impl ToXml for UndoInfo {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.index;
@@ -11572,6 +11715,7 @@ impl ToXml for UndoInfo {
 
 impl ToXml for RevisionRowColumn {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11697,6 +11841,7 @@ impl ToXml for RevisionRowColumn {
 
 impl ToXml for RevisionMove {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11819,6 +11964,7 @@ impl ToXml for RevisionMove {
 
 impl ToXml for RevisionCustomView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -11845,6 +11991,7 @@ impl ToXml for RevisionCustomView {
 
 impl ToXml for RevisionSheetRename {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11923,6 +12070,7 @@ impl ToXml for RevisionSheetRename {
 
 impl ToXml for RevisionInsertSheet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -11969,6 +12117,7 @@ impl ToXml for RevisionInsertSheet {
 
 impl ToXml for RevisionCellChange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -12117,6 +12266,7 @@ impl ToXml for RevisionCellChange {
 
 impl ToXml for RevisionFormatting {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sheet_id;
@@ -12215,6 +12365,7 @@ impl ToXml for RevisionFormatting {
 
 impl ToXml for RevisionAutoFormatting {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sheet_id;
@@ -12265,6 +12416,7 @@ impl ToXml for RevisionAutoFormatting {
 
 impl ToXml for RevisionComment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sheet_id;
@@ -12329,6 +12481,7 @@ impl ToXml for RevisionComment {
 
 impl ToXml for RevisionDefinedName {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -12519,6 +12672,7 @@ impl ToXml for RevisionDefinedName {
 
 impl ToXml for RevisionConflict {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r_id;
@@ -12553,6 +12707,7 @@ impl ToXml for RevisionConflict {
 
 impl ToXml for RevisionQueryTableField {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sheet_id;
@@ -12586,6 +12741,7 @@ impl ToXml for RevisionQueryTableField {
 
 impl ToXml for Users {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -12642,6 +12798,7 @@ impl ToXml for Users {
 
 impl ToXml for SharedUser {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -14240,6 +14397,7 @@ impl ToXml for SheetData {
 
 impl ToXml for SheetCalcProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.full_calc_on_load {
             start.push_attribute(("fullCalcOnLoad", if *val { "1" } else { "0" }));
@@ -14258,6 +14416,7 @@ impl ToXml for SheetCalcProperties {
 
 impl ToXml for SheetFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.base_col_width {
             {
@@ -14357,6 +14516,7 @@ impl ToXml for Columns {
 
 impl ToXml for Column {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         {
@@ -14429,6 +14589,7 @@ impl ToXml for Column {
 
 impl ToXml for Row {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.reference {
             {
@@ -14557,6 +14718,7 @@ impl ToXml for Row {
 
 impl ToXml for Cell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.reference {
             start.push_attribute(("r", val.as_str()));
@@ -14704,6 +14866,7 @@ impl ToXml for Cell {
 
 impl ToXml for SheetProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.sync_horizontal {
@@ -14837,6 +15000,7 @@ impl ToXml for SheetProperties {
 
 impl ToXml for SheetDimension {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -14916,6 +15080,7 @@ impl ToXml for SheetViews {
 
 impl ToXml for SheetView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.window_protection {
@@ -15121,6 +15286,7 @@ impl ToXml for SheetView {
 
 impl ToXml for Pane {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.x_split {
@@ -15168,6 +15334,7 @@ impl ToXml for Pane {
 
 impl ToXml for CTPivotSelection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.pane {
             {
@@ -15299,6 +15466,7 @@ impl ToXml for CTPivotSelection {
 
 impl ToXml for Selection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.pane {
             {
@@ -15332,6 +15500,7 @@ impl ToXml for Selection {
 
 impl ToXml for PageBreaks {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.count {
@@ -15398,6 +15567,7 @@ impl ToXml for PageBreaks {
 
 impl ToXml for PageBreak {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.id {
             {
@@ -15437,6 +15607,7 @@ impl ToXml for PageBreak {
 
 impl ToXml for OutlineProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.apply_styles {
             start.push_attribute(("applyStyles", if *val { "1" } else { "0" }));
@@ -15464,6 +15635,7 @@ impl ToXml for OutlineProperties {
 
 impl ToXml for PageSetupProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.auto_page_breaks {
             start.push_attribute(("autoPageBreaks", if *val { "1" } else { "0" }));
@@ -15485,6 +15657,7 @@ impl ToXml for PageSetupProperties {
 
 impl ToXml for CTDataConsolidate {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.function {
             {
@@ -15553,6 +15726,7 @@ impl ToXml for CTDataConsolidate {
 
 impl ToXml for CTDataRefs {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -15609,6 +15783,7 @@ impl ToXml for CTDataRefs {
 
 impl ToXml for CTDataRef {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.reference {
             start.push_attribute(("ref", val.as_str()));
@@ -15636,6 +15811,7 @@ impl ToXml for CTDataRef {
 
 impl ToXml for MergedCells {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -15692,6 +15868,7 @@ impl ToXml for MergedCells {
 
 impl ToXml for MergedCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -15752,6 +15929,7 @@ impl ToXml for SmartTags {
 
 impl ToXml for CellSmartTags {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -15806,6 +15984,7 @@ impl ToXml for CellSmartTags {
 
 impl ToXml for CellSmartTag {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -15869,6 +16048,7 @@ impl ToXml for CellSmartTag {
 
 impl ToXml for CTCellSmartTagPr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.key;
@@ -15892,6 +16072,7 @@ impl ToXml for CTCellSmartTagPr {
 
 impl ToXml for Drawing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -15911,6 +16092,7 @@ impl ToXml for Drawing {
 
 impl ToXml for LegacyDrawing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -15930,6 +16112,7 @@ impl ToXml for LegacyDrawing {
 
 impl ToXml for DrawingHeaderFooter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -16098,6 +16281,7 @@ impl ToXml for CustomSheetViews {
 
 impl ToXml for CustomSheetView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -16392,6 +16576,7 @@ impl ToXml for CustomSheetView {
 
 impl ToXml for DataValidations {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.disable_prompts {
             start.push_attribute(("disablePrompts", if *val { "1" } else { "0" }));
@@ -16463,6 +16648,7 @@ impl ToXml for DataValidations {
 
 impl ToXml for DataValidation {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-validation")]
         if let Some(ref val) = self.r#type {
@@ -16611,6 +16797,7 @@ impl ToXml for DataValidation {
 
 impl ToXml for ConditionalFormatting {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-pivot")]
         if let Some(ref val) = self.pivot {
@@ -16692,6 +16879,7 @@ impl ToXml for ConditionalFormatting {
 
 impl ToXml for ConditionalRule {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.r#type {
@@ -16948,6 +17136,7 @@ impl ToXml for Hyperlinks {
 
 impl ToXml for Hyperlink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-hyperlinks")]
         {
@@ -16983,6 +17172,7 @@ impl ToXml for Hyperlink {
 
 impl ToXml for CellFormula {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cell_type {
             {
@@ -17131,6 +17321,7 @@ impl ToXml for ColorScale {
 
 impl ToXml for DataBar {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.min_length {
@@ -17221,6 +17412,7 @@ impl ToXml for DataBar {
 
 impl ToXml for IconSet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.icon_set {
@@ -17292,6 +17484,7 @@ impl ToXml for IconSet {
 
 impl ToXml for ConditionalFormatValue {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         {
@@ -17358,6 +17551,7 @@ impl ToXml for ConditionalFormatValue {
 
 impl ToXml for PageMargins {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-layout")]
         {
@@ -17421,6 +17615,7 @@ impl ToXml for PageMargins {
 
 impl ToXml for PrintOptions {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.horizontal_centered {
             start.push_attribute(("horizontalCentered", if *val { "1" } else { "0" }));
@@ -17451,6 +17646,7 @@ impl ToXml for PrintOptions {
 
 impl ToXml for PageSetup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.paper_size {
@@ -17577,6 +17773,7 @@ impl ToXml for PageSetup {
 
 impl ToXml for HeaderFooter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-layout")]
         if let Some(ref val) = self.different_odd_even {
@@ -17780,6 +17977,7 @@ impl ToXml for HeaderFooter {
 
 impl ToXml for Scenarios {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.current {
             {
@@ -17845,6 +18043,7 @@ impl ToXml for Scenarios {
 
 impl ToXml for SheetProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.password {
             {
@@ -17976,6 +18175,7 @@ impl ToXml for ProtectedRanges {
 
 impl ToXml for ProtectedRange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.password {
             {
@@ -18029,6 +18229,7 @@ impl ToXml for ProtectedRange {
 
 impl ToXml for Scenario {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -18101,6 +18302,7 @@ impl ToXml for Scenario {
 
 impl ToXml for InputCells {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -18177,6 +18379,7 @@ impl ToXml for CellWatches {
 
 impl ToXml for CellWatch {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -18443,6 +18646,7 @@ impl ToXml for Chartsheet {
 
 impl ToXml for ChartsheetProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.published {
             start.push_attribute(("published", if *val { "1" } else { "0" }));
@@ -18559,6 +18763,7 @@ impl ToXml for ChartsheetViews {
 
 impl ToXml for ChartsheetView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.tab_selected {
             start.push_attribute(("tabSelected", if *val { "1" } else { "0" }));
@@ -18628,6 +18833,7 @@ impl ToXml for ChartsheetView {
 
 impl ToXml for ChartsheetProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.password {
             {
@@ -18676,6 +18882,7 @@ impl ToXml for ChartsheetProtection {
 
 impl ToXml for ChartsheetPageSetup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.paper_size {
             {
@@ -18789,6 +18996,7 @@ impl ToXml for CustomChartsheetViews {
 
 impl ToXml for CustomChartsheetView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.guid;
@@ -18937,6 +19145,7 @@ impl ToXml for CTCustomProperties {
 
 impl ToXml for CTCustomProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -19001,6 +19210,7 @@ impl ToXml for OleObjects {
 
 impl ToXml for OleObject {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.prog_id {
             start.push_attribute(("progId", val.as_str()));
@@ -19082,6 +19292,7 @@ impl ToXml for OleObject {
 
 impl ToXml for ObjectProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.locked {
             start.push_attribute(("locked", if *val { "1" } else { "0" }));
@@ -19162,6 +19373,7 @@ impl ToXml for ObjectProperties {
 
 impl ToXml for WebPublishItems {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -19218,6 +19430,7 @@ impl ToXml for WebPublishItems {
 
 impl ToXml for WebPublishItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -19308,6 +19521,7 @@ impl ToXml for Controls {
 
 impl ToXml for Control {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.shape_id;
@@ -19372,6 +19586,7 @@ impl ToXml for Control {
 
 impl ToXml for CTControlPr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.locked {
             start.push_attribute(("locked", if *val { "1" } else { "0" }));
@@ -19521,6 +19736,7 @@ impl ToXml for IgnoredErrors {
 
 impl ToXml for IgnoredError {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.square_reference;
@@ -19567,6 +19783,7 @@ impl ToXml for IgnoredError {
 
 impl ToXml for TableParts {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -19623,6 +19840,7 @@ impl ToXml for TableParts {
 
 impl ToXml for TablePart {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -19797,6 +20015,7 @@ impl ToXml for Metadata {
 
 impl ToXml for MetadataTypes {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -19853,6 +20072,7 @@ impl ToXml for MetadataTypes {
 
 impl ToXml for MetadataType {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -19957,6 +20177,7 @@ impl ToXml for MetadataType {
 
 impl ToXml for MetadataBlocks {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -20054,6 +20275,7 @@ impl ToXml for MetadataBlock {
 
 impl ToXml for MetadataRecord {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.cell_type;
@@ -20083,6 +20305,7 @@ impl ToXml for MetadataRecord {
 
 impl ToXml for CTFutureMetadata {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -20203,6 +20426,7 @@ impl ToXml for CTFutureMetadataBlock {
 
 impl ToXml for CTMdxMetadata {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -20259,6 +20483,7 @@ impl ToXml for CTMdxMetadata {
 
 impl ToXml for CTMdx {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.n;
@@ -20380,6 +20605,7 @@ impl ToXml for CTMdx {
 
 impl ToXml for CTMdxTuple {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cells {
             {
@@ -20475,6 +20701,7 @@ impl ToXml for CTMdxTuple {
 
 impl ToXml for CTMdxSet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.ns;
@@ -20544,6 +20771,7 @@ impl ToXml for CTMdxSet {
 
 impl ToXml for CTMdxMemeberProp {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.n;
@@ -20573,6 +20801,7 @@ impl ToXml for CTMdxMemeberProp {
 
 impl ToXml for CTMdxKPI {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.n;
@@ -20609,6 +20838,7 @@ impl ToXml for CTMdxKPI {
 
 impl ToXml for CTMetadataStringIndex {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.x;
@@ -20634,6 +20864,7 @@ impl ToXml for CTMetadataStringIndex {
 
 impl ToXml for MetadataStrings {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -20731,6 +20962,7 @@ impl ToXml for SingleXmlCells {
 
 impl ToXml for SingleXmlCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -20809,6 +21041,7 @@ impl ToXml for SingleXmlCell {
 
 impl ToXml for XmlCellProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -20879,6 +21112,7 @@ impl ToXml for XmlCellProperties {
 
 impl ToXml for XmlProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.map_id;
@@ -21197,6 +21431,7 @@ impl ToXml for Stylesheet {
 
 impl ToXml for CellAlignment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.horizontal {
@@ -21266,6 +21501,7 @@ impl ToXml for CellAlignment {
 
 impl ToXml for Borders {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -21322,6 +21558,7 @@ impl ToXml for Borders {
 
 impl ToXml for Border {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.diagonal_up {
@@ -21550,6 +21787,7 @@ impl ToXml for Border {
 
 impl ToXml for BorderProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.style {
             {
@@ -21606,6 +21844,7 @@ impl ToXml for BorderProperties {
 
 impl ToXml for CellProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-protection")]
         if let Some(ref val) = self.locked {
@@ -21629,6 +21868,7 @@ impl ToXml for CellProtection {
 
 impl ToXml for Fonts {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -21685,6 +21925,7 @@ impl ToXml for Fonts {
 
 impl ToXml for Fills {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -21805,6 +22046,7 @@ impl ToXml for Fill {
 
 impl ToXml for PatternFill {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.pattern_type {
             {
@@ -21880,6 +22122,7 @@ impl ToXml for PatternFill {
 
 impl ToXml for Color {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.auto {
@@ -21927,6 +22170,7 @@ impl ToXml for Color {
 
 impl ToXml for GradientFill {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#type {
             {
@@ -22013,6 +22257,7 @@ impl ToXml for GradientFill {
 
 impl ToXml for GradientStop {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.position;
@@ -22064,6 +22309,7 @@ impl ToXml for GradientStop {
 
 impl ToXml for NumberFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22120,6 +22366,7 @@ impl ToXml for NumberFormats {
 
 impl ToXml for NumberFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         {
@@ -22148,6 +22395,7 @@ impl ToXml for NumberFormat {
 
 impl ToXml for CellStyleFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22204,6 +22452,7 @@ impl ToXml for CellStyleFormats {
 
 impl ToXml for CellFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22260,6 +22509,7 @@ impl ToXml for CellFormats {
 
 impl ToXml for Format {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-styling")]
         if let Some(ref val) = self.number_format_id {
@@ -22421,6 +22671,7 @@ impl ToXml for Format {
 
 impl ToXml for CellStyles {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22477,6 +22728,7 @@ impl ToXml for CellStyles {
 
 impl ToXml for CellStyle {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -22555,6 +22807,7 @@ impl ToXml for CellStyle {
 
 impl ToXml for DifferentialFormats {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22912,6 +23165,7 @@ impl ToXml for MostRecentColors {
 
 impl ToXml for RgbColor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.rgb {
             {
@@ -22933,6 +23187,7 @@ impl ToXml for RgbColor {
 
 impl ToXml for TableStyles {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -22995,6 +23250,7 @@ impl ToXml for TableStyles {
 
 impl ToXml for TableStyle {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -23061,6 +23317,7 @@ impl ToXml for TableStyle {
 
 impl ToXml for TableStyleElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -23095,6 +23352,7 @@ impl ToXml for TableStyleElement {
 
 impl ToXml for BooleanProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.value {
             start.push_attribute(("val", if *val { "1" } else { "0" }));
@@ -23113,6 +23371,7 @@ impl ToXml for BooleanProperty {
 
 impl ToXml for FontSize {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23135,6 +23394,7 @@ impl ToXml for FontSize {
 
 impl ToXml for IntProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23157,6 +23417,7 @@ impl ToXml for IntProperty {
 
 impl ToXml for FontName {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23176,6 +23437,7 @@ impl ToXml for FontName {
 
 impl ToXml for VerticalAlignFontProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23198,6 +23460,7 @@ impl ToXml for VerticalAlignFontProperty {
 
 impl ToXml for FontSchemeProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23220,6 +23483,7 @@ impl ToXml for FontSchemeProperty {
 
 impl ToXml for UnderlineProperty {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.value {
             {
@@ -23578,6 +23842,7 @@ impl ToXml for Font {
 
 impl ToXml for FontFamily {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -23600,6 +23865,7 @@ impl ToXml for FontFamily {
 
 impl ToXml for SmlAGAutoFormat {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.auto_format_id {
             {
@@ -23737,6 +24003,7 @@ impl ToXml for ExternalLink {
 
 impl ToXml for ExternalBook {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -23870,6 +24137,7 @@ impl ToXml for CTExternalSheetNames {
 
 impl ToXml for CTExternalSheetName {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.value {
             start.push_attribute(("val", val.as_str()));
@@ -23929,6 +24197,7 @@ impl ToXml for CTExternalDefinedNames {
 
 impl ToXml for CTExternalDefinedName {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -23998,6 +24267,7 @@ impl ToXml for ExternalSheetDataSet {
 
 impl ToXml for ExternalSheetData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sheet_id;
@@ -24058,6 +24328,7 @@ impl ToXml for ExternalSheetData {
 
 impl ToXml for ExternalRow {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -24115,6 +24386,7 @@ impl ToXml for ExternalRow {
 
 impl ToXml for ExternalCell {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.reference {
             start.push_attribute(("r", val.as_str()));
@@ -24185,6 +24457,7 @@ impl ToXml for ExternalCell {
 
 impl ToXml for DdeLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.dde_service;
@@ -24284,6 +24557,7 @@ impl ToXml for DdeItems {
 
 impl ToXml for DdeItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -24346,6 +24620,7 @@ impl ToXml for DdeItem {
 
 impl ToXml for CTDdeValues {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.rows {
             {
@@ -24408,6 +24683,7 @@ impl ToXml for CTDdeValues {
 
 impl ToXml for CTDdeValue {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cell_type {
             {
@@ -24463,6 +24739,7 @@ impl ToXml for CTDdeValue {
 
 impl ToXml for OleLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -24562,6 +24839,7 @@ impl ToXml for OleItems {
 
 impl ToXml for OleItem {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -24590,6 +24868,7 @@ impl ToXml for OleItem {
 
 impl ToXml for Table {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-tables")]
         {
@@ -24849,6 +25128,7 @@ impl ToXml for Table {
 
 impl ToXml for TableStyleInfo {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -24879,6 +25159,7 @@ impl ToXml for TableStyleInfo {
 
 impl ToXml for TableColumns {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -24935,6 +25216,7 @@ impl ToXml for TableColumns {
 
 impl ToXml for TableColumn {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -25098,6 +25380,7 @@ impl ToXml for TableColumn {
 
 impl ToXml for TableFormula {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.array {
             start.push_attribute(("array", if *val { "1" } else { "0" }));
@@ -25134,6 +25417,7 @@ impl ToXml for TableFormula {
 
 impl ToXml for XmlColumnProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.map_id;
@@ -25262,6 +25546,7 @@ impl ToXml for CTVolTypes {
 
 impl ToXml for CTVolType {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -25319,6 +25604,7 @@ impl ToXml for CTVolType {
 
 impl ToXml for CTVolMain {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.first;
@@ -25373,6 +25659,7 @@ impl ToXml for CTVolMain {
 
 impl ToXml for CTVolTopic {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.cell_type {
             {
@@ -25465,6 +25752,7 @@ impl ToXml for CTVolTopic {
 
 impl ToXml for CTVolTopicRef {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -25491,6 +25779,7 @@ impl ToXml for CTVolTopicRef {
 
 impl ToXml for Workbook {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.conformance {
             {
@@ -25859,6 +26148,7 @@ impl ToXml for Workbook {
 
 impl ToXml for FileVersion {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.app_name {
             start.push_attribute(("appName", val.as_str()));
@@ -25930,6 +26220,7 @@ impl ToXml for BookViews {
 
 impl ToXml for BookView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-structure")]
         if let Some(ref val) = self.visibility {
@@ -26098,6 +26389,7 @@ impl ToXml for CustomWorkbookViews {
 
 impl ToXml for CustomWorkbookView {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -26293,6 +26585,7 @@ impl ToXml for Sheets {
 
 impl ToXml for Sheet {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -26330,6 +26623,7 @@ impl ToXml for Sheet {
 
 impl ToXml for WorkbookProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.date1904 {
             start.push_attribute(("date1904", if *val { "1" } else { "0" }));
@@ -26408,6 +26702,7 @@ impl ToXml for WorkbookProperties {
 
 impl ToXml for CTSmartTagPr {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.embed {
             start.push_attribute(("embed", if *val { "1" } else { "0" }));
@@ -26473,6 +26768,7 @@ impl ToXml for CTSmartTagTypes {
 
 impl ToXml for CTSmartTagType {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.namespace_uri {
             start.push_attribute(("namespaceUri", val.as_str()));
@@ -26497,6 +26793,7 @@ impl ToXml for CTSmartTagType {
 
 impl ToXml for FileRecoveryProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.auto_recover {
             start.push_attribute(("autoRecover", if *val { "1" } else { "0" }));
@@ -26524,6 +26821,7 @@ impl ToXml for FileRecoveryProperties {
 
 impl ToXml for CalculationProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "sml-formulas")]
         if let Some(ref val) = self.calc_id {
@@ -26650,6 +26948,7 @@ impl ToXml for DefinedNames {
 
 impl ToXml for DefinedName {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -26787,6 +27086,7 @@ impl ToXml for ExternalReferences {
 
 impl ToXml for ExternalReference {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -26806,6 +27106,7 @@ impl ToXml for ExternalReference {
 
 impl ToXml for SheetBackgroundPicture {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -26866,6 +27167,7 @@ impl ToXml for PivotCaches {
 
 impl ToXml for CTPivotCache {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.cache_id;
@@ -26892,6 +27194,7 @@ impl ToXml for CTPivotCache {
 
 impl ToXml for FileSharing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.read_only_recommended {
             start.push_attribute(("readOnlyRecommended", if *val { "1" } else { "0" }));
@@ -26940,6 +27243,7 @@ impl ToXml for FileSharing {
 
 impl ToXml for CTOleSize {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -26959,6 +27263,7 @@ impl ToXml for CTOleSize {
 
 impl ToXml for WorkbookProtection {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.workbook_password {
             {
@@ -27043,6 +27348,7 @@ impl ToXml for WorkbookProtection {
 
 impl ToXml for WebPublishing {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.css {
             start.push_attribute(("css", if *val { "1" } else { "0" }));
@@ -27094,6 +27400,7 @@ impl ToXml for WebPublishing {
 
 impl ToXml for CTFunctionGroups {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.built_in_group_count {
             {
@@ -27150,6 +27457,7 @@ impl ToXml for CTFunctionGroups {
 
 impl ToXml for CTFunctionGroup {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -27168,6 +27476,7 @@ impl ToXml for CTFunctionGroup {
 
 impl ToXml for CTWebPublishObjects {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.count {
             {
@@ -27224,6 +27533,7 @@ impl ToXml for CTWebPublishObjects {
 
 impl ToXml for CTWebPublishObject {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;

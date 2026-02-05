@@ -21,6 +21,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 
 impl ToXml for CTSideDirectionTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dir {
             {
@@ -42,6 +43,7 @@ impl ToXml for CTSideDirectionTransition {
 
 impl ToXml for CTCornerDirectionTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dir {
             {
@@ -63,6 +65,7 @@ impl ToXml for CTCornerDirectionTransition {
 
 impl ToXml for CTEightDirectionTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dir {
             {
@@ -84,6 +87,7 @@ impl ToXml for CTEightDirectionTransition {
 
 impl ToXml for CTOrientationTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dir {
             {
@@ -105,6 +109,7 @@ impl ToXml for CTOrientationTransition {
 
 impl ToXml for CTInOutTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.dir {
             {
@@ -126,6 +131,7 @@ impl ToXml for CTInOutTransition {
 
 impl ToXml for CTOptionalBlackTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.thru_blk {
             start.push_attribute(("thruBlk", if *val { "1" } else { "0" }));
@@ -144,6 +150,7 @@ impl ToXml for CTOptionalBlackTransition {
 
 impl ToXml for CTSplitTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.orient {
             {
@@ -171,6 +178,7 @@ impl ToXml for CTSplitTransition {
 
 impl ToXml for CTWheelTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.spokes {
             {
@@ -192,6 +200,7 @@ impl ToXml for CTWheelTransition {
 
 impl ToXml for CTTransitionStartSoundAction {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#loop {
             start.push_attribute(("loop", if *val { "1" } else { "0" }));
@@ -299,6 +308,7 @@ impl ToXml for CTTransitionSoundAction {
 
 impl ToXml for SlideTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-transitions")]
         if let Some(ref val) = self.spd {
@@ -831,6 +841,7 @@ impl ToXml for SlideTransition {
 
 impl ToXml for CTTLIterateIntervalTime {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -853,6 +864,7 @@ impl ToXml for CTTLIterateIntervalTime {
 
 impl ToXml for CTTLIterateIntervalPercentage {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -875,6 +887,7 @@ impl ToXml for CTTLIterateIntervalPercentage {
 
 impl ToXml for CTTLIterateData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#type {
             {
@@ -953,6 +966,7 @@ impl ToXml for CTTLIterateData {
 
 impl ToXml for CTTLSubShapeId {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -1035,6 +1049,7 @@ impl ToXml for CTTLTextTargetElement {
 
 impl ToXml for CTTLOleChartTargetElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.r#type;
@@ -1063,6 +1078,7 @@ impl ToXml for CTTLOleChartTargetElement {
 
 impl ToXml for CTTLShapeTargetElement {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -1294,6 +1310,7 @@ impl ToXml for CTTLTimeTargetElement {
 
 impl ToXml for CTTLTriggerTimeNodeID {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -1316,6 +1333,7 @@ impl ToXml for CTTLTriggerTimeNodeID {
 
 impl ToXml for CTTLTriggerRuntimeNode {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -1338,6 +1356,7 @@ impl ToXml for CTTLTriggerRuntimeNode {
 
 impl ToXml for CTTLTimeCondition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.evt {
             {
@@ -1748,6 +1767,7 @@ impl ToXml for CTTimeNodeList {
 
 impl ToXml for CTTLCommonTimeNodeData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.id {
             {
@@ -2013,6 +2033,7 @@ impl ToXml for CTTLCommonTimeNodeData {
 
 impl ToXml for CTTLTimeNodeSequence {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.concurrent {
             start.push_attribute(("concurrent", if *val { "1" } else { "0" }));
@@ -2150,6 +2171,7 @@ impl ToXml for CTTLBehaviorAttributeNameList {
 
 impl ToXml for CTTLCommonBehaviorData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.additive {
             {
@@ -2263,6 +2285,7 @@ impl ToXml for CTTLCommonBehaviorData {
 
 impl ToXml for CTTLAnimVariantBooleanVal {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -2282,6 +2305,7 @@ impl ToXml for CTTLAnimVariantBooleanVal {
 
 impl ToXml for CTTLAnimVariantIntegerVal {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -2304,6 +2328,7 @@ impl ToXml for CTTLAnimVariantIntegerVal {
 
 impl ToXml for CTTLAnimVariantFloatVal {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -2326,6 +2351,7 @@ impl ToXml for CTTLAnimVariantFloatVal {
 
 impl ToXml for CTTLAnimVariantStringVal {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.value;
@@ -2462,6 +2488,7 @@ impl ToXml for CTTLAnimVariant {
 
 impl ToXml for CTTLTimeAnimateValue {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.tm {
             {
@@ -2562,6 +2589,7 @@ impl ToXml for CTTLTimeAnimateValueList {
 
 impl ToXml for CTTLAnimateBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.by {
             start.push_attribute(("by", val.as_str()));
@@ -2643,6 +2671,7 @@ impl ToXml for CTTLAnimateBehavior {
 
 impl ToXml for CTTLByRgbColorTransform {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.reference;
@@ -2679,6 +2708,7 @@ impl ToXml for CTTLByRgbColorTransform {
 
 impl ToXml for CTTLByHslColorTransform {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.height;
@@ -2775,6 +2805,7 @@ impl ToXml for CTTLByAnimateColorTransform {
 
 impl ToXml for CTTLAnimateColorBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.clr_spc {
             {
@@ -2879,6 +2910,7 @@ impl ToXml for CTTLAnimateColorBehavior {
 
 impl ToXml for CTTLAnimateEffectBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.transition {
             {
@@ -2951,6 +2983,7 @@ impl ToXml for CTTLAnimateEffectBehavior {
 
 impl ToXml for CTTLPoint {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.x;
@@ -2980,6 +3013,7 @@ impl ToXml for CTTLPoint {
 
 impl ToXml for CTTLAnimateMotionBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.origin {
             {
@@ -3112,6 +3146,7 @@ impl ToXml for CTTLAnimateMotionBehavior {
 
 impl ToXml for CTTLAnimateRotationBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.by {
             {
@@ -3174,6 +3209,7 @@ impl ToXml for CTTLAnimateRotationBehavior {
 
 impl ToXml for CTTLAnimateScaleBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.zoom_contents {
             start.push_attribute(("zoomContents", if *val { "1" } else { "0" }));
@@ -3269,6 +3305,7 @@ impl ToXml for CTTLAnimateScaleBehavior {
 
 impl ToXml for CTTLCommandBehavior {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#type {
             {
@@ -3373,6 +3410,7 @@ impl ToXml for CTTLSetBehavior {
 
 impl ToXml for CTTLCommonMediaNodeData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.vol {
             {
@@ -3452,6 +3490,7 @@ impl ToXml for CTTLCommonMediaNodeData {
 
 impl ToXml for CTTLMediaNodeAudio {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.is_narration {
             start.push_attribute(("isNarration", if *val { "1" } else { "0" }));
@@ -3499,6 +3538,7 @@ impl ToXml for CTTLMediaNodeAudio {
 
 impl ToXml for CTTLMediaNodeVideo {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.full_scrn {
             start.push_attribute(("fullScrn", if *val { "1" } else { "0" }));
@@ -3546,6 +3586,7 @@ impl ToXml for CTTLMediaNodeVideo {
 
 impl ToXml for PAGTLBuild {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -3578,6 +3619,7 @@ impl ToXml for PAGTLBuild {
 
 impl ToXml for CTTLTemplate {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.lvl {
             {
@@ -3669,6 +3711,7 @@ impl ToXml for CTTLTemplateList {
 
 impl ToXml for CTTLBuildParagraph {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -3763,6 +3806,7 @@ impl ToXml for CTTLBuildParagraph {
 
 impl ToXml for CTTLBuildDiagram {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -3801,6 +3845,7 @@ impl ToXml for CTTLBuildDiagram {
 
 impl ToXml for CTTLOleBuildChart {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -3842,6 +3887,7 @@ impl ToXml for CTTLOleBuildChart {
 
 impl ToXml for CTTLGraphicalObjectBuild {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.spid;
@@ -4117,6 +4163,7 @@ impl ToXml for CTEmpty {
 
 impl ToXml for CTIndexRange {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.st;
@@ -4205,6 +4252,7 @@ impl ToXml for CTSlideRelationshipList {
 
 impl ToXml for CTCustomShowId {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -4338,6 +4386,7 @@ impl ToXml for CTCustomerDataList {
 
 impl ToXml for CTExtension {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.uri;
@@ -4439,6 +4488,7 @@ impl ToXml for CTExtensionList {
 
 impl ToXml for CTExtensionListModify {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#mod {
             start.push_attribute(("mod", if *val { "1" } else { "0" }));
@@ -4492,6 +4542,7 @@ impl ToXml for CTExtensionListModify {
 
 impl ToXml for CTCommentAuthor {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-comments")]
         {
@@ -4619,6 +4670,7 @@ impl ToXml for CTCommentAuthorList {
 
 impl ToXml for CTComment {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-comments")]
         {
@@ -4777,6 +4829,7 @@ impl ToXml for CTCommentList {
 
 impl ToXml for PAGOle {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -4810,6 +4863,7 @@ impl ToXml for PAGOle {
 
 impl ToXml for CTOleObjectEmbed {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.follow_color_scheme {
             {
@@ -4866,6 +4920,7 @@ impl ToXml for CTOleObjectEmbed {
 
 impl ToXml for CTOleObjectLink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.update_automatic {
             start.push_attribute(("updateAutomatic", if *val { "1" } else { "0" }));
@@ -4919,6 +4974,7 @@ impl ToXml for CTOleObjectLink {
 
 impl ToXml for CTOleObject {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -5034,6 +5090,7 @@ impl ToXml for CTOleObject {
 
 impl ToXml for CTControl {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -5168,6 +5225,7 @@ impl ToXml for CTControlList {
 
 impl ToXml for CTSlideIdListEntry {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.id;
@@ -5266,6 +5324,7 @@ impl ToXml for SlideIdList {
 
 impl ToXml for CTSlideMasterIdListEntry {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.id {
             {
@@ -5703,6 +5762,7 @@ impl ToXml for CTSmartTags {
 
 impl ToXml for CTCustomShow {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -5815,6 +5875,7 @@ impl ToXml for CTCustomShowList {
 
 impl ToXml for CTPhotoAlbum {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.bw {
             start.push_attribute(("bw", if *val { "1" } else { "0" }));
@@ -5883,6 +5944,7 @@ impl ToXml for CTPhotoAlbum {
 
 impl ToXml for CTSlideSize {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.cx;
@@ -5918,6 +5980,7 @@ impl ToXml for CTSlideSize {
 
 impl ToXml for CTKinsoku {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.lang {
             start.push_attribute(("lang", val.as_str()));
@@ -5944,6 +6007,7 @@ impl ToXml for CTKinsoku {
 
 impl ToXml for CTModifyVerifier {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.algorithm_name {
             start.push_attribute(("algorithmName", val.as_str()));
@@ -6043,6 +6107,7 @@ impl ToXml for CTModifyVerifier {
 
 impl ToXml for Presentation {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.server_zoom {
@@ -6433,6 +6498,7 @@ impl ToXml for Presentation {
 
 impl ToXml for CTHtmlPublishProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_speaker_notes {
             start.push_attribute(("showSpeakerNotes", if *val { "1" } else { "0" }));
@@ -6501,6 +6567,7 @@ impl ToXml for CTHtmlPublishProperties {
 
 impl ToXml for CTWebProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_animation {
             start.push_attribute(("showAnimation", if *val { "1" } else { "0" }));
@@ -6584,6 +6651,7 @@ impl ToXml for CTWebProperties {
 
 impl ToXml for CTPrintProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.prn_what {
             {
@@ -6655,6 +6723,7 @@ impl ToXml for CTPrintProperties {
 
 impl ToXml for CTShowInfoBrowse {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_scrollbar {
             start.push_attribute(("showScrollbar", if *val { "1" } else { "0" }));
@@ -6673,6 +6742,7 @@ impl ToXml for CTShowInfoBrowse {
 
 impl ToXml for CTShowInfoKiosk {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.restart {
             {
@@ -6709,6 +6779,7 @@ impl ToXml for EGShowType {
 
 impl ToXml for CTShowProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#loop {
             start.push_attribute(("loop", if *val { "1" } else { "0" }));
@@ -6972,6 +7043,7 @@ impl ToXml for CTPresentationProperties {
 
 impl ToXml for CTHeaderFooter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.sld_num {
@@ -7038,6 +7110,7 @@ impl ToXml for CTHeaderFooter {
 
 impl ToXml for CTPlaceholder {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.r#type {
             {
@@ -7115,6 +7188,7 @@ impl ToXml for CTPlaceholder {
 
 impl ToXml for CTApplicationNonVisualDrawingProps {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.is_photo {
             start.push_attribute(("isPhoto", if *val { "1" } else { "0" }));
@@ -7278,6 +7352,7 @@ impl ToXml for ShapeNonVisual {
 
 impl ToXml for Shape {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.use_bg_fill {
@@ -7789,6 +7864,7 @@ impl ToXml for CTGraphicalObjectFrameNonVisual {
 
 impl ToXml for GraphicalObjectFrame {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.bw_mode {
@@ -8168,6 +8244,7 @@ impl ToXml for EGChildSlide {
 
 impl ToXml for PAGChildSlide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_master_sp {
             start.push_attribute(("showMasterSp", if *val { "1" } else { "0" }));
@@ -8189,6 +8266,7 @@ impl ToXml for PAGChildSlide {
 
 impl ToXml for CTBackgroundProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.shade_to_title {
             start.push_attribute(("shadeToTitle", if *val { "1" } else { "0" }));
@@ -8256,6 +8334,7 @@ impl ToXml for EGBackground {
 
 impl ToXml for CTBackground {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-styling")]
         if let Some(ref val) = self.bw_mode {
@@ -8306,6 +8385,7 @@ impl ToXml for CTBackground {
 
 impl ToXml for CommonSlideData {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
@@ -8425,6 +8505,7 @@ impl ToXml for CommonSlideData {
 
 impl ToXml for Slide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_sp {
@@ -8548,6 +8629,7 @@ impl ToXml for Slide {
 
 impl ToXml for SlideLayout {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.show_master_sp {
@@ -8802,6 +8884,7 @@ impl ToXml for CTSlideMasterTextStyles {
 
 impl ToXml for CTSlideLayoutIdListEntry {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.id {
             {
@@ -8899,6 +8982,7 @@ impl ToXml for CTSlideLayoutIdList {
 
 impl ToXml for SlideMaster {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-masters")]
         if let Some(ref val) = self.preserve {
@@ -9255,6 +9339,7 @@ impl ToXml for NotesMaster {
 
 impl ToXml for NotesSlide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         #[cfg(feature = "pml-notes")]
         if let Some(ref val) = self.show_master_sp {
@@ -9341,6 +9426,7 @@ impl ToXml for NotesSlide {
 
 impl ToXml for CTSlideSyncProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.server_sld_id;
@@ -9403,6 +9489,7 @@ impl ToXml for CTSlideSyncProperties {
 
 impl ToXml for CTStringTag {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.name;
@@ -9467,6 +9554,7 @@ impl ToXml for CTTagList {
 
 impl ToXml for CTNormalViewPortion {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         {
             let val = &self.sz;
@@ -9492,6 +9580,7 @@ impl ToXml for CTNormalViewPortion {
 
 impl ToXml for CTNormalViewProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_outline_icons {
             start.push_attribute(("showOutlineIcons", if *val { "1" } else { "0" }));
@@ -9590,6 +9679,7 @@ impl ToXml for CTNormalViewProperties {
 
 impl ToXml for CTCommonViewProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.var_scale {
             start.push_attribute(("varScale", if *val { "1" } else { "0" }));
@@ -9705,6 +9795,7 @@ impl ToXml for CTNotesTextViewProperties {
 
 impl ToXml for CTOutlineViewSlideEntry {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.collapse {
             start.push_attribute(("collapse", if *val { "1" } else { "0" }));
@@ -9831,6 +9922,7 @@ impl ToXml for CTOutlineViewProperties {
 
 impl ToXml for CTSlideSorterViewProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.show_formatting {
             start.push_attribute(("showFormatting", if *val { "1" } else { "0" }));
@@ -9894,6 +9986,7 @@ impl ToXml for CTSlideSorterViewProperties {
 
 impl ToXml for CTGuide {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.orient {
             {
@@ -9962,6 +10055,7 @@ impl ToXml for CTGuideList {
 
 impl ToXml for CTCommonSlideViewProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.snap_to_grid {
             start.push_attribute(("snapToGrid", if *val { "1" } else { "0" }));
@@ -10133,6 +10227,7 @@ impl ToXml for CTNotesViewProperties {
 
 impl ToXml for CTViewProperties {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        #[allow(unused_mut)]
         let mut start = start;
         if let Some(ref val) = self.last_view {
             {
