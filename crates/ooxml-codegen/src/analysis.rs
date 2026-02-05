@@ -91,13 +91,15 @@ pub fn analyze_schema(schema: &Schema, config: &CodegenConfig) -> ModuleReport {
         }
 
         // Collect and check fields
+        // Use mapped name for feature lookup (YAML uses Worksheet, not CT_Worksheet)
+        let mapped_name = get_mapped_name(config, spec_name);
         let fields = collect_fields(&def.pattern, &definitions, &config.strip_prefix);
         for field in fields {
             report.total_fields += 1;
-            if !has_field_mapping(config, spec_name, &field) {
+            if !has_field_mapping(config, &mapped_name, &field) {
                 report
                     .unmapped_fields
-                    .push(format!("{}.{}", spec_name, field));
+                    .push(format!("{}.{}", mapped_name, field));
             }
         }
     }
@@ -120,6 +122,23 @@ fn has_type_mapping(config: &CodegenConfig, spec_name: &str) -> bool {
     }
     // If no mappings configured, consider it "mapped" (using default naming)
     config.name_mappings.is_none()
+}
+
+/// Get the mapped name for a type (e.g., CT_Worksheet -> Worksheet).
+fn get_mapped_name(config: &CodegenConfig, spec_name: &str) -> String {
+    if let Some(ref mappings) = config.name_mappings {
+        let module_mappings = mappings.for_module(&config.module_name);
+        // Check module-specific mappings first
+        if let Some(mapped) = module_mappings.types.get(spec_name) {
+            return mapped.clone();
+        }
+        // Check shared mappings
+        if let Some(mapped) = mappings.shared.types.get(spec_name) {
+            return mapped.clone();
+        }
+    }
+    // No mapping - use spec name as-is
+    spec_name.to_string()
 }
 
 /// Check if a field has a feature mapping in the config.
