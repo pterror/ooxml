@@ -68,6 +68,15 @@ fn decode_hex(s: &str) -> Option<Vec<u8>> {
         .collect()
 }
 
+#[allow(dead_code)]
+/// Decode a base64 string to bytes.
+fn decode_base64(s: &str) -> Option<Vec<u8>> {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD
+        .decode(s.trim())
+        .ok()
+}
+
 impl FromXml for CTAudioFile {
     fn from_xml<R: BufRead>(
         reader: &mut Reader<R>,

@@ -42,6 +42,7 @@ ooxml-omml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+base64.workspace = true
 
 [build-dependencies]
 ooxml-codegen.workspace = true

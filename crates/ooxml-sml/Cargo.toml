@@ -47,6 +47,7 @@ ooxml-xml.workspace = true
 quick-xml.workspace = true
 thiserror.workspace = true
 serde.workspace = true
+base64.workspace = true
 
 [dev-dependencies]
 criterion.workspace = true

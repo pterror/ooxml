@@ -25,6 +25,8 @@ enum ParseStrategy {
     TextString,
     /// Read text content and decode as hex (Vec<u8>)
     TextHexBinary,
+    /// Read text content and decode as base64 (Vec<u8>)
+    TextBase64Binary,
 }
 
 struct ParserGenerator<'a> {
@@ -225,6 +227,23 @@ impl<'a> ParserGenerator<'a> {
         )
         .unwrap();
         writeln!(self.output, "        .collect()").unwrap();
+        writeln!(self.output, "}}").unwrap();
+        writeln!(self.output).unwrap();
+
+        // Add decode_base64 helper for base64Binary types
+        writeln!(self.output, "#[allow(dead_code)]").unwrap();
+        writeln!(self.output, "/// Decode a base64 string to bytes.").unwrap();
+        writeln!(
+            self.output,
+            "fn decode_base64(s: &str) -> Option<Vec<u8>> {{"
+        )
+        .unwrap();
+        writeln!(self.output, "    use base64::Engine;").unwrap();
+        writeln!(
+            self.output,
+            "    base64::engine::general_purpose::STANDARD.decode(s.trim()).ok()"
+        )
+        .unwrap();
         writeln!(self.output, "}}").unwrap();
         writeln!(self.output).unwrap();
     }
@@ -1133,7 +1152,8 @@ impl<'a> ParserGenerator<'a> {
                     "val.parse().ok()".to_string()
                 }
                 "double" | "float" | "decimal" => "val.parse().ok()".to_string(),
-                "hexBinary" | "base64Binary" => "decode_hex(&val)".to_string(),
+                "hexBinary" => "decode_hex(&val)".to_string(),
+                "base64Binary" => "decode_base64(&val)".to_string(),
                 _ => "Some(val.into_owned())".to_string(),
             },
             Pattern::Ref(name) => {
@@ -1487,6 +1507,13 @@ impl<'a> ParserGenerator<'a> {
                     "{ let text = read_text_content(reader)?; decode_hex(&text).unwrap_or_default() }".to_string()
                 }
             }
+            ParseStrategy::TextBase64Binary => {
+                if is_empty_element {
+                    "Vec::new()".to_string()
+                } else {
+                    "{ let text = read_text_content(reader)?; decode_base64(&text).unwrap_or_default() }".to_string()
+                }
+            }
         };
 
         // For non-FromXml strategies, handle boxing normally
@@ -1626,7 +1653,7 @@ impl<'a> ParserGenerator<'a> {
                         "string" | "token" | "NCName" | "ID" | "IDREF" | "anyURI" | "dateTime"
                         | "date" | "time" => ParseStrategy::TextString,
                         "hexBinary" => ParseStrategy::TextHexBinary,
-                        "base64Binary" => ParseStrategy::TextHexBinary, // TODO: proper base64
+                        "base64Binary" => ParseStrategy::TextBase64Binary,
                         // Numbers and booleans use FromStr
                         _ => ParseStrategy::TextFromStr,
                     }
