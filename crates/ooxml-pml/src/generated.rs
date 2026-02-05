@@ -3017,44 +3017,44 @@ pub struct CTTLTimeConditionList {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTTimeNodeList {
     #[serde(rename = "par")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub par: Option<CTTLTimeNodeParallel>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub par: Vec<CTTLTimeNodeParallel>,
     #[serde(rename = "seq")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub seq: Option<Box<CTTLTimeNodeSequence>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub seq: Vec<CTTLTimeNodeSequence>,
     #[serde(rename = "excl")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub excl: Option<CTTLTimeNodeExclusive>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub excl: Vec<CTTLTimeNodeExclusive>,
     #[serde(rename = "anim")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim: Option<Box<CTTLAnimateBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim: Vec<CTTLAnimateBehavior>,
     #[serde(rename = "animClr")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim_clr: Option<Box<CTTLAnimateColorBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim_clr: Vec<CTTLAnimateColorBehavior>,
     #[serde(rename = "animEffect")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim_effect: Option<Box<CTTLAnimateEffectBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim_effect: Vec<CTTLAnimateEffectBehavior>,
     #[serde(rename = "animMotion")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim_motion: Option<Box<CTTLAnimateMotionBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim_motion: Vec<CTTLAnimateMotionBehavior>,
     #[serde(rename = "animRot")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim_rot: Option<Box<CTTLAnimateRotationBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim_rot: Vec<CTTLAnimateRotationBehavior>,
     #[serde(rename = "animScale")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub anim_scale: Option<Box<CTTLAnimateScaleBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub anim_scale: Vec<CTTLAnimateScaleBehavior>,
     #[serde(rename = "cmd")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cmd: Option<Box<CTTLCommandBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cmd: Vec<CTTLCommandBehavior>,
     #[serde(rename = "set")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub set: Option<Box<CTTLSetBehavior>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub set: Vec<CTTLSetBehavior>,
     #[serde(rename = "audio")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub audio: Option<Box<CTTLMediaNodeAudio>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub audio: Vec<CTTLMediaNodeAudio>,
     #[serde(rename = "video")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub video: Option<Box<CTTLMediaNodeVideo>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub video: Vec<CTTLMediaNodeVideo>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -4000,17 +4000,17 @@ pub struct CTTLGraphicalObjectBuild {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTBuildList {
     #[serde(rename = "bldP")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bld_p: Option<Box<CTTLBuildParagraph>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bld_p: Vec<CTTLBuildParagraph>,
     #[serde(rename = "bldDgm")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bld_dgm: Option<Box<CTTLBuildDiagram>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bld_dgm: Vec<CTTLBuildDiagram>,
     #[serde(rename = "bldOleChart")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bld_ole_chart: Option<Box<CTTLOleBuildChart>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bld_ole_chart: Vec<CTTLOleBuildChart>,
     #[serde(rename = "bldGraphic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bld_graphic: Option<Box<CTTLGraphicalObjectBuild>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bld_graphic: Vec<CTTLGraphicalObjectBuild>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -5544,24 +5544,24 @@ pub struct GroupShape {
     #[serde(rename = "grpSpPr")]
     pub grp_sp_pr: Box<ooxml_dml::types::CTGroupShapeProperties>,
     #[serde(rename = "sp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub shape: Option<Box<Shape>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub shape: Vec<Shape>,
     #[serde(rename = "grpSp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub group_shape: Option<Box<GroupShape>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub group_shape: Vec<GroupShape>,
     #[serde(rename = "graphicFrame")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub graphic_frame: Option<Box<GraphicalObjectFrame>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub graphic_frame: Vec<GraphicalObjectFrame>,
     #[serde(rename = "cxnSp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub connector: Option<Box<Connector>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub connector: Vec<Connector>,
     #[serde(rename = "pic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub picture: Option<Box<Picture>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub picture: Vec<Picture>,
     #[cfg(feature = "pml-external")]
     #[serde(rename = "contentPart")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub content_part: Option<Box<CTRel>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub content_part: Vec<CTRel>,
     #[cfg(feature = "pml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]

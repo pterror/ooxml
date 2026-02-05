@@ -3749,9 +3749,9 @@ impl FromXml for DataTables {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
-        let mut f_m = None;
-        let mut f_style_index = None;
-        let mut f_x = None;
+        let mut f_m = Vec::new();
+        let mut f_style_index = Vec::new();
+        let mut f_x = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -3784,22 +3784,21 @@ impl FromXml for DataTables {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(TableMissing::from_xml(reader, &e, false)?));
+                                f_m.push(TableMissing::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTXStringElement::from_xml(reader, &e, false)?));
+                                f_style_index.push(CTXStringElement::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"x" => {
-                                f_x = Some(Box::new(CTIndex::from_xml(reader, &e, false)?));
+                                f_x.push(CTIndex::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -3825,22 +3824,21 @@ impl FromXml for DataTables {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(TableMissing::from_xml(reader, &e, true)?));
+                                f_m.push(TableMissing::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTXStringElement::from_xml(reader, &e, true)?));
+                                f_style_index.push(CTXStringElement::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"x" => {
-                                f_x = Some(Box::new(CTIndex::from_xml(reader, &e, true)?));
+                                f_x.push(CTIndex::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -5734,12 +5732,12 @@ impl FromXml for SharedItems {
         let mut f_max_date = None;
         let mut f_count = None;
         let mut f_long_text = None;
-        let mut f_m = None;
-        let mut f_n = None;
-        let mut f_b = None;
-        let mut f_e = None;
-        let mut f_style_index = None;
-        let mut f_d = None;
+        let mut f_m = Vec::new();
+        let mut f_n = Vec::new();
+        let mut f_b = Vec::new();
+        let mut f_e = Vec::new();
+        let mut f_style_index = Vec::new();
+        let mut f_d = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -5811,43 +5809,42 @@ impl FromXml for SharedItems {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, false)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, false)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, false)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, false)?));
+                                f_e.push(CTError::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, false)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -5873,43 +5870,42 @@ impl FromXml for SharedItems {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, true)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, true)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, true)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, true)?));
+                                f_e.push(CTError::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, true)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7256,12 +7252,12 @@ impl FromXml for GroupItems {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
-        let mut f_m = None;
-        let mut f_n = None;
-        let mut f_b = None;
-        let mut f_e = None;
-        let mut f_style_index = None;
-        let mut f_d = None;
+        let mut f_m = Vec::new();
+        let mut f_n = Vec::new();
+        let mut f_b = Vec::new();
+        let mut f_e = Vec::new();
+        let mut f_style_index = Vec::new();
+        let mut f_d = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -7294,43 +7290,42 @@ impl FromXml for GroupItems {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, false)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, false)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, false)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, false)?));
+                                f_e.push(CTError::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, false)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7356,43 +7351,42 @@ impl FromXml for GroupItems {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, true)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, true)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, true)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, true)?));
+                                f_e.push(CTError::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, true)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7565,13 +7559,13 @@ impl FromXml for CTRecord {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_m = None;
-        let mut f_n = None;
-        let mut f_b = None;
-        let mut f_e = None;
-        let mut f_style_index = None;
-        let mut f_d = None;
-        let mut f_x = None;
+        let mut f_m = Vec::new();
+        let mut f_n = Vec::new();
+        let mut f_b = Vec::new();
+        let mut f_e = Vec::new();
+        let mut f_style_index = Vec::new();
+        let mut f_d = Vec::new();
+        let mut f_x = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
@@ -7585,50 +7579,49 @@ impl FromXml for CTRecord {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, false)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, false)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, false)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, false)?));
+                                f_e.push(CTError::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, false)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"x" => {
-                                f_x = Some(Box::new(CTIndex::from_xml(reader, &e, false)?));
+                                f_x.push(CTIndex::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -7654,50 +7647,49 @@ impl FromXml for CTRecord {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, true)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, true)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"b" => {
-                                f_b = Some(Box::new(CTBoolean::from_xml(reader, &e, true)?));
+                                f_b.push(CTBoolean::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, true)?));
+                                f_e.push(CTError::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"d" => {
-                                f_d = Some(Box::new(CTDateTime::from_xml(reader, &e, true)?));
+                                f_d.push(CTDateTime::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"x" => {
-                                f_x = Some(Box::new(CTIndex::from_xml(reader, &e, true)?));
+                                f_x.push(CTIndex::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9406,10 +9398,10 @@ impl FromXml for CTPCDSDTCEntries {
         is_empty: bool,
     ) -> Result<Self, ParseError> {
         let mut f_count = None;
-        let mut f_m = None;
-        let mut f_n = None;
-        let mut f_e = None;
-        let mut f_style_index = None;
+        let mut f_m = Vec::new();
+        let mut f_n = Vec::new();
+        let mut f_e = Vec::new();
+        let mut f_style_index = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
         #[cfg(feature = "extra-children")]
@@ -9442,29 +9434,28 @@ impl FromXml for CTPCDSDTCEntries {
                     Event::Start(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, false)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, false)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, false)?));
+                                f_e.push(CTError::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, false)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, false)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -9490,29 +9481,28 @@ impl FromXml for CTPCDSDTCEntries {
                     Event::Empty(e) => {
                         match e.local_name().as_ref() {
                             b"m" => {
-                                f_m = Some(Box::new(CTMissing::from_xml(reader, &e, true)?));
+                                f_m.push(CTMissing::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"n" => {
-                                f_n = Some(Box::new(CTNumber::from_xml(reader, &e, true)?));
+                                f_n.push(CTNumber::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"e" => {
-                                f_e = Some(Box::new(CTError::from_xml(reader, &e, true)?));
+                                f_e.push(CTError::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
                                 }
                             }
                             b"s" => {
-                                f_style_index =
-                                    Some(Box::new(CTString::from_xml(reader, &e, true)?));
+                                f_style_index.push(CTString::from_xml(reader, &e, true)?);
                                 #[cfg(feature = "extra-children")]
                                 {
                                     child_idx += 1;
@@ -18196,231 +18186,34 @@ impl FromXml for Revisions {
         start_tag: &BytesStart,
         is_empty: bool,
     ) -> Result<Self, ParseError> {
-        let mut f_rrc = Vec::new();
-        let mut f_rm = Vec::new();
-        let mut f_rcv = Vec::new();
-        let mut f_rsnm = Vec::new();
-        let mut f_ris = Vec::new();
-        let mut f_rcc = Vec::new();
-        let mut f_rfmt = Vec::new();
-        let mut f_raf = Vec::new();
-        let mut f_rdn = Vec::new();
-        let mut f_rcmt = Vec::new();
-        let mut f_rqt = Vec::new();
-        let mut f_rcft = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut extra_children = Vec::new();
         #[cfg(feature = "extra-children")]
         let mut child_idx: usize = 0;
-
-        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
+                    #[cfg(feature = "extra-children")]
                     Event::Start(e) => {
-                        match e.local_name().as_ref() {
-                            b"rrc" => {
-                                f_rrc.push(RevisionRowColumn::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rm" => {
-                                f_rm.push(RevisionMove::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcv" => {
-                                f_rcv.push(RevisionCustomView::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rsnm" => {
-                                f_rsnm.push(RevisionSheetRename::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"ris" => {
-                                f_ris.push(RevisionInsertSheet::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"raf" => {
-                                f_raf.push(RevisionAutoFormatting::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rdn" => {
-                                f_rdn.push(RevisionDefinedName::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcmt" => {
-                                f_rcmt.push(RevisionComment::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rqt" => {
-                                f_rqt.push(RevisionQueryTableField::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcft" => {
-                                f_rcft.push(RevisionConflict::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown element for roundtrip
-                                let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {
-                                // Skip unknown element
-                                skip_element(reader)?;
-                            }
-                        }
+                        let elem = RawXmlElement::from_reader(reader, &e)?;
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Start(_) => {
+                        skip_element(reader)?;
+                    }
+                    #[cfg(feature = "extra-children")]
                     Event::Empty(e) => {
-                        match e.local_name().as_ref() {
-                            b"rrc" => {
-                                f_rrc.push(RevisionRowColumn::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rm" => {
-                                f_rm.push(RevisionMove::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcv" => {
-                                f_rcv.push(RevisionCustomView::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rsnm" => {
-                                f_rsnm.push(RevisionSheetRename::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"ris" => {
-                                f_ris.push(RevisionInsertSheet::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"raf" => {
-                                f_raf.push(RevisionAutoFormatting::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rdn" => {
-                                f_rdn.push(RevisionDefinedName::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcmt" => {
-                                f_rcmt.push(RevisionComment::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rqt" => {
-                                f_rqt.push(RevisionQueryTableField::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcft" => {
-                                f_rcft.push(RevisionConflict::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown empty element for roundtrip
-                                let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {}
-                        }
+                        let elem = RawXmlElement::from_empty(&e);
+                        extra_children
+                            .push(PositionedNode::new(child_idx, RawXmlNode::Element(elem)));
+                        child_idx += 1;
                     }
+                    #[cfg(not(feature = "extra-children"))]
+                    Event::Empty(_) => {}
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -18428,20 +18221,7 @@ impl FromXml for Revisions {
                 buf.clear();
             }
         }
-
         Ok(Self {
-            rrc: f_rrc,
-            rm: f_rm,
-            rcv: f_rcv,
-            rsnm: f_rsnm,
-            ris: f_ris,
-            rcc: f_rcc,
-            rfmt: f_rfmt,
-            raf: f_raf,
-            rdn: f_rdn,
-            rcmt: f_rcmt,
-            rqt: f_rqt,
-            rcft: f_rcft,
             #[cfg(feature = "extra-children")]
             extra_children,
         })
@@ -19097,15 +18877,8 @@ impl FromXml for RevisionRowColumn {
         let mut f_reference: Option<Reference> = None;
         let mut f_action: Option<STRwColActionType> = None;
         let mut f_edge = None;
-        let mut f_undo = Vec::new();
-        let mut f_rcc = Vec::new();
-        let mut f_rfmt = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
-        #[cfg(feature = "extra-children")]
-        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19145,88 +18918,10 @@ impl FromXml for RevisionRowColumn {
             }
         }
 
-        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(e) => {
-                        match e.local_name().as_ref() {
-                            b"undo" => {
-                                f_undo.push(UndoInfo::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown element for roundtrip
-                                let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {
-                                // Skip unknown element
-                                skip_element(reader)?;
-                            }
-                        }
-                    }
-                    Event::Empty(e) => {
-                        match e.local_name().as_ref() {
-                            b"undo" => {
-                                f_undo.push(UndoInfo::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown empty element for roundtrip
-                                let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {}
-                        }
-                    }
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -19245,13 +18940,8 @@ impl FromXml for RevisionRowColumn {
                 .ok_or_else(|| ParseError::MissingAttribute("ref".to_string()))?,
             action: f_action.ok_or_else(|| ParseError::MissingAttribute("action".to_string()))?,
             edge: f_edge,
-            undo: f_undo,
-            rcc: f_rcc,
-            rfmt: f_rfmt,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }
@@ -19269,15 +18959,8 @@ impl FromXml for RevisionMove {
         let mut f_source: Option<Reference> = None;
         let mut f_destination: Option<Reference> = None;
         let mut f_source_sheet_id = None;
-        let mut f_undo = Vec::new();
-        let mut f_rcc = Vec::new();
-        let mut f_rfmt = Vec::new();
         #[cfg(feature = "extra-attrs")]
         let mut extra_attrs = std::collections::HashMap::new();
-        #[cfg(feature = "extra-children")]
-        let mut extra_children = Vec::new();
-        #[cfg(feature = "extra-children")]
-        let mut child_idx: usize = 0;
 
         // Parse attributes
         for attr in start_tag.attributes().filter_map(|a| a.ok()) {
@@ -19314,88 +18997,10 @@ impl FromXml for RevisionMove {
             }
         }
 
-        // Parse child elements
         if !is_empty {
             let mut buf = Vec::new();
             loop {
                 match reader.read_event_into(&mut buf)? {
-                    Event::Start(e) => {
-                        match e.local_name().as_ref() {
-                            b"undo" => {
-                                f_undo.push(UndoInfo::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, false)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown element for roundtrip
-                                let elem = RawXmlElement::from_reader(reader, &e)?;
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {
-                                // Skip unknown element
-                                skip_element(reader)?;
-                            }
-                        }
-                    }
-                    Event::Empty(e) => {
-                        match e.local_name().as_ref() {
-                            b"undo" => {
-                                f_undo.push(UndoInfo::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rcc" => {
-                                f_rcc.push(RevisionCellChange::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            b"rfmt" => {
-                                f_rfmt.push(RevisionFormatting::from_xml(reader, &e, true)?);
-                                #[cfg(feature = "extra-children")]
-                                {
-                                    child_idx += 1;
-                                }
-                            }
-                            #[cfg(feature = "extra-children")]
-                            _ => {
-                                // Capture unknown empty element for roundtrip
-                                let elem = RawXmlElement::from_empty(&e);
-                                extra_children.push(PositionedNode::new(
-                                    child_idx,
-                                    RawXmlNode::Element(elem),
-                                ));
-                                child_idx += 1;
-                            }
-                            #[cfg(not(feature = "extra-children"))]
-                            _ => {}
-                        }
-                    }
                     Event::End(_) => break,
                     Event::Eof => break,
                     _ => {}
@@ -19414,13 +19019,8 @@ impl FromXml for RevisionMove {
             destination: f_destination
                 .ok_or_else(|| ParseError::MissingAttribute("destination".to_string()))?,
             source_sheet_id: f_source_sheet_id,
-            undo: f_undo,
-            rcc: f_rcc,
-            rfmt: f_rfmt,
             #[cfg(feature = "extra-attrs")]
             extra_attrs,
-            #[cfg(feature = "extra-children")]
-            extra_children,
         })
     }
 }

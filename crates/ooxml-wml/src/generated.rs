@@ -7316,7 +7316,7 @@ pub struct CTRunTrackChange {
     pub date: Option<STDateTime>,
     #[serde(skip)]
     #[serde(default)]
-    pub run_content: Option<Box<RunContentChoice>>,
+    pub run_content: Vec<RunContentChoice>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8100,8 +8100,8 @@ pub struct Hyperlink {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTFFData {
     #[serde(rename = "name")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<Box<CTFFName>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub name: Vec<CTFFName>,
     #[serde(rename = "label")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<Box<CTDecimalNumber>>,
@@ -8109,11 +8109,11 @@ pub struct CTFFData {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab_index: Option<Box<CTUnsignedDecimalNumber>>,
     #[serde(rename = "enabled")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub enabled: Option<Box<CTOnOff>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub enabled: Vec<CTOnOff>,
     #[serde(rename = "calcOnExit")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub calc_on_exit: Option<Box<CTOnOff>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub calc_on_exit: Vec<CTOnOff>,
     #[serde(rename = "entryMacro")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub entry_macro: Option<Box<CTMacroName>>,
@@ -8126,15 +8126,6 @@ pub struct CTFFData {
     #[serde(rename = "statusText")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub status_text: Option<Box<CTFFStatusText>>,
-    #[serde(rename = "checkBox")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub check_box: Option<Box<CTFFCheckBox>>,
-    #[serde(rename = "ddList")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dd_list: Option<Box<CTFFDDList>>,
-    #[serde(rename = "textInput")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text_input: Option<Box<CTFFTextInput>>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -13162,12 +13153,6 @@ pub struct CTFrameset {
     #[serde(rename = "title")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<Box<CTString>>,
-    #[serde(rename = "frameset")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub frameset: Vec<CTFrameset>,
-    #[serde(rename = "frame")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub frame: Vec<CTFrame>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]

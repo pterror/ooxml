@@ -5610,14 +5610,14 @@ pub struct DataTables {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub m: Option<Box<TableMissing>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub m: Vec<TableMissing>,
     #[serde(rename = "s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_index: Option<Box<CTXStringElement>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_index: Vec<CTXStringElement>,
     #[serde(rename = "x")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub x: Option<Box<CTIndex>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub x: Vec<CTIndex>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6296,23 +6296,23 @@ pub struct SharedItems {
     )]
     pub long_text: Option<bool>,
     #[serde(rename = "m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub m: Option<Box<CTMissing>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub m: Vec<CTMissing>,
     #[serde(rename = "n")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub n: Option<Box<CTNumber>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub n: Vec<CTNumber>,
     #[serde(rename = "b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b: Option<Box<CTBoolean>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub b: Vec<CTBoolean>,
     #[serde(rename = "e")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub e: Option<Box<CTError>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub e: Vec<CTError>,
     #[serde(rename = "s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_index: Option<Box<CTString>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_index: Vec<CTString>,
     #[serde(rename = "d")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub d: Option<Box<CTDateTime>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d: Vec<CTDateTime>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6834,23 +6834,23 @@ pub struct GroupItems {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub m: Option<Box<CTMissing>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub m: Vec<CTMissing>,
     #[serde(rename = "n")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub n: Option<Box<CTNumber>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub n: Vec<CTNumber>,
     #[serde(rename = "b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b: Option<Box<CTBoolean>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub b: Vec<CTBoolean>,
     #[serde(rename = "e")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub e: Option<Box<CTError>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub e: Vec<CTError>,
     #[serde(rename = "s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_index: Option<Box<CTString>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_index: Vec<CTString>,
     #[serde(rename = "d")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub d: Option<Box<CTDateTime>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d: Vec<CTDateTime>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -6893,26 +6893,26 @@ pub struct PivotCacheRecords {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTRecord {
     #[serde(rename = "m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub m: Option<Box<CTMissing>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub m: Vec<CTMissing>,
     #[serde(rename = "n")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub n: Option<Box<CTNumber>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub n: Vec<CTNumber>,
     #[serde(rename = "b")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub b: Option<Box<CTBoolean>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub b: Vec<CTBoolean>,
     #[serde(rename = "e")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub e: Option<Box<CTError>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub e: Vec<CTError>,
     #[serde(rename = "s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_index: Option<Box<CTString>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_index: Vec<CTString>,
     #[serde(rename = "d")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub d: Option<Box<CTDateTime>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub d: Vec<CTDateTime>,
     #[serde(rename = "x")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub x: Option<Box<CTIndex>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub x: Vec<CTIndex>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -7395,17 +7395,17 @@ pub struct CTPCDSDTCEntries {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub count: Option<u32>,
     #[serde(rename = "m")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub m: Option<Box<CTMissing>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub m: Vec<CTMissing>,
     #[serde(rename = "n")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub n: Option<Box<CTNumber>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub n: Vec<CTNumber>,
     #[serde(rename = "e")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub e: Option<Box<CTError>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub e: Vec<CTError>,
     #[serde(rename = "s")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub style_index: Option<Box<CTString>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub style_index: Vec<CTString>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10413,42 +10413,6 @@ pub struct RevisionHeaders {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Revisions {
-    #[serde(rename = "rrc")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rrc: Vec<RevisionRowColumn>,
-    #[serde(rename = "rm")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rm: Vec<RevisionMove>,
-    #[serde(rename = "rcv")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcv: Vec<RevisionCustomView>,
-    #[serde(rename = "rsnm")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rsnm: Vec<RevisionSheetRename>,
-    #[serde(rename = "ris")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub ris: Vec<RevisionInsertSheet>,
-    #[serde(rename = "rcc")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<RevisionCellChange>,
-    #[serde(rename = "rfmt")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<RevisionFormatting>,
-    #[serde(rename = "raf")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub raf: Vec<RevisionAutoFormatting>,
-    #[serde(rename = "rdn")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rdn: Vec<RevisionDefinedName>,
-    #[serde(rename = "rcmt")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcmt: Vec<RevisionComment>,
-    #[serde(rename = "rqt")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rqt: Vec<RevisionQueryTableField>,
-    #[serde(rename = "rcft")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcft: Vec<RevisionConflict>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -10692,15 +10656,6 @@ pub struct RevisionRowColumn {
         with = "ooxml_xml::ooxml_bool"
     )]
     pub edge: Option<bool>,
-    #[serde(rename = "undo")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub undo: Vec<UndoInfo>,
-    #[serde(rename = "rcc")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<RevisionCellChange>,
-    #[serde(rename = "rfmt")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<RevisionFormatting>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10708,11 +10663,6 @@ pub struct RevisionRowColumn {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
-    #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -10742,15 +10692,6 @@ pub struct RevisionMove {
     #[serde(rename = "@sourceSheetId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub source_sheet_id: Option<u32>,
-    #[serde(rename = "undo")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub undo: Vec<UndoInfo>,
-    #[serde(rename = "rcc")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rcc: Vec<RevisionCellChange>,
-    #[serde(rename = "rfmt")]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub rfmt: Vec<RevisionFormatting>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -10758,11 +10699,6 @@ pub struct RevisionMove {
     #[serde(default)]
     #[cfg(feature = "extra-attrs")]
     pub extra_attrs: std::collections::HashMap<String, String>,
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
-    #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

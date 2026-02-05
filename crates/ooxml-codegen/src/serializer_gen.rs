@@ -1264,12 +1264,25 @@ impl<'a> SerializerGenerator<'a> {
                         }
                     }
                 }
-                Pattern::Choice(_) | Pattern::Ref(_) => {
+                Pattern::Choice(alternatives) => {
+                    // ZeroOrMore(Choice([elements])) - each element can appear multiple times
+                    for alt in alternatives {
+                        self.collect_fields_as_vec(alt, fields);
+                    }
+                }
+                Pattern::Ref(_) => {
                     self.collect_fields(inner, fields, false);
                 }
                 Pattern::Group(group_inner) => {
-                    // Unwrap group and recurse (handles patterns like OneOrMore(Group(Choice)))
-                    self.collect_fields(group_inner, fields, false);
+                    // Unwrap group and handle inner pattern
+                    // For ZeroOrMore(Group(Choice([...]))) - treat each alternative as Vec
+                    if let Pattern::Choice(alternatives) = group_inner.as_ref() {
+                        for alt in alternatives {
+                            self.collect_fields_as_vec(alt, fields);
+                        }
+                    } else {
+                        self.collect_fields(group_inner, fields, false);
+                    }
                 }
                 _ => {}
             },
@@ -1321,6 +1334,58 @@ impl<'a> SerializerGenerator<'a> {
                 // In a choice, each alternative might not be selected, so all become optional.
                 for alt in alternatives {
                     self.collect_fields(alt, fields, true);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Collect fields as Vec (for elements inside ZeroOrMore(Choice([...])))
+    /// Only non-optional elements become Vec; optional elements stay as Option.
+    fn collect_fields_as_vec(&self, pattern: &Pattern, fields: &mut Vec<Field>) {
+        match pattern {
+            Pattern::Element {
+                name,
+                pattern: inner_pattern,
+            } if name.local != "_any" => {
+                fields.push(Field {
+                    name: self.qname_to_field_name(name),
+                    xml_name: name.local.clone(),
+                    xml_prefix: name.prefix.clone(),
+                    pattern: inner_pattern.as_ref().clone(),
+                    is_optional: false,
+                    is_attribute: false,
+                    is_vec: true,
+                    is_text_content: false,
+                });
+            }
+            Pattern::Optional(inner) => {
+                // Optional inside a repeating choice means element can appear 0-1 times,
+                // NOT multiple times. Delegate to collect_fields with is_optional=true.
+                self.collect_fields(inner, fields, true);
+            }
+            Pattern::Group(inner) => {
+                self.collect_fields_as_vec(inner, fields);
+            }
+            Pattern::Ref(name) => {
+                // Ref inside a repeating choice - create Vec<RefType> field
+                if let Some(def_pattern) = self.definitions.get(name.as_str()) {
+                    if name.contains("_EG_") && self.is_element_choice(def_pattern) {
+                        // EG_* element group → Vec<EGType>
+                        fields.push(Field {
+                            name: self.eg_ref_to_field_name(name),
+                            xml_name: name.clone(),
+                            xml_prefix: None,
+                            pattern: Pattern::Ref(name.clone()),
+                            is_optional: false,
+                            is_attribute: false,
+                            is_vec: true,
+                            is_text_content: false,
+                        });
+                    } else if !name.contains("_AG_") && !name.contains("_CT_") {
+                        // Other refs that wrap elements
+                        self.collect_fields_as_vec(def_pattern, fields);
+                    }
                 }
             }
             _ => {}

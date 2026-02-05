@@ -7491,23 +7491,23 @@ pub struct CTGvmlGroupShape {
     #[serde(rename = "grpSpPr")]
     pub grp_sp_pr: Box<CTGroupShapeProperties>,
     #[serde(rename = "txSp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tx_sp: Option<Box<CTGvmlTextShape>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tx_sp: Vec<CTGvmlTextShape>,
     #[serde(rename = "sp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub sp: Option<Box<CTGvmlShape>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub sp: Vec<CTGvmlShape>,
     #[serde(rename = "cxnSp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cxn_sp: Option<Box<CTGvmlConnector>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cxn_sp: Vec<CTGvmlConnector>,
     #[serde(rename = "pic")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub pic: Option<Box<CTGvmlPicture>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pic: Vec<CTGvmlPicture>,
     #[serde(rename = "graphicFrame")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub graphic_frame: Option<Box<CTGvmlGraphicalObjectFrame>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub graphic_frame: Vec<CTGvmlGraphicalObjectFrame>,
     #[serde(rename = "grpSp")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub grp_sp: Option<Box<CTGvmlGroupShape>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub grp_sp: Vec<CTGvmlGroupShape>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
@@ -8379,72 +8379,72 @@ pub struct Blip {
     pub cstate: Option<STBlipCompression>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaBiLevel")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_bi_level: Option<Box<CTAlphaBiLevelEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_bi_level: Vec<CTAlphaBiLevelEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaCeiling")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_ceiling: Option<Box<CTAlphaCeilingEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_ceiling: Vec<CTAlphaCeilingEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaFloor")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_floor: Option<Box<CTAlphaFloorEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_floor: Vec<CTAlphaFloorEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaInv")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_inv: Option<Box<CTAlphaInverseEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_inv: Vec<CTAlphaInverseEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaMod")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_mod: Option<CTAlphaModulateEffect>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_mod: Vec<CTAlphaModulateEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaModFix")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_mod_fix: Option<Box<CTAlphaModulateFixedEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_mod_fix: Vec<CTAlphaModulateFixedEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "alphaRepl")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub alpha_repl: Option<Box<CTAlphaReplaceEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub alpha_repl: Vec<CTAlphaReplaceEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "biLevel")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub bi_level: Option<Box<CTBiLevelEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub bi_level: Vec<CTBiLevelEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "blur")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub blur: Option<Box<CTBlurEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub blur: Vec<CTBlurEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "clrChange")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_change: Option<Box<CTColorChangeEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub clr_change: Vec<CTColorChangeEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "clrRepl")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub clr_repl: Option<Box<CTColorReplaceEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub clr_repl: Vec<CTColorReplaceEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "duotone")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub duotone: Option<Box<CTDuotoneEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub duotone: Vec<CTDuotoneEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "fillOverlay")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub fill_overlay: Option<Box<CTFillOverlayEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub fill_overlay: Vec<CTFillOverlayEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "grayscl")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub grayscl: Option<Box<CTGrayscaleEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub grayscl: Vec<CTGrayscaleEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "hsl")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub hsl: Option<Box<CTHSLEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub hsl: Vec<CTHSLEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "lum")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub lum: Option<Box<CTLuminanceEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub lum: Vec<CTLuminanceEffect>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "tint")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tint: Option<Box<CTTintEffect>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tint: Vec<CTTintEffect>,
     #[cfg(feature = "dml-extensions")]
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8849,11 +8849,11 @@ pub struct CTConnectionSite {
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAdjustHandleList {
     #[serde(rename = "ahXY")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ah_x_y: Option<Box<CTXYAdjustHandle>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ah_x_y: Vec<CTXYAdjustHandle>,
     #[serde(rename = "ahPolar")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ah_polar: Option<Box<CTPolarAdjustHandle>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ah_polar: Vec<CTPolarAdjustHandle>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -8964,23 +8964,23 @@ pub struct CTPath2D {
     )]
     pub extrusion_ok: Option<bool>,
     #[serde(rename = "close")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub close: Option<Box<CTPath2DClose>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub close: Vec<CTPath2DClose>,
     #[serde(rename = "moveTo")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub move_to: Option<CTPath2DMoveTo>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub move_to: Vec<CTPath2DMoveTo>,
     #[serde(rename = "lnTo")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ln_to: Option<CTPath2DLineTo>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ln_to: Vec<CTPath2DLineTo>,
     #[serde(rename = "arcTo")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub arc_to: Option<Box<CTPath2DArcTo>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arc_to: Vec<CTPath2DArcTo>,
     #[serde(rename = "quadBezTo")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub quad_bez_to: Option<Box<CTPath2DQuadBezierTo>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub quad_bez_to: Vec<CTPath2DQuadBezierTo>,
     #[serde(rename = "cubicBezTo")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub cubic_bez_to: Option<Box<CTPath2DCubicBezierTo>>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub cubic_bez_to: Vec<CTPath2DCubicBezierTo>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
