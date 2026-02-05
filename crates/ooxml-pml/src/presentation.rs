@@ -1170,12 +1170,135 @@ fn convert_transition(trans: &types::SlideTransition) -> Transition {
 /// Extract tables from graphic frames in a slide.
 ///
 /// Tables are embedded in `p:graphicFrame` elements containing DrawingML `a:tbl`.
-/// TODO: Implement table extraction from graphic frames using extra_children.
+/// The graphic frame structure is: p:graphicFrame/a:graphic/a:graphicData/a:tbl
+#[cfg(feature = "extra-children")]
+fn extract_tables_from_slide(slide: &types::Slide) -> Vec<Table> {
+    use crate::ext::GraphicalObjectFrameExt;
+
+    let mut tables = Vec::new();
+
+    // Tables are in graphic frames in the shape tree
+    for frame in &slide.common_slide_data.shape_tree.graphic_frame {
+        // Get the frame name for the table
+        let frame_name = Some(frame.name().to_string()).filter(|s| !s.is_empty());
+
+        // Look through extra_children for the a:graphic element
+        for node in &frame.extra_children {
+            if let Some(table) = find_table_in_node(&node.node, frame_name.clone()) {
+                tables.push(table);
+            }
+        }
+    }
+
+    tables
+}
+
+/// Stub for when extra-children feature is disabled.
+#[cfg(not(feature = "extra-children"))]
 fn extract_tables_from_slide(_slide: &types::Slide) -> Vec<Table> {
-    // Table extraction from graphic frames requires parsing extra_children
-    // which contain the DrawingML table content. For now, return empty.
-    // Tables will be supported in a future update.
     Vec::new()
+}
+
+/// Recursively search for a table element in an XML node tree.
+#[cfg(feature = "extra-children")]
+fn find_table_in_node(node: &ooxml_xml::RawXmlNode, frame_name: Option<String>) -> Option<Table> {
+    use ooxml_xml::RawXmlNode;
+
+    match node {
+        RawXmlNode::Element(elem) => {
+            // Check if this is a table element (a:tbl or just tbl)
+            let local_name = elem.name.split(':').next_back().unwrap_or(&elem.name);
+            if local_name == "tbl" {
+                return parse_table_element(elem, frame_name);
+            }
+
+            // Recursively search children
+            for child in &elem.children {
+                if let Some(table) = find_table_in_node(child, frame_name.clone()) {
+                    return Some(table);
+                }
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+/// Parse a table from a RawXmlElement representing a:tbl.
+#[cfg(feature = "extra-children")]
+fn parse_table_element(
+    elem: &ooxml_xml::RawXmlElement,
+    frame_name: Option<String>,
+) -> Option<Table> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    use ooxml_dml::types::CTTable;
+    use quick_xml::Writer;
+
+    // Serialize the element back to XML
+    let mut xml_buf = Vec::new();
+    {
+        let mut writer = Writer::new(Cursor::new(&mut xml_buf));
+        if elem.write_to(&mut writer).is_err() {
+            return None;
+        }
+    }
+
+    // Parse as CTTable using the generated parser
+    let mut reader = Reader::from_reader(Cursor::new(&xml_buf));
+    let mut buf = Vec::new();
+
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) | Ok(Event::Empty(e)) => {
+                let local = e.local_name();
+                if local.as_ref() == b"tbl"
+                    && let Ok(ct_table) = CTTable::from_xml(&mut reader, &e, false)
+                {
+                    return Some(convert_ct_table(ct_table, frame_name));
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(_) => break,
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    None
+}
+
+/// Convert a DML CTTable to our Table type.
+#[cfg(feature = "extra-children")]
+fn convert_ct_table(ct_table: ooxml_dml::types::CTTable, name: Option<String>) -> Table {
+    let rows = ct_table
+        .tr
+        .iter()
+        .map(|tr| {
+            let cells = tr
+                .tc
+                .iter()
+                .map(|tc| {
+                    let paragraphs = tc
+                        .tx_body
+                        .as_ref()
+                        .map(|tb| tb.p.clone())
+                        .unwrap_or_default();
+                    TableCell {
+                        paragraphs,
+                        row_span: tc.row_span.map(|v| v as u32).unwrap_or(1),
+                        col_span: tc.grid_span.map(|v| v as u32).unwrap_or(1),
+                    }
+                })
+                .collect();
+
+            // tr.height is STCoordinate (String), parse to i64
+            let height = tr.height.parse::<i64>().ok();
+
+            TableRow { cells, height }
+        })
+        .collect();
+
+    Table { name, rows }
 }
 
 #[cfg(test)]

@@ -1399,7 +1399,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Table extraction from graphic frames not yet implemented in generated parser migration"]
     fn test_roundtrip_with_table() {
         use std::io::Cursor;
 
