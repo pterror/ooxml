@@ -19,6 +19,13 @@ fn encode_hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02X}", b)).collect()
 }
 
+#[allow(dead_code)]
+/// Encode bytes as a base64 string.
+fn encode_base64(bytes: &[u8]) -> String {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD.encode(bytes)
+}
+
 impl ToXml for CTSideDirectionTransition {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
@@ -6014,14 +6021,14 @@ impl ToXml for CTModifyVerifier {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_value {
@@ -6062,14 +6069,14 @@ impl ToXml for CTModifyVerifier {
         }
         if let Some(ref val) = self.salt_data {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltData", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltData", b64.as_str()));
             }
         }
         if let Some(ref val) = self.hash_data {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashData", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashData", b64.as_str()));
             }
         }
         if let Some(ref val) = self.crypt_provider {

@@ -18,6 +18,13 @@ fn encode_hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02X}", b)).collect()
 }
 
+#[allow(dead_code)]
+/// Encode bytes as a base64 string.
+fn encode_base64(bytes: &[u8]) -> String {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD.encode(bytes)
+}
+
 impl ToXml for AutoFilter {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         #[allow(unused_mut)]
@@ -18056,14 +18063,14 @@ impl ToXml for SheetProtection {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -18199,14 +18206,14 @@ impl ToXml for ProtectedRange {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -18846,14 +18853,14 @@ impl ToXml for ChartsheetProtection {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -27213,14 +27220,14 @@ impl ToXml for FileSharing {
         }
         if let Some(ref val) = self.hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("hashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("hashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("saltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("saltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.spin_count {
@@ -27297,14 +27304,14 @@ impl ToXml for WorkbookProtection {
         }
         if let Some(ref val) = self.revisions_hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("revisionsHashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("revisionsHashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.revisions_salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("revisionsSaltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("revisionsSaltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.revisions_spin_count {
@@ -27318,14 +27325,14 @@ impl ToXml for WorkbookProtection {
         }
         if let Some(ref val) = self.workbook_hash_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("workbookHashValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("workbookHashValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.workbook_salt_value {
             {
-                let hex = encode_hex(val);
-                start.push_attribute(("workbookSaltValue", hex.as_str()));
+                let b64 = encode_base64(val);
+                start.push_attribute(("workbookSaltValue", b64.as_str()));
             }
         }
         if let Some(ref val) = self.workbook_spin_count {

@@ -28,6 +28,8 @@ enum WriteStrategy {
     AsString,
     /// Vec<u8> — hex-encode
     HexBinary,
+    /// Vec<u8> — base64-encode
+    Base64Binary,
     /// bool — write as "1"/"0"
     OoxmlBool,
 }
@@ -127,6 +129,19 @@ impl<'a> SerializerGenerator<'a> {
         writeln!(
             self.output,
             "    bytes.iter().map(|b| format!(\"{{:02X}}\", b)).collect()"
+        )
+        .unwrap();
+        writeln!(self.output, "}}").unwrap();
+        writeln!(self.output).unwrap();
+
+        // encode_base64 helper
+        writeln!(self.output, "#[allow(dead_code)]").unwrap();
+        writeln!(self.output, "/// Encode bytes as a base64 string.").unwrap();
+        writeln!(self.output, "fn encode_base64(bytes: &[u8]) -> String {{").unwrap();
+        writeln!(self.output, "    use base64::Engine;").unwrap();
+        writeln!(
+            self.output,
+            "    base64::engine::general_purpose::STANDARD.encode(bytes)"
         )
         .unwrap();
         writeln!(self.output, "}}").unwrap();
@@ -675,6 +690,17 @@ impl<'a> SerializerGenerator<'a> {
                 .unwrap();
                 writeln!(code, "{}}}", indent).unwrap();
             }
+            WriteStrategy::Base64Binary => {
+                writeln!(code, "{}{{", indent).unwrap();
+                writeln!(code, "{}    let b64 = encode_base64({});", indent, val_expr).unwrap();
+                writeln!(
+                    code,
+                    "{}    start.push_attribute((\"{}\", b64.as_str()));",
+                    indent, attr_name
+                )
+                .unwrap();
+                writeln!(code, "{}}}", indent).unwrap();
+            }
             WriteStrategy::DisplayStr | WriteStrategy::ToXml => {
                 // For enums/numbers, use to_string(). ToXml shouldn't appear for attrs
                 // but handle it as to_string() as fallback.
@@ -800,6 +826,35 @@ impl<'a> SerializerGenerator<'a> {
                 .unwrap();
                 writeln!(code, "{}}}", indent).unwrap();
             }
+            WriteStrategy::Base64Binary => {
+                writeln!(code, "{}{{", indent).unwrap();
+                writeln!(code, "{}    let b64 = encode_base64({});", indent, val_expr).unwrap();
+                writeln!(
+                    code,
+                    "{}    let start = BytesStart::new(\"{}\");",
+                    indent, tag
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "{}    writer.write_event(Event::Start(start))?;",
+                    indent
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "{}    writer.write_event(Event::Text(BytesText::new(&b64)))?;",
+                    indent
+                )
+                .unwrap();
+                writeln!(
+                    code,
+                    "{}    writer.write_event(Event::End(BytesEnd::new(\"{}\")))?;",
+                    indent, tag
+                )
+                .unwrap();
+                writeln!(code, "{}}}", indent).unwrap();
+            }
             WriteStrategy::OoxmlBool => {
                 writeln!(code, "{}{{", indent).unwrap();
                 writeln!(
@@ -888,7 +943,8 @@ impl<'a> SerializerGenerator<'a> {
                 "boolean" => WriteStrategy::OoxmlBool,
                 "string" | "token" | "NCName" | "ID" | "IDREF" | "anyURI" | "dateTime" | "date"
                 | "time" => WriteStrategy::AsString,
-                "hexBinary" | "base64Binary" => WriteStrategy::HexBinary,
+                "hexBinary" => WriteStrategy::HexBinary,
+                "base64Binary" => WriteStrategy::Base64Binary,
                 _ => WriteStrategy::DisplayStr, // numbers
             },
             Pattern::Choice(variants)
