@@ -121,7 +121,7 @@ impl ErrorCategory {
 pub struct ErrorLocation {
     /// Path within the package (e.g., "word/document.xml").
     pub part_path: Option<String>,
-    /// XPath-like element path (e.g., "/w:document/w:body/w:p[5]").
+    /// XPath-like element path (e.g., `/w:document/w:body/w:p[5]`).
     pub element_path: Option<String>,
     /// Line number in XML file.
     pub line: Option<u32>,
