@@ -5,7 +5,7 @@
 //! # Reading Presentations
 //!
 //! ```no_run
-//! use ooxml_pml::Presentation;
+//! use ooxml_pml::{Presentation, ShapeExt};
 //!
 //! let mut pres = Presentation::open("presentation.pptx")?;
 //! println!("Slides: {}", pres.slide_count());
@@ -53,9 +53,11 @@ pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
 pub use presentation::{
-    Hyperlink, ImageData, Picture, Presentation, Shape, Slide, SlideLayout, SlideLayoutType,
-    SlideMaster, Table, TableCell, TableRow, Transition, TransitionSpeed, TransitionType,
+    Hyperlink, ImageData, Presentation, Slide, SlideLayout, SlideLayoutType, SlideMaster, Table,
+    TableCell, TableRow, Transition, TransitionSpeed, TransitionType,
 };
+// Re-export generated types that replace handwritten ones
+pub use types::{Picture, Shape};
 pub use writer::{
     ImageFormat, PresentationBuilder, SlideBuilder, SlideTransition, TableBuilder, TextRun,
 };

@@ -3,9 +3,11 @@
 //! This module provides the main entry point for working with PPTX files.
 
 use crate::error::{Error, Result};
-use ooxml_dml::ext::{TextParagraphExt, TextRunExt};
-use ooxml_dml::parsers::FromXml;
-use ooxml_dml::types::{TextBody, TextParagraph};
+use crate::ext::{CommonSlideDataExt, GroupShapeExt, PictureExt, ShapeExt};
+use crate::parsers::FromXml;
+use crate::types;
+use ooxml_dml::ext::{TextBodyExt, TextParagraphExt, TextRunExt};
+use ooxml_dml::types::TextParagraph;
 use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -322,10 +324,22 @@ impl<R: Read + Seek> Presentation<R> {
     /// Load a slide's data.
     fn load_slide(&mut self, info: &SlideInfo) -> Result<Slide> {
         let data = self.package.read_part(&info.path)?;
-        let mut slide = parse_slide(&data, info.index, &info.path)?;
 
-        // Set layout relationship ID
-        slide.layout_rel_id = info.layout_rel_id.clone();
+        // Parse slide using generated FromXml parser
+        let inner = parse_slide_xml(&data)?;
+
+        // Extract tables from graphic frames
+        let tables = extract_tables_from_slide(&inner);
+
+        // Build the slide wrapper
+        let mut slide = Slide {
+            inner,
+            index: info.index,
+            slide_path: info.path.clone(),
+            notes: None,
+            layout_rel_id: info.layout_rel_id.clone(),
+            tables,
+        };
 
         // Try to load speaker notes
         if let Ok(slide_rels) = self.package.read_part_relationships(&info.path)
@@ -343,7 +357,12 @@ impl<R: Read + Seek> Presentation<R> {
     /// Get image data for a picture from a specific slide.
     ///
     /// Loads the image data from the package using the picture's relationship ID.
-    pub fn get_image_data(&mut self, slide: &Slide, picture: &Picture) -> Result<ImageData> {
+    pub fn get_image_data(&mut self, slide: &Slide, picture: &types::Picture) -> Result<ImageData> {
+        // Get the embed relationship ID using the extension trait
+        let rel_id = picture
+            .embed_rel_id()
+            .ok_or_else(|| Error::Invalid("Picture has no embed relationship ID".into()))?;
+
         // Get slide relationships
         let slide_rels = self
             .package
@@ -351,9 +370,9 @@ impl<R: Read + Seek> Presentation<R> {
             .map_err(|_| Error::Invalid("Failed to read slide relationships".into()))?;
 
         // Find the image relationship
-        let rel = slide_rels.get(picture.rel_id()).ok_or_else(|| {
-            Error::Invalid(format!("Image relationship {} not found", picture.rel_id()))
-        })?;
+        let rel = slide_rels
+            .get(rel_id)
+            .ok_or_else(|| Error::Invalid(format!("Image relationship {} not found", rel_id)))?;
 
         // Resolve the image path
         let image_path = resolve_path(slide.slide_path(), &rel.target);
@@ -408,22 +427,24 @@ impl<R: Read + Seek> Presentation<R> {
 }
 
 /// A slide in the presentation.
+///
+/// This wraps the generated `types::Slide` and provides additional context
+/// (index, path, notes) that comes from the package structure rather than
+/// the slide XML itself.
 #[derive(Debug, Clone)]
 pub struct Slide {
+    /// The parsed slide content (generated from PML schema).
+    inner: types::Slide,
+    /// Slide index (0-based).
     index: usize,
-    shapes: Vec<Shape>,
-    /// Pictures on this slide.
-    pictures: Vec<Picture>,
-    /// Tables on this slide.
-    tables: Vec<Table>,
-    /// Path to this slide (for resolving image paths).
+    /// Path to this slide part (for resolving relationships).
     slide_path: String,
-    /// Speaker notes for this slide.
+    /// Speaker notes for this slide (parsed from separate notes part).
     notes: Option<String>,
-    /// Slide transition effect.
-    transition: Option<Transition>,
-    /// Relationship ID to the slide layout (for linking to layout info).
+    /// Relationship ID to the slide layout.
     layout_rel_id: Option<String>,
+    /// Tables extracted from graphic frames.
+    tables: Vec<Table>,
 }
 
 /// Slide transition effect.
@@ -541,17 +562,16 @@ impl Slide {
     }
 
     /// Get all shapes on the slide.
-    pub fn shapes(&self) -> &[Shape] {
-        &self.shapes
+    ///
+    /// Returns the generated `types::Shape` structs. Use the `ShapeExt` trait
+    /// for convenient accessor methods like `name()`, `text()`, `paragraphs()`.
+    pub fn shapes(&self) -> &[types::Shape] {
+        self.inner.common_slide_data.shape_tree.shapes()
     }
 
     /// Extract all text from the slide.
     pub fn text(&self) -> String {
-        self.shapes
-            .iter()
-            .filter_map(|s| s.text())
-            .collect::<Vec<_>>()
-            .join("\n")
+        self.inner.common_slide_data.text()
     }
 
     /// Get the speaker notes for this slide.
@@ -565,8 +585,11 @@ impl Slide {
     }
 
     /// Get all pictures on the slide.
-    pub fn pictures(&self) -> &[Picture] {
-        &self.pictures
+    ///
+    /// Returns the generated `types::Picture` structs. Use the `PictureExt` trait
+    /// for convenient accessor methods like `name()`, `description()`, `embed_rel_id()`.
+    pub fn pictures(&self) -> &[types::Picture] {
+        self.inner.common_slide_data.pictures()
     }
 
     /// Get the path to this slide part (for resolving image relationships).
@@ -575,13 +598,30 @@ impl Slide {
     }
 
     /// Get the slide transition effect (if any).
-    pub fn transition(&self) -> Option<&Transition> {
-        self.transition.as_ref()
+    #[cfg(feature = "pml-transitions")]
+    pub fn transition(&self) -> Option<Transition> {
+        self.inner
+            .transition
+            .as_ref()
+            .map(|t| convert_transition(t))
+    }
+
+    /// Get the slide transition effect (if any).
+    #[cfg(not(feature = "pml-transitions"))]
+    pub fn transition(&self) -> Option<Transition> {
+        None
     }
 
     /// Check if this slide has a transition effect.
+    #[cfg(feature = "pml-transitions")]
     pub fn has_transition(&self) -> bool {
-        self.transition.is_some()
+        self.inner.transition.is_some()
+    }
+
+    /// Check if this slide has a transition effect.
+    #[cfg(not(feature = "pml-transitions"))]
+    pub fn has_transition(&self) -> bool {
+        false
     }
 
     /// Get the relationship ID to the slide layout used by this slide.
@@ -595,12 +635,33 @@ impl Slide {
     ///
     /// Returns hyperlinks with their text and relationship ID.
     pub fn hyperlinks(&self) -> Vec<Hyperlink> {
-        self.shapes.iter().flat_map(|s| s.hyperlinks()).collect()
+        let mut links = Vec::new();
+        for shape in self.shapes() {
+            if let Some(text_body) = shape.text_body() {
+                for para in text_body.paragraphs() {
+                    for run in para.runs() {
+                        if let Some(rel_id) = run.hyperlink_rel_id() {
+                            links.push(Hyperlink {
+                                text: run.text().to_string(),
+                                rel_id: rel_id.to_string(),
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        links
     }
 
     /// Check if this slide contains any hyperlinks.
     pub fn has_hyperlinks(&self) -> bool {
-        self.shapes.iter().any(|s| s.has_hyperlinks())
+        self.shapes().iter().any(|s| {
+            s.text_body().is_some_and(|tb| {
+                tb.paragraphs()
+                    .iter()
+                    .any(|p| p.runs().iter().any(|r| r.has_hyperlink()))
+            })
+        })
     }
 
     /// Get all tables on the slide.
@@ -618,106 +679,16 @@ impl Slide {
         self.tables.len()
     }
 
+    /// Get the underlying generated slide type.
+    ///
+    /// Use this for full access to all parsed fields.
+    pub fn inner(&self) -> &types::Slide {
+        &self.inner
+    }
+
     /// Get a table by index (0-based).
     pub fn table(&self, index: usize) -> Option<&Table> {
         self.tables.get(index)
-    }
-}
-
-/// A shape on a slide.
-#[derive(Debug, Clone)]
-pub struct Shape {
-    /// Shape name (if any).
-    name: Option<String>,
-    /// Text paragraphs (DrawingML).
-    paragraphs: Vec<TextParagraph>,
-}
-
-impl Shape {
-    /// Get the shape name.
-    pub fn name(&self) -> Option<&str> {
-        self.name.as_deref()
-    }
-
-    /// Get the text paragraphs.
-    pub fn paragraphs(&self) -> &[TextParagraph] {
-        &self.paragraphs
-    }
-
-    /// Get the text content (paragraphs joined).
-    pub fn text(&self) -> Option<String> {
-        if self.paragraphs.is_empty() {
-            None
-        } else {
-            Some(
-                self.paragraphs
-                    .iter()
-                    .map(|p| p.text())
-                    .collect::<Vec<_>>()
-                    .join("\n"),
-            )
-        }
-    }
-
-    /// Check if the shape has text content.
-    pub fn has_text(&self) -> bool {
-        !self.paragraphs.is_empty()
-    }
-
-    /// Get all hyperlinks in this shape.
-    ///
-    /// Returns hyperlinks with their text and relationship ID.
-    /// Use the slide relationships to resolve the rel_id to a URL.
-    pub fn hyperlinks(&self) -> Vec<Hyperlink> {
-        let mut links = Vec::new();
-        for para in &self.paragraphs {
-            for run in para.runs() {
-                if let Some(rel_id) = run.hyperlink_rel_id() {
-                    links.push(Hyperlink {
-                        text: run.text().to_string(),
-                        rel_id: rel_id.to_string(),
-                    });
-                }
-            }
-        }
-        links
-    }
-
-    /// Check if the shape contains any hyperlinks.
-    pub fn has_hyperlinks(&self) -> bool {
-        self.paragraphs
-            .iter()
-            .any(|p| p.runs().iter().any(|r| r.has_hyperlink()))
-    }
-}
-
-/// A picture element on a slide.
-///
-/// Represents an image embedded via `p:pic` element.
-#[derive(Debug, Clone)]
-pub struct Picture {
-    /// Relationship ID referencing the image file.
-    rel_id: String,
-    /// Picture name (from cNvPr).
-    name: Option<String>,
-    /// Description/alt text.
-    description: Option<String>,
-}
-
-impl Picture {
-    /// Get the relationship ID for this picture's image.
-    pub fn rel_id(&self) -> &str {
-        &self.rel_id
-    }
-
-    /// Get the picture name.
-    pub fn name(&self) -> Option<&str> {
-        self.name.as_deref()
-    }
-
-    /// Get the description/alt text.
-    pub fn description(&self) -> Option<&str> {
-        self.description.as_deref()
     }
 }
 
@@ -907,367 +878,11 @@ fn parse_presentation_slides(xml: &[u8]) -> Result<Vec<String>> {
     Ok(slide_ids)
 }
 
-/// Parse a slide XML file.
-fn parse_slide(xml: &[u8], index: usize, slide_path: &str) -> Result<Slide> {
-    let mut reader = Reader::from_reader(Cursor::new(xml));
-    let mut buf = Vec::new();
-    let mut shapes = Vec::new();
-    let mut pictures = Vec::new();
-    let mut tables = Vec::new();
-
-    let mut current_shape_name: Option<String> = None;
-    let mut current_paragraphs: Vec<TextParagraph> = Vec::new();
-    let mut in_sp = false; // Inside a shape
-
-    // Picture parsing state
-    let mut in_pic = false;
-    let mut current_pic_name: Option<String> = None;
-    let mut current_pic_descr: Option<String> = None;
-    let mut current_pic_rel_id: Option<String> = None;
-
-    // Table parsing state
-    let mut in_graphic_frame = false;
-    let mut current_table_name: Option<String> = None;
-    let mut in_tbl = false;
-    let mut current_table_rows: Vec<TableRow> = Vec::new();
-    let mut in_tr = false;
-    let mut current_row_cells: Vec<TableCell> = Vec::new();
-    let mut current_row_height: Option<i64> = None;
-    let mut in_tc = false;
-    let mut current_cell_paragraphs: Vec<TextParagraph> = Vec::new();
-    let mut current_cell_row_span: u32 = 1;
-    let mut current_cell_col_span: u32 = 1;
-
-    // Transition state
-    let mut transition: Option<Transition> = None;
-    let mut in_transition = false;
-
-    loop {
-        match reader.read_event_into(&mut buf) {
-            Ok(Event::Start(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                match name {
-                    b"p:sp" => {
-                        in_sp = true;
-                        current_shape_name = None;
-                        current_paragraphs.clear();
-                    }
-                    b"p:pic" => {
-                        in_pic = true;
-                        current_pic_name = None;
-                        current_pic_descr = None;
-                        current_pic_rel_id = None;
-                    }
-                    b"p:graphicFrame" => {
-                        in_graphic_frame = true;
-                        current_table_name = None;
-                    }
-                    b"a:tbl" if in_graphic_frame => {
-                        in_tbl = true;
-                        current_table_rows.clear();
-                    }
-                    b"a:tr" if in_tbl => {
-                        in_tr = true;
-                        current_row_cells.clear();
-                        current_row_height = None;
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            if attr.key.as_ref() == b"h" {
-                                current_row_height =
-                                    String::from_utf8_lossy(&attr.value).parse().ok();
-                            }
-                        }
-                    }
-                    b"a:tc" if in_tr => {
-                        in_tc = true;
-                        current_cell_paragraphs.clear();
-                        current_cell_row_span = 1;
-                        current_cell_col_span = 1;
-                        for attr in e.attributes().filter_map(|a| a.ok()) {
-                            match attr.key.as_ref() {
-                                b"rowSpan" => {
-                                    current_cell_row_span =
-                                        String::from_utf8_lossy(&attr.value).parse().unwrap_or(1);
-                                }
-                                b"gridSpan" => {
-                                    current_cell_col_span =
-                                        String::from_utf8_lossy(&attr.value).parse().unwrap_or(1);
-                                }
-                                _ => {}
-                            }
-                        }
-                    }
-                    b"a:txBody" if in_tc => {
-                        // Parse text body for table cell using generated parser
-                        if let Ok(text_body) = TextBody::from_xml(&mut reader, &e, false) {
-                            current_cell_paragraphs = text_body.p;
-                        }
-                    }
-                    b"p:transition" => {
-                        in_transition = true;
-                        transition = Some(parse_transition_attrs(&e));
-                    }
-                    b"p:cNvPr" => {
-                        // Non-visual properties - get name and description
-                        if in_sp {
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"name" {
-                                    current_shape_name =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
-                            }
-                        } else if in_pic {
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                match attr.key.as_ref() {
-                                    b"name" => {
-                                        current_pic_name =
-                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                    }
-                                    b"descr" => {
-                                        current_pic_descr =
-                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                    }
-                                    _ => {}
-                                }
-                            }
-                        } else if in_graphic_frame && !in_tbl {
-                            // Get table name from graphicFrame's cNvPr before we enter the table
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"name" {
-                                    current_table_name =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
-                            }
-                        }
-                    }
-                    b"p:txBody" => {
-                        // Use generated DML parser for text body content
-                        if in_sp && let Ok(text_body) = TextBody::from_xml(&mut reader, &e, false) {
-                            current_paragraphs = text_body.p;
-                        }
-                    }
-                    _ => {
-                        // Check for transition type elements inside p:transition
-                        if in_transition
-                            && let Some(ref mut trans) = transition
-                            && let Some(tt) = parse_transition_type_element(name)
-                        {
-                            trans.transition_type = Some(tt);
-                        }
-                    }
-                }
-            }
-            Ok(Event::Empty(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                match name {
-                    b"p:cNvPr" => {
-                        // Handle self-closing cNvPr
-                        if in_sp {
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"name" {
-                                    current_shape_name =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
-                            }
-                        } else if in_pic {
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                match attr.key.as_ref() {
-                                    b"name" => {
-                                        current_pic_name =
-                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                    }
-                                    b"descr" => {
-                                        current_pic_descr =
-                                            Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                    }
-                                    _ => {}
-                                }
-                            }
-                        } else if in_graphic_frame && !in_tbl {
-                            // Get table name from graphicFrame's cNvPr
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"name" {
-                                    current_table_name =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
-                            }
-                        }
-                    }
-                    b"a:blip" => {
-                        // Image reference - get r:embed attribute
-                        if in_pic {
-                            for attr in e.attributes().filter_map(|a| a.ok()) {
-                                if attr.key.as_ref() == b"r:embed" {
-                                    current_pic_rel_id =
-                                        Some(String::from_utf8_lossy(&attr.value).into_owned());
-                                }
-                            }
-                        }
-                    }
-                    b"p:transition" => {
-                        // Self-closing transition element
-                        transition = Some(parse_transition_attrs(&e));
-                    }
-                    _ => {
-                        // Check for self-closing transition type elements
-                        if in_transition
-                            && let Some(ref mut trans) = transition
-                            && let Some(tt) = parse_transition_type_element(name)
-                        {
-                            trans.transition_type = Some(tt);
-                        }
-                    }
-                }
-            }
-            Ok(Event::End(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
-                match name {
-                    b"p:sp" => {
-                        // End of shape
-                        shapes.push(Shape {
-                            name: current_shape_name.take(),
-                            paragraphs: std::mem::take(&mut current_paragraphs),
-                        });
-                        in_sp = false;
-                    }
-                    b"p:pic" => {
-                        // End of picture
-                        if let Some(rel_id) = current_pic_rel_id.take() {
-                            pictures.push(Picture {
-                                rel_id,
-                                name: current_pic_name.take(),
-                                description: current_pic_descr.take(),
-                            });
-                        }
-                        in_pic = false;
-                    }
-                    b"a:tc" if in_tc => {
-                        // End of table cell
-                        current_row_cells.push(TableCell {
-                            paragraphs: std::mem::take(&mut current_cell_paragraphs),
-                            row_span: current_cell_row_span,
-                            col_span: current_cell_col_span,
-                        });
-                        in_tc = false;
-                    }
-                    b"a:tr" if in_tr => {
-                        // End of table row
-                        current_table_rows.push(TableRow {
-                            cells: std::mem::take(&mut current_row_cells),
-                            height: current_row_height.take(),
-                        });
-                        in_tr = false;
-                    }
-                    b"a:tbl" if in_tbl => {
-                        // End of table
-                        tables.push(Table {
-                            name: current_table_name.take(),
-                            rows: std::mem::take(&mut current_table_rows),
-                        });
-                        in_tbl = false;
-                    }
-                    b"p:graphicFrame" => {
-                        in_graphic_frame = false;
-                    }
-                    b"p:transition" => {
-                        in_transition = false;
-                    }
-                    _ => {}
-                }
-            }
-            Ok(Event::Eof) => break,
-            Err(e) => return Err(Error::Xml(e)),
-            _ => {}
-        }
-        buf.clear();
-    }
-
-    Ok(Slide {
-        index,
-        shapes,
-        pictures,
-        tables,
-        slide_path: slide_path.to_string(),
-        notes: None,
-        transition,
-        layout_rel_id: None,
-    })
-}
-
-/// Parse transition attributes from a p:transition element.
-fn parse_transition_attrs(e: &quick_xml::events::BytesStart) -> Transition {
-    let mut trans = Transition {
-        advance_on_click: true, // Default is true
-        ..Default::default()
-    };
-
-    for attr in e.attributes().filter_map(|a| a.ok()) {
-        let value = String::from_utf8_lossy(&attr.value);
-        match attr.key.as_ref() {
-            b"spd" => {
-                trans.speed = match value.as_ref() {
-                    "slow" => TransitionSpeed::Slow,
-                    "fast" => TransitionSpeed::Fast,
-                    _ => TransitionSpeed::Medium,
-                };
-            }
-            b"advClick" => {
-                trans.advance_on_click = value != "0" && value != "false";
-            }
-            b"advTm" => {
-                trans.advance_time_ms = value.parse().ok();
-            }
-            _ => {}
-        }
-    }
-
-    trans
-}
-
-/// Parse a transition type from an element name.
-fn parse_transition_type_element(name: &[u8]) -> Option<TransitionType> {
-    // Remove namespace prefix if present
-    let local = if let Some(pos) = name.iter().position(|&b| b == b':') {
-        &name[pos + 1..]
-    } else {
-        name
-    };
-
-    match local {
-        b"fade" => Some(TransitionType::Fade),
-        b"push" => Some(TransitionType::Push),
-        b"wipe" => Some(TransitionType::Wipe),
-        b"split" => Some(TransitionType::Split),
-        b"blinds" => Some(TransitionType::Blinds),
-        b"checker" => Some(TransitionType::Checker),
-        b"circle" => Some(TransitionType::Circle),
-        b"dissolve" => Some(TransitionType::Dissolve),
-        b"comb" => Some(TransitionType::Comb),
-        b"cover" => Some(TransitionType::Cover),
-        b"cut" => Some(TransitionType::Cut),
-        b"diamond" => Some(TransitionType::Diamond),
-        b"plus" => Some(TransitionType::Plus),
-        b"random" => Some(TransitionType::Random),
-        b"strips" => Some(TransitionType::Strips),
-        b"wedge" => Some(TransitionType::Wedge),
-        b"wheel" => Some(TransitionType::Wheel),
-        b"zoom" => Some(TransitionType::Zoom),
-        _ => {
-            let name_str = String::from_utf8_lossy(local);
-            // Only return Other for elements that look like transitions
-            if name_str.chars().all(|c| c.is_ascii_alphabetic()) && name_str.len() > 2 {
-                Some(TransitionType::Other(name_str.into_owned()))
-            } else {
-                None
-            }
-        }
-    }
-}
-
 /// Parse a notes slide XML file and extract the text content.
 fn parse_notes_slide(xml: &[u8]) -> Option<String> {
+    use ooxml_dml::parsers::FromXml as DmlFromXml;
+    use ooxml_dml::types::TextBody;
+
     let mut reader = Reader::from_reader(Cursor::new(xml));
     let mut buf = Vec::new();
     let mut all_text = Vec::new();
@@ -1275,10 +890,10 @@ fn parse_notes_slide(xml: &[u8]) -> Option<String> {
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(e)) => {
-                let name = e.name();
-                let name = name.as_ref();
+                let local = e.local_name();
+                let local = local.as_ref();
                 // Notes text is in p:txBody elements - use generated parser
-                if name == b"p:txBody"
+                if local == b"txBody"
                     && let Ok(text_body) = TextBody::from_xml(&mut reader, &e, false)
                 {
                     for para in &text_body.p {
@@ -1459,6 +1074,108 @@ fn parse_slide_layout(xml: &[u8], path: &str, master_rel_id: Option<String>) -> 
         match_name,
         show_master_shapes,
     }
+}
+
+// ============================================================================
+// Generated parser helpers
+// ============================================================================
+
+/// Parse a slide using the generated FromXml parser.
+fn parse_slide_xml(xml: &[u8]) -> Result<types::Slide> {
+    let mut reader = Reader::from_reader(Cursor::new(xml));
+    let mut buf = Vec::new();
+
+    // Find the root p:sld element and parse it
+    loop {
+        match reader.read_event_into(&mut buf) {
+            Ok(Event::Start(e)) => {
+                let local_name = e.local_name();
+                if local_name.as_ref() == b"sld" {
+                    return types::Slide::from_xml(&mut reader, &e, false)
+                        .map_err(|e| Error::Invalid(format!("Failed to parse slide: {}", e)));
+                }
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => return Err(Error::Xml(e)),
+            _ => {}
+        }
+        buf.clear();
+    }
+
+    Err(Error::Invalid("No p:sld element found in slide XML".into()))
+}
+
+/// Convert a generated SlideTransition to the handwritten Transition type.
+#[cfg(feature = "pml-transitions")]
+fn convert_transition(trans: &types::SlideTransition) -> Transition {
+    // Get speed
+    let speed = trans
+        .spd
+        .as_ref()
+        .map_or(TransitionSpeed::Medium, |s| match s {
+            types::STTransitionSpeed::Slow => TransitionSpeed::Slow,
+            types::STTransitionSpeed::Med => TransitionSpeed::Medium,
+            types::STTransitionSpeed::Fast => TransitionSpeed::Fast,
+        });
+
+    // Determine transition type by checking which field is Some
+    let transition_type = if trans.fade.is_some() {
+        Some(TransitionType::Fade)
+    } else if trans.push.is_some() {
+        Some(TransitionType::Push)
+    } else if trans.wipe.is_some() {
+        Some(TransitionType::Wipe)
+    } else if trans.split.is_some() {
+        Some(TransitionType::Split)
+    } else if trans.blinds.is_some() {
+        Some(TransitionType::Blinds)
+    } else if trans.checker.is_some() {
+        Some(TransitionType::Checker)
+    } else if trans.circle.is_some() {
+        Some(TransitionType::Circle)
+    } else if trans.dissolve.is_some() {
+        Some(TransitionType::Dissolve)
+    } else if trans.comb.is_some() {
+        Some(TransitionType::Comb)
+    } else if trans.cover.is_some() {
+        Some(TransitionType::Cover)
+    } else if trans.cut.is_some() {
+        Some(TransitionType::Cut)
+    } else if trans.diamond.is_some() {
+        Some(TransitionType::Diamond)
+    } else if trans.plus.is_some() {
+        Some(TransitionType::Plus)
+    } else if trans.random.is_some() {
+        Some(TransitionType::Random)
+    } else if trans.strips.is_some() {
+        Some(TransitionType::Strips)
+    } else if trans.wedge.is_some() {
+        Some(TransitionType::Wedge)
+    } else if trans.wheel.is_some() {
+        Some(TransitionType::Wheel)
+    } else if trans.zoom.is_some() {
+        Some(TransitionType::Zoom)
+    } else {
+        None
+    };
+
+    Transition {
+        transition_type,
+        speed,
+        advance_on_click: trans.adv_click.unwrap_or(true),
+        advance_time_ms: trans.adv_tm,
+    }
+}
+
+/// Extract tables from graphic frames in a slide.
+///
+/// Tables are embedded in `p:graphicFrame` elements containing DrawingML `a:tbl`.
+/// TODO: Implement table extraction from graphic frames using extra_children.
+fn extract_tables_from_slide(_slide: &types::Slide) -> Vec<Table> {
+    // Table extraction from graphic frames requires parsing extra_children
+    // which contain the DrawingML table content. For now, return empty.
+    // Tables will be supported in a future update.
+    Vec::new()
 }
 
 #[cfg(test)]

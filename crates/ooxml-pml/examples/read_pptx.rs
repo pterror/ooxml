@@ -4,7 +4,7 @@
 //!
 //! Run with: cargo run --example read_pptx -- path/to/presentation.pptx
 
-use ooxml_pml::Presentation;
+use ooxml_pml::{PictureExt, Presentation, ShapeExt};
 use std::env;
 
 fn main() -> ooxml_pml::Result<()> {
@@ -29,12 +29,13 @@ fn main() -> ooxml_pml::Result<()> {
 
         // Print all shapes with text
         for shape in slide.shapes() {
-            if let Some(name) = shape.name() {
+            let name = shape.name();
+            if !name.is_empty() {
                 print!("[{}] ", name);
             }
             if let Some(text) = shape.text() {
                 println!("{}", text);
-            } else if shape.name().is_some() {
+            } else if !name.is_empty() {
                 println!("(no text)");
             }
         }
@@ -57,8 +58,11 @@ fn main() -> ooxml_pml::Result<()> {
         if !pictures.is_empty() {
             println!("\n--- Pictures ({}) ---", pictures.len());
             for pic in pictures {
-                print!("  {}", pic.rel_id());
-                if let Some(name) = pic.name() {
+                if let Some(rel_id) = pic.embed_rel_id() {
+                    print!("  {}", rel_id);
+                }
+                let name = pic.name();
+                if !name.is_empty() {
                     print!(" ({})", name);
                 }
                 if let Some(descr) = pic.description() {
