@@ -47,6 +47,7 @@ DocumentBuilder handles common cases but doesn't expose:
 - [x] **Remove unnecessary Box in Vec<Box<T>>** - Codegen now generates `Vec<T>` for Vec elements since the Vec provides heap indirection. Box is only used for non-Vec fields that need indirection (recursive types, large structs). Clippy `vec_box` lint now passes.
 - [x] **Handle repeating choice patterns** - Fixed codegen to handle `OneOrMore(Group(Choice([...])))` patterns. Font/Fill types now have proper optional fields for each choice alternative.
 - [x] **Fix SML --no-default-features build** - Made `ooxml-xml` required (not optional), and gated styling-related writer functions behind `#[cfg(feature = "sml-styling")]`.
+- [x] **Fix WML/DML --no-default-features build** - Fixed WML error.rs match arm cfg gates, gated DML ext traits behind `dml-text` feature.
 
 ## Codegen Performance
 
