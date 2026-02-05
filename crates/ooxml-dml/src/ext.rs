@@ -365,4 +365,157 @@ mod tests {
         assert!(!run.is_underlined());
         assert_eq!(run.text(), "Bold Italic");
     }
+
+    #[cfg(feature = "dml-tables")]
+    fn make_cell(text: &str) -> CTTableCell {
+        CTTableCell {
+            row_span: None,
+            grid_span: None,
+            h_merge: None,
+            v_merge: None,
+            id: None,
+            tx_body: Some(Box::new(TextBody {
+                body_pr: Box::new(CTTextBodyProperties::default()),
+                lst_style: None,
+                p: vec![TextParagraph {
+                    #[cfg(feature = "dml-text")]
+                    p_pr: None,
+                    text_run: vec![EGTextRun::R(Box::new(TextRun {
+                        #[cfg(feature = "dml-text")]
+                        r_pr: None,
+                        #[cfg(feature = "dml-text")]
+                        t: text.to_string(),
+                        #[cfg(feature = "extra-children")]
+                        extra_children: Vec::new(),
+                    }))],
+                    #[cfg(feature = "dml-text")]
+                    end_para_r_pr: None,
+                    #[cfg(feature = "extra-children")]
+                    extra_children: Vec::new(),
+                }],
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })),
+            tc_pr: None,
+            ext_lst: None,
+            #[cfg(feature = "extra-attrs")]
+            extra_attrs: Default::default(),
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
+    #[cfg(feature = "dml-tables")]
+    fn make_table(data: &[&[&str]]) -> CTTable {
+        let rows: Vec<CTTableRow> = data
+            .iter()
+            .map(|row_data| CTTableRow {
+                height: "370840".to_string(), // ~0.26 inches
+                tc: row_data.iter().map(|&text| make_cell(text)).collect(),
+                ext_lst: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })
+            .collect();
+
+        let col_count = data.first().map(|r| r.len()).unwrap_or(0);
+        let grid_cols: Vec<CTTableCol> = (0..col_count)
+            .map(|_| CTTableCol {
+                width: "914400".to_string(), // 1 inch
+                ext_lst: None,
+                #[cfg(feature = "extra-attrs")]
+                extra_attrs: Default::default(),
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            })
+            .collect();
+
+        CTTable {
+            tbl_pr: None,
+            tbl_grid: Box::new(CTTableGrid {
+                grid_col: grid_cols,
+                #[cfg(feature = "extra-children")]
+                extra_children: Vec::new(),
+            }),
+            tr: rows,
+            #[cfg(feature = "extra-children")]
+            extra_children: Vec::new(),
+        }
+    }
+
+    #[cfg(feature = "dml-tables")]
+    #[test]
+    fn test_table_ext() {
+        let table = make_table(&[&["A", "B", "C"], &["1", "2", "3"], &["X", "Y", "Z"]]);
+
+        assert_eq!(table.row_count(), 3);
+        assert_eq!(table.col_count(), 3);
+        assert_eq!(table.rows().len(), 3);
+
+        // Test cell access
+        assert_eq!(table.cell(0, 0).unwrap().text(), "A");
+        assert_eq!(table.cell(1, 1).unwrap().text(), "2");
+        assert_eq!(table.cell(2, 2).unwrap().text(), "Z");
+        assert!(table.cell(3, 0).is_none()); // Out of bounds
+
+        // Test text grid
+        let grid = table.to_text_grid();
+        assert_eq!(
+            grid,
+            vec![
+                vec!["A", "B", "C"],
+                vec!["1", "2", "3"],
+                vec!["X", "Y", "Z"],
+            ]
+        );
+
+        // Test text output
+        assert_eq!(table.text(), "A\tB\tC\n1\t2\t3\nX\tY\tZ");
+    }
+
+    #[cfg(feature = "dml-tables")]
+    #[test]
+    fn test_table_row_ext() {
+        let table = make_table(&[&["Hello", "World"]]);
+        let row = &table.tr[0];
+
+        assert_eq!(row.cells().len(), 2);
+        assert_eq!(row.cell(0).unwrap().text(), "Hello");
+        assert_eq!(row.cell(1).unwrap().text(), "World");
+        assert!(row.cell(2).is_none());
+        assert_eq!(row.height_emu(), Some(370840));
+    }
+
+    #[cfg(feature = "dml-tables")]
+    #[test]
+    fn test_table_cell_ext() {
+        let cell = make_cell("Test Content");
+
+        assert_eq!(cell.text(), "Test Content");
+        assert!(cell.text_body().is_some());
+        assert_eq!(cell.row_span(), 1);
+        assert_eq!(cell.col_span(), 1);
+        assert!(!cell.has_row_span());
+        assert!(!cell.has_col_span());
+        assert!(!cell.is_h_merge());
+        assert!(!cell.is_v_merge());
+    }
+
+    #[cfg(feature = "dml-tables")]
+    #[test]
+    fn test_table_cell_spanning() {
+        let mut cell = make_cell("Merged");
+        cell.row_span = Some(2);
+        cell.grid_span = Some(3);
+        cell.h_merge = Some(true);
+
+        assert_eq!(cell.row_span(), 2);
+        assert_eq!(cell.col_span(), 3);
+        assert!(cell.has_row_span());
+        assert!(cell.has_col_span());
+        assert!(cell.is_h_merge());
+        assert!(!cell.is_v_merge());
+    }
 }
