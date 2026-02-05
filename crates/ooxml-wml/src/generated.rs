@@ -15,10 +15,10 @@ pub mod ns {
     pub const W10: &str = "urn:schemas-microsoft-com:office:word";
     /// Namespace prefix: x
     pub const X: &str = "urn:schemas-microsoft-com:office:excel";
-    /// Namespace prefix: m
-    pub const M: &str = "http://schemas.openxmlformats.org/officeDocument/2006/math";
     /// Namespace prefix: r
     pub const R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    /// Namespace prefix: m
+    pub const M: &str = "http://schemas.openxmlformats.org/officeDocument/2006/math";
     /// Namespace prefix: sl
     pub const SL: &str = "http://schemas.openxmlformats.org/schemaLibrary/2006/main";
     /// Default namespace (prefix: w)
@@ -485,6 +485,8 @@ pub type STFixedPercentage = String;
 pub type STPositivePercentage = String;
 
 pub type STPositiveFixedPercentage = String;
+
+pub type STRelationshipId = String;
 
 pub type STLongHexNumber = Vec<u8>;
 
@@ -7796,6 +7798,9 @@ pub struct CTControl {
     #[serde(rename = "@w:shapeid")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shapeid: Option<STString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -7836,13 +7841,17 @@ pub struct CTBackground {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTRel {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -7897,11 +7906,13 @@ pub struct CTPicture {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTObjectEmbed {
     #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
@@ -7925,6 +7936,8 @@ pub struct CTObjectLink {
     #[serde(rename = "@w:drawAspect")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub draw_aspect: Option<STObjectDrawAspect>,
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@w:progId")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub prog_id: Option<STString>,
@@ -8064,6 +8077,9 @@ pub struct Hyperlink {
     #[serde(rename = "@w:anchor")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub anchor: Option<STString>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(skip)]
     #[serde(default)]
     pub paragraph_content: Vec<ParagraphContent>,
@@ -8364,6 +8380,9 @@ pub struct CTPageBorder {
     #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8401,6 +8420,15 @@ pub struct CTBottomPageBorder {
     #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
+    #[serde(rename = "@r:bottomLeft")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bottom_left: Option<STRelationshipId>,
+    #[serde(rename = "@r:bottomRight")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bottom_right: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8438,6 +8466,15 @@ pub struct CTTopPageBorder {
     #[serde(rename = "@w:frame")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<OnOff>,
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
+    #[serde(rename = "@r:topLeft")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub top_left: Option<STRelationshipId>,
+    #[serde(rename = "@r:topRight")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub top_right: Option<STRelationshipId>,
     /// Unknown attributes captured for roundtrip fidelity.
     #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
@@ -8576,6 +8613,8 @@ pub struct DocumentGrid {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HeaderFooterReference {
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@w:type")]
     pub r#type: STHdrFtr,
     /// Unknown attributes captured for roundtrip fidelity.
@@ -9992,9 +10031,19 @@ pub struct EGParaRPrTrackChanges {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTAltChunk {
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "altChunkPr")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub alt_chunk_pr: Option<Box<CTAltChunkPr>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -12384,6 +12433,9 @@ pub struct CTCharacterSpacing {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTSaveThroughXslt {
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[serde(rename = "@w:solutionID")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solution_i_d: Option<STString>,
@@ -13665,8 +13717,10 @@ pub struct CTFontSig {
     pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTFontRel {
+    #[serde(rename = "@r:id")]
+    pub id: STRelationshipId,
     #[serde(rename = "@w:fontKey")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub font_key: Option<Guid>,

@@ -15,10 +15,10 @@ pub mod ns {
     pub const W10: &str = "urn:schemas-microsoft-com:office:word";
     /// Namespace prefix: x
     pub const X: &str = "urn:schemas-microsoft-com:office:excel";
-    /// Namespace prefix: a
-    pub const A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
     /// Namespace prefix: r
     pub const R: &str = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
+    /// Namespace prefix: a
+    pub const A: &str = "http://schemas.openxmlformats.org/drawingml/2006/main";
 }
 
 pub type Language = String;
@@ -479,6 +479,8 @@ pub type STFixedPercentage = String;
 pub type STPositivePercentage = String;
 
 pub type STPositiveFixedPercentage = String;
+
+pub type STRelationshipId = String;
 
 pub type STStyleMatrixColumnIndex = u32;
 
@@ -5383,31 +5385,11 @@ pub enum EGTextRun {
     Fld(Box<CTTextField>),
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTAudioFile {
     #[cfg(feature = "dml-media")]
-    #[serde(rename = "@contentType")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub content_type: Option<String>,
-    #[serde(rename = "extLst")]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
-    /// Unknown attributes captured for roundtrip fidelity.
-    #[cfg(feature = "extra-attrs")]
-    #[serde(skip)]
-    #[cfg(feature = "extra-attrs")]
-    #[serde(default)]
-    #[cfg(feature = "extra-attrs")]
-    pub extra_attrs: std::collections::HashMap<String, String>,
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
-    #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
-}
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTVideoFile {
+    #[serde(rename = "@r:link")]
+    pub link: STRelationshipId,
     #[cfg(feature = "dml-media")]
     #[serde(rename = "@contentType")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5429,11 +5411,46 @@ pub struct CTVideoFile {
     pub extra_children: Vec<ooxml_xml::PositionedNode>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct CTQuickTimeFile {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTVideoFile {
+    #[cfg(feature = "dml-media")]
+    #[serde(rename = "@r:link")]
+    pub link: STRelationshipId,
+    #[cfg(feature = "dml-media")]
+    #[serde(rename = "@contentType")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content_type: Option<String>,
     #[serde(rename = "extLst")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
+    /// Unknown child elements captured for roundtrip fidelity.
+    #[cfg(feature = "extra-children")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-children")]
+    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CTQuickTimeFile {
+    #[serde(rename = "@r:link")]
+    pub link: STRelationshipId,
+    #[serde(rename = "extLst")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ext_lst: Option<Box<CTOfficeArtExtensionList>>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
+    #[serde(skip)]
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
     /// Unknown child elements captured for roundtrip fidelity.
     #[cfg(feature = "extra-children")]
     #[serde(skip)]
@@ -6269,15 +6286,25 @@ pub struct CTColorMRU {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct AAGBlob {
-    /// Unknown child elements captured for roundtrip fidelity.
-    #[cfg(feature = "extra-children")]
+    #[serde(rename = "@r:embed")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embed: Option<STRelationshipId>,
+    #[serde(rename = "@r:link")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub link: Option<STRelationshipId>,
+    /// Unknown attributes captured for roundtrip fidelity.
+    #[cfg(feature = "extra-attrs")]
     #[serde(skip)]
-    #[cfg(feature = "extra-children")]
-    pub extra_children: Vec<ooxml_xml::PositionedNode>,
+    #[cfg(feature = "extra-attrs")]
+    #[serde(default)]
+    #[cfg(feature = "extra-attrs")]
+    pub extra_attrs: std::collections::HashMap<String, String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CTEmbeddedWAVAudioFile {
+    #[serde(rename = "@r:embed")]
+    pub embed: STRelationshipId,
     #[serde(rename = "@name")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
@@ -6292,6 +6319,10 @@ pub struct CTEmbeddedWAVAudioFile {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct CTHyperlink {
+    #[cfg(feature = "dml-text")]
+    #[serde(rename = "@r:id")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<STRelationshipId>,
     #[cfg(feature = "dml-text")]
     #[serde(rename = "@invalidUrl")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -8334,6 +8365,14 @@ pub struct CTStretchInfoProperties {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct Blip {
+    #[cfg(feature = "dml-fills")]
+    #[serde(rename = "@r:embed")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embed: Option<STRelationshipId>,
+    #[cfg(feature = "dml-fills")]
+    #[serde(rename = "@r:link")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub link: Option<STRelationshipId>,
     #[cfg(feature = "dml-fills")]
     #[serde(rename = "@cstate")]
     #[serde(default, skip_serializing_if = "Option::is_none")]

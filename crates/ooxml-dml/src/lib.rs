@@ -8,18 +8,31 @@
 //!
 //! # Text Content
 //!
-//! DrawingML text is structured as paragraphs containing runs:
+//! DrawingML text is structured as paragraphs containing runs. Use the
+//! extension traits from [`ext`] for convenient access:
 //!
-//! ```
-//! use ooxml_dml::text::{Paragraph, Run};
+//! ```ignore
+//! use ooxml_dml::ext::{TextBodyExt, TextParagraphExt, TextRunExt};
+//! use ooxml_dml::types::TextBody;
 //!
-//! let mut para = Paragraph::new();
-//! para.add_run(Run::new("Hello "));
-//! para.add_run(Run::new("World"));
-//! assert_eq!(para.text(), "Hello World");
+//! fn process_text(body: &TextBody) {
+//!     for para in body.paragraphs() {
+//!         println!("Paragraph: {}", para.text());
+//!         for run in para.runs() {
+//!             if run.is_bold() {
+//!                 println!("  Bold: {}", run.text());
+//!             }
+//!         }
+//!     }
+//! }
 //! ```
 
 pub mod error;
+pub mod ext;
+
+// Legacy text module - DEPRECATED, prefer using generated types with ext traits.
+// This module is being phased out in favor of generated types from ECMA-376 schemas.
+// Use `ooxml_dml::types::TextBody` with `TextBodyExt` trait for new code.
 pub mod text;
 
 // Generated types from ECMA-376 schema.
@@ -36,7 +49,6 @@ pub mod generated_serializers;
 pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
-pub use text::{
-    Paragraph, ParagraphProperties, Run, RunProperties, TextAlignment, parse_text_body,
-    parse_text_body_from_reader,
-};
+#[cfg(feature = "dml-text")]
+pub use ext::TextRunExt;
+pub use ext::{TextBodyExt, TextParagraphExt};

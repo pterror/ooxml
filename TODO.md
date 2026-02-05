@@ -146,6 +146,8 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
   - SML writer migration is now unblocked
 - [x] **Port feature flags to DML** - Added 11 feature flags and ~350 field mappings for 45 DML types. 977 feature annotations generated.
 - [x] **Port extra-attrs/extra-children to DML** - Working. 384 extra-attrs, 292 extra-children annotations.
+- [x] **Add relationship attribute support** - WML/DML build.rs now include `shared-relationshipReference.rnc` for `r:id`, `r:embed`, etc. attributes. Types like `Hyperlink`, `HeaderFooterReference`, `CTHyperlink` now have proper `id` field instead of using `extra_attrs`.
+- [x] **Add DML extension traits** - Created `ext.rs` with `TextBodyExt`, `TextParagraphExt`, `TextRunExt` traits for generated types. Legacy `text.rs` module marked as deprecated.
 - [ ] **Replace handwritten DML types** - Swap with generated types, update ext traits.
 - [ ] **Delete handwritten DML code** - Remove old implementations once tests pass.
 

@@ -1042,20 +1042,16 @@ impl DocumentBuilder {
 
                 // Add header references
                 for header in self.headers.values() {
-                    let mut hdr_ref = types::HeaderFooterReference {
+                    let hdr_ref = types::HeaderFooterReference {
+                        id: header.rel_id.clone(),
                         r#type: match header.header_type {
                             HeaderFooterType::Default => types::STHdrFtr::Default,
                             HeaderFooterType::First => types::STHdrFtr::First,
                             HeaderFooterType::Even => types::STHdrFtr::Even,
                         },
                         #[cfg(feature = "extra-attrs")]
-                        extra_attrs: {
-                            let mut m = std::collections::HashMap::new();
-                            m.insert("r:id".to_string(), header.rel_id.clone());
-                            m
-                        },
+                        extra_attrs: std::collections::HashMap::new(),
                     };
-                    let _ = &mut hdr_ref; // suppress unused mut warning
                     sect_pr
                         .header_footer_refs
                         .push(types::HeaderFooterRef::HeaderReference(Box::new(hdr_ref)));
@@ -1063,20 +1059,16 @@ impl DocumentBuilder {
 
                 // Add footer references
                 for footer in self.footers.values() {
-                    let mut ftr_ref = types::HeaderFooterReference {
+                    let ftr_ref = types::HeaderFooterReference {
+                        id: footer.rel_id.clone(),
                         r#type: match footer.footer_type {
                             HeaderFooterType::Default => types::STHdrFtr::Default,
                             HeaderFooterType::First => types::STHdrFtr::First,
                             HeaderFooterType::Even => types::STHdrFtr::Even,
                         },
                         #[cfg(feature = "extra-attrs")]
-                        extra_attrs: {
-                            let mut m = std::collections::HashMap::new();
-                            m.insert("r:id".to_string(), footer.rel_id.clone());
-                            m
-                        },
+                        extra_attrs: std::collections::HashMap::new(),
                     };
-                    let _ = &mut ftr_ref; // suppress unused mut warning
                     sect_pr
                         .header_footer_refs
                         .push(types::HeaderFooterRef::FooterReference(Box::new(ftr_ref)));

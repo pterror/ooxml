@@ -22,6 +22,11 @@ impl ToXml for CTAudioFile {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         #[cfg(feature = "dml-media")]
+        {
+            let val = &self.link;
+            start.push_attribute(("r:link", val.as_str()));
+        }
+        #[cfg(feature = "dml-media")]
         if let Some(ref val) = self.content_type {
             start.push_attribute(("contentType", val.as_str()));
         }
@@ -76,6 +81,11 @@ impl ToXml for CTVideoFile {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
         #[cfg(feature = "dml-media")]
+        {
+            let val = &self.link;
+            start.push_attribute(("r:link", val.as_str()));
+        }
+        #[cfg(feature = "dml-media")]
         if let Some(ref val) = self.content_type {
             start.push_attribute(("contentType", val.as_str()));
         }
@@ -127,6 +137,19 @@ impl ToXml for CTVideoFile {
 }
 
 impl ToXml for CTQuickTimeFile {
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        {
+            let val = &self.link;
+            start.push_attribute(("r:link", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
+    }
+
     fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
         #[cfg(feature = "extra-children")]
         let mut extra_iter = self.extra_children.iter().peekable();
@@ -2597,19 +2620,22 @@ impl ToXml for CTColorMRU {
 }
 
 impl ToXml for AAGBlob {
-    fn write_children<W: Write>(&self, writer: &mut Writer<W>) -> Result<(), SerializeError> {
-        #[cfg(feature = "extra-children")]
-        for child in &self.extra_children {
-            child.node.write_to(writer).map_err(SerializeError::from)?;
+    fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
+        let mut start = start;
+        if let Some(ref val) = self.embed {
+            start.push_attribute(("r:embed", val.as_str()));
         }
-        Ok(())
+        if let Some(ref val) = self.link {
+            start.push_attribute(("r:link", val.as_str()));
+        }
+        #[cfg(feature = "extra-attrs")]
+        for (key, value) in &self.extra_attrs {
+            start.push_attribute((key.as_str(), value.as_str()));
+        }
+        start
     }
 
     fn is_empty_element(&self) -> bool {
-        #[cfg(feature = "extra-children")]
-        if !self.extra_children.is_empty() {
-            return false;
-        }
         true
     }
 }
@@ -2617,6 +2643,10 @@ impl ToXml for AAGBlob {
 impl ToXml for CTEmbeddedWAVAudioFile {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        {
+            let val = &self.embed;
+            start.push_attribute(("r:embed", val.as_str()));
+        }
         if let Some(ref val) = self.name {
             start.push_attribute(("name", val.as_str()));
         }
@@ -2635,6 +2665,10 @@ impl ToXml for CTEmbeddedWAVAudioFile {
 impl ToXml for CTHyperlink {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-text")]
+        if let Some(ref val) = self.id {
+            start.push_attribute(("r:id", val.as_str()));
+        }
         #[cfg(feature = "dml-text")]
         if let Some(ref val) = self.invalid_url {
             start.push_attribute(("invalidUrl", val.as_str()));
@@ -6979,6 +7013,14 @@ impl ToXml for EGFillModeProperties {
 impl ToXml for Blip {
     fn write_attrs<'a>(&self, start: BytesStart<'a>) -> BytesStart<'a> {
         let mut start = start;
+        #[cfg(feature = "dml-fills")]
+        if let Some(ref val) = self.embed {
+            start.push_attribute(("r:embed", val.as_str()));
+        }
+        #[cfg(feature = "dml-fills")]
+        if let Some(ref val) = self.link {
+            start.push_attribute(("r:link", val.as_str()));
+        }
         #[cfg(feature = "dml-fills")]
         if let Some(ref val) = self.cstate {
             {

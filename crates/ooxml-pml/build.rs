@@ -20,6 +20,9 @@ fn main() {
     // Paths to schemas
     let pml_path = format!("{}/pml.rnc", spec_dir);
     let shared_path = format!("{}/shared-commonSimpleTypes.rnc", spec_dir);
+    // Note: shared-relationshipReference.rnc is NOT included here because PML
+    // imports DML types (which include STRelationshipId). Adding it would cause
+    // duplicate type definitions and ambiguous imports.
 
     // Only regenerate if schemas change
     println!("cargo::rerun-if-changed={}", pml_path);
