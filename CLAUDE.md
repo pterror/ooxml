@@ -139,6 +139,20 @@ OOXML_REGENERATE=1 OOXML_GENERATE_PARSERS=1 OOXML_GENERATE_SERIALIZERS=1 \
 
 After regenerating, commit all changed `generated*.rs` files in the same commit (or immediately after) the codegen change.
 
+## Static Analysis for Config Files
+
+The codegen includes static analysis to detect unmapped types and fields in `ooxml-names.yaml` and `ooxml-features.yaml`. Run during regeneration:
+
+```bash
+OOXML_ANALYZE=1 OOXML_REGENERATE=1 cargo build -p ooxml-wml -p ooxml-sml -p ooxml-pml -p ooxml-dml
+```
+
+This reports:
+- **Unmapped types**: Types in schema without name mappings (will use default PascalCase naming)
+- **Unmapped fields**: Fields in schema without feature mappings (will always be included)
+
+**Goal**: Once all types/fields are mapped, enable `warn_unmapped: true` in `CodegenConfig` to fail builds on new unmapped items. This ensures config files stay in sync with schema changes.
+
 ## Negative Constraints
 
 Do not:
