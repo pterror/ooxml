@@ -124,8 +124,9 @@ Replace ~8,750 lines of handwritten WML parsing (document.rs + styles.rs) with c
 - [x] **Add PML parser/serializer generation** - Parser and serializer modules now compile and are enabled. Cross-crate DML type references resolved via `cross_crate_type_prefix` config with module-aware name mapping lookups.
 - [x] **Port feature flags to PML** - Added 10 feature flags and ~200 field mappings for 25 PML types. 630 feature annotations generated.
 - [x] **Port extra-attrs/extra-children to PML** - Working. 285 extra-attrs, 226 extra-children annotations.
-- [ ] **Replace handwritten PML types** - Swap with generated types, update ext traits.
-- [ ] **Delete handwritten PML code** - Remove old implementations once tests pass.
+- [x] **Replace handwritten PML types** - Slide now wraps `types::Slide`. Shape and Picture re-exported from `types`. Users access shape/picture methods via `ShapeExt`/`PictureExt` traits. ~280 lines of handwritten parsing code removed.
+- [ ] **Delete handwritten PML code** - Table extraction still uses handwritten code (tables in graphic frames need extra_children parsing). Table/TableRow/TableCell remain handwritten for now.
+- [ ] **Add table extraction from graphic frames** - Parse DrawingML tables from `extra_children` in graphic frames.
 
 ### DML (Drawing)
 - [x] **Add DML parser/serializer generation** - Parser and serializer modules now compile and are enabled in lib.rs. Fixed codegen issues:
