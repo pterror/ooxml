@@ -44,5 +44,7 @@ pub mod generated_serializers;
 pub use generated_serializers as serializers;
 
 pub use error::{Error, Result};
+#[cfg(feature = "dml-tables")]
+pub use ext::{TableCellExt, TableExt, TableRowExt};
 #[cfg(feature = "dml-text")]
 pub use ext::{TextBodyExt, TextParagraphExt, TextRunExt};

@@ -7,7 +7,6 @@ use crate::ext::{CommonSlideDataExt, GroupShapeExt, PictureExt, ShapeExt};
 use crate::parsers::FromXml;
 use crate::types;
 use ooxml_dml::ext::{TextBodyExt, TextParagraphExt, TextRunExt};
-use ooxml_dml::types::TextParagraph;
 use ooxml_opc::{Package, Relationships};
 use quick_xml::Reader;
 use quick_xml::events::Event;
@@ -695,134 +694,73 @@ impl Slide {
 /// A table on a slide.
 ///
 /// Represents a table embedded via DrawingML `a:tbl` element inside a `p:graphicFrame`.
+/// This is a thin wrapper around [`ooxml_dml::types::CTTable`] that adds the frame name.
+///
+/// Use the [`ooxml_dml::TableExt`], [`ooxml_dml::TableRowExt`], and [`ooxml_dml::TableCellExt`]
+/// traits for convenient access to rows, cells, and text content.
 #[derive(Debug, Clone)]
 pub struct Table {
-    /// Table name (from cNvPr).
+    /// Table name (from graphic frame's cNvPr).
     name: Option<String>,
-    /// Table rows.
-    rows: Vec<TableRow>,
+    /// The underlying DrawingML table.
+    inner: ooxml_dml::types::CTTable,
 }
 
 impl Table {
-    /// Get the table name.
+    /// Get the table name (from the containing graphic frame).
     pub fn name(&self) -> Option<&str> {
         self.name.as_deref()
     }
 
+    /// Get a reference to the underlying DrawingML table.
+    pub fn inner(&self) -> &ooxml_dml::types::CTTable {
+        &self.inner
+    }
+
+    /// Get a mutable reference to the underlying DrawingML table.
+    pub fn inner_mut(&mut self) -> &mut ooxml_dml::types::CTTable {
+        &mut self.inner
+    }
+
+    /// Consume the wrapper and return the underlying DrawingML table.
+    pub fn into_inner(self) -> ooxml_dml::types::CTTable {
+        self.inner
+    }
+
     /// Get all rows in the table.
-    pub fn rows(&self) -> &[TableRow] {
-        &self.rows
+    pub fn rows(&self) -> &[ooxml_dml::types::CTTableRow] {
+        use ooxml_dml::TableExt;
+        self.inner.rows()
     }
 
     /// Get the number of rows.
     pub fn row_count(&self) -> usize {
-        self.rows.len()
+        use ooxml_dml::TableExt;
+        self.inner.row_count()
     }
 
-    /// Get the number of columns (from first row, or 0 if empty).
+    /// Get the number of columns.
     pub fn col_count(&self) -> usize {
-        self.rows.first().map(|r| r.cells.len()).unwrap_or(0)
+        use ooxml_dml::TableExt;
+        self.inner.col_count()
     }
 
     /// Get a cell by row and column index (0-based).
-    pub fn cell(&self, row: usize, col: usize) -> Option<&TableCell> {
-        self.rows.get(row).and_then(|r| r.cells.get(col))
+    pub fn cell(&self, row: usize, col: usize) -> Option<&ooxml_dml::types::CTTableCell> {
+        use ooxml_dml::TableExt;
+        self.inner.cell(row, col)
     }
 
     /// Get all cell text as a 2D vector.
     pub fn to_text_grid(&self) -> Vec<Vec<String>> {
-        self.rows
-            .iter()
-            .map(|row| row.cells.iter().map(|c| c.text()).collect())
-            .collect()
+        use ooxml_dml::TableExt;
+        self.inner.to_text_grid()
     }
 
     /// Get plain text representation (tab-separated values).
     pub fn text(&self) -> String {
-        self.rows
-            .iter()
-            .map(|row| {
-                row.cells
-                    .iter()
-                    .map(|c| c.text())
-                    .collect::<Vec<_>>()
-                    .join("\t")
-            })
-            .collect::<Vec<_>>()
-            .join("\n")
-    }
-}
-
-/// A row in a table.
-#[derive(Debug, Clone)]
-pub struct TableRow {
-    /// Cells in this row.
-    cells: Vec<TableCell>,
-    /// Row height in EMUs (if specified).
-    height: Option<i64>,
-}
-
-impl TableRow {
-    /// Get all cells in this row.
-    pub fn cells(&self) -> &[TableCell] {
-        &self.cells
-    }
-
-    /// Get a cell by column index (0-based).
-    pub fn cell(&self, col: usize) -> Option<&TableCell> {
-        self.cells.get(col)
-    }
-
-    /// Get the row height in EMUs (if specified).
-    pub fn height(&self) -> Option<i64> {
-        self.height
-    }
-}
-
-/// A cell in a table.
-#[derive(Debug, Clone)]
-pub struct TableCell {
-    /// Text paragraphs in the cell.
-    paragraphs: Vec<TextParagraph>,
-    /// Row span (number of rows this cell spans).
-    row_span: u32,
-    /// Column span (number of columns this cell spans).
-    col_span: u32,
-}
-
-impl TableCell {
-    /// Get the text paragraphs.
-    pub fn paragraphs(&self) -> &[TextParagraph] {
-        &self.paragraphs
-    }
-
-    /// Get the cell text (paragraphs joined with newlines).
-    pub fn text(&self) -> String {
-        self.paragraphs
-            .iter()
-            .map(|p| p.text())
-            .collect::<Vec<_>>()
-            .join("\n")
-    }
-
-    /// Get the row span.
-    pub fn row_span(&self) -> u32 {
-        self.row_span
-    }
-
-    /// Get the column span.
-    pub fn col_span(&self) -> u32 {
-        self.col_span
-    }
-
-    /// Check if this cell spans multiple rows.
-    pub fn has_row_span(&self) -> bool {
-        self.row_span > 1
-    }
-
-    /// Check if this cell spans multiple columns.
-    pub fn has_col_span(&self) -> bool {
-        self.col_span > 1
+        use ooxml_dml::TableExt;
+        self.inner.text()
     }
 }
 
@@ -1235,41 +1173,16 @@ fn parse_table_element(
     // Use the RawXmlElement::parse_as helper to convert to typed struct
     elem.parse_as::<CTTable>()
         .ok()
-        .map(|ct_table| convert_ct_table(ct_table, frame_name))
+        .map(|ct_table| wrap_ct_table(ct_table, frame_name))
 }
 
-/// Convert a DML CTTable to our Table type.
+/// Wrap a DML CTTable in our Table type with the frame name.
 #[cfg(feature = "extra-children")]
-fn convert_ct_table(ct_table: ooxml_dml::types::CTTable, name: Option<String>) -> Table {
-    let rows = ct_table
-        .tr
-        .iter()
-        .map(|tr| {
-            let cells = tr
-                .tc
-                .iter()
-                .map(|tc| {
-                    let paragraphs = tc
-                        .tx_body
-                        .as_ref()
-                        .map(|tb| tb.p.clone())
-                        .unwrap_or_default();
-                    TableCell {
-                        paragraphs,
-                        row_span: tc.row_span.map(|v| v as u32).unwrap_or(1),
-                        col_span: tc.grid_span.map(|v| v as u32).unwrap_or(1),
-                    }
-                })
-                .collect();
-
-            // tr.height is STCoordinate (String), parse to i64
-            let height = tr.height.parse::<i64>().ok();
-
-            TableRow { cells, height }
-        })
-        .collect();
-
-    Table { name, rows }
+fn wrap_ct_table(ct_table: ooxml_dml::types::CTTable, name: Option<String>) -> Table {
+    Table {
+        name,
+        inner: ct_table,
+    }
 }
 
 #[cfg(test)]

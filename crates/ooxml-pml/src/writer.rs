@@ -1400,6 +1400,7 @@ mod tests {
 
     #[test]
     fn test_roundtrip_with_table() {
+        use ooxml_dml::TableCellExt;
         use std::io::Cursor;
 
         let mut pres = PresentationBuilder::new();
