@@ -103,7 +103,7 @@ impl RoundtripResult {
 /// A difference found during XML comparison.
 #[derive(Debug, Clone)]
 pub struct XmlDifference {
-    /// Path to the element (e.g., "/worksheet/sheetData/row[1]/c[2]").
+    /// Path to the element (e.g., `/worksheet/sheetData/row[1]/c[2]`).
     pub path: String,
     /// Type of difference.
     pub kind: DifferenceKind,

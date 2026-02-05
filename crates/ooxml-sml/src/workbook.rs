@@ -787,7 +787,7 @@ impl NumberFormat {
     /// Check if this format represents a date/time format.
     ///
     /// Date formats contain patterns like y, m, d, h, s but not in contexts
-    /// like [Red] color codes or escaped characters.
+    /// like `[Red]` color codes or escaped characters.
     pub fn is_date_format(&self) -> bool {
         is_date_format_code(&self.code)
     }

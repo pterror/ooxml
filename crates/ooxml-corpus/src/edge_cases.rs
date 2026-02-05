@@ -132,7 +132,7 @@ pub struct EdgeCase {
     pub severity: Severity,
     /// Human-readable description with specifics.
     pub description: String,
-    /// Optional location info (e.g., "paragraph 42", "table at /w:body/w:tbl[3]").
+    /// Optional location info (e.g., "paragraph 42", "table at `/w:body/w:tbl[3]`").
     pub location: Option<String>,
     /// Numeric value if applicable (e.g., nesting depth, count).
     pub value: Option<u32>,
