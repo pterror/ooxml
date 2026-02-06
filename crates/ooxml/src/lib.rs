@@ -8,8 +8,8 @@
 //!
 //! Format-specific support is in separate crates:
 //! - `ooxml-wml` - WordprocessingML (DOCX)
-//! - `ooxml-sml` - SpreadsheetML (XLSX) - planned
-//! - `ooxml-pml` - PresentationML (PPTX) - planned
+//! - `ooxml-sml` - SpreadsheetML (XLSX)
+//! - `ooxml-pml` - PresentationML (PPTX)
 //!
 //! # Example
 //!
