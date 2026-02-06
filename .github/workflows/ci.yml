@@ -23,6 +23,26 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
       - name: Build
-        run: cargo build --all-targets
+        run: cargo build --all-targets --all-features
       - name: Test
-        run: cargo test --all-targets
+        run: cargo test --all-targets --all-features
+      - name: Doc tests
+        run: cargo test --doc --all-features
+
+  # Verify crates compile with minimal (default) features
+  minimal-features:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build with default features
+        run: cargo build
+      - name: Build with no default features
+        run: |
+          cargo check -p ooxml-xml --no-default-features
+          cargo check -p ooxml-opc --no-default-features
+          cargo check -p ooxml-dml --no-default-features
+          cargo check -p ooxml-wml --no-default-features
+          cargo check -p ooxml-sml --no-default-features
+          cargo check -p ooxml-pml --no-default-features

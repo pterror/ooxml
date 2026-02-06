@@ -351,8 +351,14 @@ impl SlideMasterExt for SlideMaster {
         &self.common_slide_data
     }
 
+    #[cfg(feature = "pml-masters")]
     fn preserve(&self) -> bool {
         self.preserve.unwrap_or(false)
+    }
+
+    #[cfg(not(feature = "pml-masters"))]
+    fn preserve(&self) -> bool {
+        false
     }
 }
 
