@@ -159,7 +159,7 @@ Based on corpus analysis, recommended implementation order:
 
 ### Tier 1: Core (Required for 95%+ of documents)
 
-1. **Document structure**: `w:document`, `w:body` ✅ | `w:sectPr` ❌
+1. **Document structure**: `w:document`, `w:body`, `w:sectPr` ✅
 2. **Paragraphs**: `w:p`, `w:pPr` ✅
 3. **Runs**: `w:r`, `w:rPr`, `w:t` ✅
 4. **Basic formatting**: `w:b`, `w:i`, `w:u`, `w:strike`, `w:sz`, `w:color` ✅
@@ -168,7 +168,7 @@ Based on corpus analysis, recommended implementation order:
 
 ### Tier 2: High Priority (Required for 60-95% of documents)
 
-7. **Tables**: `w:tbl`, `w:tr`, `w:tc` ✅ | `w:tblPr`, cell merging ❌
+7. **Tables**: `w:tbl`, `w:tr`, `w:tc`, `w:tblPr`, cell merging ✅
 8. **Lists**: `w:numPr`, `w:numbering.xml` ✅
 9. **Hyperlinks**: `w:hyperlink` ✅
 10. **Spacing/Indentation**: `w:spacing`, `w:ind` ✅
@@ -176,27 +176,25 @@ Based on corpus analysis, recommended implementation order:
 
 ### Tier 3: Medium Priority (Required for 10-60% of documents)
 
-12. **Inline images**: `wp:inline` ✅ | `wp:anchor` (floating) ❌
+12. **Images**: `wp:inline` ✅ | `wp:anchor` (floating) ✅
 13. **Page breaks**: `w:br w:type="page"` ✅
-14. **Line breaks/Tabs**: `w:br`, `w:tab` ✅ | `w:tabs` (tab stops) ❌
-15. **Underline styles**: `w:u` ⚠️ (presence only, not style variants)
-16. **Highlighting**: `w:highlight` ❌
+14. **Line breaks/Tabs**: `w:br`, `w:tab` ✅ | `w:tabs` (tab stops) ✅
+15. **Underline styles**: `w:u` ✅ (all 17 styles)
+16. **Highlighting**: `w:highlight` ✅ (16 standard colors)
 
 ### Tier 4: Lower Priority (Required for <10% of documents)
 
-17. **Headers/Footers**: `w:hdr`, `w:ftr`, `w:headerReference` ❌
-18. **Footnotes/Endnotes**: `w:footnote`, `w:endnote` ❌
-19. **Comments**: `w:comment`, `w:commentRangeStart` ❌
-20. **Bookmarks**: `w:bookmarkStart`, `w:bookmarkEnd` ❌
-21. **Fields**: `w:fldSimple`, `w:fldChar` ❌
-22. **Double strikethrough**: `w:dstrike` ❌
-23. **Superscript/Subscript**: `w:vertAlign` ❌
+17. **Headers/Footers**: `w:hdr`, `w:ftr`, `w:headerReference` ✅
+18. **Footnotes/Endnotes**: `w:footnote`, `w:endnote` ✅
+19. **Comments**: `w:comment`, `w:commentRangeStart` ✅
+20. **Bookmarks**: `w:bookmarkStart`, `w:bookmarkEnd` ✅
+21. **Fields**: `w:fldSimple`, `w:fldChar` ✅
+22. **Double strikethrough**: `w:dstrike` ✅
+23. **Superscript/Subscript**: `w:vertAlign` ✅
 
 ### Legend
 
 - ✅ Implemented
-- ⚠️ Partial implementation
-- ❌ Not yet implemented
 
 See [implementation-status.md](./implementation-status.md) for detailed feature matrix.
 
